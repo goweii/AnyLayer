@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AnimRes;
@@ -17,7 +16,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,22 +38,18 @@ import per.goweii.anylayer.utils.blur.BlurUtils;
 /**
  * @author Cuizhen
  */
-public class AnyLayer implements View.OnKeyListener {
+public class AnyLayer extends LiveLayer {
 
     private final Context mContext;
     private final LayoutInflater mInflater;
 
-    private View mTargetView = null;
+    private View mTargetView;
     private ViewGroup mRootView;
     private FrameLayout mContainer;
     private FrameLayout mContentWrapper;
     private ImageView mBackground;
     private View mContent;
     private ViewHolder mViewHolder;
-
-    private boolean mShow = false;
-    private boolean mDismissing = false;
-    private boolean mShowing = false;
 
     private int mGravity = Gravity.CENTER;
     private float mBackgroundBlurRadius = 0;
@@ -66,7 +60,6 @@ public class AnyLayer implements View.OnKeyListener {
     private int mBackgroundColor = Color.TRANSPARENT;
 
     private boolean mCancelableOnTouchOutside = true;
-    private boolean mCancelableOnClickKeyBack = true;
 
     private IAnim mBackgroundAnim = null;
     private Animation mBackgroundInAnim = null;
@@ -74,15 +67,14 @@ public class AnyLayer implements View.OnKeyListener {
     private IAnim mContentAnim = null;
     private Animation mContentInAnim = null;
     private Animation mContentOutAnim = null;
-    private long mBackgroundAnimDuration = 200;
-    private long mContentAnimDuration = 250;
-
-    private View currentKeyView = null;
+    private long mBackgroundAnimDuration = 300;
+    private long mContentAnimDuration = 350;
 
     private IDataBinder mDataBinder = null;
     private OnVisibleChangeListener mOnVisibleChangeListener = null;
     private OnLayerShowListener mOnLayerShowListener = null;
     private OnLayerDismissListener mOnLayerDismissListener = null;
+
     private Direction mDirection = Direction.BOTTOM;
 
     public static AnyLayer with(@NonNull Context context) {
@@ -108,7 +100,7 @@ public class AnyLayer implements View.OnKeyListener {
         initView();
     }
 
-    private AnyLayer(@NonNull ViewGroup viewGroup) {
+    public AnyLayer(@NonNull ViewGroup viewGroup) {
         mContext = viewGroup.getContext();
         mInflater = LayoutInflater.from(mContext);
         mRootView = viewGroup;
@@ -135,37 +127,16 @@ public class AnyLayer implements View.OnKeyListener {
     }
 
     public void show() {
-        if (isShow()) {
-            return;
-        }
-        mShow = true;
-        if (mShowing) {
-            return;
-        }
-        onAttached();
+        add(mRootView, mContainer);
     }
 
     public void dismiss() {
-        if (mContainer.getParent() == null || !mShow) {
-            return;
-        }
-        if (mDismissing) {
-            return;
-        }
-        mDismissing = true;
-        doOutAnim();
-        mRootView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                onDetached();
-            }
-        }, getDuration());
-        if (mOnLayerDismissListener != null) {
-            mOnLayerDismissListener.onDismissing(AnyLayer.this);
-        }
+        remove();
     }
 
-    private void onAttached() {
+    @Override
+    protected void onAttach() {
+        super.onAttach();
         initContainer();
         initBackground();
         initContent();
@@ -179,6 +150,53 @@ public class AnyLayer implements View.OnKeyListener {
         if (mOnLayerShowListener != null) {
             mOnLayerShowListener.onShowing(AnyLayer.this);
         }
+    }
+
+    @Override
+    protected long onAnimIn(View view) {
+        super.onAnimIn(view);
+        startContentInAnim();
+        startBackgroundInAnim();
+        return getDuration();
+    }
+
+    @Override
+    protected long onAnimOut(View view) {
+        super.onAnimOut(view);
+        startContentOutAnim();
+        startBackgroundOutAnim();
+        return getDuration();
+    }
+
+    @Override
+    protected void onShow() {
+        super.onShow();
+        if (mOnLayerShowListener != null) {
+            mOnLayerShowListener.onShown(AnyLayer.this);
+        }
+    }
+
+    @Override
+    protected void onRemove() {
+        super.onRemove();
+        if (mOnLayerDismissListener != null) {
+            mOnLayerDismissListener.onDismissing(AnyLayer.this);
+        }
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        if (mOnVisibleChangeListener != null) {
+            mOnVisibleChangeListener.onDismiss(AnyLayer.this);
+        }
+        if (mOnLayerDismissListener != null) {
+            mOnLayerDismissListener.onDismissed(AnyLayer.this);
+        }
+        mViewHolder = null;
+        mContainer = null;
+        mBackground = null;
+        mTargetView = null;
     }
 
     private void initContainer() {
@@ -216,26 +234,6 @@ public class AnyLayer implements View.OnKeyListener {
             }
             mContainer.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
         }
-        mRootView.addView(mContainer);
-        mContainer.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                if (mContainer.getViewTreeObserver().isAlive()) {
-                    mContainer.getViewTreeObserver().removeOnPreDrawListener(this);
-                }
-                mRootView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mShowing = false;
-                        if (mOnLayerShowListener != null) {
-                            mOnLayerShowListener.onShown(AnyLayer.this);
-                        }
-                    }
-                }, getDuration());
-                doInAnim();
-                return true;
-            }
-        });
     }
 
     private void initBackground() {
@@ -284,47 +282,7 @@ public class AnyLayer implements View.OnKeyListener {
                 }
                 mContentWrapper.addView(mContent);
             }
-            mContent.setFocusable(true);
-            mContent.setFocusableInTouchMode(true);
-            mContent.requestFocus();
-            currentKeyView = mContent;
-            currentKeyView.setOnKeyListener(this);
-            ViewTreeObserver observer = mContent.getViewTreeObserver();
-            observer.addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
-                @Override
-                public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                    if (currentKeyView != null) {
-                        currentKeyView.setOnKeyListener(null);
-                    }
-                    if (oldFocus != null) {
-                        oldFocus.setOnKeyListener(null);
-                    }
-                    if (newFocus != null) {
-                        currentKeyView = newFocus;
-                        currentKeyView.setOnKeyListener(AnyLayer.this);
-                    }
-                }
-            });
         }
-    }
-
-    private void onDetached() {
-        if (currentKeyView != null) {
-            currentKeyView.setOnKeyListener(null);
-        }
-        mRootView.removeView(mContainer);
-        mShow = false;
-        mDismissing = false;
-        if (mOnVisibleChangeListener != null) {
-            mOnVisibleChangeListener.onDismiss(AnyLayer.this);
-        }
-        if (mOnLayerDismissListener != null) {
-            mOnLayerDismissListener.onDismissed(AnyLayer.this);
-        }
-        mViewHolder = null;
-        mContainer = null;
-        mBackground = null;
-        mTargetView = null;
     }
 
     public AnyLayer setOnVisibleChangeListener(OnVisibleChangeListener mOnVisibleChangeListener) {
@@ -498,7 +456,7 @@ public class AnyLayer implements View.OnKeyListener {
     }
 
     public AnyLayer cancelableOnClickKeyBack(boolean cancelable) {
-        mCancelableOnClickKeyBack = cancelable;
+        setCancelableOnClickKeyBack(cancelable);
         return this;
     }
 
@@ -544,17 +502,7 @@ public class AnyLayer implements View.OnKeyListener {
     }
 
     public boolean isShow() {
-        return mContainer.getParent() != null || mShow;
-    }
-
-    private void doInAnim() {
-        startContentInAnim();
-        startBackgroundInAnim();
-    }
-
-    private void doOutAnim() {
-        startContentOutAnim();
-        startBackgroundOutAnim();
+        return mContainer.getParent() != null;
     }
 
     private void startContentInAnim() {
@@ -603,21 +551,5 @@ public class AnyLayer implements View.OnKeyListener {
                 AnimHelper.startAlphaOutAnim(mBackground, mBackgroundAnimDuration);
             }
         }
-    }
-
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (mContainer.getParent() == null || !mShow) {
-            return false;
-        }
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (mCancelableOnClickKeyBack) {
-                    dismiss();
-                }
-                return true;
-            }
-        }
-        return false;
     }
 }

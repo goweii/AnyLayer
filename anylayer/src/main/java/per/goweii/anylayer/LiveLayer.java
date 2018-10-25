@@ -8,38 +8,41 @@ import android.view.ViewTreeObserver;
 
 /**
  * 描述：管理view的动态添加和移除
+ * 这里有几个生命周期的回调：
+ * {@link #onAttach()}
+ * {@link #onAnimIn(View)}
+ * {@link #onShow()}
+ * {@link #onRemove()}
+ * {@link #onAnimOut(View)}
+ * {@link #onDetach()}
  *
  * @author Cuizhen
  * @date 2018/10/25
  */
-public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocusChangeListener, ViewTreeObserver.OnPreDrawListener {
-    private final ViewGroup mParent;
-    private final View mChild;
+public class LiveLayer implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocusChangeListener, ViewTreeObserver.OnPreDrawListener {
+    private ViewGroup mParent;
+    private View mChild;
 
     private View currentKeyView = null;
     private boolean mCancelableOnClickKeyBack = true;
     private boolean mShowing = false;
     private boolean mDismissing = false;
 
-    private LayerManager(@NonNull ViewGroup parent, @NonNull View child) {
+    protected void add(@NonNull ViewGroup parent, @NonNull View child) {
+        if (mParent != null || mChild != null){
+            return;
+        }
         mParent = parent;
         mChild = child;
-    }
-
-    public static LayerManager with(@NonNull ViewGroup parent, @NonNull View child) {
-        return new LayerManager(parent, child);
-    }
-
-    public void setCancelableOnClickKeyBack(boolean cancelable) {
-        mCancelableOnClickKeyBack = cancelable;
-    }
-
-    public void add() {
         onAttach();
     }
 
-    public void remove() {
+    protected void remove() {
         onRemove();
+    }
+
+    protected void setCancelableOnClickKeyBack(boolean cancelable) {
+        mCancelableOnClickKeyBack = cancelable;
     }
 
     /**
@@ -74,7 +77,6 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
      * 进入动画结束
      */
     protected void onShow() {
-
     }
 
     /**
@@ -98,7 +100,7 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
     }
 
     /**
-     * 移出动画结束
+     * 移出动画开始
      */
     protected long onAnimOut(View view) {
         return 0;
@@ -111,8 +113,10 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
         if (currentKeyView != null) {
             currentKeyView.setOnKeyListener(null);
         }
-        mParent.removeView(mChild);
         mChild.getViewTreeObserver().removeOnGlobalFocusChangeListener(this);
+        mParent.removeView(mChild);
+        mParent = null;
+        mChild = null;
     }
 
     @Override
@@ -156,7 +160,7 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
         }
         if (newFocus != null) {
             currentKeyView = newFocus;
-            currentKeyView.setOnKeyListener(LayerManager.this);
+            currentKeyView.setOnKeyListener(LiveLayer.this);
         }
     }
 }
