@@ -465,6 +465,10 @@ public class AnyLayer implements LayerManager.LiveListener {
         return mContent;
     }
 
+    public ImageView getBackground() {
+        return mViewHolder.getBackground();
+    }
+
     private long getDuration() {
         return Math.max(mBackgroundAnimDuration, mContentAnimDuration);
     }
