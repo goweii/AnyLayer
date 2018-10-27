@@ -8,11 +8,10 @@ import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
 /**
- * @author damai
+ * @author Cuizhen
  * @date 2018/5/20
  * QQ: 302833254
  * E-mail: goweii@163.com

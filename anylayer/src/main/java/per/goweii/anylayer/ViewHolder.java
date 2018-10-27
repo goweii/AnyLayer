@@ -8,7 +8,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 /**
- * @author damai
+ * @author Cuizhen
  * @date 2018/5/20
  * QQ: 302833254
  * E-mail: goweii@163.com

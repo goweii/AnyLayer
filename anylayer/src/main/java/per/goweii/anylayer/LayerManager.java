@@ -34,10 +34,16 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
     }
 
     public void add() {
+        if (mChild.getParent() != null) {
+            return;
+        }
         onAttach();
     }
 
     public void remove() {
+        if (mChild.getParent() == null) {
+            return;
+        }
         onRemove();
     }
 
@@ -49,9 +55,6 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
      * 已添加到父View
      */
     private void onAttach() {
-        if (mChild.getParent() != null) {
-            return;
-        }
         if (mShowing) {
             return;
         }
@@ -92,9 +95,6 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
      * 移出动画开始
      */
     private void onRemove() {
-        if (mChild.getParent() == null) {
-            return;
-        }
         if (mDismissing) {
             return;
         }
