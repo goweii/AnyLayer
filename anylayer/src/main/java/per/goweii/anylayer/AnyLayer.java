@@ -25,29 +25,16 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import per.goweii.anylayer.listener.IAnim;
-import per.goweii.anylayer.listener.IDataBinder;
-import per.goweii.anylayer.listener.OnLayerClickListener;
-import per.goweii.anylayer.listener.OnLayerDismissListener;
-import per.goweii.anylayer.listener.OnLayerShowListener;
-import per.goweii.anylayer.listener.OnVisibleChangeListener;
-import per.goweii.anylayer.utils.AnimHelper;
-import per.goweii.anylayer.utils.Utils;
-import per.goweii.anylayer.utils.blur.BlurUtils;
-
 /**
  * @author Cuizhen
  */
-public class AnyLayer extends LiveLayer {
+public class AnyLayer implements LayerManager.LiveListener {
 
     private final Context mContext;
     private final LayoutInflater mInflater;
 
     private View mTargetView;
     private ViewGroup mRootView;
-    private FrameLayout mContainer;
-    private FrameLayout mContentWrapper;
-    private ImageView mBackground;
     private View mContent;
     private ViewHolder mViewHolder;
 
@@ -68,7 +55,7 @@ public class AnyLayer extends LiveLayer {
     private Animation mContentInAnim = null;
     private Animation mContentOutAnim = null;
     private long mBackgroundAnimDuration = 300;
-    private long mContentAnimDuration = 350;
+    private long mContentAnimDuration = 300;
 
     private IDataBinder mDataBinder = null;
     private OnVisibleChangeListener mOnVisibleChangeListener = null;
@@ -76,6 +63,7 @@ public class AnyLayer extends LiveLayer {
     private OnLayerDismissListener mOnLayerDismissListener = null;
 
     private Direction mDirection = Direction.BOTTOM;
+    private LayerManager mLayerManager;
 
     public static AnyLayer with(@NonNull Context context) {
         return new AnyLayer(context);
@@ -92,11 +80,7 @@ public class AnyLayer extends LiveLayer {
     private AnyLayer(@NonNull Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
-        Activity activity = Utils.getActivity(context);
-        if (activity == null) {
-            throw new NullPointerException();
-        }
-        mRootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
+        initRootView();
         initView();
     }
 
@@ -111,32 +95,35 @@ public class AnyLayer extends LiveLayer {
         mContext = targetView.getContext();
         mInflater = LayoutInflater.from(mContext);
         mTargetView = targetView;
+        initRootView();
+        initView();
+    }
+
+    private void initRootView(){
         Activity activity = Utils.getActivity(mContext);
         if (activity == null) {
             throw new NullPointerException();
         }
         mRootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
-        initView();
     }
 
     private void initView() {
-        mContainer = (FrameLayout) mInflater.inflate(R.layout.layout_any_layer, mRootView, false);
-        mContentWrapper = mContainer.findViewById(R.id.fl_content);
-        mBackground = mContainer.findViewById(R.id.iv_background);
-        mViewHolder = new ViewHolder(this, mContainer);
+        FrameLayout container = (FrameLayout) mInflater.inflate(R.layout.layout_any_layer, mRootView, false);
+        mViewHolder = new ViewHolder(this, container);
+        mLayerManager = new LayerManager(mRootView, container);
+        mLayerManager.setLiveListener(this);
     }
 
     public void show() {
-        add(mRootView, mContainer);
+        mLayerManager.add();
     }
 
     public void dismiss() {
-        remove();
+        mLayerManager.remove();
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
+    public void onAttach() {
         initContainer();
         initBackground();
         initContent();
@@ -153,55 +140,49 @@ public class AnyLayer extends LiveLayer {
     }
 
     @Override
-    protected long onAnimIn(View view) {
-        super.onAnimIn(view);
+    public long onAnimIn(View view) {
         startContentInAnim();
         startBackgroundInAnim();
         return getDuration();
     }
 
     @Override
-    protected long onAnimOut(View view) {
-        super.onAnimOut(view);
+    public long onAnimOut(View view) {
         startContentOutAnim();
         startBackgroundOutAnim();
         return getDuration();
     }
 
     @Override
-    protected void onShow() {
-        super.onShow();
+    public void onShow() {
         if (mOnLayerShowListener != null) {
             mOnLayerShowListener.onShown(AnyLayer.this);
         }
     }
 
     @Override
-    protected void onRemove() {
-        super.onRemove();
+    public void onRemove() {
         if (mOnLayerDismissListener != null) {
             mOnLayerDismissListener.onDismissing(AnyLayer.this);
         }
     }
 
     @Override
-    protected void onDetach() {
-        super.onDetach();
+    public void onDetach() {
         if (mOnVisibleChangeListener != null) {
             mOnVisibleChangeListener.onDismiss(AnyLayer.this);
         }
         if (mOnLayerDismissListener != null) {
             mOnLayerDismissListener.onDismissed(AnyLayer.this);
         }
+        mViewHolder.recycle();
         mViewHolder = null;
-        mContainer = null;
-        mBackground = null;
         mTargetView = null;
     }
 
     private void initContainer() {
         if (mCancelableOnTouchOutside) {
-            mContainer.setOnClickListener(new View.OnClickListener() {
+            mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dismiss();
@@ -209,12 +190,6 @@ public class AnyLayer extends LiveLayer {
             });
         }
         if (mTargetView != null) {
-            Activity activity = Utils.getActivity(mContext);
-            if (activity == null) {
-                throw new NullPointerException();
-            }
-            View decorView = activity.getWindow().getDecorView();
-            mRootView = decorView.findViewById(android.R.id.content);
             int[] locationTarget = new int[2];
             mTargetView.getLocationOnScreen(locationTarget);
             int[] locationRoot = new int[2];
@@ -232,41 +207,41 @@ public class AnyLayer extends LiveLayer {
             } else if (mDirection == Direction.RIGHT){
                 paddingLeft = locationTarget[0] - locationRoot[0] + mTargetView.getWidth();
             }
-            mContainer.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+            mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
         }
     }
 
     private void initBackground() {
         if (mBackgroundBlurRadius > 0) {
-            mBackground.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            mViewHolder.getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    mBackground.getViewTreeObserver().removeOnPreDrawListener(this);
+                    mViewHolder.getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
                     Bitmap snapshot = Utils.snapshot(mRootView);
                     int[] location = new int[2];
-                    mBackground.getLocationOnScreen(location);
-                    Bitmap original = Bitmap.createBitmap(snapshot, location[0], location[1], mBackground.getWidth(), mBackground.getHeight());
+                    mViewHolder.getBackground().getLocationOnScreen(location);
+                    Bitmap original = Bitmap.createBitmap(snapshot, location[0], location[1], mViewHolder.getBackground().getWidth(), mViewHolder.getBackground().getHeight());
                     snapshot.recycle();
                     Bitmap blur = BlurUtils.blur(mContext, original, mBackgroundBlurRadius, mBackgroundBlurScale);
                     original.recycle();
-                    mBackground.setScaleType(ImageView.ScaleType.FIT_XY);
-                    mBackground.setImageBitmap(blur);
-                    mBackground.setBackgroundColor(mBackgroundColor);
+                    mViewHolder.getBackground().setScaleType(ImageView.ScaleType.FIT_XY);
+                    mViewHolder.getBackground().setImageBitmap(blur);
+                    mViewHolder.getBackground().setBackgroundColor(mBackgroundColor);
                     return true;
                 }
             });
         } else {
             if (mBackgroundBitmap != null) {
-                mBackground.setImageBitmap(mBackgroundBitmap);
-                mBackground.setColorFilter(mBackgroundColor);
+                mViewHolder.getBackground().setImageBitmap(mBackgroundBitmap);
+                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
             } else if (mBackgroundResource != -1) {
-                mBackground.setImageResource(mBackgroundResource);
-                mBackground.setColorFilter(mBackgroundColor);
+                mViewHolder.getBackground().setImageResource(mBackgroundResource);
+                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
             } else if (mBackgroundDrawable != null) {
-                mBackground.setImageDrawable(mBackgroundDrawable);
-                mBackground.setColorFilter(mBackgroundColor);
+                mViewHolder.getBackground().setImageDrawable(mBackgroundDrawable);
+                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
             } else if (mBackgroundColor != Color.TRANSPARENT) {
-                mBackground.setImageDrawable(new ColorDrawable(mBackgroundColor));
+                mViewHolder.getBackground().setImageDrawable(new ColorDrawable(mBackgroundColor));
             }
         }
     }
@@ -280,7 +255,7 @@ public class AnyLayer extends LiveLayer {
                     params.gravity = mGravity;
                     mContent.setLayoutParams(params);
                 }
-                mContentWrapper.addView(mContent);
+                mViewHolder.getContentWrapper().addView(mContent);
             }
         }
     }
@@ -310,13 +285,6 @@ public class AnyLayer extends LiveLayer {
      */
     public enum Direction {
         TOP, BOTTOM, LEFT, RIGHT
-    }
-
-    /**
-     * 控制与targetView的对齐方式
-     */
-    public enum Alignment {
-        TOP, BOTTOM, LEFT, RIGHT, CENTER
     }
 
     public AnyLayer gravity(int gravity) {
@@ -394,7 +362,7 @@ public class AnyLayer extends LiveLayer {
     }
 
     public AnyLayer contentView(@LayoutRes int contentViewId) {
-        mContent = mInflater.inflate(contentViewId, mContainer, false);
+        mContent = mInflater.inflate(contentViewId, mViewHolder.getContainer(), false);
         return this;
     }
 
@@ -456,7 +424,7 @@ public class AnyLayer extends LiveLayer {
     }
 
     public AnyLayer cancelableOnClickKeyBack(boolean cancelable) {
-        setCancelableOnClickKeyBack(cancelable);
+        mLayerManager.setCancelableOnClickKeyBack(cancelable);
         return this;
     }
 
@@ -502,7 +470,7 @@ public class AnyLayer extends LiveLayer {
     }
 
     public boolean isShow() {
-        return mContainer.getParent() != null;
+        return mViewHolder.getContainer().getParent() != null;
     }
 
     private void startContentInAnim() {
@@ -531,25 +499,71 @@ public class AnyLayer extends LiveLayer {
 
     private void startBackgroundInAnim() {
         if (mBackgroundAnim != null) {
-            mBackgroundAnimDuration = mBackgroundAnim.inAnim(mBackground);
+            mBackgroundAnimDuration = mBackgroundAnim.inAnim(mViewHolder.getBackground());
         } else {
             if (mBackgroundInAnim != null) {
-                mBackground.startAnimation(mBackgroundInAnim);
+                mViewHolder.getBackground().startAnimation(mBackgroundInAnim);
             } else {
-                AnimHelper.startAlphaInAnim(mBackground, mBackgroundAnimDuration);
+                AnimHelper.startAlphaInAnim(mViewHolder.getBackground(), mBackgroundAnimDuration);
             }
         }
     }
 
     private void startBackgroundOutAnim() {
         if (mBackgroundAnim != null) {
-            mBackgroundAnimDuration = mBackgroundAnim.outAnim(mBackground);
+            mBackgroundAnimDuration = mBackgroundAnim.outAnim(mViewHolder.getBackground());
         } else {
             if (mBackgroundOutAnim != null) {
-                mBackground.startAnimation(mBackgroundOutAnim);
+                mViewHolder.getBackground().startAnimation(mBackgroundOutAnim);
             } else {
-                AnimHelper.startAlphaOutAnim(mBackground, mBackgroundAnimDuration);
+                AnimHelper.startAlphaOutAnim(mViewHolder.getBackground(), mBackgroundAnimDuration);
             }
         }
+    }
+
+    public interface IAnim {
+        /**
+         * 内容进入动画
+         *
+         * @param target 内容
+         * @return 动画时长
+         */
+        long inAnim(View target);
+
+        /**
+         * 内容消失动画
+         *
+         * @param target 内容
+         * @return 动画时长
+         */
+        long outAnim(View target);
+    }
+
+    public interface IDataBinder {
+        /**
+         * 绑定数据
+         *
+         * @param anyLayer AnyLayer
+         */
+        void bind(AnyLayer anyLayer);
+    }
+
+    public interface OnLayerClickListener {
+        void onClick(AnyLayer anyLayer, View v);
+    }
+
+    public interface OnLayerDismissListener {
+        void onDismissing(AnyLayer anyLayer);
+        void onDismissed(AnyLayer anyLayer);
+    }
+
+    public interface OnLayerShowListener {
+        void onShowing(AnyLayer anyLayer);
+        void onShown(AnyLayer anyLayer);
+    }
+
+    public interface OnVisibleChangeListener {
+        void onShow(AnyLayer anyLayer);
+        void onDismiss(AnyLayer anyLayer);
     }
 }

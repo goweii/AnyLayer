@@ -19,36 +19,36 @@ import android.view.ViewTreeObserver;
  * @author Cuizhen
  * @date 2018/10/25
  */
-public class LiveLayer implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocusChangeListener, ViewTreeObserver.OnPreDrawListener {
-    private ViewGroup mParent;
-    private View mChild;
+public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocusChangeListener, ViewTreeObserver.OnPreDrawListener {
+    private final ViewGroup mParent;
+    private final View mChild;
 
     private View currentKeyView = null;
     private boolean mCancelableOnClickKeyBack = true;
     private boolean mShowing = false;
     private boolean mDismissing = false;
 
-    protected void add(@NonNull ViewGroup parent, @NonNull View child) {
-        if (mParent != null || mChild != null){
-            return;
-        }
+    public LayerManager(@NonNull ViewGroup parent, @NonNull View child) {
         mParent = parent;
         mChild = child;
+    }
+
+    public void add() {
         onAttach();
     }
 
-    protected void remove() {
+    public void remove() {
         onRemove();
     }
 
-    protected void setCancelableOnClickKeyBack(boolean cancelable) {
+    public void setCancelableOnClickKeyBack(boolean cancelable) {
         mCancelableOnClickKeyBack = cancelable;
     }
 
     /**
      * 已添加到父View
      */
-    protected void onAttach() {
+    private void onAttach() {
         if (mChild.getParent() != null) {
             return;
         }
@@ -64,25 +64,34 @@ public class LiveLayer implements View.OnKeyListener, ViewTreeObserver.OnGlobalF
         currentKeyView.setOnKeyListener(this);
         mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(this);
         mChild.getViewTreeObserver().addOnPreDrawListener(this);
+        if (mLiveListener != null){
+            mLiveListener.onAttach();
+        }
     }
 
     /**
      * 进入动画开始
      */
-    protected long onAnimIn(View view) {
+    private long onAnimIn(View view) {
+        if (mLiveListener != null){
+            return mLiveListener.onAnimIn(view);
+        }
         return 0;
     }
 
     /**
      * 进入动画结束
      */
-    protected void onShow() {
+    private void onShow() {
+        if (mLiveListener != null){
+            mLiveListener.onShow();
+        }
     }
 
     /**
      * 移出动画开始
      */
-    protected void onRemove() {
+    private void onRemove() {
         if (mChild.getParent() == null) {
             return;
         }
@@ -97,26 +106,33 @@ public class LiveLayer implements View.OnKeyListener, ViewTreeObserver.OnGlobalF
                 onDetach();
             }
         }, onAnimOut(mChild) + 16);
+        if (mLiveListener != null){
+            mLiveListener.onRemove();
+        }
     }
 
     /**
      * 移出动画开始
      */
-    protected long onAnimOut(View view) {
+    private long onAnimOut(View view) {
+        if (mLiveListener != null){
+           return mLiveListener.onAnimOut(view);
+        }
         return 0;
     }
 
     /**
      * 已从父View移除
      */
-    protected void onDetach() {
+    private void onDetach() {
         if (currentKeyView != null) {
             currentKeyView.setOnKeyListener(null);
         }
         mChild.getViewTreeObserver().removeOnGlobalFocusChangeListener(this);
         mParent.removeView(mChild);
-        mParent = null;
-        mChild = null;
+        if (mLiveListener != null){
+            mLiveListener.onDetach();
+        }
     }
 
     @Override
@@ -160,7 +176,22 @@ public class LiveLayer implements View.OnKeyListener, ViewTreeObserver.OnGlobalF
         }
         if (newFocus != null) {
             currentKeyView = newFocus;
-            currentKeyView.setOnKeyListener(LiveLayer.this);
+            currentKeyView.setOnKeyListener(LayerManager.this);
         }
+    }
+
+    private LiveListener mLiveListener = null;
+
+    public void setLiveListener(LiveListener liveListener) {
+        mLiveListener = liveListener;
+    }
+
+    public interface LiveListener {
+        void onAttach();
+        long onAnimIn(View view);
+        void onShow();
+        void onRemove();
+        long onAnimOut(View view);
+        void onDetach();
     }
 }

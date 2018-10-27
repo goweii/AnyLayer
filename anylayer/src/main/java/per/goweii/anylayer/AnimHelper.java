@@ -1,4 +1,4 @@
-package per.goweii.anylayer.utils;
+package per.goweii.anylayer;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;

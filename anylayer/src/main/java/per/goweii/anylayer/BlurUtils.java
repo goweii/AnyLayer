@@ -1,4 +1,4 @@
-package per.goweii.anylayer.utils.blur;
+package per.goweii.anylayer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,9 +11,9 @@ import android.os.Build;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public final class BlurUtils {
+final class BlurUtils {
 
-    public static Bitmap blur(Context context, Bitmap originalBitmap, float radius){
+    static Bitmap blur(Context context, Bitmap originalBitmap, float radius){
         if (radius <= 0){
             return originalBitmap;
         }
@@ -27,7 +27,7 @@ public final class BlurUtils {
         }
     }
 
-    public static Bitmap blur(Context context, Bitmap originalBitmap, float radius, float scaleFactor){
+    static Bitmap blur(Context context, Bitmap originalBitmap, float radius, float scaleFactor){
         if (radius <= 0){
             return originalBitmap;
         }

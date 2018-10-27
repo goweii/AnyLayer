@@ -1,4 +1,4 @@
-package per.goweii.anylayer.utils.blur;
+package per.goweii.anylayer;
 
 import android.graphics.Bitmap;
 import android.support.annotation.FloatRange;
@@ -12,7 +12,7 @@ import android.support.annotation.FloatRange;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public final class FastBlur {
+final class FastBlur {
 
     /**
      * 模糊   采用FastBlur算法
@@ -23,7 +23,7 @@ public final class FastBlur {
      * @param scaleFactor    缩放因子（>=1）
      * @return 模糊Bitmap
      */
-    public static Bitmap blur(Bitmap originalBitmap, int radius, @FloatRange(from = 1) float scaleFactor) {
+    static Bitmap blur(Bitmap originalBitmap, int radius, @FloatRange(from = 1) float scaleFactor) {
         if (radius <= 0) {
             return originalBitmap;
         }
@@ -45,7 +45,7 @@ public final class FastBlur {
      * @param radius         模糊半径
      * @return 模糊Bitmap
      */
-    public static Bitmap blur(Bitmap originalBitmap, int radius) {
+    static Bitmap blur(Bitmap originalBitmap, int radius) {
 
         if (radius <= 0) {
             return originalBitmap;

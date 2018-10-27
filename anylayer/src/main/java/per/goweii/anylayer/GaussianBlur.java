@@ -1,4 +1,4 @@
-package per.goweii.anylayer.utils.blur;
+package per.goweii.anylayer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,7 +17,7 @@ import android.support.annotation.RequiresApi;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public final class GaussianBlur {
+final class GaussianBlur {
     /**
      * 模糊
      * 采用系统自带的RenderScript
@@ -30,7 +30,7 @@ public final class GaussianBlur {
      * @return 模糊Bitmap
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public static Bitmap blur(Context context, Bitmap originalBitmap, float radius) {
+    static Bitmap blur(Context context, Bitmap originalBitmap, float radius) {
         if (radius <= 0) {
             return originalBitmap;
         }
@@ -52,7 +52,7 @@ public final class GaussianBlur {
      * @return 模糊Bitmap
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public static Bitmap blur(Context context, Bitmap originalBitmap,
+    static Bitmap blur(Context context, Bitmap originalBitmap,
                               @FloatRange(fromInclusive = false, from = 0.0, to = 25.0) float radius,
                               @FloatRange(from = 1) float scaleFactor) {
         if (scaleFactor == 1){
@@ -77,7 +77,7 @@ public final class GaussianBlur {
      * @param radius         模糊半径
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public static Bitmap blurIn25(Context context, Bitmap originalBitmap,
+    static Bitmap blurIn25(Context context, Bitmap originalBitmap,
                               @FloatRange(fromInclusive = false, from = 0.0, to = 25.0) float radius) {
         // 创建输出图片
         Bitmap blurBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), originalBitmap.getConfig());

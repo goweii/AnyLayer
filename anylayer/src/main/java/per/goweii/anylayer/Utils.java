@@ -1,4 +1,4 @@
-package per.goweii.anylayer.utils;
+package per.goweii.anylayer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,13 +13,13 @@ import android.view.View;
  * @author Cuizhen
  * @date 2018/10/25
  */
-public class Utils {
+class Utils {
 
     /**
      * 从当前上下文获取Activity
      */
     @Nullable
-    public static Activity getActivity(Context context) {
+    static Activity getActivity(Context context) {
         if (context == null) {
             return null;
         }
@@ -35,7 +35,7 @@ public class Utils {
         return null;
     }
 
-    public static Bitmap snapshot(View view){
+    static Bitmap snapshot(View view){
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache(true);
         view.destroyDrawingCache();

@@ -1,11 +1,11 @@
 package per.goweii.anylayer;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.IdRes;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.FrameLayout;
-
-import per.goweii.anylayer.listener.OnLayerClickListener;
+import android.widget.ImageView;
 
 /**
  * @author damai
@@ -14,25 +14,49 @@ import per.goweii.anylayer.listener.OnLayerClickListener;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class ViewHolder {
+class ViewHolder {
 
     private final AnyLayer mAnyLayer;
     private FrameLayout mContainer;
-    private SparseArray<View> views = null;
-    private SparseArray<OnLayerClickListener> onClickListeners = null;
+    private FrameLayout mContentWrapper;
+    private ImageView mBackground;
 
-    public ViewHolder(AnyLayer anyLayer, FrameLayout container) {
+    private SparseArray<View> views = null;
+    private SparseArray<AnyLayer.OnLayerClickListener> onClickListeners = null;
+
+    ViewHolder(AnyLayer anyLayer, FrameLayout container) {
         this.mAnyLayer = anyLayer;
         this.mContainer = container;
+        mContentWrapper = mContainer.findViewById(R.id.fl_content_wrapper);
+        mBackground = mContainer.findViewById(R.id.iv_background);
     }
 
-    public void bindListener() {
+    void recycle(){
+        if (mBackground.getDrawable() instanceof BitmapDrawable) {
+            BitmapDrawable bd = (BitmapDrawable) mBackground.getDrawable();
+            bd.getBitmap().recycle();
+        }
+    }
+
+    FrameLayout getContainer() {
+        return mContainer;
+    }
+
+    FrameLayout getContentWrapper() {
+        return mContentWrapper;
+    }
+
+    ImageView getBackground() {
+        return mBackground;
+    }
+
+    void bindListener() {
         if (onClickListeners == null) {
             return;
         }
         for (int i = 0; i < onClickListeners.size(); i++) {
             int viewId = onClickListeners.keyAt(i);
-            final OnLayerClickListener listener = onClickListeners.valueAt(i);
+            final AnyLayer.OnLayerClickListener listener = onClickListeners.valueAt(i);
             getView(viewId).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -42,7 +66,7 @@ public class ViewHolder {
         }
     }
 
-    public <V extends View> V getView(@IdRes int viewId) {
+    <V extends View> V getView(@IdRes int viewId) {
         if (views == null) {
             views = new SparseArray<>();
         }
@@ -54,7 +78,7 @@ public class ViewHolder {
         return (V) views.get(viewId);
     }
 
-    public void addOnClickListener(OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
+    void addOnClickListener(AnyLayer.OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
         if (onClickListeners == null) {
             onClickListeners = new SparseArray<>();
         }
