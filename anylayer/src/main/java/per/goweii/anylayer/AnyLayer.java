@@ -99,12 +99,12 @@ public class AnyLayer implements LayerManager.LiveListener {
         initView();
     }
 
-    private void initRootView(){
+    private void initRootView() {
         Activity activity = Utils.getActivity(mContext);
         if (activity == null) {
             throw new NullPointerException();
         }
-        mRootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
+        mRootView = (ViewGroup) activity.getWindow().getDecorView()/*.findViewById(android.R.id.content)*/;
     }
 
     private void initView() {
@@ -200,11 +200,11 @@ public class AnyLayer implements LayerManager.LiveListener {
             int paddingRight = 0;
             if (mDirection == Direction.TOP) {
                 paddingBottom = mRootView.getHeight() - locationTarget[1];
-            } else if (mDirection == Direction.BOTTOM){
+            } else if (mDirection == Direction.BOTTOM) {
                 paddingTop = locationTarget[1] - locationRoot[1] + mTargetView.getHeight();
-            } else if (mDirection == Direction.LEFT){
+            } else if (mDirection == Direction.LEFT) {
                 paddingRight = mRootView.getWidth() - locationTarget[0];
-            } else if (mDirection == Direction.RIGHT){
+            } else if (mDirection == Direction.RIGHT) {
                 paddingLeft = locationTarget[0] - locationRoot[0] + mTargetView.getWidth();
             }
             mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
@@ -248,15 +248,17 @@ public class AnyLayer implements LayerManager.LiveListener {
 
     private void initContent() {
         if (mContent != null) {
-            if (mContent.getParent() == null) {
-                mContent.setClickable(true);
-                if (mGravity != -1) {
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mContent.getLayoutParams();
-                    params.gravity = mGravity;
-                    mContent.setLayoutParams(params);
-                }
-                mViewHolder.getContentWrapper().addView(mContent);
+            ViewGroup contentParent = (ViewGroup) mContent.getParent();
+            if (contentParent != null) {
+                contentParent.removeView(mContent);
             }
+            mContent.setClickable(true);
+            if (mGravity != -1) {
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mContent.getLayoutParams();
+                params.gravity = mGravity;
+                mContent.setLayoutParams(params);
+            }
+            mViewHolder.getContentWrapper().addView(mContent);
         }
     }
 
@@ -558,16 +560,19 @@ public class AnyLayer implements LayerManager.LiveListener {
 
     public interface OnLayerDismissListener {
         void onDismissing(AnyLayer anyLayer);
+
         void onDismissed(AnyLayer anyLayer);
     }
 
     public interface OnLayerShowListener {
         void onShowing(AnyLayer anyLayer);
+
         void onShown(AnyLayer anyLayer);
     }
 
     public interface OnVisibleChangeListener {
         void onShow(AnyLayer anyLayer);
+
         void onDismiss(AnyLayer anyLayer);
     }
 }
