@@ -176,8 +176,6 @@ public class AnyLayer implements LayerManager.LiveListener {
             mOnLayerDismissListener.onDismissed(AnyLayer.this);
         }
         mViewHolder.recycle();
-        mViewHolder = null;
-        mTargetView = null;
     }
 
     private void initContainer() {
