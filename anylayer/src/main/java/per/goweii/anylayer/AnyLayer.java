@@ -104,7 +104,7 @@ public class AnyLayer implements LayerManager.LiveListener {
         if (activity == null) {
             throw new NullPointerException();
         }
-        mRootView = (ViewGroup) activity.getWindow().getDecorView()/*.findViewById(android.R.id.content)*/;
+        mRootView = (ViewGroup) activity.getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     private void initView() {
@@ -128,11 +128,11 @@ public class AnyLayer implements LayerManager.LiveListener {
         initBackground();
         initContent();
         mViewHolder.bindListener();
-        if (mDataBinder != null) {
-            mDataBinder.bind(this);
-        }
         if (mOnVisibleChangeListener != null) {
             mOnVisibleChangeListener.onShow(AnyLayer.this);
+        }
+        if (mDataBinder != null) {
+            mDataBinder.bind(this);
         }
         if (mOnLayerShowListener != null) {
             mOnLayerShowListener.onShowing(AnyLayer.this);
@@ -262,17 +262,17 @@ public class AnyLayer implements LayerManager.LiveListener {
         }
     }
 
-    public AnyLayer setOnVisibleChangeListener(OnVisibleChangeListener mOnVisibleChangeListener) {
+    public AnyLayer onVisibleChangeListener(OnVisibleChangeListener mOnVisibleChangeListener) {
         this.mOnVisibleChangeListener = mOnVisibleChangeListener;
         return this;
     }
 
-    public AnyLayer onOnLayerShowListener(OnLayerShowListener onLayerShowListener) {
+    public AnyLayer onLayerShowListener(OnLayerShowListener onLayerShowListener) {
         mOnLayerShowListener = onLayerShowListener;
         return this;
     }
 
-    public AnyLayer onOnLayerDismissListener(OnLayerDismissListener onLayerDismissListener) {
+    public AnyLayer onLayerDismissListener(OnLayerDismissListener onLayerDismissListener) {
         mOnLayerDismissListener = onLayerDismissListener;
         return this;
     }
