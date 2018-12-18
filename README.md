@@ -4,7 +4,7 @@
 
 [GitHub主页](https://github.com/goweii/AnyLayer)
 
-[Demo下载](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)
+[Demo下载](https://github.com/goweii/AnyLayer/raw/master/app/release/app-release.apk)
 
 # 简介
 
