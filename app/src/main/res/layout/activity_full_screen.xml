@@ -32,6 +32,24 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tv_show_multi"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="多个弹出"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_show_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="带输入框"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
+                <TextView
                     android:id="@+id/tv_show_full"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"

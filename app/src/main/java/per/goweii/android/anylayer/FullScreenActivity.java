@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         flContent = findViewById(R.id.fl_content);
         tvTitle = findViewById(R.id.tv_title);
         tvTitle.setOnClickListener(this);
+        findViewById(R.id.tv_show_multi).setOnClickListener(this);
+        findViewById(R.id.tv_show_edit).setOnClickListener(this);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
         findViewById(R.id.tv_show_top).setOnClickListener(this);
         findViewById(R.id.tv_show_top_view_group).setOnClickListener(this);
@@ -69,6 +72,45 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_title:
                 Toast.makeText(FullScreenActivity.this, "点击了title", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.tv_show_multi:
+                showMulti();
+                break;
+            case R.id.tv_show_edit:
+                AnyLayer.with(FullScreenActivity.this)
+                        .contentView(R.layout.dialog_test_7)
+                        .backgroundColorRes(R.color.dialog_bg)
+                        .gravity(Gravity.CENTER)
+                        .cancelableOnTouchOutside(false)
+                        .cancelableOnClickKeyBack(false)
+                        .contentAnim(new AnyLayer.IAnim() {
+                            @Override
+                            public long inAnim(View content) {
+                                AnimHelper.startZoomInAnim(content, ANIM_DURATION);
+                                return ANIM_DURATION;
+                            }
+
+                            @Override
+                            public long outAnim(View content) {
+                                AnimHelper.startZoomOutAnim(content, ANIM_DURATION);
+                                return ANIM_DURATION;
+                            }
+                        })
+                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                            @Override
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
+                            }
+                        })
+                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                            @Override
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
+                                EditText et = anyLayer.getView(R.id.et_dialog_content);
+                                Toast.makeText(FullScreenActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
+                break;
             case R.id.tv_show_full:
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_1)
@@ -99,8 +141,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -127,8 +169,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -245,8 +287,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -261,14 +303,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -281,14 +323,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -300,14 +342,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -333,14 +375,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -366,14 +408,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -399,14 +441,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -432,14 +474,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -465,14 +507,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -498,14 +540,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -531,14 +573,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -564,14 +606,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -597,14 +639,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -630,14 +672,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -663,14 +705,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -696,14 +738,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -729,14 +771,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -762,14 +804,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -795,14 +837,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -828,14 +870,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -865,19 +907,54 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
                 break;
         }
+    }
+
+    private void showMulti() {
+        AnyLayer.with(FullScreenActivity.this)
+                .contentView(R.layout.dialog_test_6)
+                .backgroundColorRes(R.color.dialog_bg)
+                .gravity(Gravity.CENTER)
+                .cancelableOnTouchOutside(false)
+                .cancelableOnClickKeyBack(false)
+                .contentAnim(new AnyLayer.IAnim() {
+                    @Override
+                    public long inAnim(View content) {
+                        AnimHelper.startZoomInAnim(content, ANIM_DURATION);
+                        return ANIM_DURATION;
+                    }
+
+                    @Override
+                    public long outAnim(View content) {
+                        AnimHelper.startZoomOutAnim(content, ANIM_DURATION);
+                        return ANIM_DURATION;
+                    }
+                })
+                .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                    @Override
+                    public void onClick(AnyLayer anyLayer, View v) {
+                        anyLayer.dismiss();
+                    }
+                })
+                .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                    @Override
+                    public void onClick(AnyLayer anyLayer, View v) {
+                        showMulti();
+                    }
+                })
+                .show();
     }
 }
 

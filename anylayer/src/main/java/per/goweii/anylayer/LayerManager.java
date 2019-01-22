@@ -20,13 +20,17 @@ import android.view.ViewTreeObserver;
  * @date 2018/10/25
  */
 public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocusChangeListener, ViewTreeObserver.OnPreDrawListener {
+
     private final ViewGroup mParent;
     private final View mChild;
 
-    private View currentKeyView = null;
+    private LifeListener mLifeListener = null;
     private boolean mCancelableOnClickKeyBack = true;
-    private boolean mShowing = false;
-    private boolean mDismissing = false;
+
+    private View currentKeyView = null;
+
+    private boolean mOnAnimIn = false;
+    private boolean mOnAnimOut = false;
 
     public LayerManager(@NonNull ViewGroup parent, @NonNull View child) {
         mParent = parent;
@@ -34,39 +38,62 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
     }
 
     public void add() {
-        if (mChild.getParent() != null) {
+        if (isAdded()) {
             return;
         }
         onAttach();
     }
 
     public void remove() {
-        if (mChild.getParent() == null) {
+        if (!isAdded()) {
             return;
         }
         onRemove();
+    }
+
+    public boolean isAdded(){
+        return mChild.getParent() != null;
+    }
+
+    public void setLifeListener(LifeListener lifeListener) {
+        mLifeListener = lifeListener;
     }
 
     public void setCancelableOnClickKeyBack(boolean cancelable) {
         mCancelableOnClickKeyBack = cancelable;
     }
 
+    @Override
+    public boolean onPreDraw() {
+        if (mChild.getViewTreeObserver().isAlive()) {
+            mChild.getViewTreeObserver().removeOnPreDrawListener(this);
+        }
+        mChild.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mOnAnimIn = false;
+                onShow();
+            }
+        }, onAnimIn(mChild) + 16);
+        return true;
+    }
+
     /**
      * 已添加到父View
      */
     private void onAttach() {
-        if (mShowing) {
+        if (mOnAnimIn) {
             return;
         }
-        mShowing = true;
-        mParent.addView(mChild);
+        mOnAnimIn = true;
+        mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(this);
+        mChild.getViewTreeObserver().addOnPreDrawListener(this);
         mChild.setFocusable(true);
         mChild.setFocusableInTouchMode(true);
         mChild.requestFocus();
         currentKeyView = mChild;
         currentKeyView.setOnKeyListener(this);
-        mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(this);
-        mChild.getViewTreeObserver().addOnPreDrawListener(this);
+        mParent.addView(mChild);
         if (mLifeListener != null){
             mLifeListener.onAttach();
         }
@@ -83,7 +110,7 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
     }
 
     /**
-     * 进入动画结束
+     * 进入动画结束，处于显示状态
      */
     private void onShow() {
         if (mLifeListener != null){
@@ -92,17 +119,17 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
     }
 
     /**
-     * 移出动画开始
+     * 开始移出
      */
     private void onRemove() {
-        if (mDismissing) {
+        if (mOnAnimOut) {
             return;
         }
-        mDismissing = true;
+        mOnAnimOut = true;
         mChild.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mDismissing = false;
+                mOnAnimOut = false;
                 onDetach();
             }
         }, onAnimOut(mChild) + 16);
@@ -136,21 +163,6 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
     }
 
     @Override
-    public boolean onPreDraw() {
-        if (mChild.getViewTreeObserver().isAlive()) {
-            mChild.getViewTreeObserver().removeOnPreDrawListener(this);
-        }
-        mChild.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mShowing = false;
-                onShow();
-            }
-        }, onAnimIn(mChild) + 16);
-        return true;
-    }
-
-    @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (mChild.getParent() == null) {
             return false;
@@ -178,12 +190,6 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
             currentKeyView = newFocus;
             currentKeyView.setOnKeyListener(LayerManager.this);
         }
-    }
-
-    private LifeListener mLifeListener = null;
-
-    public void setLifeListener(LifeListener lifeListener) {
-        mLifeListener = lifeListener;
     }
 
     public interface LifeListener {

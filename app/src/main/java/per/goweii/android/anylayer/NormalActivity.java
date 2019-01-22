@@ -92,8 +92,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -120,8 +120,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -238,8 +238,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -254,14 +254,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -274,14 +274,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -293,14 +293,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -326,14 +326,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -359,14 +359,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -392,14 +392,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -425,14 +425,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -458,14 +458,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -491,14 +491,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -524,14 +524,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -557,14 +557,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -590,14 +590,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -623,14 +623,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -656,14 +656,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -689,14 +689,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -722,14 +722,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -755,14 +755,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -788,14 +788,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -821,14 +821,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
@@ -858,14 +858,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         })
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer AnyLayer, View v) {
-                                AnyLayer.dismiss();
+                            public void onClick(AnyLayer anyLayer, View v) {
+                                anyLayer.dismiss();
                             }
                         })
                         .show();
