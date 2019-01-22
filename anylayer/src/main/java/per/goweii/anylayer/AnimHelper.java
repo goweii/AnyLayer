@@ -207,7 +207,7 @@ public class AnimHelper {
     public static void startCircularRevealInAnim(View target, int centerX, int centerY, long duration) {
         int x = target.getMeasuredWidth();
         int y = target.getMeasuredHeight();
-        int r = (int) Math.sqrt(Math.pow(Math.max(x, x - centerX), 2) + Math.pow(Math.max(y, y - centerY), 2));
+        int r = (int) Math.sqrt(Math.pow(Math.max(centerX, x - centerX), 2) + Math.pow(Math.max(centerY, y - centerY), 2));
         Animator animator = ViewAnimationUtils.createCircularReveal(target, centerX, centerY, 0, r);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.setDuration(duration);
@@ -218,7 +218,7 @@ public class AnimHelper {
     public static void startCircularRevealOutAnim(View target, int centerX, int centerY, long duration) {
         int x = target.getMeasuredWidth();
         int y = target.getMeasuredHeight();
-        int r = (int) Math.sqrt(Math.pow(Math.max(x, x - centerX), 2) + Math.pow(Math.max(y, y - centerY), 2));
+        int r = (int) Math.sqrt(Math.pow(Math.max(centerX, x - centerX), 2) + Math.pow(Math.max(centerY, y - centerY), 2));
         Animator animator = ViewAnimationUtils.createCircularReveal(target, centerX, centerY, r, 0);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.setDuration(duration);

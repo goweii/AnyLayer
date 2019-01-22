@@ -19,7 +19,7 @@ import android.view.ViewTreeObserver;
  * @author Cuizhen
  * @date 2018/10/25
  */
-public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocusChangeListener, ViewTreeObserver.OnPreDrawListener {
+class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocusChangeListener, ViewTreeObserver.OnPreDrawListener {
 
     private final ViewGroup mParent;
     private final View mChild;
@@ -32,34 +32,34 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
     private boolean mOnAnimIn = false;
     private boolean mOnAnimOut = false;
 
-    public LayerManager(@NonNull ViewGroup parent, @NonNull View child) {
+    LayerManager(@NonNull ViewGroup parent, @NonNull View child) {
         mParent = parent;
         mChild = child;
     }
 
-    public void add() {
+    void add() {
         if (isAdded()) {
             return;
         }
         onAttach();
     }
 
-    public void remove() {
+    void remove() {
         if (!isAdded()) {
             return;
         }
         onRemove();
     }
 
-    public boolean isAdded(){
+    private boolean isAdded(){
         return mChild.getParent() != null;
     }
 
-    public void setLifeListener(LifeListener lifeListener) {
+    void setLifeListener(LifeListener lifeListener) {
         mLifeListener = lifeListener;
     }
 
-    public void setCancelableOnClickKeyBack(boolean cancelable) {
+    void setCancelableOnClickKeyBack(boolean cancelable) {
         mCancelableOnClickKeyBack = cancelable;
     }
 
