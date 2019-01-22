@@ -67,8 +67,8 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
         currentKeyView.setOnKeyListener(this);
         mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(this);
         mChild.getViewTreeObserver().addOnPreDrawListener(this);
-        if (mLiveListener != null){
-            mLiveListener.onAttach();
+        if (mLifeListener != null){
+            mLifeListener.onAttach();
         }
     }
 
@@ -76,8 +76,8 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
      * 进入动画开始
      */
     private long onAnimIn(View view) {
-        if (mLiveListener != null){
-            return mLiveListener.onAnimIn(view);
+        if (mLifeListener != null){
+            return mLifeListener.onAnimIn(view);
         }
         return 0;
     }
@@ -86,8 +86,8 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
      * 进入动画结束
      */
     private void onShow() {
-        if (mLiveListener != null){
-            mLiveListener.onShow();
+        if (mLifeListener != null){
+            mLifeListener.onShow();
         }
     }
 
@@ -106,8 +106,8 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
                 onDetach();
             }
         }, onAnimOut(mChild) + 16);
-        if (mLiveListener != null){
-            mLiveListener.onRemove();
+        if (mLifeListener != null){
+            mLifeListener.onRemove();
         }
     }
 
@@ -115,8 +115,8 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
      * 移出动画开始
      */
     private long onAnimOut(View view) {
-        if (mLiveListener != null){
-           return mLiveListener.onAnimOut(view);
+        if (mLifeListener != null){
+           return mLifeListener.onAnimOut(view);
         }
         return 0;
     }
@@ -130,8 +130,8 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
         }
         mChild.getViewTreeObserver().removeOnGlobalFocusChangeListener(this);
         mParent.removeView(mChild);
-        if (mLiveListener != null){
-            mLiveListener.onDetach();
+        if (mLifeListener != null){
+            mLifeListener.onDetach();
         }
     }
 
@@ -180,13 +180,13 @@ public class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlob
         }
     }
 
-    private LiveListener mLiveListener = null;
+    private LifeListener mLifeListener = null;
 
-    public void setLiveListener(LiveListener liveListener) {
-        mLiveListener = liveListener;
+    public void setLifeListener(LifeListener lifeListener) {
+        mLifeListener = lifeListener;
     }
 
-    public interface LiveListener {
+    public interface LifeListener {
         void onAttach();
         long onAnimIn(View view);
         void onShow();

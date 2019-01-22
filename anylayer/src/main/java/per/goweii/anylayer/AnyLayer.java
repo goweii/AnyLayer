@@ -28,7 +28,7 @@ import android.widget.ImageView;
 /**
  * @author Cuizhen
  */
-public class AnyLayer implements LayerManager.LiveListener {
+public class AnyLayer implements LayerManager.LifeListener {
 
     private final Context mContext;
     private final LayoutInflater mInflater;
@@ -84,7 +84,7 @@ public class AnyLayer implements LayerManager.LiveListener {
         initView();
     }
 
-    public AnyLayer(@NonNull ViewGroup viewGroup) {
+    private AnyLayer(@NonNull ViewGroup viewGroup) {
         mContext = viewGroup.getContext();
         mInflater = LayoutInflater.from(mContext);
         mRootView = viewGroup;
@@ -104,14 +104,14 @@ public class AnyLayer implements LayerManager.LiveListener {
         if (activity == null) {
             throw new NullPointerException();
         }
-        mRootView = (ViewGroup) activity.getWindow().getDecorView().findViewById(android.R.id.content);
+        mRootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     private void initView() {
         FrameLayout container = (FrameLayout) mInflater.inflate(R.layout.layout_any_layer, mRootView, false);
         mViewHolder = new ViewHolder(this, container);
         mLayerManager = new LayerManager(mRootView, container);
-        mLayerManager.setLiveListener(this);
+        mLayerManager.setLifeListener(this);
     }
 
     public void show() {
@@ -197,11 +197,11 @@ public class AnyLayer implements LayerManager.LiveListener {
             int paddingLeft = 0;
             int paddingRight = 0;
             if (mDirection == Direction.TOP) {
-                paddingBottom = mRootView.getHeight() - locationTarget[1];
+                paddingBottom = mRootView.getHeight() - (locationTarget[1] - locationRoot[1]);
             } else if (mDirection == Direction.BOTTOM) {
                 paddingTop = locationTarget[1] - locationRoot[1] + mTargetView.getHeight();
             } else if (mDirection == Direction.LEFT) {
-                paddingRight = mRootView.getWidth() - locationTarget[0];
+                paddingRight = mRootView.getWidth() - locationTarget[0] - locationRoot[0];
             } else if (mDirection == Direction.RIGHT) {
                 paddingLeft = locationTarget[0] - locationRoot[0] + mTargetView.getWidth();
             }
@@ -216,9 +216,13 @@ public class AnyLayer implements LayerManager.LiveListener {
                 public boolean onPreDraw() {
                     mViewHolder.getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
                     Bitmap snapshot = Utils.snapshot(mRootView);
-                    int[] location = new int[2];
-                    mViewHolder.getBackground().getLocationOnScreen(location);
-                    Bitmap original = Bitmap.createBitmap(snapshot, location[0], location[1], mViewHolder.getBackground().getWidth(), mViewHolder.getBackground().getHeight());
+                    int[] locationRootView = new int[2];
+                    mRootView.getLocationOnScreen(locationRootView);
+                    int[] locationBackground = new int[2];
+                    mViewHolder.getBackground().getLocationOnScreen(locationBackground);
+                    int x = locationBackground[0] - locationRootView[0];
+                    int y = locationBackground[1] - locationRootView[1];
+                    Bitmap original = Bitmap.createBitmap(snapshot, x, y, mViewHolder.getBackground().getWidth(), mViewHolder.getBackground().getHeight());
                     snapshot.recycle();
                     Bitmap blur = BlurUtils.blur(mContext, original, mBackgroundBlurRadius, mBackgroundBlurScale);
                     original.recycle();
