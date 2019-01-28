@@ -4,8 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="250sp"
     app:cardBackgroundColor="#232323"
-    android:layout_margin="5dp"
     app:cardCornerRadius="6dp"
+    app:cardUseCompatPadding="false"
     app:cardElevation="0dp">
 
     <TextView

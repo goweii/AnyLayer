@@ -74,7 +74,7 @@ class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocus
                 mOnAnimIn = false;
                 onShow();
             }
-        }, onAnimIn(mChild) + 16);
+        }, onAnimIn(mChild));
         return true;
     }
 
@@ -86,17 +86,17 @@ class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocus
             return;
         }
         mOnAnimIn = true;
-        mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(this);
-        mChild.getViewTreeObserver().addOnPreDrawListener(this);
         mChild.setFocusable(true);
         mChild.setFocusableInTouchMode(true);
         mChild.requestFocus();
         currentKeyView = mChild;
         currentKeyView.setOnKeyListener(this);
-        mParent.addView(mChild);
         if (mLifeListener != null){
             mLifeListener.onAttach();
         }
+        mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(this);
+        mChild.getViewTreeObserver().addOnPreDrawListener(this);
+        mParent.addView(mChild);
     }
 
     /**
@@ -132,7 +132,7 @@ class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocus
                 mOnAnimOut = false;
                 onDetach();
             }
-        }, onAnimOut(mChild) + 16);
+        }, onAnimOut(mChild));
         if (mLifeListener != null){
             mLifeListener.onRemove();
         }

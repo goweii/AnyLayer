@@ -80,8 +80,20 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_test_7)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.CENTER)
-                        .cancelableOnTouchOutside(false)
-                        .cancelableOnClickKeyBack(false)
+                        .cancelableOnTouchOutside(true)
+                        .cancelableOnClickKeyBack(true)
+                        .onVisibleChangeListener(new AnyLayer.OnVisibleChangeListener() {
+                            @Override
+                            public void onShow(AnyLayer anyLayer) {
+                                EditText editText = anyLayer.getView(R.id.et_dialog_content);
+                                anyLayer.compatSoftInput(editText);
+                            }
+
+                            @Override
+                            public void onDismiss(AnyLayer anyLayer) {
+                                anyLayer.removeSoftInput();
+                            }
+                        })
                         .contentAnim(new AnyLayer.IAnim() {
                             @Override
                             public long inAnim(View content) {
@@ -177,9 +189,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_right:
                 AnyLayer.target(findViewById(R.id.tv_show_target_right))
-                        .direction(AnyLayer.Direction.RIGHT)
+                        .alignment(AnyLayer.Alignment.Direction.HORIZONTAL, AnyLayer.Alignment.Horizontal.TO_RIGHT, AnyLayer.Alignment.Vertical.CENTER, true)
                         .contentView(R.layout.dialog_test_5)
-                        .gravity(Gravity.LEFT | Gravity.CENTER_VERTICAL)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
                         .contentAnim(new AnyLayer.IAnim() {
@@ -199,9 +210,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_left:
                 AnyLayer.target(findViewById(R.id.tv_show_target_left))
-                        .direction(AnyLayer.Direction.LEFT)
                         .contentView(R.layout.dialog_test_5)
-                        .gravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL)
+                        .alignment(AnyLayer.Alignment.Direction.HORIZONTAL, AnyLayer.Alignment.Horizontal.TO_LEFT, AnyLayer.Alignment.Vertical.CENTER, true)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
                         .contentAnim(new AnyLayer.IAnim() {
@@ -221,8 +231,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_top:
                 AnyLayer.target(findViewById(R.id.tv_show_target_top))
-                        .direction(AnyLayer.Direction.TOP)
                         .contentView(R.layout.dialog_test_4)
+                        .alignment(AnyLayer.Alignment.Direction.VERTICAL, AnyLayer.Alignment.Horizontal.CENTER, AnyLayer.Alignment.Vertical.ABOVE, true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
                         .cancelableOnTouchOutside(true)
@@ -244,10 +254,9 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_bottom:
                 AnyLayer.target(findViewById(R.id.tv_show_target_bottom))
-                        .direction(AnyLayer.Direction.BOTTOM)
                         .contentView(R.layout.dialog_test_4)
+                        .alignment(AnyLayer.Alignment.Direction.VERTICAL, AnyLayer.Alignment.Horizontal.CENTER, AnyLayer.Alignment.Vertical.BELOW, true)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
                         .contentAnim(new AnyLayer.IAnim() {

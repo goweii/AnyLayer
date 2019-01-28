@@ -128,9 +128,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_target_right:
                 AnyLayer.target(findViewById(R.id.tv_show_target_right))
-                        .direction(AnyLayer.Direction.RIGHT)
                         .contentView(R.layout.dialog_test_5)
-                        .gravity(Gravity.LEFT | Gravity.CENTER_VERTICAL)
+                        .alignment(AnyLayer.Alignment.Direction.HORIZONTAL, AnyLayer.Alignment.Horizontal.TO_RIGHT, AnyLayer.Alignment.Vertical.CENTER, true)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
                         .contentAnim(new AnyLayer.IAnim() {
@@ -150,9 +149,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_target_left:
                 AnyLayer.target(findViewById(R.id.tv_show_target_left))
-                        .direction(AnyLayer.Direction.LEFT)
                         .contentView(R.layout.dialog_test_5)
-                        .gravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL)
+                        .alignment(AnyLayer.Alignment.Direction.HORIZONTAL, AnyLayer.Alignment.Horizontal.TO_LEFT, AnyLayer.Alignment.Vertical.CENTER, true)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
                         .contentAnim(new AnyLayer.IAnim() {
@@ -172,8 +170,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_target_top:
                 AnyLayer.target(findViewById(R.id.tv_show_target_top))
-                        .direction(AnyLayer.Direction.TOP)
                         .contentView(R.layout.dialog_test_4)
+                        .alignment(AnyLayer.Alignment.Direction.VERTICAL, AnyLayer.Alignment.Horizontal.CENTER, AnyLayer.Alignment.Vertical.ABOVE, true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
                         .cancelableOnTouchOutside(true)
@@ -195,8 +193,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_target_bottom:
                 AnyLayer.target(findViewById(R.id.tv_show_target_bottom))
-                        .direction(AnyLayer.Direction.BOTTOM)
                         .contentView(R.layout.dialog_test_4)
+                        .alignment(AnyLayer.Alignment.Direction.VERTICAL, AnyLayer.Alignment.Horizontal.CENTER, AnyLayer.Alignment.Vertical.BELOW, true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
                         .cancelableOnTouchOutside(true)

@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="15dp"
     android:layout_gravity="center"
+    android:layout_margin="15dp"
     app:cardBackgroundColor="#ffffff"
     app:cardCornerRadius="5dp"
-    app:cardElevation="30dp">
+    app:cardElevation="0dp"
+    app:cardUseCompatPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,9 +20,9 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center"
+            android:text="说明"
             android:textColor="#232323"
-            android:textSize="16sp"
-            android:text="说明" />
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/et_dialog_content"
@@ -32,9 +33,9 @@
             android:paddingTop="28dp"
             android:paddingRight="20dp"
             android:paddingBottom="25dp"
+            android:text="@string/dialog_msg"
             android:textColor="#232323"
-            android:textSize="17sp"
-            android:text="@string/dialog_msg" />
+            android:textSize="17sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,8 +48,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
 
                 <ImageView
                     android:id="@+id/iv_dialog_no"
@@ -63,9 +64,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
+                    android:text="关闭"
                     android:textColor="#232323"
-                    android:textSize="16sp"
-                    android:text="关闭" />
+                    android:textSize="16sp" />
 
             </FrameLayout>
 
@@ -73,17 +74,17 @@
                 android:id="@+id/view_line"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="#f3f3f3" />
 
             <FrameLayout
                 android:id="@+id/fl_dialog_yes"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:clickable="true"
                 android:layout_weight="1"
-                android:background="?android:attr/selectableItemBackground">
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
 
                 <ImageView
                     android:id="@+id/iv_dialog_yes"
@@ -98,9 +99,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
+                    android:text="确定"
                     android:textColor="#232323"
-                    android:textSize="16sp"
-                    android:text="确定" />
+                    android:textSize="16sp" />
 
             </FrameLayout>
 

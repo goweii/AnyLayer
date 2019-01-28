@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     app:cardBackgroundColor="#232323"
     app:cardCornerRadius="0dp"
+    app:cardUseCompatPadding="false"
     app:cardElevation="0dp">
 
     <TextView

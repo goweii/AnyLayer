@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -14,6 +15,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -37,6 +40,7 @@ public class AnyLayer implements LayerManager.LifeListener {
     private ViewGroup mRootView;
     private View mContent;
     private ViewHolder mViewHolder;
+    private LayerManager mLayerManager;
 
     private int mGravity = Gravity.CENTER;
     private float mBackgroundBlurRadius = 0;
@@ -54,16 +58,22 @@ public class AnyLayer implements LayerManager.LifeListener {
     private IAnim mContentAnim = null;
     private Animation mContentInAnim = null;
     private Animation mContentOutAnim = null;
-    private long mBackgroundAnimDuration = 300;
-    private long mContentAnimDuration = 300;
+    private long mBackgroundInAnimDuration = 300;
+    private long mBackgroundOutAnimDuration = 300;
+    private long mContentInAnimDuration = 300;
+    private long mContentOutAnimDuration = 300;
 
     private IDataBinder mDataBinder = null;
     private OnVisibleChangeListener mOnVisibleChangeListener = null;
     private OnLayerShowListener mOnLayerShowListener = null;
     private OnLayerDismissListener mOnLayerDismissListener = null;
 
-    private Direction mDirection = Direction.BOTTOM;
-    private LayerManager mLayerManager;
+    private boolean mInsideAlignment = false;
+    private Alignment.Direction mAlignmentDirection = Alignment.Direction.VERTICAL;
+    private Alignment.Horizontal mAlignmentHorizontal = Alignment.Horizontal.CENTER;
+    private Alignment.Vertical mAlignmentVertical = Alignment.Vertical.BELOW;
+
+    private SoftInputHelper mSoftInputHelper = null;
 
     public static AnyLayer with(@NonNull Context context) {
         return new AnyLayer(context);
@@ -122,146 +132,35 @@ public class AnyLayer implements LayerManager.LifeListener {
         mLayerManager.remove();
     }
 
-    @Override
-    public void onAttach() {
-        initContainer();
-        initBackground();
-        initContent();
-        mViewHolder.bindListener();
-        if (mOnVisibleChangeListener != null) {
-            mOnVisibleChangeListener.onShow(AnyLayer.this);
-        }
-        if (mDataBinder != null) {
-            mDataBinder.bind(this);
-        }
-        if (mOnLayerShowListener != null) {
-            mOnLayerShowListener.onShowing(AnyLayer.this);
-        }
+    public <V extends View> V getView(@IdRes int viewId) {
+        return mViewHolder.getView(viewId);
     }
 
-    @Override
-    public long onAnimIn(View view) {
-        startContentInAnim();
-        startBackgroundInAnim();
-        return getDuration();
+    public ViewHolder getViewHolder() {
+        return mViewHolder;
     }
 
-    @Override
-    public long onAnimOut(View view) {
-        startContentOutAnim();
-        startBackgroundOutAnim();
-        return getDuration();
+    public View getContentView() {
+        return mContent;
     }
 
-    @Override
-    public void onShow() {
-        if (mOnLayerShowListener != null) {
-            mOnLayerShowListener.onShown(AnyLayer.this);
-        }
+    public ImageView getBackground() {
+        return mViewHolder.getBackground();
     }
 
-    @Override
-    public void onRemove() {
-        if (mOnLayerDismissListener != null) {
-            mOnLayerDismissListener.onDismissing(AnyLayer.this);
-        }
+    public AnyLayer contentView(@NonNull View contentView) {
+        mContent = contentView;
+        return this;
     }
 
-    @Override
-    public void onDetach() {
-        if (mOnVisibleChangeListener != null) {
-            mOnVisibleChangeListener.onDismiss(AnyLayer.this);
-        }
-        if (mOnLayerDismissListener != null) {
-            mOnLayerDismissListener.onDismissed(AnyLayer.this);
-        }
-        mViewHolder.recycle();
+    public AnyLayer contentView(@LayoutRes int contentViewId) {
+        mContent = mInflater.inflate(contentViewId, mViewHolder.getContainer(), false);
+        return this;
     }
 
-    private void initContainer() {
-        if (mCancelableOnTouchOutside) {
-            mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
-        }
-        if (mTargetView != null) {
-            int[] locationTarget = new int[2];
-            mTargetView.getLocationOnScreen(locationTarget);
-            int[] locationRoot = new int[2];
-            mRootView.getLocationOnScreen(locationRoot);
-            int paddingTop = 0;
-            int paddingBottom = 0;
-            int paddingLeft = 0;
-            int paddingRight = 0;
-            if (mDirection == Direction.TOP) {
-                paddingBottom = mRootView.getHeight() - (locationTarget[1] - locationRoot[1]);
-            } else if (mDirection == Direction.BOTTOM) {
-                paddingTop = locationTarget[1] - locationRoot[1] + mTargetView.getHeight();
-            } else if (mDirection == Direction.LEFT) {
-                paddingRight = mRootView.getWidth() - locationTarget[0] - locationRoot[0];
-            } else if (mDirection == Direction.RIGHT) {
-                paddingLeft = locationTarget[0] - locationRoot[0] + mTargetView.getWidth();
-            }
-            mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        }
-    }
-
-    private void initBackground() {
-        if (mBackgroundBlurRadius > 0) {
-            mViewHolder.getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    mViewHolder.getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
-                    Bitmap snapshot = Utils.snapshot(mRootView);
-                    int[] locationRootView = new int[2];
-                    mRootView.getLocationOnScreen(locationRootView);
-                    int[] locationBackground = new int[2];
-                    mViewHolder.getBackground().getLocationOnScreen(locationBackground);
-                    int x = locationBackground[0] - locationRootView[0];
-                    int y = locationBackground[1] - locationRootView[1];
-                    Bitmap original = Bitmap.createBitmap(snapshot, x, y, mViewHolder.getBackground().getWidth(), mViewHolder.getBackground().getHeight());
-                    snapshot.recycle();
-                    Bitmap blur = BlurUtils.blur(mContext, original, mBackgroundBlurRadius, mBackgroundBlurScale);
-                    original.recycle();
-                    mViewHolder.getBackground().setScaleType(ImageView.ScaleType.FIT_XY);
-                    mViewHolder.getBackground().setImageBitmap(blur);
-                    mViewHolder.getBackground().setBackgroundColor(mBackgroundColor);
-                    return true;
-                }
-            });
-        } else {
-            if (mBackgroundBitmap != null) {
-                mViewHolder.getBackground().setImageBitmap(mBackgroundBitmap);
-                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
-            } else if (mBackgroundResource != -1) {
-                mViewHolder.getBackground().setImageResource(mBackgroundResource);
-                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
-            } else if (mBackgroundDrawable != null) {
-                mViewHolder.getBackground().setImageDrawable(mBackgroundDrawable);
-                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
-            } else if (mBackgroundColor != Color.TRANSPARENT) {
-                mViewHolder.getBackground().setImageDrawable(new ColorDrawable(mBackgroundColor));
-            }
-        }
-    }
-
-    private void initContent() {
-        if (mContent != null) {
-            ViewGroup contentParent = (ViewGroup) mContent.getParent();
-            if (contentParent != null) {
-                contentParent.removeView(mContent);
-            }
-            mContent.setClickable(true);
-            if (mGravity != -1) {
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mContent.getLayoutParams();
-                params.gravity = mGravity;
-                mContent.setLayoutParams(params);
-            }
-            mViewHolder.getContentWrapper().addView(mContent);
-        }
+    public AnyLayer bindData(IDataBinder dataBinder) {
+        mDataBinder = dataBinder;
+        return this;
     }
 
     public AnyLayer onVisibleChangeListener(OnVisibleChangeListener mOnVisibleChangeListener) {
@@ -279,20 +178,19 @@ public class AnyLayer implements LayerManager.LifeListener {
         return this;
     }
 
-    public AnyLayer direction(Direction direction) {
-        mDirection = direction;
+    public AnyLayer gravity(int gravity) {
+        mGravity = gravity;
         return this;
     }
 
-    /**
-     * 控制出现的方向
-     */
-    public enum Direction {
-        TOP, BOTTOM, LEFT, RIGHT
-    }
-
-    public AnyLayer gravity(int gravity) {
-        mGravity = gravity;
+    public AnyLayer alignment(@NonNull Alignment.Direction direction,
+                              @NonNull Alignment.Horizontal horizontal,
+                              @NonNull Alignment.Vertical vertical,
+                              boolean inside) {
+        mAlignmentDirection = direction;
+        mAlignmentHorizontal = horizontal;
+        mAlignmentVertical = vertical;
+        mInsideAlignment = inside;
         return this;
     }
 
@@ -308,7 +206,7 @@ public class AnyLayer implements LayerManager.LifeListener {
 
     public AnyLayer contentInAnim(@NonNull Animation anim) {
         mContentInAnim = anim;
-        mContentAnimDuration = Math.max(mContentAnimDuration, mContentInAnim.getDuration());
+        mContentInAnimDuration = mContentInAnim.getDuration();
         return this;
     }
 
@@ -319,7 +217,7 @@ public class AnyLayer implements LayerManager.LifeListener {
 
     public AnyLayer contentOutAnim(@NonNull Animation anim) {
         mContentOutAnim = anim;
-        mContentAnimDuration = Math.max(mContentAnimDuration, mContentOutAnim.getDuration());
+        mContentOutAnimDuration = mContentOutAnim.getDuration();
         return this;
     }
 
@@ -335,7 +233,7 @@ public class AnyLayer implements LayerManager.LifeListener {
 
     public AnyLayer backgroundInAnim(@NonNull Animation anim) {
         mBackgroundInAnim = anim;
-        mBackgroundAnimDuration = Math.max(mBackgroundAnimDuration, mBackgroundInAnim.getDuration());
+        mBackgroundInAnimDuration = mBackgroundInAnim.getDuration();
         return this;
     }
 
@@ -346,27 +244,39 @@ public class AnyLayer implements LayerManager.LifeListener {
 
     public AnyLayer backgroundOutAnim(@NonNull Animation anim) {
         mBackgroundOutAnim = anim;
-        mBackgroundAnimDuration = Math.max(mBackgroundAnimDuration, mBackgroundOutAnim.getDuration());
+        mBackgroundOutAnimDuration = mBackgroundOutAnim.getDuration();
         return this;
     }
 
     public AnyLayer defaultContentAnimDuration(long defaultAnimDuration) {
-        this.mContentAnimDuration = defaultAnimDuration;
+        this.mContentInAnimDuration = defaultAnimDuration;
+        this.mContentOutAnimDuration = defaultAnimDuration;
+        return this;
+    }
+
+    public AnyLayer defaultContentInAnimDuration(long defaultInAnimDuration) {
+        this.mContentInAnimDuration = defaultInAnimDuration;
+        return this;
+    }
+
+    public AnyLayer defaultContentOutAnimDuration(long defaultOutAnimDuration) {
+        this.mContentOutAnimDuration = defaultOutAnimDuration;
         return this;
     }
 
     public AnyLayer defaultBackgroundAnimDuration(long defaultAnimDuration) {
-        this.mBackgroundAnimDuration = defaultAnimDuration;
+        this.mBackgroundInAnimDuration = defaultAnimDuration;
+        this.mBackgroundOutAnimDuration = defaultAnimDuration;
         return this;
     }
 
-    public AnyLayer contentView(@NonNull View contentView) {
-        mContent = contentView;
+    public AnyLayer defaultBackgroundInAnimDuration(long defaultInAnimDuration) {
+        this.mBackgroundInAnimDuration = defaultInAnimDuration;
         return this;
     }
 
-    public AnyLayer contentView(@LayoutRes int contentViewId) {
-        mContent = mInflater.inflate(contentViewId, mViewHolder.getContainer(), false);
+    public AnyLayer defaultBackgroundOutAnimDuration(long defaultOutAnimDuration) {
+        this.mBackgroundOutAnimDuration = defaultOutAnimDuration;
         return this;
     }
 
@@ -452,80 +362,362 @@ public class AnyLayer implements LayerManager.LifeListener {
         return this;
     }
 
-    public <V extends View> V getView(@IdRes int viewId) {
-        return mViewHolder.getView(viewId);
-    }
-
-    public ViewHolder getViewHolder() {
-        return mViewHolder;
-    }
-
-    public AnyLayer bindData(IDataBinder dataBinder) {
-        mDataBinder = dataBinder;
-        return this;
-    }
-
-    public View getContentView() {
-        return mContent;
-    }
-
-    public ImageView getBackground() {
-        return mViewHolder.getBackground();
-    }
-
-    private long getDuration() {
-        return Math.max(mBackgroundAnimDuration, mContentAnimDuration);
-    }
-
     public boolean isShow() {
         return mViewHolder.getContainer().getParent() != null;
     }
 
+    /**
+     * 适配软键盘的弹出，布局自动上移
+     * 在某几个EditText获取焦点时布局上移
+     * 在{@link OnVisibleChangeListener#onShow(AnyLayer)}中调用
+     * 应该和{@link #removeSoftInput()}成对出现
+     *
+     * @param editText 焦点EditTexts
+     */
+    public void compatSoftInput(EditText... editText) {
+        Activity activity = getActivity();
+        if (activity != null) {
+            SoftInputHelper.attach(activity)
+                    .init(mViewHolder.getContentWrapper(), mContent, editText)
+                    .moveWithTranslation()
+                    .duration(300);
+        }
+    }
+
+    /**
+     * 移除软键盘适配
+     * 在{@link OnVisibleChangeListener#onDismiss(AnyLayer)}中调用
+     * 应该和{@link #compatSoftInput(EditText...)}成对出现
+     */
+    public void removeSoftInput() {
+        if (mSoftInputHelper != null) {
+            mSoftInputHelper.detach();
+        }
+    }
+
+    /**
+     * 从当前上下文获取Activity
+     */
+    @Nullable
+    private Activity getActivity() {
+        if (mContext instanceof Activity) {
+            return (Activity) mContext;
+        }
+        if (mContext instanceof ContextWrapper) {
+            Context baseContext = ((ContextWrapper) mContext).getBaseContext();
+            if (baseContext instanceof Activity) {
+                return (Activity) baseContext;
+            }
+        }
+        return null;
+    }
+
     private void startContentInAnim() {
         if (mContentAnim != null) {
-            mContentAnimDuration = mContentAnim.inAnim(mContent);
+            mContentInAnimDuration = mContentAnim.inAnim(mContent);
         } else {
             if (mContentInAnim != null) {
                 mContent.startAnimation(mContentInAnim);
             } else {
-                AnimHelper.startZoomInAnim(mContent, mContentAnimDuration);
+                AnimHelper.startZoomInAnim(mContent, mContentInAnimDuration);
             }
         }
     }
 
     private void startContentOutAnim() {
         if (mContentAnim != null) {
-            mContentAnimDuration = mContentAnim.outAnim(mContent);
+            mContentOutAnimDuration = mContentAnim.outAnim(mContent);
         } else {
             if (mContentOutAnim != null) {
                 mContent.startAnimation(mContentOutAnim);
             } else {
-                AnimHelper.startZoomOutAnim(mContent, mContentAnimDuration);
+                AnimHelper.startZoomOutAnim(mContent, mContentOutAnimDuration);
             }
         }
     }
 
     private void startBackgroundInAnim() {
         if (mBackgroundAnim != null) {
-            mBackgroundAnimDuration = mBackgroundAnim.inAnim(mViewHolder.getBackground());
+            mBackgroundInAnimDuration = mBackgroundAnim.inAnim(mViewHolder.getBackground());
         } else {
             if (mBackgroundInAnim != null) {
                 mViewHolder.getBackground().startAnimation(mBackgroundInAnim);
             } else {
-                AnimHelper.startAlphaInAnim(mViewHolder.getBackground(), mBackgroundAnimDuration);
+                AnimHelper.startAlphaInAnim(mViewHolder.getBackground(), mBackgroundInAnimDuration);
             }
         }
     }
 
     private void startBackgroundOutAnim() {
         if (mBackgroundAnim != null) {
-            mBackgroundAnimDuration = mBackgroundAnim.outAnim(mViewHolder.getBackground());
+            mBackgroundOutAnimDuration = mBackgroundAnim.outAnim(mViewHolder.getBackground());
         } else {
             if (mBackgroundOutAnim != null) {
                 mViewHolder.getBackground().startAnimation(mBackgroundOutAnim);
             } else {
-                AnimHelper.startAlphaOutAnim(mViewHolder.getBackground(), mBackgroundAnimDuration);
+                AnimHelper.startAlphaOutAnim(mViewHolder.getBackground(), mBackgroundOutAnimDuration);
             }
+        }
+    }
+
+    @Override
+    public void onAttach() {
+        initContainer();
+        initBackground();
+        initContent();
+        mViewHolder.bindListener();
+        if (mOnVisibleChangeListener != null) {
+            mOnVisibleChangeListener.onShow(AnyLayer.this);
+        }
+        if (mDataBinder != null) {
+            mDataBinder.bind(this);
+        }
+        if (mOnLayerShowListener != null) {
+            mOnLayerShowListener.onShowing(AnyLayer.this);
+        }
+    }
+
+    @Override
+    public long onAnimIn(View view) {
+        startContentInAnim();
+        startBackgroundInAnim();
+        return Math.max(mBackgroundInAnimDuration, mContentInAnimDuration);
+    }
+
+    @Override
+    public long onAnimOut(View view) {
+        startContentOutAnim();
+        startBackgroundOutAnim();
+        return Math.max(mBackgroundOutAnimDuration, mContentOutAnimDuration);
+    }
+
+    @Override
+    public void onShow() {
+        if (mOnLayerShowListener != null) {
+            mOnLayerShowListener.onShown(AnyLayer.this);
+        }
+    }
+
+    @Override
+    public void onRemove() {
+        if (mOnLayerDismissListener != null) {
+            mOnLayerDismissListener.onDismissing(AnyLayer.this);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        if (mOnVisibleChangeListener != null) {
+            mOnVisibleChangeListener.onDismiss(AnyLayer.this);
+        }
+        if (mOnLayerDismissListener != null) {
+            mOnLayerDismissListener.onDismissed(AnyLayer.this);
+        }
+        mViewHolder.recycle();
+    }
+
+    private void initContainer() {
+        if (mCancelableOnTouchOutside) {
+            mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                }
+            });
+        }
+        if (mTargetView == null) {
+            FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+            contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
+            mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+            if (mGravity != -1) {
+                FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) mContent.getLayoutParams();
+                contentParams.gravity = mGravity;
+                mContent.setLayoutParams(contentParams);
+            }
+        } else {
+            FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+            contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
+            contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+            mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+            final int[] locationTarget = new int[2];
+            mTargetView.getLocationOnScreen(locationTarget);
+            final int[] locationRoot = new int[2];
+            mRootView.getLocationOnScreen(locationRoot);
+            final int targetX = (locationTarget[0] - locationRoot[0]);
+            final int targetY = (locationTarget[1] - locationRoot[1]);
+            final int targetWidth = mTargetView.getWidth();
+            final int targetHeight = mTargetView.getHeight();
+            int paddingTop = 0;
+            int paddingBottom = 0;
+            int paddingLeft = 0;
+            int paddingRight = 0;
+            if (mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
+                if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
+                    paddingRight = mRootView.getWidth() - targetX;
+                } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
+                    paddingLeft = targetX + targetWidth;
+                } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
+                    paddingLeft = targetX;
+                } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
+                    paddingRight = mRootView.getWidth() - targetX - targetWidth;
+                }
+            } else if (mAlignmentDirection == Alignment.Direction.VERTICAL) {
+                if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
+                    paddingBottom = mRootView.getHeight() - targetY;
+                } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
+                    paddingTop = targetY + targetHeight;
+                } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
+                    paddingTop = targetY;
+                } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
+                    paddingBottom = mRootView.getHeight() - targetY - targetHeight;
+                }
+            }
+            mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+            int finalPaddingLeft = paddingLeft;
+            int finalPaddingTop = paddingTop;
+            mViewHolder.getContainer().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    if (mViewHolder.getContainer().getViewTreeObserver().isAlive()) {
+                        mViewHolder.getContainer().getViewTreeObserver().removeOnPreDrawListener(this);
+                    }
+                    final int width = mViewHolder.getContentWrapper().getWidth();
+                    final int height = mViewHolder.getContentWrapper().getHeight();
+                    int x = 0;
+                    int y = 0;
+                    if (mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
+                        x = targetX - (width - targetWidth) / 2;
+                    } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
+                        x = targetX - width;
+                    } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
+                        x = targetX + targetWidth;
+                    } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
+                        x = targetX;
+                    } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
+                        x = targetX - (width - targetWidth);
+                    }
+                    if (mAlignmentVertical == Alignment.Vertical.CENTER) {
+                        y = targetY - (height - targetHeight) / 2;
+                    } else if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
+                        y = targetY - height;
+                    } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
+                        y = targetY + targetHeight;
+                    } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
+                        y = targetY;
+                    } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
+                        y = targetY - (height - targetHeight);
+                    }
+                    x = x - finalPaddingLeft;
+                    y = y - finalPaddingTop;
+                    if (mInsideAlignment) {
+                        final int maxWidth = mViewHolder.getContainer().getWidth() - mViewHolder.getContainer().getPaddingLeft() - mViewHolder.getContainer().getPaddingRight();
+                        final int maxHeight = mViewHolder.getContainer().getHeight() - mViewHolder.getContainer().getPaddingTop() - mViewHolder.getContainer().getPaddingBottom();
+                        final int maxX = maxWidth - width;
+                        final int maxY = maxHeight - height;
+                        if (x < 0) {
+                            x = 0;
+                        } else if (x > maxX) {
+                            x = maxX;
+                        }
+                        if (y < 0) {
+                            y = 0;
+                        } else if (y > maxY) {
+                            y = maxY;
+                        }
+                    }
+                    FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+                    contentWrapperParams.leftMargin = x;
+                    contentWrapperParams.topMargin = y;
+                    mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+                    return false;
+                }
+            });
+        }
+    }
+
+    private void initBackground() {
+        if (mBackgroundBlurRadius > 0) {
+            mViewHolder.getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mViewHolder.getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
+                    Bitmap snapshot = Utils.snapshot(mRootView);
+                    int[] locationRootView = new int[2];
+                    mRootView.getLocationOnScreen(locationRootView);
+                    int[] locationBackground = new int[2];
+                    mViewHolder.getBackground().getLocationOnScreen(locationBackground);
+                    int x = locationBackground[0] - locationRootView[0];
+                    int y = locationBackground[1] - locationRootView[1];
+                    Bitmap original = Bitmap.createBitmap(snapshot, x, y, mViewHolder.getBackground().getWidth(), mViewHolder.getBackground().getHeight());
+                    snapshot.recycle();
+                    Bitmap blur = BlurUtils.blur(mContext, original, mBackgroundBlurRadius, mBackgroundBlurScale);
+                    original.recycle();
+                    mViewHolder.getBackground().setScaleType(ImageView.ScaleType.FIT_XY);
+                    mViewHolder.getBackground().setImageBitmap(blur);
+                    mViewHolder.getBackground().setBackgroundColor(mBackgroundColor);
+                    return true;
+                }
+            });
+        } else {
+            if (mBackgroundBitmap != null) {
+                mViewHolder.getBackground().setImageBitmap(mBackgroundBitmap);
+                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
+            } else if (mBackgroundResource != -1) {
+                mViewHolder.getBackground().setImageResource(mBackgroundResource);
+                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
+            } else if (mBackgroundDrawable != null) {
+                mViewHolder.getBackground().setImageDrawable(mBackgroundDrawable);
+                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
+            } else if (mBackgroundColor != Color.TRANSPARENT) {
+                mViewHolder.getBackground().setImageDrawable(new ColorDrawable(mBackgroundColor));
+            }
+        }
+    }
+
+    private void initContent() {
+        if (mContent != null) {
+            ViewGroup contentParent = (ViewGroup) mContent.getParent();
+            if (contentParent != null) {
+                contentParent.removeView(mContent);
+            }
+            mContent.setClickable(true);
+            mViewHolder.getContentWrapper().addView(mContent);
+        }
+    }
+
+    /**
+     * 控制与目标控件的对齐方式
+     */
+    public static class Alignment {
+        public enum Direction {
+            /**
+             * 主方向
+             */
+            HORIZONTAL,
+            VERTICAL
+        }
+
+        public enum Horizontal {
+            /**
+             * 水平对齐方式
+             */
+            CENTER,
+            TO_LEFT,
+            TO_RIGHT,
+            ALIGN_LEFT,
+            ALIGN_RIGHT
+        }
+
+        public enum Vertical {
+            /**
+             * 垂直对齐方式
+             */
+            CENTER,
+            ABOVE,
+            BELOW,
+            ALIGN_TOP,
+            ALIGN_BOTTOM
         }
     }
 
