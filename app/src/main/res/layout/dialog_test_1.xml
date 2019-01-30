@@ -11,7 +11,8 @@
         android:layout_height="match_parent"
         android:alpha="0.9"
         android:gravity="center"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher_background" />
+        android:scaleType="fitCenter"
+        android:background="@drawable/ic_launcher_background"
+        android:src="@drawable/ic_launcher_foreground" />
 
 </LinearLayout>

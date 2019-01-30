@@ -18,8 +18,9 @@ class ViewHolder {
 
     private final AnyLayer mAnyLayer;
     private FrameLayout mContainer;
-    private FrameLayout mContentWrapper;
     private ImageView mBackground;
+    private FrameLayout mContentWrapper;
+    private View mContent;
 
     private SparseArray<View> views = null;
     private SparseArray<AnyLayer.OnLayerClickListener> onClickListeners = null;
@@ -36,6 +37,14 @@ class ViewHolder {
             BitmapDrawable bd = (BitmapDrawable) mBackground.getDrawable();
             bd.getBitmap().recycle();
         }
+    }
+
+    void setContent(View content) {
+        mContent = content;
+    }
+
+    View getContent() {
+        return mContent;
     }
 
     FrameLayout getContainer() {

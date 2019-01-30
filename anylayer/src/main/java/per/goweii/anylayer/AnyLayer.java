@@ -28,6 +28,8 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import java.util.Objects;
+
 /**
  * @author Cuizhen
  */
@@ -36,9 +38,10 @@ public class AnyLayer implements LayerManager.LifeListener {
     private final Context mContext;
     private final LayoutInflater mInflater;
 
-    private View mTargetView;
-    private ViewGroup mRootView;
-    private View mContent;
+    private final ViewGroup mRootView;
+    private final FrameLayout mActivityContentView;
+    private final View mTargetView;
+
     private ViewHolder mViewHolder;
     private LayerManager mLayerManager;
 
@@ -75,29 +78,36 @@ public class AnyLayer implements LayerManager.LifeListener {
 
     private SoftInputHelper mSoftInputHelper = null;
 
-    public static AnyLayer with(@NonNull Context context) {
-        return new AnyLayer(context);
-    }
+    @IdRes
+    private int mAsStatusBarViewId = 0;
 
     public static AnyLayer with(@NonNull ViewGroup viewGroup) {
         return new AnyLayer(viewGroup);
+    }
+
+    public static AnyLayer with(@NonNull Context context) {
+        return new AnyLayer(context);
     }
 
     public static AnyLayer target(@NonNull View targetView) {
         return new AnyLayer(targetView);
     }
 
-    private AnyLayer(@NonNull Context context) {
-        mContext = context;
-        mInflater = LayoutInflater.from(mContext);
-        initRootView();
-        initView();
-    }
-
     private AnyLayer(@NonNull ViewGroup viewGroup) {
         mContext = viewGroup.getContext();
         mInflater = LayoutInflater.from(mContext);
+        mTargetView = null;
         mRootView = viewGroup;
+        mActivityContentView = null;
+        initView();
+    }
+
+    private AnyLayer(@NonNull Context context) {
+        mContext = context;
+        mInflater = LayoutInflater.from(mContext);
+        mTargetView = null;
+        mRootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(mContext)).getWindow().getDecorView();
+        mActivityContentView = mRootView.findViewById(android.R.id.content);
         initView();
     }
 
@@ -105,16 +115,9 @@ public class AnyLayer implements LayerManager.LifeListener {
         mContext = targetView.getContext();
         mInflater = LayoutInflater.from(mContext);
         mTargetView = targetView;
-        initRootView();
+        mRootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(mContext)).getWindow().getDecorView();
+        mActivityContentView = mRootView.findViewById(android.R.id.content);
         initView();
-    }
-
-    private void initRootView() {
-        Activity activity = Utils.getActivity(mContext);
-        if (activity == null) {
-            throw new NullPointerException();
-        }
-        mRootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     private void initView() {
@@ -141,7 +144,7 @@ public class AnyLayer implements LayerManager.LifeListener {
     }
 
     public View getContentView() {
-        return mContent;
+        return mViewHolder.getContent();
     }
 
     public ImageView getBackground() {
@@ -149,12 +152,16 @@ public class AnyLayer implements LayerManager.LifeListener {
     }
 
     public AnyLayer contentView(@NonNull View contentView) {
-        mContent = contentView;
+        mViewHolder.setContent(contentView);
         return this;
     }
 
     public AnyLayer contentView(@LayoutRes int contentViewId) {
-        mContent = mInflater.inflate(contentViewId, mViewHolder.getContainer(), false);
+        return contentView(mInflater.inflate(contentViewId, mViewHolder.getContainer(), false));
+    }
+
+    public AnyLayer asStatusBar(@IdRes int statusBarId) {
+        mAsStatusBarViewId = statusBarId;
         return this;
     }
 
@@ -378,7 +385,7 @@ public class AnyLayer implements LayerManager.LifeListener {
         Activity activity = getActivity();
         if (activity != null) {
             SoftInputHelper.attach(activity)
-                    .init(mViewHolder.getContentWrapper(), mContent, editText)
+                    .init(mViewHolder.getContentWrapper(), mViewHolder.getContent(), editText)
                     .moveWithTranslation()
                     .duration(300);
         }
@@ -414,24 +421,24 @@ public class AnyLayer implements LayerManager.LifeListener {
 
     private void startContentInAnim() {
         if (mContentAnim != null) {
-            mContentInAnimDuration = mContentAnim.inAnim(mContent);
+            mContentInAnimDuration = mContentAnim.inAnim(mViewHolder.getContent());
         } else {
             if (mContentInAnim != null) {
-                mContent.startAnimation(mContentInAnim);
+                mViewHolder.getContent().startAnimation(mContentInAnim);
             } else {
-                AnimHelper.startZoomInAnim(mContent, mContentInAnimDuration);
+                AnimHelper.startZoomInAnim(mViewHolder.getContent(), mContentInAnimDuration);
             }
         }
     }
 
     private void startContentOutAnim() {
         if (mContentAnim != null) {
-            mContentOutAnimDuration = mContentAnim.outAnim(mContent);
+            mContentOutAnimDuration = mContentAnim.outAnim(mViewHolder.getContent());
         } else {
             if (mContentOutAnim != null) {
-                mContent.startAnimation(mContentOutAnim);
+                mViewHolder.getContent().startAnimation(mContentOutAnim);
             } else {
-                AnimHelper.startZoomOutAnim(mContent, mContentOutAnimDuration);
+                AnimHelper.startZoomOutAnim(mViewHolder.getContent(), mContentOutAnimDuration);
             }
         }
     }
@@ -516,6 +523,14 @@ public class AnyLayer implements LayerManager.LifeListener {
         mViewHolder.recycle();
     }
 
+    private int getStatusBarHeight() {
+        int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return mContext.getResources().getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+
     private void initContainer() {
         if (mCancelableOnTouchOutside) {
             mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
@@ -525,16 +540,24 @@ public class AnyLayer implements LayerManager.LifeListener {
                 }
             });
         }
+        if (mActivityContentView != null) {
+            // 非指定父布局的，添加到DecorView，此时mRootView为DecorView
+            final int[] locationDecor = new int[2];
+            mRootView.getLocationOnScreen(locationDecor);
+            final int[] locationActivityContent = new int[2];
+            mActivityContentView.getLocationOnScreen(locationActivityContent);
+            FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
+            containerParams.leftMargin = locationActivityContent[0] - locationDecor[0];
+            containerParams.topMargin = 0;
+            containerParams.width = mActivityContentView.getWidth();
+            containerParams.height = mActivityContentView.getHeight() + (locationActivityContent[1] - locationDecor[1]);
+            mViewHolder.getContainer().setLayoutParams(containerParams);
+        }
         if (mTargetView == null) {
             FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
             contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
             contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
             mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
-            if (mGravity != -1) {
-                FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) mContent.getLayoutParams();
-                contentParams.gravity = mGravity;
-                mContent.setLayoutParams(contentParams);
-            }
         } else {
             FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
             contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
@@ -552,25 +575,26 @@ public class AnyLayer implements LayerManager.LifeListener {
             int paddingBottom = 0;
             int paddingLeft = 0;
             int paddingRight = 0;
+            FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
             if (mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
                 if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-                    paddingRight = mRootView.getWidth() - targetX;
+                    paddingRight = containerParams.width - targetX;
                 } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
                     paddingLeft = targetX + targetWidth;
                 } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
                     paddingLeft = targetX;
                 } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-                    paddingRight = mRootView.getWidth() - targetX - targetWidth;
+                    paddingRight = containerParams.width - targetX - targetWidth;
                 }
             } else if (mAlignmentDirection == Alignment.Direction.VERTICAL) {
                 if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
-                    paddingBottom = mRootView.getHeight() - targetY;
+                    paddingBottom = containerParams.height - targetY;
                 } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
                     paddingTop = targetY + targetHeight;
                 } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
                     paddingTop = targetY;
                 } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-                    paddingBottom = mRootView.getHeight() - targetY - targetHeight;
+                    paddingBottom = containerParams.height - targetY - targetHeight;
                 }
             }
             mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
@@ -653,9 +677,9 @@ public class AnyLayer implements LayerManager.LifeListener {
                     snapshot.recycle();
                     Bitmap blur = BlurUtils.blur(mContext, original, mBackgroundBlurRadius, mBackgroundBlurScale);
                     original.recycle();
-                    mViewHolder.getBackground().setScaleType(ImageView.ScaleType.FIT_XY);
+                    mViewHolder.getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
                     mViewHolder.getBackground().setImageBitmap(blur);
-                    mViewHolder.getBackground().setBackgroundColor(mBackgroundColor);
+                    mViewHolder.getBackground().setColorFilter(mBackgroundColor);
                     return true;
                 }
             });
@@ -669,20 +693,34 @@ public class AnyLayer implements LayerManager.LifeListener {
             } else if (mBackgroundDrawable != null) {
                 mViewHolder.getBackground().setImageDrawable(mBackgroundDrawable);
                 mViewHolder.getBackground().setColorFilter(mBackgroundColor);
-            } else if (mBackgroundColor != Color.TRANSPARENT) {
+            } else {
                 mViewHolder.getBackground().setImageDrawable(new ColorDrawable(mBackgroundColor));
             }
         }
     }
 
     private void initContent() {
-        if (mContent != null) {
-            ViewGroup contentParent = (ViewGroup) mContent.getParent();
+        if (mViewHolder.getContent() != null) {
+            ViewGroup contentParent = (ViewGroup) mViewHolder.getContent().getParent();
             if (contentParent != null) {
-                contentParent.removeView(mContent);
+                contentParent.removeView(mViewHolder.getContent());
             }
-            mContent.setClickable(true);
-            mViewHolder.getContentWrapper().addView(mContent);
+            mViewHolder.getContent().setClickable(true);
+            if (mTargetView == null && mGravity != -1) {
+                FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) mViewHolder.getContent().getLayoutParams();
+                contentParams.gravity = mGravity;
+                mViewHolder.getContent().setLayoutParams(contentParams);
+            }
+            if (mAsStatusBarViewId > 0) {
+                View statusBar = mViewHolder.getContent().findViewById(mAsStatusBarViewId);
+                if (statusBar != null) {
+                    ViewGroup.LayoutParams params = statusBar.getLayoutParams();
+                    params.height = getStatusBarHeight();
+                    statusBar.setLayoutParams(params);
+                    statusBar.setVisibility(View.VISIBLE);
+                }
+            }
+            mViewHolder.getContentWrapper().addView(mViewHolder.getContent());
         }
     }
 

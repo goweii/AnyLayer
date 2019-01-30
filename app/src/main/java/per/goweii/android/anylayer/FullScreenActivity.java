@@ -134,6 +134,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_top:
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_3)
+                        .asStatusBar(R.id.v_status_bar)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP)
                         .cancelableOnTouchOutside(true)
@@ -307,7 +308,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_test_2)
                         .backgroundBlurRadius(8)
                         .backgroundBlurScale(8)
-                        .backgroundColorInt(Color.WHITE)
+                        .backgroundColorInt(Color.argb(100, 0, 0, 0))
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
