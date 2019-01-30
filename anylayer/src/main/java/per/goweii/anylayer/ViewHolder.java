@@ -80,7 +80,7 @@ class ViewHolder {
             views = new SparseArray<>();
         }
         if (views.indexOfKey(viewId) < 0) {
-            V view = mContainer.findViewById(viewId);
+            V view = mContent.findViewById(viewId);
             views.put(viewId, view);
             return view;
         }

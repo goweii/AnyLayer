@@ -32,6 +32,9 @@ import java.util.Objects;
 
 /**
  * @author Cuizhen
+ * QQ: 302833254
+ * E-mail: goweii@163.com
+ * GitHub: https://github.com/goweii
  */
 public class AnyLayer implements LayerManager.LifeListener {
 
@@ -41,6 +44,9 @@ public class AnyLayer implements LayerManager.LifeListener {
     private final ViewGroup mRootView;
     private final FrameLayout mActivityContentView;
     private final View mTargetView;
+
+    @IdRes
+    private int mAsStatusBarViewId = 0;
 
     private ViewHolder mViewHolder;
     private LayerManager mLayerManager;
@@ -71,26 +77,537 @@ public class AnyLayer implements LayerManager.LifeListener {
     private OnLayerShowListener mOnLayerShowListener = null;
     private OnLayerDismissListener mOnLayerDismissListener = null;
 
-    private boolean mInsideAlignment = false;
+    private boolean mAlignmentInside = false;
     private Alignment.Direction mAlignmentDirection = Alignment.Direction.VERTICAL;
     private Alignment.Horizontal mAlignmentHorizontal = Alignment.Horizontal.CENTER;
     private Alignment.Vertical mAlignmentVertical = Alignment.Vertical.BELOW;
 
     private SoftInputHelper mSoftInputHelper = null;
 
-    @IdRes
-    private int mAsStatusBarViewId = 0;
-
+    /**
+     * 向父布局viewGroup添加一个浮层
+     *
+     * @param viewGroup 浮层父布局
+     */
     public static AnyLayer with(@NonNull ViewGroup viewGroup) {
         return new AnyLayer(viewGroup);
     }
 
+    /**
+     * 向窗口根布局添加一个浮层
+     *
+     * @param context 上下文，不能是ApplicationContext
+     */
     public static AnyLayer with(@NonNull Context context) {
         return new AnyLayer(context);
     }
 
+    /**
+     * 向窗口根布局添加一个浮层，且位置参照targetView
+     * 及类似PopupWindow效果
+     *
+     * @param targetView 位置参照View
+     */
     public static AnyLayer target(@NonNull View targetView) {
         return new AnyLayer(targetView);
+    }
+
+    /**
+     * 设置自自定义View
+     *
+     * @param contentView 自定以View
+     */
+    public AnyLayer contentView(@NonNull View contentView) {
+        mViewHolder.setContent(contentView);
+        return this;
+    }
+
+    /**
+     * 设置自定义布局文件
+     *
+     * @param contentViewId 自定以布局ID
+     */
+    public AnyLayer contentView(@LayoutRes int contentViewId) {
+        return contentView(mInflater.inflate(contentViewId, mViewHolder.getContainer(), false));
+    }
+
+    /**
+     * 设置自定义布局文件中状态栏的占位View
+     * 该控件高度将设置为状态栏高度，可用来使布局整体下移，避免状态栏遮挡
+     *
+     * @param statusBarId 状态栏的占位View
+     */
+    public AnyLayer asStatusBar(@IdRes int statusBarId) {
+        mAsStatusBarViewId = statusBarId;
+        return this;
+    }
+
+    /**
+     * 绑定数据
+     * 获取子控件ID为{@link #getView(int)}
+     *
+     * @param dataBinder 实现该接口进行数据绑定
+     */
+    public AnyLayer bindData(IDataBinder dataBinder) {
+        mDataBinder = dataBinder;
+        return this;
+    }
+
+    /**
+     * 设置显示状态改变的监听
+     *
+     * @param mOnVisibleChangeListener OnVisibleChangeListener
+     */
+    public AnyLayer onVisibleChangeListener(OnVisibleChangeListener mOnVisibleChangeListener) {
+        this.mOnVisibleChangeListener = mOnVisibleChangeListener;
+        return this;
+    }
+
+    /**
+     * 设置变更为显示状态监听
+     *
+     * @param onLayerShowListener OnLayerShowListener
+     */
+    public AnyLayer onLayerShowListener(OnLayerShowListener onLayerShowListener) {
+        mOnLayerShowListener = onLayerShowListener;
+        return this;
+    }
+
+    /**
+     * 设置变更为隐藏状态监听
+     *
+     * @param onLayerDismissListener OnLayerDismissListener
+     */
+    public AnyLayer onLayerDismissListener(OnLayerDismissListener onLayerDismissListener) {
+        mOnLayerDismissListener = onLayerDismissListener;
+        return this;
+    }
+
+    /**
+     * 设置子布局的gravity
+     * 可直接在布局文件指定layout_gravity属性，作用相同
+     *
+     * @param gravity {@link Gravity}
+     */
+    public AnyLayer gravity(int gravity) {
+        mGravity = gravity;
+        return this;
+    }
+
+    /**
+     * 当以target方式创建时为参照View位置显示
+     * 可自己指定浮层相对于参照View的对齐方式
+     *
+     * @param direction  主方向
+     * @param horizontal 水平对齐方式
+     * @param vertical   垂直对齐方式
+     * @param inside     是否强制位于屏幕内部
+     */
+    public AnyLayer alignment(@NonNull Alignment.Direction direction,
+                              @NonNull Alignment.Horizontal horizontal,
+                              @NonNull Alignment.Vertical vertical,
+                              boolean inside) {
+        mAlignmentDirection = direction;
+        mAlignmentHorizontal = horizontal;
+        mAlignmentVertical = vertical;
+        mAlignmentInside = inside;
+        return this;
+    }
+
+    /**
+     * 自定义浮层的进入和退出动画
+     * 可使用工具类{@link AnimHelper}
+     *
+     * @param contentAnim IAnim接口
+     */
+    public AnyLayer contentAnim(IAnim contentAnim) {
+        this.mContentAnim = contentAnim;
+        return this;
+    }
+
+    /**
+     * 自定义浮层的进入动画
+     *
+     * @param anim 动画资源文件ID
+     */
+    public AnyLayer contentInAnim(@AnimRes int anim) {
+        contentInAnim(AnimationUtils.loadAnimation(mContext, anim));
+        return this;
+    }
+
+    /**
+     * 自定义浮层的进入动画
+     *
+     * @param anim Animation动画
+     */
+    public AnyLayer contentInAnim(@NonNull Animation anim) {
+        mContentInAnim = anim;
+        mContentInAnimDuration = mContentInAnim.getDuration();
+        return this;
+    }
+
+    /**
+     * 自定义浮层的退出动画
+     *
+     * @param anim 动画资源文件ID
+     */
+    public AnyLayer contentOutAnim(@AnimRes int anim) {
+        contentOutAnim(AnimationUtils.loadAnimation(mContext, anim));
+        return this;
+    }
+
+    /**
+     * 自定义浮层的退出动画
+     *
+     * @param anim Animation动画
+     */
+    public AnyLayer contentOutAnim(@NonNull Animation anim) {
+        mContentOutAnim = anim;
+        mContentOutAnimDuration = mContentOutAnim.getDuration();
+        return this;
+    }
+
+    /**
+     * 自定义背景的进入和退出动画
+     * 可使用工具类{@link AnimHelper}
+     *
+     * @param backgroundAnim IAnim接口
+     */
+    public AnyLayer backgroundAnim(IAnim backgroundAnim) {
+        this.mBackgroundAnim = backgroundAnim;
+        return this;
+    }
+
+    /**
+     * 自定义背景的进入动画
+     *
+     * @param anim 动画资源文件ID
+     */
+    public AnyLayer backgroundInAnim(@AnimRes int anim) {
+        backgroundInAnim(AnimationUtils.loadAnimation(mContext, anim));
+        return this;
+    }
+
+    /**
+     * 自定义背景的退出动画
+     *
+     * @param anim Animation动画
+     */
+    public AnyLayer backgroundInAnim(@NonNull Animation anim) {
+        mBackgroundInAnim = anim;
+        mBackgroundInAnimDuration = mBackgroundInAnim.getDuration();
+        return this;
+    }
+
+    /**
+     * 自定义背景的退出动画
+     *
+     * @param anim 动画资源文件ID
+     */
+    public AnyLayer backgroundOutAnim(@AnimRes int anim) {
+        backgroundOutAnim(AnimationUtils.loadAnimation(mContext, anim));
+        return this;
+    }
+
+    /**
+     * 自定义背景的退出动画
+     *
+     * @param anim Animation动画
+     */
+    public AnyLayer backgroundOutAnim(@NonNull Animation anim) {
+        mBackgroundOutAnim = anim;
+        mBackgroundOutAnimDuration = mBackgroundOutAnim.getDuration();
+        return this;
+    }
+
+    /**
+     * 默认浮层进入和退出动画时长
+     *
+     * @param defaultAnimDuration 时长
+     */
+    public AnyLayer defaultContentAnimDuration(long defaultAnimDuration) {
+        this.mContentInAnimDuration = defaultAnimDuration;
+        this.mContentOutAnimDuration = defaultAnimDuration;
+        return this;
+    }
+
+    /**
+     * 默认浮层进入动画时长
+     *
+     * @param defaultInAnimDuration 时长
+     */
+    public AnyLayer defaultContentInAnimDuration(long defaultInAnimDuration) {
+        this.mContentInAnimDuration = defaultInAnimDuration;
+        return this;
+    }
+
+    /**
+     * 默认浮层退出动画时长
+     *
+     * @param defaultOutAnimDuration 时长
+     */
+    public AnyLayer defaultContentOutAnimDuration(long defaultOutAnimDuration) {
+        this.mContentOutAnimDuration = defaultOutAnimDuration;
+        return this;
+    }
+
+    /**
+     * 默认背景进入和退出动画时长
+     *
+     * @param defaultAnimDuration 时长
+     */
+    public AnyLayer defaultBackgroundAnimDuration(long defaultAnimDuration) {
+        this.mBackgroundInAnimDuration = defaultAnimDuration;
+        this.mBackgroundOutAnimDuration = defaultAnimDuration;
+        return this;
+    }
+
+    /**
+     * 默认背景进入动画时长
+     *
+     * @param defaultInAnimDuration 时长
+     */
+    public AnyLayer defaultBackgroundInAnimDuration(long defaultInAnimDuration) {
+        this.mBackgroundInAnimDuration = defaultInAnimDuration;
+        return this;
+    }
+
+    /**
+     * 默认背景退出动画时长
+     *
+     * @param defaultOutAnimDuration 时长
+     */
+    public AnyLayer defaultBackgroundOutAnimDuration(long defaultOutAnimDuration) {
+        this.mBackgroundOutAnimDuration = defaultOutAnimDuration;
+        return this;
+    }
+
+    /**
+     * 设置背景为当前activity的高斯模糊效果
+     * 设置之后其他背景设置方法失效，仅{@link #backgroundColorInt(int)}生效
+     * 且设置的backgroundColor值调用imageView.setColorFilter(backgroundColor)设置
+     * 建议此时的{@link #backgroundColorInt(int)}传入的为半透明颜色
+     *
+     * @param radius 模糊半径
+     */
+    public AnyLayer backgroundBlurRadius(@FloatRange(from = 0, fromInclusive = false, to = 25) float radius) {
+        mBackgroundBlurRadius = radius;
+        return this;
+    }
+
+    /**
+     * 设置背景高斯模糊的缩小比例
+     *
+     * @param scale 缩小比例
+     */
+    public AnyLayer backgroundBlurScale(@FloatRange(from = 1) float scale) {
+        mBackgroundBlurScale = scale;
+        return this;
+    }
+
+    /**
+     * 设置背景图片
+     *
+     * @param bitmap 图片
+     */
+    public AnyLayer backgroundBitmap(@NonNull Bitmap bitmap) {
+        mBackgroundBitmap = bitmap;
+        return this;
+    }
+
+    /**
+     * 设置背景资源
+     *
+     * @param resource 资源ID
+     */
+    public AnyLayer backgroundResource(@DrawableRes int resource) {
+        mBackgroundResource = resource;
+        return this;
+    }
+
+    /**
+     * 设置背景Drawable
+     *
+     * @param drawable Drawable
+     */
+    public AnyLayer backgroundDrawable(@NonNull Drawable drawable) {
+        mBackgroundDrawable = drawable;
+        return this;
+    }
+
+    /**
+     * 设置背景颜色
+     * 在调用了{@link #backgroundBitmap(Bitmap)}或者{@link #backgroundBlurRadius(float)}方法后
+     * 该颜色值将调用imageView.setColorFilter(backgroundColor)设置
+     * 建议此时传入的颜色为半透明颜色
+     *
+     * @param colorInt 颜色值
+     */
+    public AnyLayer backgroundColorInt(@ColorInt int colorInt) {
+        mBackgroundColor = colorInt;
+        return this;
+    }
+
+    /**
+     * 设置背景颜色
+     * 在调用了{@link #backgroundBitmap(Bitmap)}或者{@link #backgroundBlurRadius(float)}方法后
+     * 该颜色值将调用imageView.setColorFilter(backgroundColor)设置
+     * 建议此时传入的颜色为半透明颜色
+     *
+     * @param colorRes 颜色资源ID
+     */
+    public AnyLayer backgroundColorRes(@ColorRes int colorRes) {
+        mBackgroundColor = ContextCompat.getColor(mContext, colorRes);
+        return this;
+    }
+
+    /**
+     * 设置点击浮层以外区域是否可关闭
+     *
+     * @param cancelable 是否可关闭
+     */
+    public AnyLayer cancelableOnTouchOutside(boolean cancelable) {
+        mCancelableOnTouchOutside = cancelable;
+        return this;
+    }
+
+    /**
+     * 设置点击返回键是否可关闭
+     *
+     * @param cancelable 是否可关闭
+     */
+    public AnyLayer cancelableOnClickKeyBack(boolean cancelable) {
+        mLayerManager.setCancelableOnClickKeyBack(cancelable);
+        return this;
+    }
+
+    /**
+     * 对一个View绑定点击事件
+     *
+     * @param viewId   控件ID
+     * @param listener 监听器
+     */
+    public AnyLayer onClick(@IdRes int viewId, OnLayerClickListener listener) {
+        mViewHolder.addOnClickListener(listener, viewId, null);
+        return this;
+    }
+
+    /**
+     * 对多个View绑定点击事件
+     *
+     * @param listener 监听器
+     * @param viewId   控件ID
+     * @param viewIds  控件ID
+     */
+    public AnyLayer onClick(OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
+        mViewHolder.addOnClickListener(listener, viewId, viewIds);
+        return this;
+    }
+
+    /**
+     * 绑定该控件点击时直接隐藏浮层
+     *
+     * @param viewId  控件ID
+     * @param viewIds 控件ID
+     */
+    public AnyLayer onClickToDismiss(@IdRes int viewId, @IdRes int... viewIds) {
+        mViewHolder.addOnClickListener(new OnLayerClickListener() {
+            @Override
+            public void onClick(AnyLayer anyLayer, View v) {
+                dismiss();
+            }
+        }, viewId, viewIds);
+        return this;
+    }
+
+    /**
+     * 显示
+     */
+    public void show() {
+        mLayerManager.add();
+    }
+
+    /**
+     * 隐藏
+     */
+    public void dismiss() {
+        mLayerManager.remove();
+    }
+
+    /**
+     * 获取布局子控件
+     *
+     * @param viewId 控件ID
+     * @param <V>    子控件
+     * @return 子控件
+     */
+    public <V extends View> V getView(@IdRes int viewId) {
+        return mViewHolder.getView(viewId);
+    }
+
+    /**
+     * 获取View管理容器
+     *
+     * @return ViewHolder
+     */
+    public ViewHolder getViewHolder() {
+        return mViewHolder;
+    }
+
+    /**
+     * 获取自定义的浮层控件
+     *
+     * @return View
+     */
+    public View getContentView() {
+        return mViewHolder.getContent();
+    }
+
+    /**
+     * 获取背景图
+     *
+     * @return ImageView
+     */
+    public ImageView getBackground() {
+        return mViewHolder.getBackground();
+    }
+
+    /**
+     * 获取浮层是否已显示
+     *
+     * @return boolean
+     */
+    public boolean isShow() {
+        return mViewHolder.getContainer().getParent() != null;
+    }
+
+    /**
+     * 适配软键盘的弹出，布局自动上移
+     * 在某几个EditText获取焦点时布局上移
+     * 在{@link OnVisibleChangeListener#onShow(AnyLayer)}中调用
+     * 应该和{@link #removeSoftInput()}成对出现
+     *
+     * @param editText 焦点EditTexts
+     */
+    public void compatSoftInput(EditText... editText) {
+        Activity activity = getActivity();
+        if (activity != null) {
+            SoftInputHelper.attach(activity)
+                    .init(mViewHolder.getContentWrapper(), mViewHolder.getContent(), editText)
+                    .moveWithTranslation()
+                    .duration(300);
+        }
+    }
+
+    /**
+     * 移除软键盘适配
+     * 在{@link OnVisibleChangeListener#onDismiss(AnyLayer)}中调用
+     * 应该和{@link #compatSoftInput(EditText...)}成对出现
+     */
+    public void removeSoftInput() {
+        if (mSoftInputHelper != null) {
+            mSoftInputHelper.detach();
+        }
     }
 
     private AnyLayer(@NonNull ViewGroup viewGroup) {
@@ -125,281 +642,6 @@ public class AnyLayer implements LayerManager.LifeListener {
         mViewHolder = new ViewHolder(this, container);
         mLayerManager = new LayerManager(mRootView, container);
         mLayerManager.setLifeListener(this);
-    }
-
-    public void show() {
-        mLayerManager.add();
-    }
-
-    public void dismiss() {
-        mLayerManager.remove();
-    }
-
-    public <V extends View> V getView(@IdRes int viewId) {
-        return mViewHolder.getView(viewId);
-    }
-
-    public ViewHolder getViewHolder() {
-        return mViewHolder;
-    }
-
-    public View getContentView() {
-        return mViewHolder.getContent();
-    }
-
-    public ImageView getBackground() {
-        return mViewHolder.getBackground();
-    }
-
-    public AnyLayer contentView(@NonNull View contentView) {
-        mViewHolder.setContent(contentView);
-        return this;
-    }
-
-    public AnyLayer contentView(@LayoutRes int contentViewId) {
-        return contentView(mInflater.inflate(contentViewId, mViewHolder.getContainer(), false));
-    }
-
-    public AnyLayer asStatusBar(@IdRes int statusBarId) {
-        mAsStatusBarViewId = statusBarId;
-        return this;
-    }
-
-    public AnyLayer bindData(IDataBinder dataBinder) {
-        mDataBinder = dataBinder;
-        return this;
-    }
-
-    public AnyLayer onVisibleChangeListener(OnVisibleChangeListener mOnVisibleChangeListener) {
-        this.mOnVisibleChangeListener = mOnVisibleChangeListener;
-        return this;
-    }
-
-    public AnyLayer onLayerShowListener(OnLayerShowListener onLayerShowListener) {
-        mOnLayerShowListener = onLayerShowListener;
-        return this;
-    }
-
-    public AnyLayer onLayerDismissListener(OnLayerDismissListener onLayerDismissListener) {
-        mOnLayerDismissListener = onLayerDismissListener;
-        return this;
-    }
-
-    public AnyLayer gravity(int gravity) {
-        mGravity = gravity;
-        return this;
-    }
-
-    public AnyLayer alignment(@NonNull Alignment.Direction direction,
-                              @NonNull Alignment.Horizontal horizontal,
-                              @NonNull Alignment.Vertical vertical,
-                              boolean inside) {
-        mAlignmentDirection = direction;
-        mAlignmentHorizontal = horizontal;
-        mAlignmentVertical = vertical;
-        mInsideAlignment = inside;
-        return this;
-    }
-
-    public AnyLayer contentAnim(IAnim contentAnim) {
-        this.mContentAnim = contentAnim;
-        return this;
-    }
-
-    public AnyLayer contentInAnim(@AnimRes int anim) {
-        contentInAnim(AnimationUtils.loadAnimation(mContext, anim));
-        return this;
-    }
-
-    public AnyLayer contentInAnim(@NonNull Animation anim) {
-        mContentInAnim = anim;
-        mContentInAnimDuration = mContentInAnim.getDuration();
-        return this;
-    }
-
-    public AnyLayer contentOutAnim(@AnimRes int anim) {
-        contentOutAnim(AnimationUtils.loadAnimation(mContext, anim));
-        return this;
-    }
-
-    public AnyLayer contentOutAnim(@NonNull Animation anim) {
-        mContentOutAnim = anim;
-        mContentOutAnimDuration = mContentOutAnim.getDuration();
-        return this;
-    }
-
-    public AnyLayer backgroundAnim(IAnim backgroundAnim) {
-        this.mBackgroundAnim = backgroundAnim;
-        return this;
-    }
-
-    public AnyLayer backgroundInAnim(@AnimRes int anim) {
-        backgroundInAnim(AnimationUtils.loadAnimation(mContext, anim));
-        return this;
-    }
-
-    public AnyLayer backgroundInAnim(@NonNull Animation anim) {
-        mBackgroundInAnim = anim;
-        mBackgroundInAnimDuration = mBackgroundInAnim.getDuration();
-        return this;
-    }
-
-    public AnyLayer backgroundOutAnim(@AnimRes int anim) {
-        backgroundOutAnim(AnimationUtils.loadAnimation(mContext, anim));
-        return this;
-    }
-
-    public AnyLayer backgroundOutAnim(@NonNull Animation anim) {
-        mBackgroundOutAnim = anim;
-        mBackgroundOutAnimDuration = mBackgroundOutAnim.getDuration();
-        return this;
-    }
-
-    public AnyLayer defaultContentAnimDuration(long defaultAnimDuration) {
-        this.mContentInAnimDuration = defaultAnimDuration;
-        this.mContentOutAnimDuration = defaultAnimDuration;
-        return this;
-    }
-
-    public AnyLayer defaultContentInAnimDuration(long defaultInAnimDuration) {
-        this.mContentInAnimDuration = defaultInAnimDuration;
-        return this;
-    }
-
-    public AnyLayer defaultContentOutAnimDuration(long defaultOutAnimDuration) {
-        this.mContentOutAnimDuration = defaultOutAnimDuration;
-        return this;
-    }
-
-    public AnyLayer defaultBackgroundAnimDuration(long defaultAnimDuration) {
-        this.mBackgroundInAnimDuration = defaultAnimDuration;
-        this.mBackgroundOutAnimDuration = defaultAnimDuration;
-        return this;
-    }
-
-    public AnyLayer defaultBackgroundInAnimDuration(long defaultInAnimDuration) {
-        this.mBackgroundInAnimDuration = defaultInAnimDuration;
-        return this;
-    }
-
-    public AnyLayer defaultBackgroundOutAnimDuration(long defaultOutAnimDuration) {
-        this.mBackgroundOutAnimDuration = defaultOutAnimDuration;
-        return this;
-    }
-
-    /**
-     * 设置背景为当前activity的高斯模糊效果
-     * 设置之后其他背景设置方法失效，仅{@link #backgroundColorInt(int)}生效
-     * 且设置的backgroundColor值调用imageView.setColorFilter(backgroundColor)设置
-     * 建议此时的{@link #backgroundColorInt(int)}为半透明颜色
-     *
-     * @param radius 模糊半径
-     * @return PopupView
-     */
-    public AnyLayer backgroundBlurRadius(@FloatRange(from = 0, fromInclusive = false, to = 25) float radius) {
-        mBackgroundBlurRadius = radius;
-        return this;
-    }
-
-    public AnyLayer backgroundBlurScale(@FloatRange(from = 1) float scale) {
-        mBackgroundBlurScale = scale;
-        return this;
-    }
-
-    public AnyLayer backgroundBitmap(@NonNull Bitmap bitmap) {
-        mBackgroundBitmap = bitmap;
-        return this;
-    }
-
-    public AnyLayer backgroundResource(@DrawableRes int resource) {
-        mBackgroundResource = resource;
-        return this;
-    }
-
-    public AnyLayer backgroundDrawable(@NonNull Drawable drawable) {
-        mBackgroundDrawable = drawable;
-        return this;
-    }
-
-    /**
-     * 在调用了{@link #backgroundBitmap(Bitmap)}或者{@link #backgroundBlurRadius(float)}方法后
-     * 该颜色值将调用imageView.setColorFilter(backgroundColor)设置
-     * 建议此时传入的颜色为半透明颜色
-     *
-     * @param colorInt ColorInt
-     * @return PopupView
-     */
-    public AnyLayer backgroundColorInt(@ColorInt int colorInt) {
-        mBackgroundColor = colorInt;
-        return this;
-    }
-
-    public AnyLayer backgroundColorRes(@ColorRes int colorRes) {
-        mBackgroundColor = ContextCompat.getColor(mContext, colorRes);
-        return this;
-    }
-
-    public AnyLayer cancelableOnTouchOutside(boolean cancelable) {
-        mCancelableOnTouchOutside = cancelable;
-        return this;
-    }
-
-    public AnyLayer cancelableOnClickKeyBack(boolean cancelable) {
-        mLayerManager.setCancelableOnClickKeyBack(cancelable);
-        return this;
-    }
-
-    public AnyLayer onClick(@IdRes int viewId, OnLayerClickListener listener) {
-        mViewHolder.addOnClickListener(listener, viewId, null);
-        return this;
-    }
-
-    public AnyLayer onClick(OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
-        mViewHolder.addOnClickListener(listener, viewId, viewIds);
-        return this;
-    }
-
-    public AnyLayer onClickToDismiss(@IdRes int viewId, @IdRes int... viewIds) {
-        mViewHolder.addOnClickListener(new OnLayerClickListener() {
-            @Override
-            public void onClick(AnyLayer anyLayer, View v) {
-                dismiss();
-            }
-        }, viewId, viewIds);
-        return this;
-    }
-
-    public boolean isShow() {
-        return mViewHolder.getContainer().getParent() != null;
-    }
-
-    /**
-     * 适配软键盘的弹出，布局自动上移
-     * 在某几个EditText获取焦点时布局上移
-     * 在{@link OnVisibleChangeListener#onShow(AnyLayer)}中调用
-     * 应该和{@link #removeSoftInput()}成对出现
-     *
-     * @param editText 焦点EditTexts
-     */
-    public void compatSoftInput(EditText... editText) {
-        Activity activity = getActivity();
-        if (activity != null) {
-            SoftInputHelper.attach(activity)
-                    .init(mViewHolder.getContentWrapper(), mViewHolder.getContent(), editText)
-                    .moveWithTranslation()
-                    .duration(300);
-        }
-    }
-
-    /**
-     * 移除软键盘适配
-     * 在{@link OnVisibleChangeListener#onDismiss(AnyLayer)}中调用
-     * 应该和{@link #compatSoftInput(EditText...)}成对出现
-     */
-    public void removeSoftInput() {
-        if (mSoftInputHelper != null) {
-            mSoftInputHelper.detach();
-        }
     }
 
     /**
@@ -634,7 +876,7 @@ public class AnyLayer implements LayerManager.LifeListener {
                     }
                     x = x - finalPaddingLeft;
                     y = y - finalPaddingTop;
-                    if (mInsideAlignment) {
+                    if (mAlignmentInside) {
                         final int maxWidth = mViewHolder.getContainer().getWidth() - mViewHolder.getContainer().getPaddingLeft() - mViewHolder.getContainer().getPaddingRight();
                         final int maxHeight = mViewHolder.getContainer().getHeight() - mViewHolder.getContainer().getPaddingTop() - mViewHolder.getContainer().getPaddingBottom();
                         final int maxX = maxWidth - width;
@@ -787,24 +1029,60 @@ public class AnyLayer implements LayerManager.LifeListener {
     }
 
     public interface OnLayerClickListener {
+        /**
+         * 点击事件回调
+         *
+         * @param anyLayer 浮层
+         * @param v        点击控件
+         */
         void onClick(AnyLayer anyLayer, View v);
     }
 
     public interface OnLayerDismissListener {
+        /**
+         * 开始隐藏，动画刚开始执行
+         *
+         * @param anyLayer 浮层
+         */
         void onDismissing(AnyLayer anyLayer);
 
+        /**
+         * 已隐藏，浮层已被移除
+         *
+         * @param anyLayer 浮层
+         */
         void onDismissed(AnyLayer anyLayer);
     }
 
     public interface OnLayerShowListener {
+        /**
+         * 开始显示，动画刚开始执行
+         *
+         * @param anyLayer 浮层
+         */
         void onShowing(AnyLayer anyLayer);
 
+        /**
+         * 已显示，浮层已显示且动画结束
+         *
+         * @param anyLayer 浮层
+         */
         void onShown(AnyLayer anyLayer);
     }
 
     public interface OnVisibleChangeListener {
+        /**
+         * 浮层显示，刚被添加到父布局，进入动画未开始
+         *
+         * @param anyLayer 浮层
+         */
         void onShow(AnyLayer anyLayer);
 
+        /**
+         * 浮层隐藏，已被从父布局移除，隐藏动画已结束
+         *
+         * @param anyLayer 浮层
+         */
         void onDismiss(AnyLayer anyLayer);
     }
 }
