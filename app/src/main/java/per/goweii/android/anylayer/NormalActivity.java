@@ -246,9 +246,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_blur_bg:
                 AnyLayer.with(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
-                        .backgroundBlurRadius(8)
-                        .backgroundBlurScale(8)
-                        .backgroundColorInt(Color.argb(100, 0, 0, 0))
+                        .backgroundBlurPercent(0.05f)
+                        .backgroundColorInt(Color.argb(100, 0, 0, 255))
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {

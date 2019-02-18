@@ -30,6 +30,8 @@ import android.widget.ImageView;
 
 import java.util.Objects;
 
+import per.goweii.burred.Blurred;
+
 /**
  * @author Cuizhen
  * QQ: 302833254
@@ -52,8 +54,9 @@ public class AnyLayer implements LayerManager.LifeListener {
     private LayerManager mLayerManager;
 
     private int mGravity = Gravity.CENTER;
+    private float mBackgroundBlurPercent = 0;
     private float mBackgroundBlurRadius = 0;
-    private float mBackgroundBlurScale = 0;
+    private float mBackgroundBlurScale = 2;
     private Bitmap mBackgroundBitmap = null;
     private int mBackgroundResource = -1;
     private Drawable mBackgroundDrawable = null;
@@ -395,6 +398,11 @@ public class AnyLayer implements LayerManager.LifeListener {
         return this;
     }
 
+    public AnyLayer backgroundBlurPercent(@FloatRange(from = 0, fromInclusive = false) float percent) {
+        mBackgroundBlurPercent = percent;
+        return this;
+    }
+
     /**
      * 设置背景高斯模糊的缩小比例
      *
@@ -638,6 +646,7 @@ public class AnyLayer implements LayerManager.LifeListener {
     }
 
     private void initView() {
+        Blurred.init(mContext);
         FrameLayout container = (FrameLayout) mInflater.inflate(R.layout.layout_any_layer, mRootView, false);
         mViewHolder = new ViewHolder(this, container);
         mLayerManager = new LayerManager(mRootView, container);
@@ -903,7 +912,7 @@ public class AnyLayer implements LayerManager.LifeListener {
     }
 
     private void initBackground() {
-        if (mBackgroundBlurRadius > 0) {
+        if (mBackgroundBlurPercent > 0 || mBackgroundBlurRadius > 0) {
             mViewHolder.getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
@@ -917,10 +926,18 @@ public class AnyLayer implements LayerManager.LifeListener {
                     int y = locationBackground[1] - locationRootView[1];
                     Bitmap original = Bitmap.createBitmap(snapshot, x, y, mViewHolder.getBackground().getWidth(), mViewHolder.getBackground().getHeight());
                     snapshot.recycle();
-                    Bitmap blur = BlurUtils.blur(mContext, original, mBackgroundBlurRadius, mBackgroundBlurScale);
-                    original.recycle();
+                    Blurred blurred = Blurred.with(original)
+                            .recycleOriginal(true)
+                            .keepSize(false)
+                            .scale(mBackgroundBlurScale);
+                    if (mBackgroundBlurPercent > 0) {
+                        blurred.percent(mBackgroundBlurPercent);
+                    } else if (mBackgroundBlurRadius > 0) {
+                        blurred.radius(mBackgroundBlurRadius);
+                    }
+                    Bitmap blurBitmap = blurred.blur();
                     mViewHolder.getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    mViewHolder.getBackground().setImageBitmap(blur);
+                    mViewHolder.getBackground().setImageBitmap(blurBitmap);
                     mViewHolder.getBackground().setColorFilter(mBackgroundColor);
                     return true;
                 }

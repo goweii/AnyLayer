@@ -39,6 +39,7 @@ class Utils {
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache(true);
         view.destroyDrawingCache();
+        view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_LOW);
         return view.getDrawingCache();
     }
 }
