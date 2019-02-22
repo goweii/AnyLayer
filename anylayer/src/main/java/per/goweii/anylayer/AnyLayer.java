@@ -966,7 +966,13 @@ public class AnyLayer implements LayerManager.LifeListener {
             }
             mViewHolder.getContent().setClickable(true);
             if (mTargetView == null && mGravity != -1) {
-                FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) mViewHolder.getContent().getLayoutParams();
+                ViewGroup.LayoutParams params = mViewHolder.getContent().getLayoutParams();
+                FrameLayout.LayoutParams contentParams;
+                if (params instanceof FrameLayout.LayoutParams) {
+                    contentParams = (FrameLayout.LayoutParams) params;
+                } else {
+                    contentParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                }
                 contentParams.gravity = mGravity;
                 mViewHolder.getContent().setLayoutParams(contentParams);
             }
