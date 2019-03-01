@@ -249,7 +249,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.with(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundBlurPercent(0.05f)
-                        .backgroundColorInt(Color.argb(100, 0, 0, 255))
+                        .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
                         .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {

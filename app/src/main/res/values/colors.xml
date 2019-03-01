@@ -5,4 +5,5 @@
     <color name="colorAccent">#D81B60</color>
 
     <color name="dialog_bg">#33000000</color>
+    <color name="dialog_blur_bg">#33008577</color>
 </resources>
