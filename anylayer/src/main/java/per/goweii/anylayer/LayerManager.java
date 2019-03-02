@@ -10,194 +10,155 @@ import android.view.ViewTreeObserver;
  * 描述：管理view的动态添加和移除
  * 这里有几个生命周期的回调：
  * {@link #onAttach()}
- * {@link #onAnimIn(View)}
- * {@link #onShow()}
- * {@link #onRemove()}
- * {@link #onAnimOut(View)}
  * {@link #onDetach()}
  *
  * @author Cuizhen
  * @date 2018/10/25
  */
-class LayerManager implements View.OnKeyListener, ViewTreeObserver.OnGlobalFocusChangeListener, ViewTreeObserver.OnPreDrawListener {
+public final class LayerManager {
 
     private final ViewGroup mParent;
     private final View mChild;
-
-    private LifeListener mLifeListener = null;
-    private boolean mCancelableOnClickKeyBack = true;
+    private final LayerKeyListener mLayerKeyListener;
+    private final LayerGlobalFocusChangeListener mLayerGlobalFocusChangeListener;
 
     private View currentKeyView = null;
 
-    private boolean mOnAnimIn = false;
-    private boolean mOnAnimOut = false;
+    private OnLifeListener mOnLifeListener = null;
+    private OnPreDrawListener mOnPreDrawListener = null;
+    private OnKeyListener mOnKeyListener = null;
 
     LayerManager(@NonNull ViewGroup parent, @NonNull View child) {
         mParent = parent;
         mChild = child;
+        checkChildParent();
+        mLayerKeyListener = new LayerKeyListener();
+        mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
     }
 
-    void add() {
-        if (isAdded()) {
+    /**
+     * 确保子控件未被添加到非当前父布局，否则移除
+     */
+    private void checkChildParent() {
+        ViewGroup parent = (ViewGroup) mChild.getParent();
+        if (parent != null && parent != mParent) {
+            parent.removeView(mChild);
+        }
+    }
+
+    public void attach() {
+        if (isAttached()) {
             return;
         }
         onAttach();
     }
 
-    void remove() {
-        if (!isAdded()) {
+    public void detach() {
+        if (!isAttached()) {
             return;
         }
-        onRemove();
+        onDetach();
     }
 
-    private boolean isAdded(){
+    public boolean isAttached(){
         return mChild.getParent() != null;
     }
 
-    void setLifeListener(LifeListener lifeListener) {
-        mLifeListener = lifeListener;
+    public void setOnLifeListener(OnLifeListener onLifeListener) {
+        mOnLifeListener = onLifeListener;
     }
 
-    void setCancelableOnClickKeyBack(boolean cancelable) {
-        mCancelableOnClickKeyBack = cancelable;
+    public void setOnPreDrawListener(OnPreDrawListener onPreDrawListener) {
+        mOnPreDrawListener = onPreDrawListener;
     }
 
-    @Override
-    public boolean onPreDraw() {
-        if (mChild.getViewTreeObserver().isAlive()) {
-            mChild.getViewTreeObserver().removeOnPreDrawListener(this);
-        }
-        mChild.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mOnAnimIn = false;
-                onShow();
-            }
-        }, onAnimIn(mChild));
-        return true;
+    public void setOnKeyListener(OnKeyListener onKeyListener) {
+        mOnKeyListener = onKeyListener;
     }
 
     /**
-     * 已添加到父View
+     * 添加到父View
      */
     private void onAttach() {
-        if (mOnAnimIn) {
-            return;
-        }
-        mOnAnimIn = true;
+        mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
+        mChild.getViewTreeObserver().addOnPreDrawListener(new LayerPreDrawListener());
         mChild.setFocusable(true);
         mChild.setFocusableInTouchMode(true);
         mChild.requestFocus();
         currentKeyView = mChild;
-        currentKeyView.setOnKeyListener(this);
-        if (mLifeListener != null){
-            mLifeListener.onAttach();
-        }
-        mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(this);
-        mChild.getViewTreeObserver().addOnPreDrawListener(this);
+        currentKeyView.setOnKeyListener(mLayerKeyListener);
         mParent.addView(mChild);
-    }
-
-    /**
-     * 进入动画开始
-     */
-    private long onAnimIn(View view) {
-        if (mLifeListener != null){
-            return mLifeListener.onAnimIn(view);
-        }
-        return 0;
-    }
-
-    /**
-     * 进入动画结束，处于显示状态
-     */
-    private void onShow() {
-        if (mLifeListener != null){
-            mLifeListener.onShow();
+        if (mOnLifeListener != null){
+            mOnLifeListener.onAttach();
         }
     }
 
     /**
-     * 开始移出
-     */
-    private void onRemove() {
-        if (mOnAnimOut) {
-            return;
-        }
-        mOnAnimOut = true;
-        mChild.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mOnAnimOut = false;
-                onDetach();
-            }
-        }, onAnimOut(mChild));
-        if (mLifeListener != null){
-            mLifeListener.onRemove();
-        }
-    }
-
-    /**
-     * 移出动画开始
-     */
-    private long onAnimOut(View view) {
-        if (mLifeListener != null){
-           return mLifeListener.onAnimOut(view);
-        }
-        return 0;
-    }
-
-    /**
-     * 已从父View移除
+     * 从父View移除
      */
     private void onDetach() {
         if (currentKeyView != null) {
             currentKeyView.setOnKeyListener(null);
         }
-        mChild.getViewTreeObserver().removeOnGlobalFocusChangeListener(this);
+        mChild.getViewTreeObserver().removeOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
         mParent.removeView(mChild);
-        if (mLifeListener != null){
-            mLifeListener.onDetach();
+        if (mOnLifeListener != null){
+            mOnLifeListener.onDetach();
         }
     }
 
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (mChild.getParent() == null) {
-            return false;
+    private final class LayerPreDrawListener implements ViewTreeObserver.OnPreDrawListener{
+        @Override
+        public boolean onPreDraw() {
+            if (mChild.getViewTreeObserver().isAlive()) {
+                mChild.getViewTreeObserver().removeOnPreDrawListener(this);
+            }
+            if (mOnPreDrawListener != null) {
+                mOnPreDrawListener.onPreDraw();
+            }
+            return true;
         }
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (mCancelableOnClickKeyBack) {
-                    remove();
-                }
-                return true;
+    }
+
+    private final class LayerGlobalFocusChangeListener implements ViewTreeObserver.OnGlobalFocusChangeListener {
+        @Override
+        public void onGlobalFocusChanged(android.view.View oldFocus, android.view.View newFocus) {
+            if (currentKeyView != null) {
+                currentKeyView.setOnKeyListener(null);
+            }
+            if (oldFocus != null) {
+                oldFocus.setOnKeyListener(null);
+            }
+            if (newFocus != null) {
+                currentKeyView = newFocus;
+                currentKeyView.setOnKeyListener(mLayerKeyListener);
             }
         }
-        return false;
     }
 
-    @Override
-    public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-        if (currentKeyView != null) {
-            currentKeyView.setOnKeyListener(null);
-        }
-        if (oldFocus != null) {
-            oldFocus.setOnKeyListener(null);
-        }
-        if (newFocus != null) {
-            currentKeyView = newFocus;
-            currentKeyView.setOnKeyListener(LayerManager.this);
+    private final class LayerKeyListener implements View.OnKeyListener {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if (!isAttached()) {
+                return false;
+            }
+            if (mOnKeyListener == null) {
+                return false;
+            }
+            return mOnKeyListener.onKey(keyCode, event);
         }
     }
 
-    public interface LifeListener {
+    public interface OnLifeListener {
         void onAttach();
-        long onAnimIn(View view);
-        void onShow();
-        void onRemove();
-        long onAnimOut(View view);
         void onDetach();
+    }
+
+    public interface OnPreDrawListener {
+        void onPreDraw();
+    }
+
+    public interface OnKeyListener {
+        boolean onKey(int keyCode, KeyEvent event);
     }
 }

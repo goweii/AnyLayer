@@ -19,209 +19,188 @@ import android.view.animation.DecelerateInterpolator;
  */
 public class AnimHelper {
 
-    public static void startAlphaInAnim(View target, long duration) {
+    public static Animator createAlphaInAnim(final View target) {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
-        alpha.setDuration(duration);
         alpha.setInterpolator(new DecelerateInterpolator());
-        alpha.start();
+        return alpha;
     }
 
-    public static void startAlphaOutAnim(View target, long duration) {
+    public static Animator createAlphaOutAnim(final View target) {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
-        alpha.setDuration(duration);
         alpha.setInterpolator(new DecelerateInterpolator());
-        alpha.start();
+        return alpha;
     }
 
-    public static void startZoomInAnim(View target, long duration) {
+    public static Animator createZoomInAnim(final View target) {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", 0.618f, 1);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY", 0.618f, 1);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, scaleX, scaleY);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startZoomOutAnim(View target, long duration) {
+    public static Animator createZoomOutAnim(final View target) {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", target.getScaleX(), 0.618f);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY", target.getScaleY(), 0.618f);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, scaleX, scaleY);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startTopInAnim(final View target, long duration) {
+    public static Animator createTopInAnim(final View target) {
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", -target.getBottom(), 0);
         translationY.setInterpolator(new DecelerateInterpolator());
-        translationY.setDuration(duration);
-        translationY.start();
+        return translationY;
     }
 
-    public static void startTopOutAnim(final View target, long duration) {
+    public static Animator createTopOutAnim(final View target) {
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), -target.getBottom());
         translationY.setInterpolator(new DecelerateInterpolator());
-        translationY.setDuration(duration);
-        translationY.start();
+        return translationY;
     }
 
-    public static void startTopAlphaInAnim(View target, long duration) {
+    public static Animator createTopAlphaInAnim(final View target) {
         float y = (1 - 0.618f) * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", -y, 0);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationY);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startTopAlphaOutAnim(View target, long duration) {
+    public static Animator createTopAlphaOutAnim(final View target) {
         float y = (1 - 0.618f) * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 1, 0);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), -y);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationY);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startBottomInAnim(final View target, long duration) {
+    public static Animator createBottomInAnim(final View target) {
         float y = ((ViewGroup) target.getParent()).getMeasuredHeight() - target.getTop();
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", y, 0);
         translationY.setInterpolator(new DecelerateInterpolator());
-        translationY.setDuration(duration);
-        translationY.start();
+        return translationY;
     }
 
-    public static void startBottomOutAnim(final View target, long duration) {
+    public static Animator createBottomOutAnim(final View target) {
         float y = ((ViewGroup) target.getParent()).getMeasuredHeight() - target.getTop();
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), y);
         translationY.setInterpolator(new DecelerateInterpolator());
-        translationY.setDuration(duration);
-        translationY.start();
+        return translationY;
     }
 
-    public static void startBottomAlphaInAnim(final View target, long duration) {
+    public static Animator createBottomAlphaInAnim(final View target) {
         float y = (1 - 0.618f) * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", y, 0);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationY);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startBottomAlphaOutAnim(final View target, long duration) {
+    public static Animator createBottomAlphaOutAnim(final View target) {
         float y = (1 - 0.618f) * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 1, 0);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), y);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationY);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startLeftInAnim(final View target, long duration) {
+    public static Animator createLeftInAnim(final View target) {
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", -target.getRight(), 0);
         translationX.setInterpolator(new DecelerateInterpolator());
-        translationX.setDuration(duration);
         translationX.start();
+        return translationX;
     }
 
-    public static void startLeftOutAnim(final View target, long duration) {
+    public static Animator createLeftOutAnim(final View target) {
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), -target.getRight());
         translationX.setInterpolator(new DecelerateInterpolator());
-        translationX.setDuration(duration);
-        translationX.start();
+        return translationX;
     }
 
-    public static void startLeftAlphaInAnim(View target, long duration) {
+    public static Animator createLeftAlphaInAnim(final View target) {
         float x = (1 - 0.618f) * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", -x, 0);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationX);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startLeftAlphaOutAnim(View target, long duration) {
+    public static Animator createLeftAlphaOutAnim(final View target) {
         float x = (1 - 0.618f) * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 1, 0);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), -x);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationX);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startRightInAnim(final View target, long duration) {
+    public static Animator createRightInAnim(final View target) {
         float x = ((ViewGroup) target.getParent()).getMeasuredWidth() - target.getLeft();
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", x, 0);
         translationX.setInterpolator(new DecelerateInterpolator());
-        translationX.setDuration(duration);
-        translationX.start();
+        return translationX;
     }
 
-    public static void startRightOutAnim(final View target, long duration) {
+    public static Animator createRightOutAnim(final View target) {
         float x = ((ViewGroup) target.getParent()).getMeasuredWidth() - target.getLeft();
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), x);
         translationX.setInterpolator(new DecelerateInterpolator());
-        translationX.setDuration(duration);
-        translationX.start();
+        return translationX;
     }
 
-    public static void startRightAlphaInAnim(View target, long duration) {
+    public static Animator createRightAlphaInAnim(final View target) {
         float x = (1 - 0.618f) * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", x, 0);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationX);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
-    public static void startRightAlphaOutAnim(View target, long duration) {
+    public static Animator createRightAlphaOutAnim(final View target) {
         float x = (1 - 0.618f) * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 1, 0);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), x);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationX);
         set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(duration);
-        set.start();
+        return set;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public static void startCircularRevealInAnim(View target, int centerX, int centerY, long duration) {
+    public static Animator createCircularRevealInAnim(View target, int centerX, int centerY) {
         int x = target.getMeasuredWidth();
         int y = target.getMeasuredHeight();
         int r = (int) Math.sqrt(Math.pow(Math.max(centerX, x - centerX), 2) + Math.pow(Math.max(centerY, y - centerY), 2));
         Animator animator = ViewAnimationUtils.createCircularReveal(target, centerX, centerY, 0, r);
         animator.setInterpolator(new DecelerateInterpolator());
-        animator.setDuration(duration);
-        animator.start();
+        return animator;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public static void startCircularRevealOutAnim(View target, int centerX, int centerY, long duration) {
+    public static Animator createCircularRevealOutAnim(View target, int centerX, int centerY) {
         int x = target.getMeasuredWidth();
         int y = target.getMeasuredHeight();
         int r = (int) Math.sqrt(Math.pow(Math.max(centerX, x - centerX), 2) + Math.pow(Math.max(centerY, y - centerY), 2));
         Animator animator = ViewAnimationUtils.createCircularReveal(target, centerX, centerY, r, 0);
         animator.setInterpolator(new DecelerateInterpolator());
-        animator.setDuration(duration);
-        animator.start();
+        return animator;
     }
 }

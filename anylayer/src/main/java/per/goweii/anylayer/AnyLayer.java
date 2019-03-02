@@ -1,5 +1,6 @@
 package per.goweii.anylayer;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -18,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +40,9 @@ import per.goweii.burred.Blurred;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class AnyLayer implements LayerManager.LifeListener {
+public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKeyListener, LayerManager.OnPreDrawListener {
+
+    private static final long ANIM_DURATION_DEF = 300;
 
     private final Context mContext;
     private final LayoutInflater mInflater;
@@ -63,17 +67,28 @@ public class AnyLayer implements LayerManager.LifeListener {
     private int mBackgroundColor = Color.TRANSPARENT;
 
     private boolean mCancelableOnTouchOutside = true;
+    private boolean mCancelableOnClickKeyBack = true;
 
+    private boolean mInAnimRunning = false;
+    private boolean mOutAnimRunning = false;
+    private boolean mContentInAnimEnd = false;
+    private boolean mBackgroundInAnimEnd = false;
+    private boolean mContentOutAnimEnd = false;
+    private boolean mBackgroundOutAnimEnd = false;
     private IAnim mBackgroundAnim = null;
-    private Animation mBackgroundInAnim = null;
-    private Animation mBackgroundOutAnim = null;
+    private Animator mBackgroundInAnimator = null;
+    private Animator mBackgroundOutAnimator = null;
+    private Animation mBackgroundInAnimation = null;
+    private Animation mBackgroundOutAnimation = null;
     private IAnim mContentAnim = null;
-    private Animation mContentInAnim = null;
-    private Animation mContentOutAnim = null;
-    private long mBackgroundInAnimDuration = 300;
-    private long mBackgroundOutAnimDuration = 300;
-    private long mContentInAnimDuration = 300;
-    private long mContentOutAnimDuration = 300;
+    private Animator mContentInAnimator = null;
+    private Animator mContentOutAnimator = null;
+    private Animation mContentInAnimation = null;
+    private Animation mContentOutAnimation = null;
+    private long mBackgroundInAnimDuration = ANIM_DURATION_DEF;
+    private long mBackgroundOutAnimDuration = ANIM_DURATION_DEF;
+    private long mContentInAnimDuration = ANIM_DURATION_DEF;
+    private long mContentOutAnimDuration = ANIM_DURATION_DEF;
 
     private IDataBinder mDataBinder = null;
     private OnVisibleChangeListener mOnVisibleChangeListener = null;
@@ -128,7 +143,7 @@ public class AnyLayer implements LayerManager.LifeListener {
     /**
      * 设置自定义布局文件
      *
-     * @param contentViewId 自定以布局ID
+     * @param contentViewId 自定义布局ID
      */
     public AnyLayer contentView(@LayoutRes int contentViewId) {
         return contentView(mInflater.inflate(contentViewId, mViewHolder.getContainer(), false));
@@ -244,8 +259,7 @@ public class AnyLayer implements LayerManager.LifeListener {
      * @param anim Animation动画
      */
     public AnyLayer contentInAnim(@NonNull Animation anim) {
-        mContentInAnim = anim;
-        mContentInAnimDuration = mContentInAnim.getDuration();
+        mContentInAnimation = anim;
         return this;
     }
 
@@ -265,8 +279,7 @@ public class AnyLayer implements LayerManager.LifeListener {
      * @param anim Animation动画
      */
     public AnyLayer contentOutAnim(@NonNull Animation anim) {
-        mContentOutAnim = anim;
-        mContentOutAnimDuration = mContentOutAnim.getDuration();
+        mContentOutAnimation = anim;
         return this;
     }
 
@@ -297,8 +310,7 @@ public class AnyLayer implements LayerManager.LifeListener {
      * @param anim Animation动画
      */
     public AnyLayer backgroundInAnim(@NonNull Animation anim) {
-        mBackgroundInAnim = anim;
-        mBackgroundInAnimDuration = mBackgroundInAnim.getDuration();
+        mBackgroundInAnimation = anim;
         return this;
     }
 
@@ -318,8 +330,7 @@ public class AnyLayer implements LayerManager.LifeListener {
      * @param anim Animation动画
      */
     public AnyLayer backgroundOutAnim(@NonNull Animation anim) {
-        mBackgroundOutAnim = anim;
-        mBackgroundOutAnimDuration = mBackgroundOutAnim.getDuration();
+        mBackgroundOutAnimation = anim;
         return this;
     }
 
@@ -485,7 +496,7 @@ public class AnyLayer implements LayerManager.LifeListener {
      * @param cancelable 是否可关闭
      */
     public AnyLayer cancelableOnClickKeyBack(boolean cancelable) {
-        mLayerManager.setCancelableOnClickKeyBack(cancelable);
+        mCancelableOnClickKeyBack = cancelable;
         return this;
     }
 
@@ -496,8 +507,18 @@ public class AnyLayer implements LayerManager.LifeListener {
      * @param listener 监听器
      */
     public AnyLayer onClick(@IdRes int viewId, OnLayerClickListener listener) {
-        mViewHolder.addOnClickListener(listener, viewId, null);
-        return this;
+        return onClick(listener, viewId, null);
+    }
+
+    /**
+     * 对一个View绑定点击事件
+     * 绑定该控件点击时直接隐藏浮层
+     *
+     * @param viewId   控件ID
+     * @param listener 监听器
+     */
+    public AnyLayer onClickToDismiss(@IdRes int viewId, OnLayerClickListener listener) {
+        return onClickToDismiss(listener, viewId, null);
     }
 
     /**
@@ -513,15 +534,20 @@ public class AnyLayer implements LayerManager.LifeListener {
     }
 
     /**
+     * 对多个View绑定点击事件
      * 绑定该控件点击时直接隐藏浮层
      *
-     * @param viewId  控件ID
-     * @param viewIds 控件ID
+     * @param listener 监听器
+     * @param viewId   控件ID
+     * @param viewIds  控件ID
      */
-    public AnyLayer onClickToDismiss(@IdRes int viewId, @IdRes int... viewIds) {
+    public AnyLayer onClickToDismiss(OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
         mViewHolder.addOnClickListener(new OnLayerClickListener() {
             @Override
             public void onClick(AnyLayer anyLayer, View v) {
+                if (listener != null) {
+                    listener.onClick(anyLayer, v);
+                }
                 dismiss();
             }
         }, viewId, viewIds);
@@ -529,17 +555,27 @@ public class AnyLayer implements LayerManager.LifeListener {
     }
 
     /**
+     * 绑定该控件点击时直接隐藏浮层
+     *
+     * @param viewId  控件ID
+     * @param viewIds 控件ID
+     */
+    public AnyLayer onClickToDismiss(@IdRes int viewId, @IdRes int... viewIds) {
+        return onClickToDismiss(null, viewId, viewIds);
+    }
+
+    /**
      * 显示
      */
     public void show() {
-        mLayerManager.add();
+        mLayerManager.attach();
     }
 
     /**
      * 隐藏
      */
     public void dismiss() {
-        mLayerManager.remove();
+        onPerRemove();
     }
 
     /**
@@ -586,7 +622,7 @@ public class AnyLayer implements LayerManager.LifeListener {
      * @return boolean
      */
     public boolean isShow() {
-        return mViewHolder.getContainer().getParent() != null;
+        return mLayerManager.isAttached();
     }
 
     /**
@@ -650,7 +686,9 @@ public class AnyLayer implements LayerManager.LifeListener {
         FrameLayout container = (FrameLayout) mInflater.inflate(R.layout.layout_any_layer, mRootView, false);
         mViewHolder = new ViewHolder(this, container);
         mLayerManager = new LayerManager(mRootView, container);
-        mLayerManager.setLifeListener(this);
+        mLayerManager.setOnLifeListener(this);
+        mLayerManager.setOnPreDrawListener(this);
+        mLayerManager.setOnKeyListener(this);
     }
 
     /**
@@ -672,50 +710,282 @@ public class AnyLayer implements LayerManager.LifeListener {
 
     private void startContentInAnim() {
         if (mContentAnim != null) {
-            mContentInAnimDuration = mContentAnim.inAnim(mViewHolder.getContent());
+            mContentInAnimator = mContentAnim.inAnim(mViewHolder.getContent());
+        }
+        if (mContentInAnimator != null) {
+            startContentInAnim(mContentInAnimator);
         } else {
-            if (mContentInAnim != null) {
-                mViewHolder.getContent().startAnimation(mContentInAnim);
+            if (mContentInAnimation != null) {
+                startContentInAnim(mContentInAnimation);
             } else {
-                AnimHelper.startZoomInAnim(mViewHolder.getContent(), mContentInAnimDuration);
+                mContentInAnimator = AnimHelper.createZoomInAnim(mViewHolder.getContent());
+                startContentInAnim(mContentInAnimator);
             }
         }
     }
 
-    private void startContentOutAnim() {
-        if (mContentAnim != null) {
-            mContentOutAnimDuration = mContentAnim.outAnim(mViewHolder.getContent());
-        } else {
-            if (mContentOutAnim != null) {
-                mViewHolder.getContent().startAnimation(mContentOutAnim);
-            } else {
-                AnimHelper.startZoomOutAnim(mViewHolder.getContent(), mContentOutAnimDuration);
-            }
+    private void startContentInAnim(Animator animator) {
+        if (animator.getDuration() <= 0) {
+            animator.setDuration(mContentInAnimDuration);
         }
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mContentInAnimEnd = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mContentInAnimEnd = true;
+                if (mBackgroundInAnimEnd) {
+                    onShow();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        animator.start();
+    }
+
+    private void startContentInAnim(Animation animation) {
+        if (animation.getDuration() <= 0) {
+            animation.setDuration(mContentInAnimDuration);
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mContentInAnimEnd = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mContentInAnimEnd = true;
+                if (mBackgroundInAnimEnd) {
+                    onShow();
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        mViewHolder.getContent().startAnimation(animation);
     }
 
     private void startBackgroundInAnim() {
         if (mBackgroundAnim != null) {
-            mBackgroundInAnimDuration = mBackgroundAnim.inAnim(mViewHolder.getBackground());
+            mBackgroundInAnimator = mBackgroundAnim.inAnim(mViewHolder.getBackground());
+        }
+        if (mBackgroundInAnimator != null) {
+            startBackgroundInAnim(mBackgroundInAnimator);
         } else {
-            if (mBackgroundInAnim != null) {
-                mViewHolder.getBackground().startAnimation(mBackgroundInAnim);
+            if (mBackgroundInAnimation != null) {
+                startBackgroundInAnim(mBackgroundInAnimation);
             } else {
-                AnimHelper.startAlphaInAnim(mViewHolder.getBackground(), mBackgroundInAnimDuration);
+                mBackgroundInAnimator = AnimHelper.createAlphaInAnim(mViewHolder.getBackground());
+                startBackgroundInAnim(mBackgroundInAnimator);
             }
         }
     }
 
-    private void startBackgroundOutAnim() {
-        if (mBackgroundAnim != null) {
-            mBackgroundOutAnimDuration = mBackgroundAnim.outAnim(mViewHolder.getBackground());
+    private void startBackgroundInAnim(Animator animator) {
+        if (animator.getDuration() <= 0) {
+            animator.setDuration(mBackgroundInAnimDuration);
+        }
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mBackgroundInAnimEnd = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mBackgroundInAnimEnd = true;
+                if (mContentInAnimEnd) {
+                    onShow();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        animator.start();
+    }
+
+    private void startBackgroundInAnim(Animation animation) {
+        if (animation.getDuration() <= 0) {
+            animation.setDuration(mBackgroundInAnimDuration);
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mBackgroundInAnimEnd = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mBackgroundInAnimEnd = true;
+                if (mContentInAnimEnd) {
+                    onShow();
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        mViewHolder.getBackground().startAnimation(animation);
+    }
+
+    private void startContentOutAnim() {
+        if (mContentAnim != null) {
+            mContentOutAnimator = mContentAnim.outAnim(mViewHolder.getContent());
+        }
+        if (mContentOutAnimator != null) {
+            startContentOutAnim(mContentOutAnimator);
         } else {
-            if (mBackgroundOutAnim != null) {
-                mViewHolder.getBackground().startAnimation(mBackgroundOutAnim);
+            if (mContentOutAnimation != null) {
+                startContentOutAnim(mContentOutAnimation);
             } else {
-                AnimHelper.startAlphaOutAnim(mViewHolder.getBackground(), mBackgroundOutAnimDuration);
+                mContentOutAnimator = AnimHelper.createZoomOutAnim(mViewHolder.getContent());
+                startContentOutAnim(mContentOutAnimator);
             }
         }
+    }
+
+    private void startContentOutAnim(Animator animator) {
+        if (animator.getDuration() <= 0) {
+            animator.setDuration(mContentOutAnimDuration);
+        }
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mContentOutAnimEnd = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mContentOutAnimEnd = true;
+                if (mBackgroundOutAnimEnd) {
+                    mLayerManager.detach();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        animator.start();
+    }
+
+    private void startContentOutAnim(Animation animation) {
+        if (animation.getDuration() <= 0) {
+            animation.setDuration(mContentOutAnimDuration);
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mContentOutAnimEnd = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mContentOutAnimEnd = true;
+                if (mBackgroundOutAnimEnd) {
+                    mLayerManager.detach();
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        mViewHolder.getContent().startAnimation(animation);
+    }
+
+    private void startBackgroundOutAnim() {
+        if (mBackgroundAnim != null) {
+            mBackgroundOutAnimator = mBackgroundAnim.outAnim(mViewHolder.getBackground());
+        }
+        if (mBackgroundOutAnimator != null) {
+            startBackgroundOutAnim(mBackgroundOutAnimator);
+        } else {
+            if (mBackgroundOutAnimation != null) {
+                startBackgroundOutAnim(mBackgroundOutAnimation);
+            } else {
+                mBackgroundOutAnimator = AnimHelper.createAlphaOutAnim(mViewHolder.getBackground());
+                startBackgroundOutAnim(mBackgroundOutAnimator);
+            }
+        }
+    }
+
+    private void startBackgroundOutAnim(Animator animator) {
+        if (animator.getDuration() <= 0) {
+            animator.setDuration(mBackgroundOutAnimDuration);
+        }
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mBackgroundOutAnimEnd = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mBackgroundOutAnimEnd = true;
+                if (mContentOutAnimEnd) {
+                    mLayerManager.detach();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        animator.start();
+    }
+
+    private void startBackgroundOutAnim(Animation animation) {
+        if (animation.getDuration() <= 0) {
+            animation.setDuration(mBackgroundOutAnimDuration);
+        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mBackgroundOutAnimEnd = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mBackgroundOutAnimEnd = true;
+                if (mContentOutAnimEnd) {
+                    mLayerManager.detach();
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        mViewHolder.getBackground().startAnimation(animation);
     }
 
     @Override
@@ -730,41 +1000,43 @@ public class AnyLayer implements LayerManager.LifeListener {
         if (mDataBinder != null) {
             mDataBinder.bind(this);
         }
+    }
+
+    @Override
+    public void onPreDraw() {
+        if (mInAnimRunning) {
+            return;
+        }
+        mInAnimRunning = true;
         if (mOnLayerShowListener != null) {
             mOnLayerShowListener.onShowing(AnyLayer.this);
         }
-    }
-
-    @Override
-    public long onAnimIn(View view) {
         startContentInAnim();
         startBackgroundInAnim();
-        return Math.max(mBackgroundInAnimDuration, mContentInAnimDuration);
     }
 
-    @Override
-    public long onAnimOut(View view) {
-        startContentOutAnim();
-        startBackgroundOutAnim();
-        return Math.max(mBackgroundOutAnimDuration, mContentOutAnimDuration);
-    }
-
-    @Override
     public void onShow() {
+        mInAnimRunning = false;
         if (mOnLayerShowListener != null) {
             mOnLayerShowListener.onShown(AnyLayer.this);
         }
     }
 
-    @Override
-    public void onRemove() {
+    public void onPerRemove() {
+        if (mOutAnimRunning) {
+            return;
+        }
+        mOutAnimRunning = true;
         if (mOnLayerDismissListener != null) {
             mOnLayerDismissListener.onDismissing(AnyLayer.this);
         }
+        startContentOutAnim();
+        startBackgroundOutAnim();
     }
 
     @Override
     public void onDetach() {
+        mOutAnimRunning = false;
         if (mOnVisibleChangeListener != null) {
             mOnVisibleChangeListener.onDismiss(AnyLayer.this);
         }
@@ -772,6 +1044,19 @@ public class AnyLayer implements LayerManager.LifeListener {
             mOnLayerDismissListener.onDismissed(AnyLayer.this);
         }
         mViewHolder.recycle();
+    }
+
+    @Override
+    public boolean onKey(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (mCancelableOnClickKeyBack) {
+                    dismiss();
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     private int getStatusBarHeight() {
@@ -1031,17 +1316,15 @@ public class AnyLayer implements LayerManager.LifeListener {
          * 内容进入动画
          *
          * @param target 内容
-         * @return 动画时长
          */
-        long inAnim(View target);
+        Animator inAnim(View target);
 
         /**
          * 内容消失动画
          *
          * @param target 内容
-         * @return 动画时长
          */
-        long outAnim(View target);
+        Animator outAnim(View target);
     }
 
     public interface IDataBinder {
