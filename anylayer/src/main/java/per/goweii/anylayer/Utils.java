@@ -13,7 +13,7 @@ import android.view.View;
  * @author Cuizhen
  * @date 2018/10/25
  */
-class Utils {
+final class Utils {
 
     /**
      * 从当前上下文获取Activity

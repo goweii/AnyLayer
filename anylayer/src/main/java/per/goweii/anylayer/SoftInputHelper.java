@@ -20,7 +20,7 @@ import android.widget.EditText;
  * @version v1.0.0
  * @date 2018/3/30-上午9:06
  */
-class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnGlobalFocusChangeListener {
+final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnGlobalFocusChangeListener {
 
     private final Window window;
     private final View rootView;

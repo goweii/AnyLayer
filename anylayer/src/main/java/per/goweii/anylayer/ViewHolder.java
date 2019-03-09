@@ -14,7 +14,7 @@ import android.widget.ImageView;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-class ViewHolder {
+final class ViewHolder {
 
     private final AnyLayer mAnyLayer;
     private FrameLayout mContainer;

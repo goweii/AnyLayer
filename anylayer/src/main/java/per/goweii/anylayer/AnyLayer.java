@@ -42,8 +42,6 @@ import per.goweii.burred.Blurred;
  */
 public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKeyListener, LayerManager.OnPreDrawListener {
 
-    private static final long ANIM_DURATION_DEF = 300;
-
     private final Context mContext;
     private final LayoutInflater mInflater;
 
@@ -75,20 +73,10 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
     private boolean mBackgroundInAnimEnd = false;
     private boolean mContentOutAnimEnd = false;
     private boolean mBackgroundOutAnimEnd = false;
-    private IAnim mBackgroundAnim = null;
-    private Animator mBackgroundInAnimator = null;
-    private Animator mBackgroundOutAnimator = null;
-    private Animation mBackgroundInAnimation = null;
-    private Animation mBackgroundOutAnimation = null;
-    private IAnim mContentAnim = null;
-    private Animator mContentInAnimator = null;
-    private Animator mContentOutAnimator = null;
-    private Animation mContentInAnimation = null;
-    private Animation mContentOutAnimation = null;
-    private long mBackgroundInAnimDuration = ANIM_DURATION_DEF;
-    private long mBackgroundOutAnimDuration = ANIM_DURATION_DEF;
-    private long mContentInAnimDuration = ANIM_DURATION_DEF;
-    private long mContentOutAnimDuration = ANIM_DURATION_DEF;
+    private AnimExecutor mContentInAnimExecutor = null;
+    private AnimExecutor mBackgroundInAnimExecutor = null;
+    private AnimExecutor mContentOutAnimExecutor = null;
+    private AnimExecutor mBackgroundOutAnimExecutor = null;
 
     private IDataBinder mDataBinder = null;
     private OnVisibleChangeListener mOnVisibleChangeListener = null;
@@ -239,7 +227,22 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param contentAnim IAnim接口
      */
     public AnyLayer contentAnim(IAnim contentAnim) {
-        this.mContentAnim = contentAnim;
+        if (contentAnim != null) {
+            mContentInAnimExecutor.setCreator(new AnimExecutor.Creator() {
+                @Nullable
+                @Override
+                public Animator create(View target) {
+                    return contentAnim.inAnim(target);
+                }
+            });
+            mContentOutAnimExecutor.setCreator(new AnimExecutor.Creator() {
+                @Nullable
+                @Override
+                public Animator create(View target) {
+                    return contentAnim.outAnim(target);
+                }
+            });
+        }
         return this;
     }
 
@@ -249,7 +252,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim 动画资源文件ID
      */
     public AnyLayer contentInAnim(@AnimRes int anim) {
-        contentInAnim(AnimationUtils.loadAnimation(mContext, anim));
+        mContentInAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mContext, anim));
         return this;
     }
 
@@ -259,7 +262,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim Animation动画
      */
     public AnyLayer contentInAnim(@NonNull Animation anim) {
-        mContentInAnimation = anim;
+        mContentInAnimExecutor.setAnimation(anim);
         return this;
     }
 
@@ -269,7 +272,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim 动画资源文件ID
      */
     public AnyLayer contentOutAnim(@AnimRes int anim) {
-        contentOutAnim(AnimationUtils.loadAnimation(mContext, anim));
+        mContentOutAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mContext, anim));
         return this;
     }
 
@@ -279,7 +282,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim Animation动画
      */
     public AnyLayer contentOutAnim(@NonNull Animation anim) {
-        mContentOutAnimation = anim;
+        mContentOutAnimExecutor.setAnimation(anim);
         return this;
     }
 
@@ -290,7 +293,22 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param backgroundAnim IAnim接口
      */
     public AnyLayer backgroundAnim(IAnim backgroundAnim) {
-        this.mBackgroundAnim = backgroundAnim;
+        if (backgroundAnim != null) {
+            mBackgroundInAnimExecutor.setCreator(new AnimExecutor.Creator() {
+                @Nullable
+                @Override
+                public Animator create(View target) {
+                    return backgroundAnim.inAnim(target);
+                }
+            });
+            mBackgroundOutAnimExecutor.setCreator(new AnimExecutor.Creator() {
+                @Nullable
+                @Override
+                public Animator create(View target) {
+                    return backgroundAnim.outAnim(target);
+                }
+            });
+        }
         return this;
     }
 
@@ -300,7 +318,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim 动画资源文件ID
      */
     public AnyLayer backgroundInAnim(@AnimRes int anim) {
-        backgroundInAnim(AnimationUtils.loadAnimation(mContext, anim));
+        mBackgroundInAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mContext, anim));
         return this;
     }
 
@@ -310,7 +328,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim Animation动画
      */
     public AnyLayer backgroundInAnim(@NonNull Animation anim) {
-        mBackgroundInAnimation = anim;
+        mBackgroundInAnimExecutor.setAnimation(anim);
         return this;
     }
 
@@ -320,7 +338,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim 动画资源文件ID
      */
     public AnyLayer backgroundOutAnim(@AnimRes int anim) {
-        backgroundOutAnim(AnimationUtils.loadAnimation(mContext, anim));
+        mBackgroundOutAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mContext, anim));
         return this;
     }
 
@@ -330,7 +348,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim Animation动画
      */
     public AnyLayer backgroundOutAnim(@NonNull Animation anim) {
-        mBackgroundOutAnimation = anim;
+        mBackgroundOutAnimExecutor.setAnimation(anim);
         return this;
     }
 
@@ -340,8 +358,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultAnimDuration 时长
      */
     public AnyLayer defaultContentAnimDuration(long defaultAnimDuration) {
-        this.mContentInAnimDuration = defaultAnimDuration;
-        this.mContentOutAnimDuration = defaultAnimDuration;
+        mContentInAnimExecutor.setDuration(defaultAnimDuration);
+        mContentOutAnimExecutor.setDuration(defaultAnimDuration);
         return this;
     }
 
@@ -351,7 +369,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultInAnimDuration 时长
      */
     public AnyLayer defaultContentInAnimDuration(long defaultInAnimDuration) {
-        this.mContentInAnimDuration = defaultInAnimDuration;
+        mContentInAnimExecutor.setDuration(defaultInAnimDuration);
         return this;
     }
 
@@ -361,7 +379,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultOutAnimDuration 时长
      */
     public AnyLayer defaultContentOutAnimDuration(long defaultOutAnimDuration) {
-        this.mContentOutAnimDuration = defaultOutAnimDuration;
+        mContentOutAnimExecutor.setDuration(defaultOutAnimDuration);
         return this;
     }
 
@@ -371,8 +389,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultAnimDuration 时长
      */
     public AnyLayer defaultBackgroundAnimDuration(long defaultAnimDuration) {
-        this.mBackgroundInAnimDuration = defaultAnimDuration;
-        this.mBackgroundOutAnimDuration = defaultAnimDuration;
+        mBackgroundInAnimExecutor.setDuration(defaultAnimDuration);
+        mBackgroundOutAnimExecutor.setDuration(defaultAnimDuration);
         return this;
     }
 
@@ -382,7 +400,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultInAnimDuration 时长
      */
     public AnyLayer defaultBackgroundInAnimDuration(long defaultInAnimDuration) {
-        this.mBackgroundInAnimDuration = defaultInAnimDuration;
+        mBackgroundInAnimExecutor.setDuration(defaultInAnimDuration);
         return this;
     }
 
@@ -392,7 +410,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultOutAnimDuration 时长
      */
     public AnyLayer defaultBackgroundOutAnimDuration(long defaultOutAnimDuration) {
-        this.mBackgroundOutAnimDuration = defaultOutAnimDuration;
+        mBackgroundOutAnimExecutor.setDuration(defaultOutAnimDuration);
         return this;
     }
 
@@ -689,6 +707,66 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
         mLayerManager.setOnLifeListener(this);
         mLayerManager.setOnPreDrawListener(this);
         mLayerManager.setOnKeyListener(this);
+        mContentInAnimExecutor = new AnimExecutor();
+        mBackgroundInAnimExecutor = new AnimExecutor();
+        mContentInAnimExecutor.setListener(new AnimExecutor.Listener() {
+            @Override
+            public void onStart() {
+                mContentInAnimEnd = false;
+            }
+
+            @Override
+            public void onEnd() {
+                mContentInAnimEnd = true;
+                if (mBackgroundInAnimEnd) {
+                    onShow();
+                }
+            }
+        });
+        mBackgroundInAnimExecutor.setListener(new AnimExecutor.Listener() {
+            @Override
+            public void onStart() {
+                mBackgroundInAnimEnd = false;
+            }
+
+            @Override
+            public void onEnd() {
+                mBackgroundInAnimEnd = true;
+                if (mContentInAnimEnd) {
+                    onShow();
+                }
+            }
+        });
+        mContentOutAnimExecutor = new AnimExecutor();
+        mBackgroundOutAnimExecutor = new AnimExecutor();
+        mContentOutAnimExecutor.setListener(new AnimExecutor.Listener() {
+            @Override
+            public void onStart() {
+                mContentOutAnimEnd = false;
+            }
+
+            @Override
+            public void onEnd() {
+                mContentOutAnimEnd = true;
+                if (mBackgroundOutAnimEnd) {
+                    mLayerManager.detach();
+                }
+            }
+        });
+        mBackgroundOutAnimExecutor.setListener(new AnimExecutor.Listener() {
+            @Override
+            public void onStart() {
+                mBackgroundOutAnimEnd = false;
+            }
+
+            @Override
+            public void onEnd() {
+                mBackgroundOutAnimEnd = true;
+                if (mContentOutAnimEnd) {
+                    mLayerManager.detach();
+                }
+            }
+        });
     }
 
     /**
@@ -708,292 +786,40 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
         return null;
     }
 
-    private void startContentInAnim() {
-        if (mContentAnim != null) {
-            mContentInAnimator = mContentAnim.inAnim(mViewHolder.getContent());
-        }
-        if (mContentInAnimator != null) {
-            startContentInAnim(mContentInAnimator);
-        } else {
-            if (mContentInAnimation != null) {
-                startContentInAnim(mContentInAnimation);
-            } else {
-                mContentInAnimator = AnimHelper.createZoomInAnim(mViewHolder.getContent());
-                startContentInAnim(mContentInAnimator);
-            }
-        }
-    }
-
-    private void startContentInAnim(Animator animator) {
-        if (animator.getDuration() <= 0) {
-            animator.setDuration(mContentInAnimDuration);
-        }
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mContentInAnimEnd = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mContentInAnimEnd = true;
-                if (mBackgroundInAnimEnd) {
-                    onShow();
-                }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-        animator.start();
-    }
-
-    private void startContentInAnim(Animation animation) {
-        if (animation.getDuration() <= 0) {
-            animation.setDuration(mContentInAnimDuration);
-        }
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                mContentInAnimEnd = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mContentInAnimEnd = true;
-                if (mBackgroundInAnimEnd) {
-                    onShow();
-                }
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        mViewHolder.getContent().startAnimation(animation);
-    }
-
-    private void startBackgroundInAnim() {
-        if (mBackgroundAnim != null) {
-            mBackgroundInAnimator = mBackgroundAnim.inAnim(mViewHolder.getBackground());
-        }
-        if (mBackgroundInAnimator != null) {
-            startBackgroundInAnim(mBackgroundInAnimator);
-        } else {
-            if (mBackgroundInAnimation != null) {
-                startBackgroundInAnim(mBackgroundInAnimation);
-            } else {
-                mBackgroundInAnimator = AnimHelper.createAlphaInAnim(mViewHolder.getBackground());
-                startBackgroundInAnim(mBackgroundInAnimator);
-            }
-        }
-    }
-
-    private void startBackgroundInAnim(Animator animator) {
-        if (animator.getDuration() <= 0) {
-            animator.setDuration(mBackgroundInAnimDuration);
-        }
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mBackgroundInAnimEnd = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mBackgroundInAnimEnd = true;
-                if (mContentInAnimEnd) {
-                    onShow();
-                }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-        animator.start();
-    }
-
-    private void startBackgroundInAnim(Animation animation) {
-        if (animation.getDuration() <= 0) {
-            animation.setDuration(mBackgroundInAnimDuration);
-        }
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                mBackgroundInAnimEnd = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mBackgroundInAnimEnd = true;
-                if (mContentInAnimEnd) {
-                    onShow();
-                }
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        mViewHolder.getBackground().startAnimation(animation);
-    }
-
-    private void startContentOutAnim() {
-        if (mContentAnim != null) {
-            mContentOutAnimator = mContentAnim.outAnim(mViewHolder.getContent());
-        }
-        if (mContentOutAnimator != null) {
-            startContentOutAnim(mContentOutAnimator);
-        } else {
-            if (mContentOutAnimation != null) {
-                startContentOutAnim(mContentOutAnimation);
-            } else {
-                mContentOutAnimator = AnimHelper.createZoomOutAnim(mViewHolder.getContent());
-                startContentOutAnim(mContentOutAnimator);
-            }
-        }
-    }
-
-    private void startContentOutAnim(Animator animator) {
-        if (animator.getDuration() <= 0) {
-            animator.setDuration(mContentOutAnimDuration);
-        }
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mContentOutAnimEnd = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mContentOutAnimEnd = true;
-                if (mBackgroundOutAnimEnd) {
-                    mLayerManager.detach();
-                }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-        animator.start();
-    }
-
-    private void startContentOutAnim(Animation animation) {
-        if (animation.getDuration() <= 0) {
-            animation.setDuration(mContentOutAnimDuration);
-        }
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                mContentOutAnimEnd = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mContentOutAnimEnd = true;
-                if (mBackgroundOutAnimEnd) {
-                    mLayerManager.detach();
-                }
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        mViewHolder.getContent().startAnimation(animation);
-    }
-
-    private void startBackgroundOutAnim() {
-        if (mBackgroundAnim != null) {
-            mBackgroundOutAnimator = mBackgroundAnim.outAnim(mViewHolder.getBackground());
-        }
-        if (mBackgroundOutAnimator != null) {
-            startBackgroundOutAnim(mBackgroundOutAnimator);
-        } else {
-            if (mBackgroundOutAnimation != null) {
-                startBackgroundOutAnim(mBackgroundOutAnimation);
-            } else {
-                mBackgroundOutAnimator = AnimHelper.createAlphaOutAnim(mViewHolder.getBackground());
-                startBackgroundOutAnim(mBackgroundOutAnimator);
-            }
-        }
-    }
-
-    private void startBackgroundOutAnim(Animator animator) {
-        if (animator.getDuration() <= 0) {
-            animator.setDuration(mBackgroundOutAnimDuration);
-        }
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mBackgroundOutAnimEnd = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mBackgroundOutAnimEnd = true;
-                if (mContentOutAnimEnd) {
-                    mLayerManager.detach();
-                }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-        animator.start();
-    }
-
-    private void startBackgroundOutAnim(Animation animation) {
-        if (animation.getDuration() <= 0) {
-            animation.setDuration(mBackgroundOutAnimDuration);
-        }
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                mBackgroundOutAnimEnd = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mBackgroundOutAnimEnd = true;
-                if (mContentOutAnimEnd) {
-                    mLayerManager.detach();
-                }
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        mViewHolder.getBackground().startAnimation(animation);
-    }
-
     @Override
     public void onAttach() {
         initContainer();
         initBackground();
         initContent();
         mViewHolder.bindListener();
+        mContentInAnimExecutor.setTarget(mViewHolder.getContent(), new AnimExecutor.Creator() {
+            @Nullable
+            @Override
+            public Animator create(View target) {
+                return AnimHelper.createZoomInAnim(target);
+            }
+        });
+        mContentOutAnimExecutor.setTarget(mViewHolder.getContent(), new AnimExecutor.Creator() {
+            @Nullable
+            @Override
+            public Animator create(View target) {
+                return AnimHelper.createZoomOutAnim(target);
+            }
+        });
+        mBackgroundInAnimExecutor.setTarget(mViewHolder.getBackground(), new AnimExecutor.Creator() {
+            @Nullable
+            @Override
+            public Animator create(View target) {
+                return AnimHelper.createAlphaInAnim(target);
+            }
+        });
+        mBackgroundOutAnimExecutor.setTarget(mViewHolder.getBackground(), new AnimExecutor.Creator() {
+            @Nullable
+            @Override
+            public Animator create(View target) {
+                return AnimHelper.createAlphaOutAnim(target);
+            }
+        });
         if (mOnVisibleChangeListener != null) {
             mOnVisibleChangeListener.onShow(AnyLayer.this);
         }
@@ -1011,8 +837,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
         if (mOnLayerShowListener != null) {
             mOnLayerShowListener.onShowing(AnyLayer.this);
         }
-        startContentInAnim();
-        startBackgroundInAnim();
+        mContentInAnimExecutor.start();
+        mBackgroundInAnimExecutor.start();
     }
 
     public void onShow() {
@@ -1030,8 +856,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
         if (mOnLayerDismissListener != null) {
             mOnLayerDismissListener.onDismissing(AnyLayer.this);
         }
-        startContentOutAnim();
-        startBackgroundOutAnim();
+        mContentOutAnimExecutor.start();
+        mBackgroundOutAnimExecutor.start();
     }
 
     @Override
@@ -1095,105 +921,109 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
             contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
             mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
         } else {
-            FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
-            contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
-            contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
-            mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
-            final int[] locationTarget = new int[2];
-            mTargetView.getLocationOnScreen(locationTarget);
-            final int[] locationRoot = new int[2];
-            mRootView.getLocationOnScreen(locationRoot);
-            final int targetX = (locationTarget[0] - locationRoot[0]);
-            final int targetY = (locationTarget[1] - locationRoot[1]);
-            final int targetWidth = mTargetView.getWidth();
-            final int targetHeight = mTargetView.getHeight();
-            int paddingTop = 0;
-            int paddingBottom = 0;
-            int paddingLeft = 0;
-            int paddingRight = 0;
-            FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
-            if (mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
-                if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-                    paddingRight = containerParams.width - targetX;
-                } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
-                    paddingLeft = targetX + targetWidth;
-                } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
-                    paddingLeft = targetX;
-                } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-                    paddingRight = containerParams.width - targetX - targetWidth;
-                }
-            } else if (mAlignmentDirection == Alignment.Direction.VERTICAL) {
-                if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
-                    paddingBottom = containerParams.height - targetY;
-                } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
-                    paddingTop = targetY + targetHeight;
-                } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
-                    paddingTop = targetY;
-                } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-                    paddingBottom = containerParams.height - targetY - targetHeight;
-                }
-            }
-            mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-            int finalPaddingLeft = paddingLeft;
-            int finalPaddingTop = paddingTop;
-            mViewHolder.getContainer().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    if (mViewHolder.getContainer().getViewTreeObserver().isAlive()) {
-                        mViewHolder.getContainer().getViewTreeObserver().removeOnPreDrawListener(this);
-                    }
-                    final int width = mViewHolder.getContentWrapper().getWidth();
-                    final int height = mViewHolder.getContentWrapper().getHeight();
-                    int x = 0;
-                    int y = 0;
-                    if (mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
-                        x = targetX - (width - targetWidth) / 2;
-                    } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-                        x = targetX - width;
-                    } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
-                        x = targetX + targetWidth;
-                    } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
-                        x = targetX;
-                    } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-                        x = targetX - (width - targetWidth);
-                    }
-                    if (mAlignmentVertical == Alignment.Vertical.CENTER) {
-                        y = targetY - (height - targetHeight) / 2;
-                    } else if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
-                        y = targetY - height;
-                    } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
-                        y = targetY + targetHeight;
-                    } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
-                        y = targetY;
-                    } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-                        y = targetY - (height - targetHeight);
-                    }
-                    x = x - finalPaddingLeft;
-                    y = y - finalPaddingTop;
-                    if (mAlignmentInside) {
-                        final int maxWidth = mViewHolder.getContainer().getWidth() - mViewHolder.getContainer().getPaddingLeft() - mViewHolder.getContainer().getPaddingRight();
-                        final int maxHeight = mViewHolder.getContainer().getHeight() - mViewHolder.getContainer().getPaddingTop() - mViewHolder.getContainer().getPaddingBottom();
-                        final int maxX = maxWidth - width;
-                        final int maxY = maxHeight - height;
-                        if (x < 0) {
-                            x = 0;
-                        } else if (x > maxX) {
-                            x = maxX;
-                        }
-                        if (y < 0) {
-                            y = 0;
-                        } else if (y > maxY) {
-                            y = maxY;
-                        }
-                    }
-                    FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
-                    contentWrapperParams.leftMargin = x;
-                    contentWrapperParams.topMargin = y;
-                    mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
-                    return false;
-                }
-            });
+            initContainerWithTarget();
         }
+    }
+
+    private void initContainerWithTarget(){
+        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+        contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
+        contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+        mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+        final int[] locationTarget = new int[2];
+        mTargetView.getLocationOnScreen(locationTarget);
+        final int[] locationRoot = new int[2];
+        mRootView.getLocationOnScreen(locationRoot);
+        final int targetX = (locationTarget[0] - locationRoot[0]);
+        final int targetY = (locationTarget[1] - locationRoot[1]);
+        final int targetWidth = mTargetView.getWidth();
+        final int targetHeight = mTargetView.getHeight();
+        int paddingTop = 0;
+        int paddingBottom = 0;
+        int paddingLeft = 0;
+        int paddingRight = 0;
+        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
+        if (mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
+            if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
+                paddingRight = containerParams.width - targetX;
+            } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
+                paddingLeft = targetX + targetWidth;
+            } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
+                paddingLeft = targetX;
+            } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
+                paddingRight = containerParams.width - targetX - targetWidth;
+            }
+        } else if (mAlignmentDirection == Alignment.Direction.VERTICAL) {
+            if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
+                paddingBottom = containerParams.height - targetY;
+            } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
+                paddingTop = targetY + targetHeight;
+            } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
+                paddingTop = targetY;
+            } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
+                paddingBottom = containerParams.height - targetY - targetHeight;
+            }
+        }
+        mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        final int finalPaddingLeft = paddingLeft;
+        final int finalPaddingTop = paddingTop;
+        mViewHolder.getContainer().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if (mViewHolder.getContainer().getViewTreeObserver().isAlive()) {
+                    mViewHolder.getContainer().getViewTreeObserver().removeOnPreDrawListener(this);
+                }
+                final int width = mViewHolder.getContentWrapper().getWidth();
+                final int height = mViewHolder.getContentWrapper().getHeight();
+                int x = 0;
+                int y = 0;
+                if (mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
+                    x = targetX - (width - targetWidth) / 2;
+                } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
+                    x = targetX - width;
+                } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
+                    x = targetX + targetWidth;
+                } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
+                    x = targetX;
+                } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
+                    x = targetX - (width - targetWidth);
+                }
+                if (mAlignmentVertical == Alignment.Vertical.CENTER) {
+                    y = targetY - (height - targetHeight) / 2;
+                } else if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
+                    y = targetY - height;
+                } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
+                    y = targetY + targetHeight;
+                } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
+                    y = targetY;
+                } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
+                    y = targetY - (height - targetHeight);
+                }
+                x = x - finalPaddingLeft;
+                y = y - finalPaddingTop;
+                if (mAlignmentInside) {
+                    final int maxWidth = mViewHolder.getContainer().getWidth() - mViewHolder.getContainer().getPaddingLeft() - mViewHolder.getContainer().getPaddingRight();
+                    final int maxHeight = mViewHolder.getContainer().getHeight() - mViewHolder.getContainer().getPaddingTop() - mViewHolder.getContainer().getPaddingBottom();
+                    final int maxX = maxWidth - width;
+                    final int maxY = maxHeight - height;
+                    if (x < 0) {
+                        x = 0;
+                    } else if (x > maxX) {
+                        x = maxX;
+                    }
+                    if (y < 0) {
+                        y = 0;
+                    } else if (y > maxY) {
+                        y = maxY;
+                    }
+                }
+                FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+                contentWrapperParams.leftMargin = x;
+                contentWrapperParams.topMargin = y;
+                mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+                return false;
+            }
+        });
     }
 
     private void initBackground() {

@@ -1,5 +1,6 @@
 package per.goweii.anylayer;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.View;
@@ -28,7 +29,7 @@ public final class LayerManager {
     private OnPreDrawListener mOnPreDrawListener = null;
     private OnKeyListener mOnKeyListener = null;
 
-    LayerManager(@NonNull ViewGroup parent, @NonNull View child) {
+    public LayerManager(@NonNull ViewGroup parent, @NonNull View child) {
         mParent = parent;
         mChild = child;
         checkChildParent();

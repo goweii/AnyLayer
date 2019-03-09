@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
  * @author Yanbo
  * @date 18/9/1
  */
-class InputMethodUtils {
+final class InputMethodUtils {
 
     /**
      * 禁止EditText弹出软件盘，光标依然正常显示。
