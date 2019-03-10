@@ -15,6 +15,14 @@ import android.view.View;
  */
 final class Utils {
 
+    static int getStatusBarHeight(Context context) {
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+
     /**
      * 从当前上下文获取Activity
      */

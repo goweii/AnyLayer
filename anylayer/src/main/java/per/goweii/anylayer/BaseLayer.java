@@ -13,7 +13,7 @@ import android.view.ViewGroup;
  * @author Cuizhen
  * @date 2018/12/10
  */
-public abstract class BaseLayer implements AnyLayer.OnVisibleChangeListener {
+public abstract class BaseLayer implements LayerManager.OnVisibleChangeListener {
 
     protected AnyLayer mAnyLayer = null;
 
@@ -86,7 +86,7 @@ public abstract class BaseLayer implements AnyLayer.OnVisibleChangeListener {
         } else if (getContext() != null) {
             mAnyLayer = AnyLayer.with(getContext());
         } else {
-            throw new NullPointerException("创建浮层失败，getTarget()/getParent()/getContext()方法不能同时为null");
+            mAnyLayer = AnyLayer.with();
         }
         mAnyLayer.contentView(getLayoutId());
         mAnyLayer.onVisibleChangeListener(this);

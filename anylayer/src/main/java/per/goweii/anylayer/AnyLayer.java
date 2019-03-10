@@ -2,11 +2,9 @@ package per.goweii.anylayer;
 
 import android.animation.Animator;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AnimRes;
 import android.support.annotation.ColorInt;
@@ -19,11 +17,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
@@ -40,55 +35,26 @@ import per.goweii.burred.Blurred;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKeyListener, LayerManager.OnPreDrawListener {
-
-    private final Context mContext;
-    private final LayoutInflater mInflater;
-
-    private final ViewGroup mRootView;
-    private final FrameLayout mActivityContentView;
-    private final View mTargetView;
-
-    @IdRes
-    private int mAsStatusBarViewId = 0;
-
-    private ViewHolder mViewHolder;
-    private LayerManager mLayerManager;
-
-    private int mGravity = Gravity.CENTER;
-    private float mBackgroundBlurPercent = 0;
-    private float mBackgroundBlurRadius = 0;
-    private float mBackgroundBlurScale = 2;
-    private Bitmap mBackgroundBitmap = null;
-    private int mBackgroundResource = -1;
-    private Drawable mBackgroundDrawable = null;
-    private int mBackgroundColor = Color.TRANSPARENT;
-
-    private boolean mCancelableOnTouchOutside = true;
-    private boolean mCancelableOnClickKeyBack = true;
-
-    private boolean mInAnimRunning = false;
-    private boolean mOutAnimRunning = false;
-    private boolean mContentInAnimEnd = false;
-    private boolean mBackgroundInAnimEnd = false;
-    private boolean mContentOutAnimEnd = false;
-    private boolean mBackgroundOutAnimEnd = false;
-    private AnimExecutor mContentInAnimExecutor = null;
-    private AnimExecutor mBackgroundInAnimExecutor = null;
-    private AnimExecutor mContentOutAnimExecutor = null;
-    private AnimExecutor mBackgroundOutAnimExecutor = null;
-
-    private IDataBinder mDataBinder = null;
-    private OnVisibleChangeListener mOnVisibleChangeListener = null;
-    private OnLayerShowListener mOnLayerShowListener = null;
-    private OnLayerDismissListener mOnLayerDismissListener = null;
-
-    private boolean mAlignmentInside = false;
-    private Alignment.Direction mAlignmentDirection = Alignment.Direction.VERTICAL;
-    private Alignment.Horizontal mAlignmentHorizontal = Alignment.Horizontal.CENTER;
-    private Alignment.Vertical mAlignmentVertical = Alignment.Vertical.BELOW;
+public class AnyLayer {
 
     private SoftInputHelper mSoftInputHelper = null;
+    private LayerManager mLayerManager;
+
+    public static void init(@NonNull Application application) {
+        ActivityHolder.init(application);
+    }
+
+    public static void initBlurred(@NonNull Context context) {
+        Blurred.init(context);
+    }
+
+    /**
+     * 向窗口根布局添加一个浮层
+     * 需要在Application中调用{@link AnyLayer#init(Application)}
+     */
+    public static AnyLayer with() {
+        return new AnyLayer();
+    }
 
     /**
      * 向父布局viewGroup添加一个浮层
@@ -124,7 +90,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param contentView 自定以View
      */
     public AnyLayer contentView(@NonNull View contentView) {
-        mViewHolder.setContent(contentView);
+        mLayerManager.mViewHolder.setContent(contentView);
         return this;
     }
 
@@ -134,7 +100,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param contentViewId 自定义布局ID
      */
     public AnyLayer contentView(@LayoutRes int contentViewId) {
-        return contentView(mInflater.inflate(contentViewId, mViewHolder.getContainer(), false));
+        return contentView(mLayerManager.mLayoutInflater.inflate(contentViewId, mLayerManager.mViewHolder.getContainer(), false));
     }
 
     /**
@@ -144,7 +110,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param statusBarId 状态栏的占位View
      */
     public AnyLayer asStatusBar(@IdRes int statusBarId) {
-        mAsStatusBarViewId = statusBarId;
+        mLayerManager.mConfig.mAsStatusBarViewId = statusBarId;
         return this;
     }
 
@@ -154,8 +120,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      *
      * @param dataBinder 实现该接口进行数据绑定
      */
-    public AnyLayer bindData(IDataBinder dataBinder) {
-        mDataBinder = dataBinder;
+    public AnyLayer bindData(LayerManager.IDataBinder dataBinder) {
+        mLayerManager.mListener.mDataBinder = dataBinder;
         return this;
     }
 
@@ -164,8 +130,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      *
      * @param mOnVisibleChangeListener OnVisibleChangeListener
      */
-    public AnyLayer onVisibleChangeListener(OnVisibleChangeListener mOnVisibleChangeListener) {
-        this.mOnVisibleChangeListener = mOnVisibleChangeListener;
+    public AnyLayer onVisibleChangeListener(LayerManager.OnVisibleChangeListener mOnVisibleChangeListener) {
+        mLayerManager.mListener.mOnVisibleChangeListener = mOnVisibleChangeListener;
         return this;
     }
 
@@ -174,8 +140,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      *
      * @param onLayerShowListener OnLayerShowListener
      */
-    public AnyLayer onLayerShowListener(OnLayerShowListener onLayerShowListener) {
-        mOnLayerShowListener = onLayerShowListener;
+    public AnyLayer onLayerShowListener(LayerManager.OnLayerShowListener onLayerShowListener) {
+        mLayerManager.mListener.mOnLayerShowListener = onLayerShowListener;
         return this;
     }
 
@@ -184,8 +150,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      *
      * @param onLayerDismissListener OnLayerDismissListener
      */
-    public AnyLayer onLayerDismissListener(OnLayerDismissListener onLayerDismissListener) {
-        mOnLayerDismissListener = onLayerDismissListener;
+    public AnyLayer onLayerDismissListener(LayerManager.OnLayerDismissListener onLayerDismissListener) {
+        mLayerManager.mListener.mOnLayerDismissListener = onLayerDismissListener;
         return this;
     }
 
@@ -196,7 +162,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param gravity {@link Gravity}
      */
     public AnyLayer gravity(int gravity) {
-        mGravity = gravity;
+        mLayerManager.mConfig.mGravity = gravity;
         return this;
     }
 
@@ -213,10 +179,10 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
                               @NonNull Alignment.Horizontal horizontal,
                               @NonNull Alignment.Vertical vertical,
                               boolean inside) {
-        mAlignmentDirection = direction;
-        mAlignmentHorizontal = horizontal;
-        mAlignmentVertical = vertical;
-        mAlignmentInside = inside;
+        mLayerManager.mConfig.mAlignmentDirection = direction;
+        mLayerManager.mConfig.mAlignmentHorizontal = horizontal;
+        mLayerManager.mConfig.mAlignmentVertical = vertical;
+        mLayerManager.mConfig.mAlignmentInside = inside;
         return this;
     }
 
@@ -226,16 +192,16 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      *
      * @param contentAnim IAnim接口
      */
-    public AnyLayer contentAnim(IAnim contentAnim) {
+    public AnyLayer contentAnim(LayerManager.IAnim contentAnim) {
         if (contentAnim != null) {
-            mContentInAnimExecutor.setCreator(new AnimExecutor.Creator() {
+            mLayerManager.mContentInAnimExecutor.setCreator(new AnimExecutor.Creator() {
                 @Nullable
                 @Override
                 public Animator create(View target) {
                     return contentAnim.inAnim(target);
                 }
             });
-            mContentOutAnimExecutor.setCreator(new AnimExecutor.Creator() {
+            mLayerManager.mContentOutAnimExecutor.setCreator(new AnimExecutor.Creator() {
                 @Nullable
                 @Override
                 public Animator create(View target) {
@@ -252,7 +218,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim 动画资源文件ID
      */
     public AnyLayer contentInAnim(@AnimRes int anim) {
-        mContentInAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mContext, anim));
+        mLayerManager.mContentInAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mLayerManager.mContext, anim));
         return this;
     }
 
@@ -262,7 +228,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim Animation动画
      */
     public AnyLayer contentInAnim(@NonNull Animation anim) {
-        mContentInAnimExecutor.setAnimation(anim);
+        mLayerManager.mContentInAnimExecutor.setAnimation(anim);
         return this;
     }
 
@@ -272,7 +238,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim 动画资源文件ID
      */
     public AnyLayer contentOutAnim(@AnimRes int anim) {
-        mContentOutAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mContext, anim));
+        mLayerManager.mContentOutAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mLayerManager.mContext, anim));
         return this;
     }
 
@@ -282,7 +248,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim Animation动画
      */
     public AnyLayer contentOutAnim(@NonNull Animation anim) {
-        mContentOutAnimExecutor.setAnimation(anim);
+        mLayerManager.mContentOutAnimExecutor.setAnimation(anim);
         return this;
     }
 
@@ -292,16 +258,16 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      *
      * @param backgroundAnim IAnim接口
      */
-    public AnyLayer backgroundAnim(IAnim backgroundAnim) {
+    public AnyLayer backgroundAnim(LayerManager.IAnim backgroundAnim) {
         if (backgroundAnim != null) {
-            mBackgroundInAnimExecutor.setCreator(new AnimExecutor.Creator() {
+            mLayerManager.mBackgroundInAnimExecutor.setCreator(new AnimExecutor.Creator() {
                 @Nullable
                 @Override
                 public Animator create(View target) {
                     return backgroundAnim.inAnim(target);
                 }
             });
-            mBackgroundOutAnimExecutor.setCreator(new AnimExecutor.Creator() {
+            mLayerManager.mBackgroundOutAnimExecutor.setCreator(new AnimExecutor.Creator() {
                 @Nullable
                 @Override
                 public Animator create(View target) {
@@ -318,7 +284,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim 动画资源文件ID
      */
     public AnyLayer backgroundInAnim(@AnimRes int anim) {
-        mBackgroundInAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mContext, anim));
+        mLayerManager.mBackgroundInAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mLayerManager.mContext, anim));
         return this;
     }
 
@@ -328,7 +294,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim Animation动画
      */
     public AnyLayer backgroundInAnim(@NonNull Animation anim) {
-        mBackgroundInAnimExecutor.setAnimation(anim);
+        mLayerManager.mBackgroundInAnimExecutor.setAnimation(anim);
         return this;
     }
 
@@ -338,7 +304,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim 动画资源文件ID
      */
     public AnyLayer backgroundOutAnim(@AnimRes int anim) {
-        mBackgroundOutAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mContext, anim));
+        mLayerManager.mBackgroundOutAnimExecutor.setAnimation(AnimationUtils.loadAnimation(mLayerManager.mContext, anim));
         return this;
     }
 
@@ -348,7 +314,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param anim Animation动画
      */
     public AnyLayer backgroundOutAnim(@NonNull Animation anim) {
-        mBackgroundOutAnimExecutor.setAnimation(anim);
+        mLayerManager.mBackgroundOutAnimExecutor.setAnimation(anim);
         return this;
     }
 
@@ -358,8 +324,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultAnimDuration 时长
      */
     public AnyLayer defaultContentAnimDuration(long defaultAnimDuration) {
-        mContentInAnimExecutor.setDuration(defaultAnimDuration);
-        mContentOutAnimExecutor.setDuration(defaultAnimDuration);
+        mLayerManager.mContentInAnimExecutor.setDuration(defaultAnimDuration);
+        mLayerManager.mContentOutAnimExecutor.setDuration(defaultAnimDuration);
         return this;
     }
 
@@ -369,7 +335,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultInAnimDuration 时长
      */
     public AnyLayer defaultContentInAnimDuration(long defaultInAnimDuration) {
-        mContentInAnimExecutor.setDuration(defaultInAnimDuration);
+        mLayerManager.mContentInAnimExecutor.setDuration(defaultInAnimDuration);
         return this;
     }
 
@@ -379,7 +345,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultOutAnimDuration 时长
      */
     public AnyLayer defaultContentOutAnimDuration(long defaultOutAnimDuration) {
-        mContentOutAnimExecutor.setDuration(defaultOutAnimDuration);
+        mLayerManager.mContentOutAnimExecutor.setDuration(defaultOutAnimDuration);
         return this;
     }
 
@@ -389,8 +355,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultAnimDuration 时长
      */
     public AnyLayer defaultBackgroundAnimDuration(long defaultAnimDuration) {
-        mBackgroundInAnimExecutor.setDuration(defaultAnimDuration);
-        mBackgroundOutAnimExecutor.setDuration(defaultAnimDuration);
+        mLayerManager.mBackgroundInAnimExecutor.setDuration(defaultAnimDuration);
+        mLayerManager.mBackgroundOutAnimExecutor.setDuration(defaultAnimDuration);
         return this;
     }
 
@@ -400,7 +366,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultInAnimDuration 时长
      */
     public AnyLayer defaultBackgroundInAnimDuration(long defaultInAnimDuration) {
-        mBackgroundInAnimExecutor.setDuration(defaultInAnimDuration);
+        mLayerManager.mBackgroundInAnimExecutor.setDuration(defaultInAnimDuration);
         return this;
     }
 
@@ -410,7 +376,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param defaultOutAnimDuration 时长
      */
     public AnyLayer defaultBackgroundOutAnimDuration(long defaultOutAnimDuration) {
-        mBackgroundOutAnimExecutor.setDuration(defaultOutAnimDuration);
+        mLayerManager.mBackgroundOutAnimExecutor.setDuration(defaultOutAnimDuration);
         return this;
     }
 
@@ -423,12 +389,12 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param radius 模糊半径
      */
     public AnyLayer backgroundBlurRadius(@FloatRange(from = 0, fromInclusive = false, to = 25) float radius) {
-        mBackgroundBlurRadius = radius;
+        mLayerManager.mConfig.mBackgroundBlurRadius = radius;
         return this;
     }
 
     public AnyLayer backgroundBlurPercent(@FloatRange(from = 0, fromInclusive = false) float percent) {
-        mBackgroundBlurPercent = percent;
+        mLayerManager.mConfig.mBackgroundBlurPercent = percent;
         return this;
     }
 
@@ -438,7 +404,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param scale 缩小比例
      */
     public AnyLayer backgroundBlurScale(@FloatRange(from = 1) float scale) {
-        mBackgroundBlurScale = scale;
+        mLayerManager.mConfig.mBackgroundBlurScale = scale;
         return this;
     }
 
@@ -448,7 +414,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param bitmap 图片
      */
     public AnyLayer backgroundBitmap(@NonNull Bitmap bitmap) {
-        mBackgroundBitmap = bitmap;
+        mLayerManager.mConfig.mBackgroundBitmap = bitmap;
         return this;
     }
 
@@ -458,7 +424,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param resource 资源ID
      */
     public AnyLayer backgroundResource(@DrawableRes int resource) {
-        mBackgroundResource = resource;
+        mLayerManager.mConfig.mBackgroundResource = resource;
         return this;
     }
 
@@ -468,7 +434,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param drawable Drawable
      */
     public AnyLayer backgroundDrawable(@NonNull Drawable drawable) {
-        mBackgroundDrawable = drawable;
+        mLayerManager.mConfig.mBackgroundDrawable = drawable;
         return this;
     }
 
@@ -481,7 +447,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param colorInt 颜色值
      */
     public AnyLayer backgroundColorInt(@ColorInt int colorInt) {
-        mBackgroundColor = colorInt;
+        mLayerManager.mConfig.mBackgroundColor = colorInt;
         return this;
     }
 
@@ -494,7 +460,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param colorRes 颜色资源ID
      */
     public AnyLayer backgroundColorRes(@ColorRes int colorRes) {
-        mBackgroundColor = ContextCompat.getColor(mContext, colorRes);
+        mLayerManager.mConfig.mBackgroundColor = ContextCompat.getColor(mLayerManager.mContext, colorRes);
         return this;
     }
 
@@ -504,7 +470,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param cancelable 是否可关闭
      */
     public AnyLayer cancelableOnTouchOutside(boolean cancelable) {
-        mCancelableOnTouchOutside = cancelable;
+        mLayerManager.mConfig.mCancelableOnTouchOutside = cancelable;
         return this;
     }
 
@@ -514,7 +480,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param cancelable 是否可关闭
      */
     public AnyLayer cancelableOnClickKeyBack(boolean cancelable) {
-        mCancelableOnClickKeyBack = cancelable;
+        mLayerManager.mConfig.mCancelableOnClickKeyBack = cancelable;
         return this;
     }
 
@@ -524,7 +490,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param viewId   控件ID
      * @param listener 监听器
      */
-    public AnyLayer onClick(@IdRes int viewId, OnLayerClickListener listener) {
+    public AnyLayer onClick(@IdRes int viewId, LayerManager.OnLayerClickListener listener) {
         return onClick(listener, viewId, null);
     }
 
@@ -535,7 +501,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param viewId   控件ID
      * @param listener 监听器
      */
-    public AnyLayer onClickToDismiss(@IdRes int viewId, OnLayerClickListener listener) {
+    public AnyLayer onClickToDismiss(@IdRes int viewId, LayerManager.OnLayerClickListener listener) {
         return onClickToDismiss(listener, viewId, null);
     }
 
@@ -546,8 +512,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param viewId   控件ID
      * @param viewIds  控件ID
      */
-    public AnyLayer onClick(OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
-        mViewHolder.addOnClickListener(listener, viewId, viewIds);
+    public AnyLayer onClick(LayerManager.OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
+        mLayerManager.mViewHolder.addOnClickListener(listener, viewId, viewIds);
         return this;
     }
 
@@ -559,8 +525,8 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @param viewId   控件ID
      * @param viewIds  控件ID
      */
-    public AnyLayer onClickToDismiss(OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
-        mViewHolder.addOnClickListener(new OnLayerClickListener() {
+    public AnyLayer onClickToDismiss(LayerManager.OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
+        mLayerManager.mViewHolder.addOnClickListener(new LayerManager.OnLayerClickListener() {
             @Override
             public void onClick(AnyLayer anyLayer, View v) {
                 if (listener != null) {
@@ -586,14 +552,14 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * 显示
      */
     public void show() {
-        mLayerManager.attach();
+        mLayerManager.mViewManager.attach();
     }
 
     /**
      * 隐藏
      */
     public void dismiss() {
-        onPerRemove();
+        mLayerManager.onPerRemove();
     }
 
     /**
@@ -604,7 +570,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @return 子控件
      */
     public <V extends View> V getView(@IdRes int viewId) {
-        return mViewHolder.getView(viewId);
+        return mLayerManager.mViewHolder.getView(viewId);
     }
 
     /**
@@ -613,7 +579,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @return ViewHolder
      */
     public ViewHolder getViewHolder() {
-        return mViewHolder;
+        return mLayerManager.mViewHolder;
     }
 
     /**
@@ -622,7 +588,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @return View
      */
     public View getContentView() {
-        return mViewHolder.getContent();
+        return mLayerManager.mViewHolder.getContent();
     }
 
     /**
@@ -631,7 +597,7 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @return ImageView
      */
     public ImageView getBackground() {
-        return mViewHolder.getBackground();
+        return mLayerManager.mViewHolder.getBackground();
     }
 
     /**
@@ -640,30 +606,29 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
      * @return boolean
      */
     public boolean isShow() {
-        return mLayerManager.isAttached();
+        return mLayerManager.mViewManager.isAttached();
     }
 
     /**
      * 适配软键盘的弹出，布局自动上移
      * 在某几个EditText获取焦点时布局上移
-     * 在{@link OnVisibleChangeListener#onShow(AnyLayer)}中调用
+     * 在{@link LayerManager.OnVisibleChangeListener#onShow(AnyLayer)}中调用
      * 应该和{@link #removeSoftInput()}成对出现
      *
      * @param editText 焦点EditTexts
      */
     public void compatSoftInput(EditText... editText) {
-        Activity activity = getActivity();
+        Activity activity = Utils.getActivity(mLayerManager.mContext);
         if (activity != null) {
             SoftInputHelper.attach(activity)
-                    .init(mViewHolder.getContentWrapper(), mViewHolder.getContent(), editText)
-                    .moveWithTranslation()
-                    .duration(300);
+                    .init(mLayerManager.mViewHolder.getContentWrapper(), mLayerManager.mViewHolder.getContent(), editText)
+                    .moveWithTranslation();
         }
     }
 
     /**
      * 移除软键盘适配
-     * 在{@link OnVisibleChangeListener#onDismiss(AnyLayer)}中调用
+     * 在{@link LayerManager.OnVisibleChangeListener#onDismiss(AnyLayer)}中调用
      * 应该和{@link #compatSoftInput(EditText...)}成对出现
      */
     public void removeSoftInput() {
@@ -672,555 +637,30 @@ public class AnyLayer implements LayerManager.OnLifeListener, LayerManager.OnKey
         }
     }
 
+    private AnyLayer() {
+        Activity activity = ActivityHolder.currentActivity();
+        if (activity == null) {
+            throw new RuntimeException();
+        }
+        FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
+        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
+        mLayerManager = new LayerManager(this, activity, rootView, null, activityContentView);
+    }
+
     private AnyLayer(@NonNull ViewGroup viewGroup) {
-        mContext = viewGroup.getContext();
-        mInflater = LayoutInflater.from(mContext);
-        mTargetView = null;
-        mRootView = viewGroup;
-        mActivityContentView = null;
-        initView();
+        mLayerManager = new LayerManager(this, viewGroup.getContext(), viewGroup, null, null);
     }
 
     private AnyLayer(@NonNull Context context) {
-        mContext = context;
-        mInflater = LayoutInflater.from(mContext);
-        mTargetView = null;
-        mRootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(mContext)).getWindow().getDecorView();
-        mActivityContentView = mRootView.findViewById(android.R.id.content);
-        initView();
+        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
+        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
+        mLayerManager = new LayerManager(this, context, rootView, null, activityContentView);
     }
 
     private AnyLayer(@NonNull View targetView) {
-        mContext = targetView.getContext();
-        mInflater = LayoutInflater.from(mContext);
-        mTargetView = targetView;
-        mRootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(mContext)).getWindow().getDecorView();
-        mActivityContentView = mRootView.findViewById(android.R.id.content);
-        initView();
-    }
-
-    private void initView() {
-        Blurred.init(mContext);
-        FrameLayout container = (FrameLayout) mInflater.inflate(R.layout.layout_any_layer, mRootView, false);
-        mViewHolder = new ViewHolder(this, container);
-        mLayerManager = new LayerManager(mRootView, container);
-        mLayerManager.setOnLifeListener(this);
-        mLayerManager.setOnPreDrawListener(this);
-        mLayerManager.setOnKeyListener(this);
-        mContentInAnimExecutor = new AnimExecutor();
-        mBackgroundInAnimExecutor = new AnimExecutor();
-        mContentInAnimExecutor.setListener(new AnimExecutor.Listener() {
-            @Override
-            public void onStart() {
-                mContentInAnimEnd = false;
-            }
-
-            @Override
-            public void onEnd() {
-                mContentInAnimEnd = true;
-                if (mBackgroundInAnimEnd) {
-                    onShow();
-                }
-            }
-        });
-        mBackgroundInAnimExecutor.setListener(new AnimExecutor.Listener() {
-            @Override
-            public void onStart() {
-                mBackgroundInAnimEnd = false;
-            }
-
-            @Override
-            public void onEnd() {
-                mBackgroundInAnimEnd = true;
-                if (mContentInAnimEnd) {
-                    onShow();
-                }
-            }
-        });
-        mContentOutAnimExecutor = new AnimExecutor();
-        mBackgroundOutAnimExecutor = new AnimExecutor();
-        mContentOutAnimExecutor.setListener(new AnimExecutor.Listener() {
-            @Override
-            public void onStart() {
-                mContentOutAnimEnd = false;
-            }
-
-            @Override
-            public void onEnd() {
-                mContentOutAnimEnd = true;
-                if (mBackgroundOutAnimEnd) {
-                    mLayerManager.detach();
-                }
-            }
-        });
-        mBackgroundOutAnimExecutor.setListener(new AnimExecutor.Listener() {
-            @Override
-            public void onStart() {
-                mBackgroundOutAnimEnd = false;
-            }
-
-            @Override
-            public void onEnd() {
-                mBackgroundOutAnimEnd = true;
-                if (mContentOutAnimEnd) {
-                    mLayerManager.detach();
-                }
-            }
-        });
-    }
-
-    /**
-     * 从当前上下文获取Activity
-     */
-    @Nullable
-    private Activity getActivity() {
-        if (mContext instanceof Activity) {
-            return (Activity) mContext;
-        }
-        if (mContext instanceof ContextWrapper) {
-            Context baseContext = ((ContextWrapper) mContext).getBaseContext();
-            if (baseContext instanceof Activity) {
-                return (Activity) baseContext;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void onAttach() {
-        initContainer();
-        initBackground();
-        initContent();
-        mViewHolder.bindListener();
-        mContentInAnimExecutor.setTarget(mViewHolder.getContent(), new AnimExecutor.Creator() {
-            @Nullable
-            @Override
-            public Animator create(View target) {
-                return AnimHelper.createZoomInAnim(target);
-            }
-        });
-        mContentOutAnimExecutor.setTarget(mViewHolder.getContent(), new AnimExecutor.Creator() {
-            @Nullable
-            @Override
-            public Animator create(View target) {
-                return AnimHelper.createZoomOutAnim(target);
-            }
-        });
-        mBackgroundInAnimExecutor.setTarget(mViewHolder.getBackground(), new AnimExecutor.Creator() {
-            @Nullable
-            @Override
-            public Animator create(View target) {
-                return AnimHelper.createAlphaInAnim(target);
-            }
-        });
-        mBackgroundOutAnimExecutor.setTarget(mViewHolder.getBackground(), new AnimExecutor.Creator() {
-            @Nullable
-            @Override
-            public Animator create(View target) {
-                return AnimHelper.createAlphaOutAnim(target);
-            }
-        });
-        if (mOnVisibleChangeListener != null) {
-            mOnVisibleChangeListener.onShow(AnyLayer.this);
-        }
-        if (mDataBinder != null) {
-            mDataBinder.bind(this);
-        }
-    }
-
-    @Override
-    public void onPreDraw() {
-        if (mInAnimRunning) {
-            return;
-        }
-        mInAnimRunning = true;
-        if (mOnLayerShowListener != null) {
-            mOnLayerShowListener.onShowing(AnyLayer.this);
-        }
-        mContentInAnimExecutor.start();
-        mBackgroundInAnimExecutor.start();
-    }
-
-    public void onShow() {
-        mInAnimRunning = false;
-        if (mOnLayerShowListener != null) {
-            mOnLayerShowListener.onShown(AnyLayer.this);
-        }
-    }
-
-    public void onPerRemove() {
-        if (mOutAnimRunning) {
-            return;
-        }
-        mOutAnimRunning = true;
-        if (mOnLayerDismissListener != null) {
-            mOnLayerDismissListener.onDismissing(AnyLayer.this);
-        }
-        mContentOutAnimExecutor.start();
-        mBackgroundOutAnimExecutor.start();
-    }
-
-    @Override
-    public void onDetach() {
-        mOutAnimRunning = false;
-        if (mOnVisibleChangeListener != null) {
-            mOnVisibleChangeListener.onDismiss(AnyLayer.this);
-        }
-        if (mOnLayerDismissListener != null) {
-            mOnLayerDismissListener.onDismissed(AnyLayer.this);
-        }
-        mViewHolder.recycle();
-    }
-
-    @Override
-    public boolean onKey(int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (mCancelableOnClickKeyBack) {
-                    dismiss();
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private int getStatusBarHeight() {
-        int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            return mContext.getResources().getDimensionPixelSize(resourceId);
-        }
-        return 0;
-    }
-
-    private void initContainer() {
-        if (mCancelableOnTouchOutside) {
-            mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
-        }
-        if (mActivityContentView != null) {
-            // 非指定父布局的，添加到DecorView，此时mRootView为DecorView
-            final int[] locationDecor = new int[2];
-            mRootView.getLocationOnScreen(locationDecor);
-            final int[] locationActivityContent = new int[2];
-            mActivityContentView.getLocationOnScreen(locationActivityContent);
-            FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
-            containerParams.leftMargin = locationActivityContent[0] - locationDecor[0];
-            containerParams.topMargin = 0;
-            containerParams.width = mActivityContentView.getWidth();
-            containerParams.height = mActivityContentView.getHeight() + (locationActivityContent[1] - locationDecor[1]);
-            mViewHolder.getContainer().setLayoutParams(containerParams);
-        }
-        if (mTargetView == null) {
-            FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
-            contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
-            contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
-            mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
-        } else {
-            initContainerWithTarget();
-        }
-    }
-
-    private void initContainerWithTarget(){
-        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
-        contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
-        contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
-        mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
-        final int[] locationTarget = new int[2];
-        mTargetView.getLocationOnScreen(locationTarget);
-        final int[] locationRoot = new int[2];
-        mRootView.getLocationOnScreen(locationRoot);
-        final int targetX = (locationTarget[0] - locationRoot[0]);
-        final int targetY = (locationTarget[1] - locationRoot[1]);
-        final int targetWidth = mTargetView.getWidth();
-        final int targetHeight = mTargetView.getHeight();
-        int paddingTop = 0;
-        int paddingBottom = 0;
-        int paddingLeft = 0;
-        int paddingRight = 0;
-        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
-        if (mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
-            if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-                paddingRight = containerParams.width - targetX;
-            } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
-                paddingLeft = targetX + targetWidth;
-            } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
-                paddingLeft = targetX;
-            } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-                paddingRight = containerParams.width - targetX - targetWidth;
-            }
-        } else if (mAlignmentDirection == Alignment.Direction.VERTICAL) {
-            if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
-                paddingBottom = containerParams.height - targetY;
-            } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
-                paddingTop = targetY + targetHeight;
-            } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
-                paddingTop = targetY;
-            } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-                paddingBottom = containerParams.height - targetY - targetHeight;
-            }
-        }
-        mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        final int finalPaddingLeft = paddingLeft;
-        final int finalPaddingTop = paddingTop;
-        mViewHolder.getContainer().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                if (mViewHolder.getContainer().getViewTreeObserver().isAlive()) {
-                    mViewHolder.getContainer().getViewTreeObserver().removeOnPreDrawListener(this);
-                }
-                final int width = mViewHolder.getContentWrapper().getWidth();
-                final int height = mViewHolder.getContentWrapper().getHeight();
-                int x = 0;
-                int y = 0;
-                if (mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
-                    x = targetX - (width - targetWidth) / 2;
-                } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-                    x = targetX - width;
-                } else if (mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
-                    x = targetX + targetWidth;
-                } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
-                    x = targetX;
-                } else if (mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-                    x = targetX - (width - targetWidth);
-                }
-                if (mAlignmentVertical == Alignment.Vertical.CENTER) {
-                    y = targetY - (height - targetHeight) / 2;
-                } else if (mAlignmentVertical == Alignment.Vertical.ABOVE) {
-                    y = targetY - height;
-                } else if (mAlignmentVertical == Alignment.Vertical.BELOW) {
-                    y = targetY + targetHeight;
-                } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
-                    y = targetY;
-                } else if (mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-                    y = targetY - (height - targetHeight);
-                }
-                x = x - finalPaddingLeft;
-                y = y - finalPaddingTop;
-                if (mAlignmentInside) {
-                    final int maxWidth = mViewHolder.getContainer().getWidth() - mViewHolder.getContainer().getPaddingLeft() - mViewHolder.getContainer().getPaddingRight();
-                    final int maxHeight = mViewHolder.getContainer().getHeight() - mViewHolder.getContainer().getPaddingTop() - mViewHolder.getContainer().getPaddingBottom();
-                    final int maxX = maxWidth - width;
-                    final int maxY = maxHeight - height;
-                    if (x < 0) {
-                        x = 0;
-                    } else if (x > maxX) {
-                        x = maxX;
-                    }
-                    if (y < 0) {
-                        y = 0;
-                    } else if (y > maxY) {
-                        y = maxY;
-                    }
-                }
-                FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
-                contentWrapperParams.leftMargin = x;
-                contentWrapperParams.topMargin = y;
-                mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
-                return false;
-            }
-        });
-    }
-
-    private void initBackground() {
-        if (mBackgroundBlurPercent > 0 || mBackgroundBlurRadius > 0) {
-            mViewHolder.getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    mViewHolder.getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
-                    Bitmap snapshot = Utils.snapshot(mRootView);
-                    int[] locationRootView = new int[2];
-                    mRootView.getLocationOnScreen(locationRootView);
-                    int[] locationBackground = new int[2];
-                    mViewHolder.getBackground().getLocationOnScreen(locationBackground);
-                    int x = locationBackground[0] - locationRootView[0];
-                    int y = locationBackground[1] - locationRootView[1];
-                    Bitmap original = Bitmap.createBitmap(snapshot, x, y, mViewHolder.getBackground().getWidth(), mViewHolder.getBackground().getHeight());
-                    snapshot.recycle();
-                    Blurred blurred = Blurred.with(original)
-                            .recycleOriginal(true)
-                            .keepSize(false)
-                            .scale(mBackgroundBlurScale);
-                    if (mBackgroundBlurPercent > 0) {
-                        blurred.percent(mBackgroundBlurPercent);
-                    } else if (mBackgroundBlurRadius > 0) {
-                        blurred.radius(mBackgroundBlurRadius);
-                    }
-                    Bitmap blurBitmap = blurred.blur();
-                    mViewHolder.getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    mViewHolder.getBackground().setImageBitmap(blurBitmap);
-                    mViewHolder.getBackground().setColorFilter(mBackgroundColor);
-                    return true;
-                }
-            });
-        } else {
-            if (mBackgroundBitmap != null) {
-                mViewHolder.getBackground().setImageBitmap(mBackgroundBitmap);
-                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
-            } else if (mBackgroundResource != -1) {
-                mViewHolder.getBackground().setImageResource(mBackgroundResource);
-                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
-            } else if (mBackgroundDrawable != null) {
-                mViewHolder.getBackground().setImageDrawable(mBackgroundDrawable);
-                mViewHolder.getBackground().setColorFilter(mBackgroundColor);
-            } else {
-                mViewHolder.getBackground().setImageDrawable(new ColorDrawable(mBackgroundColor));
-            }
-        }
-    }
-
-    private void initContent() {
-        if (mViewHolder.getContent() != null) {
-            ViewGroup contentParent = (ViewGroup) mViewHolder.getContent().getParent();
-            if (contentParent != null) {
-                contentParent.removeView(mViewHolder.getContent());
-            }
-            mViewHolder.getContent().setClickable(true);
-            if (mTargetView == null && mGravity != -1) {
-                ViewGroup.LayoutParams params = mViewHolder.getContent().getLayoutParams();
-                FrameLayout.LayoutParams contentParams;
-                if (params == null) {
-                    contentParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                } else if (params instanceof FrameLayout.LayoutParams) {
-                    contentParams = (FrameLayout.LayoutParams) params;
-                } else {
-                    contentParams = new FrameLayout.LayoutParams(params.width, params.height);
-                }
-                contentParams.gravity = mGravity;
-                mViewHolder.getContent().setLayoutParams(contentParams);
-            }
-            if (mAsStatusBarViewId > 0) {
-                View statusBar = mViewHolder.getContent().findViewById(mAsStatusBarViewId);
-                if (statusBar != null) {
-                    ViewGroup.LayoutParams params = statusBar.getLayoutParams();
-                    params.height = getStatusBarHeight();
-                    statusBar.setLayoutParams(params);
-                    statusBar.setVisibility(View.VISIBLE);
-                }
-            }
-            mViewHolder.getContentWrapper().addView(mViewHolder.getContent());
-        }
-    }
-
-    /**
-     * 控制与目标控件的对齐方式
-     */
-    public static class Alignment {
-        public enum Direction {
-            /**
-             * 主方向
-             */
-            HORIZONTAL,
-            VERTICAL
-        }
-
-        public enum Horizontal {
-            /**
-             * 水平对齐方式
-             */
-            CENTER,
-            TO_LEFT,
-            TO_RIGHT,
-            ALIGN_LEFT,
-            ALIGN_RIGHT
-        }
-
-        public enum Vertical {
-            /**
-             * 垂直对齐方式
-             */
-            CENTER,
-            ABOVE,
-            BELOW,
-            ALIGN_TOP,
-            ALIGN_BOTTOM
-        }
-    }
-
-    public interface IAnim {
-        /**
-         * 内容进入动画
-         *
-         * @param target 内容
-         */
-        Animator inAnim(View target);
-
-        /**
-         * 内容消失动画
-         *
-         * @param target 内容
-         */
-        Animator outAnim(View target);
-    }
-
-    public interface IDataBinder {
-        /**
-         * 绑定数据
-         *
-         * @param anyLayer AnyLayer
-         */
-        void bind(AnyLayer anyLayer);
-    }
-
-    public interface OnLayerClickListener {
-        /**
-         * 点击事件回调
-         *
-         * @param anyLayer 浮层
-         * @param v        点击控件
-         */
-        void onClick(AnyLayer anyLayer, View v);
-    }
-
-    public interface OnLayerDismissListener {
-        /**
-         * 开始隐藏，动画刚开始执行
-         *
-         * @param anyLayer 浮层
-         */
-        void onDismissing(AnyLayer anyLayer);
-
-        /**
-         * 已隐藏，浮层已被移除
-         *
-         * @param anyLayer 浮层
-         */
-        void onDismissed(AnyLayer anyLayer);
-    }
-
-    public interface OnLayerShowListener {
-        /**
-         * 开始显示，动画刚开始执行
-         *
-         * @param anyLayer 浮层
-         */
-        void onShowing(AnyLayer anyLayer);
-
-        /**
-         * 已显示，浮层已显示且动画结束
-         *
-         * @param anyLayer 浮层
-         */
-        void onShown(AnyLayer anyLayer);
-    }
-
-    public interface OnVisibleChangeListener {
-        /**
-         * 浮层显示，刚被添加到父布局，进入动画未开始
-         *
-         * @param anyLayer 浮层
-         */
-        void onShow(AnyLayer anyLayer);
-
-        /**
-         * 浮层隐藏，已被从父布局移除，隐藏动画已结束
-         *
-         * @param anyLayer 浮层
-         */
-        void onDismiss(AnyLayer anyLayer);
+        Context context = targetView.getContext();
+        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
+        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
+        mLayerManager = new LayerManager(this, context, rootView, targetView, activityContentView);
     }
 }

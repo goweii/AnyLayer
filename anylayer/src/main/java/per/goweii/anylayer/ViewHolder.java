@@ -23,7 +23,7 @@ final class ViewHolder {
     private View mContent;
 
     private SparseArray<View> views = null;
-    private SparseArray<AnyLayer.OnLayerClickListener> onClickListeners = null;
+    private SparseArray<LayerManager.OnLayerClickListener> onClickListeners = null;
 
     ViewHolder(AnyLayer anyLayer, FrameLayout container) {
         this.mAnyLayer = anyLayer;
@@ -43,19 +43,19 @@ final class ViewHolder {
         mContent = content;
     }
 
-    View getContent() {
+    public View getContent() {
         return mContent;
     }
 
-    FrameLayout getContainer() {
+    public FrameLayout getContainer() {
         return mContainer;
     }
 
-    FrameLayout getContentWrapper() {
+    public FrameLayout getContentWrapper() {
         return mContentWrapper;
     }
 
-    ImageView getBackground() {
+    public ImageView getBackground() {
         return mBackground;
     }
 
@@ -65,7 +65,7 @@ final class ViewHolder {
         }
         for (int i = 0; i < onClickListeners.size(); i++) {
             int viewId = onClickListeners.keyAt(i);
-            final AnyLayer.OnLayerClickListener listener = onClickListeners.valueAt(i);
+            final LayerManager.OnLayerClickListener listener = onClickListeners.valueAt(i);
             getView(viewId).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -75,7 +75,7 @@ final class ViewHolder {
         }
     }
 
-    <V extends View> V getView(@IdRes int viewId) {
+    public <V extends View> V getView(@IdRes int viewId) {
         if (views == null) {
             views = new SparseArray<>();
         }
@@ -87,7 +87,7 @@ final class ViewHolder {
         return (V) views.get(viewId);
     }
 
-    void addOnClickListener(AnyLayer.OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
+    void addOnClickListener(LayerManager.OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
         if (onClickListeners == null) {
             onClickListeners = new SparseArray<>();
         }

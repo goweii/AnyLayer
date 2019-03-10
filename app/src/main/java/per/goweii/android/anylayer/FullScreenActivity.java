@@ -11,8 +11,10 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import per.goweii.anylayer.Alignment;
 import per.goweii.anylayer.AnimHelper;
 import per.goweii.anylayer.AnyLayer;
+import per.goweii.anylayer.LayerManager;
 
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -81,7 +83,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .gravity(Gravity.CENTER)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .onVisibleChangeListener(new AnyLayer.OnVisibleChangeListener() {
+                        .onVisibleChangeListener(new LayerManager.OnVisibleChangeListener() {
                             @Override
                             public void onShow(AnyLayer anyLayer) {
                                 EditText editText = anyLayer.getView(R.id.et_dialog_content);
@@ -93,7 +95,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 anyLayer.removeSoftInput();
                             }
                         })
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createZoomInAnim(content);
@@ -104,13 +106,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createZoomOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -136,7 +138,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .gravity(Gravity.TOP)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -147,7 +149,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -162,7 +164,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .gravity(Gravity.TOP)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -173,7 +175,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -183,11 +185,11 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_right:
                 AnyLayer.target(findViewById(R.id.tv_show_target_right))
-                        .alignment(AnyLayer.Alignment.Direction.HORIZONTAL, AnyLayer.Alignment.Horizontal.TO_RIGHT, AnyLayer.Alignment.Vertical.CENTER, true)
+                        .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, true)
                         .contentView(R.layout.dialog_test_5)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftInAnim(content);
@@ -203,10 +205,10 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_left:
                 AnyLayer.target(findViewById(R.id.tv_show_target_left))
                         .contentView(R.layout.dialog_test_5)
-                        .alignment(AnyLayer.Alignment.Direction.HORIZONTAL, AnyLayer.Alignment.Horizontal.TO_LEFT, AnyLayer.Alignment.Vertical.CENTER, true)
+                        .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_LEFT, Alignment.Vertical.CENTER, true)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightInAnim(content);
@@ -222,12 +224,12 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_top:
                 AnyLayer.target(findViewById(R.id.tv_show_target_top))
                         .contentView(R.layout.dialog_test_4)
-                        .alignment(AnyLayer.Alignment.Direction.VERTICAL, AnyLayer.Alignment.Horizontal.CENTER, AnyLayer.Alignment.Vertical.ABOVE, true)
+                        .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.ABOVE, true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomInAnim(content);
@@ -243,11 +245,11 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_bottom:
                 AnyLayer.target(findViewById(R.id.tv_show_target_bottom))
                         .contentView(R.layout.dialog_test_4)
-                        .alignment(AnyLayer.Alignment.Direction.VERTICAL, AnyLayer.Alignment.Horizontal.CENTER, AnyLayer.Alignment.Vertical.BELOW, true)
+                        .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -267,7 +269,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .gravity(Gravity.BOTTOM)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomInAnim(content);
@@ -278,7 +280,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -293,13 +295,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -313,13 +315,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -332,13 +334,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_test_2)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -352,7 +354,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomInAnim(content);
@@ -363,13 +365,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -383,7 +385,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomAlphaInAnim(content);
@@ -394,13 +396,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createBottomAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -414,7 +416,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -425,13 +427,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -445,7 +447,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopAlphaInAnim(content);
@@ -456,13 +458,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createTopAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -476,7 +478,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -487,13 +489,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -507,7 +509,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomInAnim(content);
@@ -518,13 +520,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -538,7 +540,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopAlphaInAnim(content);
@@ -549,13 +551,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createBottomAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -569,7 +571,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomAlphaInAnim(content);
@@ -580,13 +582,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createTopAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -600,7 +602,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftInAnim(content);
@@ -611,13 +613,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createLeftOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -631,7 +633,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftAlphaInAnim(content);
@@ -642,13 +644,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createLeftAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -662,7 +664,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightInAnim(content);
@@ -673,13 +675,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createRightOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -693,7 +695,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightAlphaInAnim(content);
@@ -704,13 +706,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createRightAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -724,7 +726,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftInAnim(content);
@@ -735,13 +737,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createRightOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -755,7 +757,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightInAnim(content);
@@ -766,13 +768,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createLeftOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -786,7 +788,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftAlphaInAnim(content);
@@ -797,13 +799,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createRightAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -817,7 +819,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightAlphaInAnim(content);
@@ -828,13 +830,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimHelper.createLeftAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -848,7 +850,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -865,13 +867,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return null;
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -889,7 +891,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 .gravity(Gravity.CENTER)
                 .cancelableOnTouchOutside(false)
                 .cancelableOnClickKeyBack(false)
-                .contentAnim(new AnyLayer.IAnim() {
+                .contentAnim(new LayerManager.IAnim() {
                     @Override
                     public Animator inAnim(View content) {
                         return AnimHelper.createZoomInAnim(content);
@@ -900,13 +902,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         return AnimHelper.createZoomOutAnim(content);
                     }
                 })
-                .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                     @Override
                     public void onClick(AnyLayer anyLayer, View v) {
                         anyLayer.dismiss();
                     }
                 })
-                .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                     @Override
                     public void onClick(AnyLayer anyLayer, View v) {
                         showMulti();

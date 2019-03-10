@@ -11,9 +11,8 @@ import android.view.animation.Animation;
  * @author Cuizhen
  * @date 2019/3/4
  */
-public final class AnimExecutor {
-
-    private static final long DURATION_DEF = 3000;
+final class AnimExecutor {
+    private static final long DURATION_DEF = 300;
 
     private View mTarget = null;
     private Creator mCreator = null;
@@ -57,8 +56,27 @@ public final class AnimExecutor {
             if (mAnimation != null) {
                 startAnimation(mAnimation);
             } else {
-                startAnimator(mDefCreator.create(mTarget));
+                mAnimator = mDefCreator.create(mTarget);
+                if (mAnimator != null) {
+                    mAnimator.setDuration(mDuration);
+                    startAnimator(mAnimator);
+                } else {
+                    if (mListener != null) {
+                        mListener.onStart();
+                    }
+                    if (mListener != null) {
+                        mListener.onEnd();
+                    }
+                }
             }
+        }
+    }
+
+    public void cancel(){
+        if (mAnimator != null) {
+            mAnimator.cancel();
+        } else if (mAnimation != null){
+            mAnimation.cancel();
         }
     }
 
@@ -83,6 +101,9 @@ public final class AnimExecutor {
 
             @Override
             public void onAnimationCancel(Animator animation) {
+                if (mListener != null) {
+                    mListener.onEnd();
+                }
             }
 
             @Override

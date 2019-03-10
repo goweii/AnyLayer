@@ -29,6 +29,15 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/tv_show_no_context"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="无需Context弹出"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
+                <TextView
                     android:id="@+id/tv_show_top"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"

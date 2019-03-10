@@ -8,8 +8,10 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import per.goweii.anylayer.Alignment;
 import per.goweii.anylayer.AnimHelper;
 import per.goweii.anylayer.AnyLayer;
+import per.goweii.anylayer.LayerManager;
 
 public class NormalActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -25,6 +27,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
     private void initView() {
         flContent = findViewById(R.id.fl_content);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
+        findViewById(R.id.tv_show_no_context).setOnClickListener(this);
         findViewById(R.id.tv_show_top).setOnClickListener(this);
         findViewById(R.id.tv_show_top_view_group).setOnClickListener(this);
         findViewById(R.id.tv_show_target_right).setOnClickListener(this);
@@ -67,6 +70,15 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .onClickToDismiss(R.id.iv_1)
                         .show();
                 break;
+            case R.id.tv_show_no_context:
+                AnyLayer.with()
+                        .contentView(R.layout.dialog_test_2)
+                        .backgroundColorRes(R.color.dialog_bg)
+                        .cancelableOnTouchOutside(true)
+                        .cancelableOnClickKeyBack(true)
+                        .onClickToDismiss(R.id.fl_dialog_no)
+                        .show();
+                break;
             case R.id.tv_show_top:
                 AnyLayer.with(NormalActivity.this)
                         .contentView(R.layout.dialog_test_3)
@@ -75,7 +87,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .gravity(Gravity.TOP)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -86,7 +98,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -101,7 +113,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .gravity(Gravity.TOP)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -112,7 +124,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -123,10 +135,10 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_target_right:
                 AnyLayer.target(findViewById(R.id.tv_show_target_right))
                         .contentView(R.layout.dialog_test_5)
-                        .alignment(AnyLayer.Alignment.Direction.HORIZONTAL, AnyLayer.Alignment.Horizontal.TO_RIGHT, AnyLayer.Alignment.Vertical.CENTER, true)
+                        .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, true)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftInAnim(content);
@@ -142,10 +154,10 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_target_left:
                 AnyLayer.target(findViewById(R.id.tv_show_target_left))
                         .contentView(R.layout.dialog_test_5)
-                        .alignment(AnyLayer.Alignment.Direction.HORIZONTAL, AnyLayer.Alignment.Horizontal.TO_LEFT, AnyLayer.Alignment.Vertical.CENTER, true)
+                        .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_LEFT, Alignment.Vertical.CENTER, true)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightInAnim(content);
@@ -161,12 +173,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_target_top:
                 AnyLayer.target(findViewById(R.id.tv_show_target_top))
                         .contentView(R.layout.dialog_test_4)
-                        .alignment(AnyLayer.Alignment.Direction.VERTICAL, AnyLayer.Alignment.Horizontal.CENTER, AnyLayer.Alignment.Vertical.ABOVE, true)
+                        .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.ABOVE, true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomInAnim(content);
@@ -182,12 +194,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_target_bottom:
                 AnyLayer.target(findViewById(R.id.tv_show_target_bottom))
                         .contentView(R.layout.dialog_test_4)
-                        .alignment(AnyLayer.Alignment.Direction.VERTICAL, AnyLayer.Alignment.Horizontal.CENTER, AnyLayer.Alignment.Vertical.BELOW, true)
+                        .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -207,7 +219,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .gravity(Gravity.BOTTOM)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomInAnim(content);
@@ -218,7 +230,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -233,13 +245,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -253,13 +265,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -272,13 +284,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_test_2)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -292,7 +304,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomInAnim(content);
@@ -303,13 +315,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -323,7 +335,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomAlphaInAnim(content);
@@ -334,13 +346,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createBottomAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -354,7 +366,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -365,13 +377,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -385,7 +397,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopAlphaInAnim(content);
@@ -396,13 +408,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createTopAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -416,7 +428,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopInAnim(content);
@@ -427,13 +439,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -447,7 +459,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomInAnim(content);
@@ -458,13 +470,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -478,7 +490,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createTopAlphaInAnim(content);
@@ -489,13 +501,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createBottomAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -509,7 +521,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createBottomAlphaInAnim(content);
@@ -520,13 +532,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createTopAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -540,7 +552,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftInAnim(content);
@@ -551,13 +563,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createLeftOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -571,7 +583,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftAlphaInAnim(content);
@@ -582,13 +594,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createLeftAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -602,7 +614,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightInAnim(content);
@@ -613,13 +625,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createRightOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -633,7 +645,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightAlphaInAnim(content);
@@ -644,13 +656,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createRightAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -664,7 +676,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftInAnim(content);
@@ -675,13 +687,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createRightOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -695,7 +707,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightInAnim(content);
@@ -706,13 +718,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createLeftOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -726,7 +738,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createLeftAlphaInAnim(content);
@@ -737,13 +749,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createRightAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -757,7 +769,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 return AnimHelper.createRightAlphaInAnim(content);
@@ -768,13 +780,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createLeftAlphaOutAnim(content);
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -788,7 +800,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundColorRes(R.color.dialog_bg)
                         .cancelableOnTouchOutside(true)
                         .cancelableOnClickKeyBack(true)
-                        .contentAnim(new AnyLayer.IAnim() {
+                        .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -807,13 +819,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 }
                             }
                         })
-                        .onClick(R.id.fl_dialog_no, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
                         })
-                        .onClick(R.id.fl_dialog_yes, new AnyLayer.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
                             @Override
                             public void onClick(AnyLayer anyLayer, View v) {
                                 anyLayer.dismiss();
