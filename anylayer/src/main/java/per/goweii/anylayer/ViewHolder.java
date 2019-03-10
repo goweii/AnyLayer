@@ -4,6 +4,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.IdRes;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -17,7 +18,11 @@ import android.widget.ImageView;
 final class ViewHolder {
 
     private final AnyLayer mAnyLayer;
-    private FrameLayout mContainer;
+    private final ViewGroup mRootView;
+    private final FrameLayout mActivityContentView;
+    private final View mTargetView;
+    private final FrameLayout mContainer;
+
     private ImageView mBackground;
     private FrameLayout mContentWrapper;
     private View mContent;
@@ -25,8 +30,11 @@ final class ViewHolder {
     private SparseArray<View> views = null;
     private SparseArray<LayerManager.OnLayerClickListener> onClickListeners = null;
 
-    ViewHolder(AnyLayer anyLayer, FrameLayout container) {
+    ViewHolder(AnyLayer anyLayer, ViewGroup rootView, FrameLayout activityContentView, View targetView, FrameLayout container) {
         this.mAnyLayer = anyLayer;
+        this.mRootView = rootView;
+        this.mActivityContentView = activityContentView;
+        this.mTargetView = targetView;
         this.mContainer = container;
         mContentWrapper = mContainer.findViewById(R.id.fl_content_wrapper);
         mBackground = mContainer.findViewById(R.id.iv_background);
@@ -37,6 +45,18 @@ final class ViewHolder {
             BitmapDrawable bd = (BitmapDrawable) mBackground.getDrawable();
             bd.getBitmap().recycle();
         }
+    }
+
+    public ViewGroup getRootView() {
+        return mRootView;
+    }
+
+    public FrameLayout getActivityContentView() {
+        return mActivityContentView;
+    }
+
+    public View getTargetView() {
+        return mTargetView;
     }
 
     void setContent(View content) {

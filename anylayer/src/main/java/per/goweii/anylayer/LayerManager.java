@@ -22,12 +22,10 @@ import per.goweii.burred.Blurred;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
+public final class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
 
     private final AnyLayer mAnyLayer;
-    private final ViewGroup mRootView;
-    private final FrameLayout mActivityContentView;
-    private final View mTargetView;
+
     final Context mContext;
     final LayoutInflater mLayoutInflater;
     final ViewHolder mViewHolder;
@@ -50,12 +48,10 @@ public class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnK
     LayerManager(AnyLayer anyLayer, Context context, ViewGroup rootView, View targetView, FrameLayout activityContentView) {
         mAnyLayer = anyLayer;
         mContext = context;
-        mRootView = rootView;
-        mTargetView = targetView;
-        mActivityContentView = activityContentView;
         mLayoutInflater = LayoutInflater.from(mContext);
-        mViewHolder = new ViewHolder(mAnyLayer, (FrameLayout) mLayoutInflater.inflate(R.layout.layout_any_layer, mRootView, false));
-        mViewManager = new ViewManager(mRootView, mViewHolder.getContainer());
+        FrameLayout container = (FrameLayout) mLayoutInflater.inflate(R.layout.layout_any_layer, rootView, false);
+        mViewHolder = new ViewHolder(mAnyLayer, rootView, activityContentView, targetView, container);
+        mViewManager = new ViewManager(rootView, mViewHolder.getContainer());
         mContentInAnimExecutor = new AnimExecutor();
         mBackgroundInAnimExecutor = new AnimExecutor();
         mContentOutAnimExecutor = new AnimExecutor();
@@ -125,6 +121,20 @@ public class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnK
                 }
             }
         });
+    }
+
+    /**
+     * 显示
+     */
+    public void show() {
+        mViewManager.attach();
+    }
+
+    /**
+     * 隐藏
+     */
+    public void dismiss() {
+        onPerRemove();
     }
 
     @Override
@@ -220,7 +230,7 @@ public class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnK
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 if (mConfig.mCancelableOnClickKeyBack) {
-                    onPerRemove();
+                    dismiss();
                 }
                 return true;
             }
@@ -233,24 +243,24 @@ public class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnK
             mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onPerRemove();
+                    dismiss();
                 }
             });
         }
-        if (mActivityContentView != null) {
-            // 非指定父布局的，添加到DecorView，此时mRootView为DecorView
+        if (mViewHolder.getActivityContentView() != null) {
+            // 非指定父布局的，添加到DecorView，此时mViewHolder.getRootView()为DecorView
             final int[] locationDecor = new int[2];
-            mRootView.getLocationOnScreen(locationDecor);
+            mViewHolder.getRootView().getLocationOnScreen(locationDecor);
             final int[] locationActivityContent = new int[2];
-            mActivityContentView.getLocationOnScreen(locationActivityContent);
+            mViewHolder.getActivityContentView().getLocationOnScreen(locationActivityContent);
             FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
             containerParams.leftMargin = locationActivityContent[0] - locationDecor[0];
             containerParams.topMargin = 0;
-            containerParams.width = mActivityContentView.getWidth();
-            containerParams.height = mActivityContentView.getHeight() + (locationActivityContent[1] - locationDecor[1]);
+            containerParams.width = mViewHolder.getActivityContentView().getWidth();
+            containerParams.height = mViewHolder.getActivityContentView().getHeight() + (locationActivityContent[1] - locationDecor[1]);
             mViewHolder.getContainer().setLayoutParams(containerParams);
         }
-        if (mTargetView == null) {
+        if (mViewHolder.getTargetView() == null) {
             FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
             contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
             contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
@@ -266,13 +276,13 @@ public class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnK
         contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
         mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
         final int[] locationTarget = new int[2];
-        mTargetView.getLocationOnScreen(locationTarget);
+        mViewHolder.getTargetView().getLocationOnScreen(locationTarget);
         final int[] locationRoot = new int[2];
-        mRootView.getLocationOnScreen(locationRoot);
+        mViewHolder.getRootView().getLocationOnScreen(locationRoot);
         final int targetX = (locationTarget[0] - locationRoot[0]);
         final int targetY = (locationTarget[1] - locationRoot[1]);
-        final int targetWidth = mTargetView.getWidth();
-        final int targetHeight = mTargetView.getHeight();
+        final int targetWidth = mViewHolder.getTargetView().getWidth();
+        final int targetHeight = mViewHolder.getTargetView().getHeight();
         int paddingTop = 0;
         int paddingBottom = 0;
         int paddingLeft = 0;
@@ -367,9 +377,9 @@ public class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnK
                 @Override
                 public boolean onPreDraw() {
                     mViewHolder.getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
-                    Bitmap snapshot = Utils.snapshot(mRootView);
+                    Bitmap snapshot = Utils.snapshot(mViewHolder.getRootView());
                     int[] locationRootView = new int[2];
-                    mRootView.getLocationOnScreen(locationRootView);
+                    mViewHolder.getRootView().getLocationOnScreen(locationRootView);
                     int[] locationBackground = new int[2];
                     mViewHolder.getBackground().getLocationOnScreen(locationBackground);
                     int x = locationBackground[0] - locationRootView[0];
@@ -416,7 +426,7 @@ public class LayerManager implements ViewManager.OnLifeListener, ViewManager.OnK
                 contentParent.removeView(mViewHolder.getContent());
             }
             mViewHolder.getContent().setClickable(true);
-            if (mTargetView == null && mConfig.mGravity != -1) {
+            if (mViewHolder.getTargetView() == null && mConfig.mGravity != -1) {
                 ViewGroup.LayoutParams params = mViewHolder.getContent().getLayoutParams();
                 FrameLayout.LayoutParams contentParams;
                 if (params == null) {

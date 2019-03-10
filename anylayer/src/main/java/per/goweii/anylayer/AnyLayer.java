@@ -35,10 +35,10 @@ import per.goweii.burred.Blurred;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class AnyLayer {
+public final class AnyLayer {
 
+    private final LayerManager mLayerManager;
     private SoftInputHelper mSoftInputHelper = null;
-    private LayerManager mLayerManager;
 
     public static void init(@NonNull Application application) {
         ActivityHolder.init(application);
@@ -82,6 +82,33 @@ public class AnyLayer {
      */
     public static AnyLayer target(@NonNull View targetView) {
         return new AnyLayer(targetView);
+    }
+
+    private AnyLayer() {
+        Activity activity = ActivityHolder.currentActivity();
+        if (activity == null) {
+            throw new RuntimeException();
+        }
+        FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
+        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
+        mLayerManager = new LayerManager(this, activity, rootView, null, activityContentView);
+    }
+
+    private AnyLayer(@NonNull ViewGroup viewGroup) {
+        mLayerManager = new LayerManager(this, viewGroup.getContext(), viewGroup, null, null);
+    }
+
+    private AnyLayer(@NonNull Context context) {
+        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
+        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
+        mLayerManager = new LayerManager(this, context, rootView, null, activityContentView);
+    }
+
+    private AnyLayer(@NonNull View targetView) {
+        Context context = targetView.getContext();
+        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
+        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
+        mLayerManager = new LayerManager(this, context, rootView, targetView, activityContentView);
     }
 
     /**
@@ -552,14 +579,18 @@ public class AnyLayer {
      * 显示
      */
     public void show() {
-        mLayerManager.mViewManager.attach();
+        mLayerManager.show();
     }
 
     /**
      * 隐藏
      */
     public void dismiss() {
-        mLayerManager.onPerRemove();
+        mLayerManager.dismiss();
+    }
+
+    public Context getContext() {
+        return mLayerManager.mContext;
     }
 
     /**
@@ -635,32 +666,5 @@ public class AnyLayer {
         if (mSoftInputHelper != null) {
             mSoftInputHelper.detach();
         }
-    }
-
-    private AnyLayer() {
-        Activity activity = ActivityHolder.currentActivity();
-        if (activity == null) {
-            throw new RuntimeException();
-        }
-        FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        mLayerManager = new LayerManager(this, activity, rootView, null, activityContentView);
-    }
-
-    private AnyLayer(@NonNull ViewGroup viewGroup) {
-        mLayerManager = new LayerManager(this, viewGroup.getContext(), viewGroup, null, null);
-    }
-
-    private AnyLayer(@NonNull Context context) {
-        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        mLayerManager = new LayerManager(this, context, rootView, null, activityContentView);
-    }
-
-    private AnyLayer(@NonNull View targetView) {
-        Context context = targetView.getContext();
-        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        mLayerManager = new LayerManager(this, context, rootView, targetView, activityContentView);
     }
 }

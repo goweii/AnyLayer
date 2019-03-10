@@ -7,7 +7,7 @@ package per.goweii.anylayer;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-class Listener {
+final class Listener {
     LayerManager.IDataBinder mDataBinder = null;
     LayerManager.OnVisibleChangeListener mOnVisibleChangeListener = null;
     LayerManager.OnLayerShowListener mOnLayerShowListener = null;
