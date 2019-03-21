@@ -87,7 +87,7 @@ public final class AnyLayer {
     private AnyLayer() {
         Activity activity = ActivityHolder.currentActivity();
         if (activity == null) {
-            throw new RuntimeException();
+            throw new RuntimeException("要是用全局弹窗必须先在Application中调用AnyLayer.init(Application)方法初始化");
         }
         FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
         FrameLayout activityContentView = rootView.findViewById(android.R.id.content);

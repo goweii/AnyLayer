@@ -55,16 +55,16 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
         }
     };
 
+    public static SoftInputHelper attach(@NonNull Activity activity) {
+        return new SoftInputHelper(activity);
+    }
+
     private SoftInputHelper(@NonNull Activity activity) {
         this.window = activity.getWindow();
         this.rootView = window.getDecorView().getRootView();
         ViewTreeObserver observer = rootView.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(this);
         observer.addOnGlobalFocusChangeListener(this);
-    }
-
-    public static SoftInputHelper attach(@NonNull Activity activity) {
-        return new SoftInputHelper(activity);
     }
 
     public void detach(){

@@ -24,6 +24,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         initView();
         AnyLayer.with(this)
                 .contentView(R.layout.dialog_test_2)
+                .gravity(Gravity.CENTER)
                 .backgroundColorRes(R.color.dialog_bg)
                 .cancelableOnTouchOutside(true)
                 .cancelableOnClickKeyBack(true)
@@ -99,7 +100,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_top_view_group:
@@ -118,7 +119,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_target_right:
@@ -209,7 +210,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_blur_bg:

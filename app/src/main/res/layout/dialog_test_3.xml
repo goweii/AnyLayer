@@ -57,14 +57,6 @@
                     android:layout_height="match_parent"
                     android:background="?android:attr/selectableItemBackground">
 
-                    <ImageView
-                        android:id="@+id/iv_dialog_no"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:padding="16dp"
-                        android:src="@null" />
-
                     <TextView
                         android:id="@+id/tv_dialog_no"
                         android:layout_width="match_parent"

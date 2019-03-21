@@ -48,17 +48,22 @@ public final class ViewManager {
     }
 
     public void attach() {
-        if (isAttached()) {
-            return;
+        if (!isAttached()) {
+            mParent.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isAttached()) {
+                        onAttach();
+                    }
+                }
+            });
         }
-        onAttach();
     }
 
     public void detach() {
-        if (!isAttached()) {
-            return;
+        if (isAttached()) {
+            onDetach();
         }
-        onDetach();
     }
 
     public boolean isAttached(){
