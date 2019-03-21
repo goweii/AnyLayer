@@ -147,14 +147,14 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
             @Nullable
             @Override
             public Animator create(View target) {
-                return AnimHelper.createZoomInAnim(target);
+                return AnimHelper.createZoomAlphaInAnim(target);
             }
         });
         mContentOutAnimExecutor.setTarget(mViewHolder.getContent(), new AnimExecutor.Creator() {
             @Nullable
             @Override
             public Animator create(View target) {
-                return AnimHelper.createZoomOutAnim(target);
+                return AnimHelper.createZoomAlphaOutAnim(target);
             }
         });
         mBackgroundInAnimExecutor.setTarget(mViewHolder.getBackground(), new AnimExecutor.Creator() {

@@ -63,6 +63,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.tv_show_left_right_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_right_left_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_reveal).setOnClickListener(this);
+        findViewById(R.id.tv_show_delayed_zoom).setOnClickListener(this);
     }
 
     @Override
@@ -96,12 +97,12 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentAnim(new LayerManager.IAnim() {
                             @Override
                             public Animator inAnim(View content) {
-                                return AnimHelper.createZoomInAnim(content);
+                                return AnimHelper.createZoomAlphaInAnim(content);
                             }
 
                             @Override
                             public Animator outAnim(View content) {
-                                return AnimHelper.createZoomOutAnim(content);
+                                return AnimHelper.createZoomAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
@@ -583,6 +584,23 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
+            case R.id.tv_show_delayed_zoom:
+                AnyLayer.target(findViewById(R.id.tv_show_delayed_zoom))
+                        .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.ALIGN_RIGHT, Alignment.Vertical.BELOW, true)
+                        .contentView(R.layout.dialog_test_8)
+                        .contentAnim(new LayerManager.IAnim() {
+                            @Override
+                            public Animator inAnim(View content) {
+                                return AnimHelper.createDelayedZoomInAnim(content, 1F, 0F);
+                            }
+
+                            @Override
+                            public Animator outAnim(View content) {
+                                return AnimHelper.createDelayedZoomOutAnim(content, 1F, 0F);
+                            }
+                        })
+                        .show();
+                break;
         }
     }
 
@@ -596,12 +614,12 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 .contentAnim(new LayerManager.IAnim() {
                     @Override
                     public Animator inAnim(View content) {
-                        return AnimHelper.createZoomInAnim(content);
+                        return AnimHelper.createZoomAlphaInAnim(content);
                     }
 
                     @Override
                     public Animator outAnim(View content) {
-                        return AnimHelper.createZoomOutAnim(content);
+                        return AnimHelper.createZoomAlphaOutAnim(content);
                     }
                 })
                 .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {

@@ -1,5 +1,6 @@
 package per.goweii.anylayer;
 
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.IdRes;
 import android.util.SparseArray;
