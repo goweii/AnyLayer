@@ -39,7 +39,7 @@
 
 截图效果较差，建议[下载Demo](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)体验
 
-![anylayer.gif](https://upload-images.jianshu.io/upload_images/9231307-9b9fdd9b345c3167.gif?imageMogr2/auto-orient/strip)
+![anylayer.gif](https://github.com/goweii/AnyLayer/blob/master/picture/demo.gif?raw=true)
 
 
 # 使用说明
