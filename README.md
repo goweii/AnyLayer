@@ -61,11 +61,12 @@ allprojects {
 - ### 添加依赖
 
   [点击查看最新版本号](https://github.com/goweii/AnyLayer/releases)
-
+  从2.3.1版本开始，版本号前不加v，引用时需要注意。
+  
 ```java
 // build.gradle(Module:)
 dependencies {
-    implementation 'com.github.goweii:AnyLayer:最新版本号'
+    implementation 'com.github.goweii:AnyLayer:2.3.1'
 }
 ```
 
