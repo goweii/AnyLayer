@@ -40,6 +40,7 @@ public final class AnyLayer {
     private final LayerManager mLayerManager;
     private SoftInputHelper mSoftInputHelper = null;
 
+    @Deprecated
     public static void init(@NonNull Application application) {
         ActivityHolder.init(application);
     }
@@ -48,9 +49,12 @@ public final class AnyLayer {
         Blurred.init(context);
     }
 
+    public static void recycleBlurred() {
+        Blurred.recycle();
+    }
+
     /**
      * 向窗口根布局添加一个浮层
-     * 需要在Application中调用{@link AnyLayer#init(Application)}
      */
     public static AnyLayer with() {
         return new AnyLayer();

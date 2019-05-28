@@ -1,2 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="per.goweii.anylayer" />
+    package="per.goweii.anylayer" >
+
+    <application>
+        <provider
+            android:name=".ActivityProvider"
+            android:authorities="${applicationId}.activityprovider"
+            android:exported="false"
+            android:multiprocess="true" />
+    </application>
+
+</manifest>

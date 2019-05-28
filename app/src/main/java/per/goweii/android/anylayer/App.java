@@ -15,7 +15,5 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        AnyLayer.init(this);
-        AnyLayer.initBlurred(this);
     }
 }

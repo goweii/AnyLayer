@@ -2,6 +2,11 @@ package per.goweii.anylayer;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,22 +21,23 @@ import java.util.Stack;
  * GitHub: https://github.com/goweii
  */
 final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
+
     private static ActivityHolder INSTANCE = null;
 
     private Stack<Activity> mActivityStack = new Stack<>();
 
-    private ActivityHolder(@NonNull Application application){
+    private ActivityHolder(@NonNull Application application) {
         application.registerActivityLifecycleCallbacks(this);
     }
 
-    static void init(@NonNull Application application){
+    static void init(@NonNull Application application) {
         if (INSTANCE == null) {
             INSTANCE = new ActivityHolder(application);
         }
     }
 
     @Nullable
-    static Activity currentActivity(){
+    static Activity currentActivity() {
         if (INSTANCE == null) {
             return null;
         }
@@ -40,6 +46,8 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         }
         return INSTANCE.mActivityStack.peek();
     }
+
+    // Application.ActivityLifecycleCallbacks
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
