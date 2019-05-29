@@ -12,10 +12,11 @@ import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.LayerManager;
 
 /**
- * loading弹窗
- *
- * @author Cuizhen
- * @date 2018/6/21-上午10:00
+ * @author CuiZhen
+ * @date 2019/5/29
+ * QQ: 302833254
+ * E-mail: goweii@163.com
+ * GitHub: https://github.com/goweii
  */
 public class LoadingLayer {
 

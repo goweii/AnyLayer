@@ -27,7 +27,7 @@
         android:overScrollMode="never"
         android:scrollbars="none"
         tools:itemCount="5"
-        tools:listitem="@layout/anylayer_common_rv_item_list"/>
+        tools:listitem="@layout/anylayer_common_list_rv_item"/>
 
     <View
         android:id="@+id/anylayer_common_list_v_line_h"

@@ -254,7 +254,7 @@ public class ListLayer extends BaseLayer {
         @NonNull
         @Override
         public ListHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            return new ListHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.anylayer_common_rv_item_list, viewGroup, false));
+            return new ListHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.anylayer_common_list_rv_item, viewGroup, false));
         }
 
         @Override

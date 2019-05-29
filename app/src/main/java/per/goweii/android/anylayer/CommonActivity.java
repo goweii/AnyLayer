@@ -6,23 +6,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.Random;
+
 import per.goweii.anylayer.common.ListLayer;
 import per.goweii.anylayer.common.LoadingLayer;
+import per.goweii.anylayer.common.MenuLayer;
 import per.goweii.anylayer.common.TipLayer;
 
 public class CommonActivity extends AppCompatActivity implements View.OnClickListener {
 
     private LoadingLayer mLoadingLayer;
     private LoadingLayer mLoadingLayer2;
+    private Random mRandom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarUtils.translucentStatusBar(this);
         setContentView(R.layout.activity_common);
         initView();
     }
 
     private void initView() {
+        findViewById(R.id.tv_show_menu).setOnClickListener(this);
         findViewById(R.id.tv_show_tip).setOnClickListener(this);
         findViewById(R.id.tv_show_tip_no_title).setOnClickListener(this);
         findViewById(R.id.tv_show_tip_no_title_single_yes).setOnClickListener(this);
@@ -36,6 +42,27 @@ public class CommonActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             default:
+                break;
+            case R.id.tv_show_menu:
+                MenuLayer menuLayer = MenuLayer.target(findViewById(R.id.ll_action_bar));
+                if (mRandom == null) {
+                    mRandom = new Random();
+                }
+                if (mRandom.nextBoolean()) {
+                    menuLayer.icons(R.mipmap.ic_launcher_round,
+                            R.mipmap.ic_launcher_round,
+                            R.mipmap.ic_launcher_round,
+                            R.mipmap.ic_launcher_round,
+                            R.mipmap.ic_launcher_round);
+                }
+                menuLayer.datas("喜欢", "收藏", "回复", "复制链接", "浏览器打开")
+                        .listener(new MenuLayer.OnMenuClickListener() {
+                            @Override
+                            public void onClick(String data, int pos) {
+                                Toast.makeText(getApplicationContext(), data, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
                 break;
             case R.id.tv_show_tip:
                 TipLayer.make()
