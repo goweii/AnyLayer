@@ -22,4 +22,13 @@
         android:textColor="#232323"
         android:textSize="14sp" />
 
+    <TextView
+        android:id="@+id/tv_activity_common"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="通用弹窗"
+        android:textColor="#232323"
+        android:textSize="14sp" />
+
 </LinearLayout>

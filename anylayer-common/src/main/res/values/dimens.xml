@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="anylayer_common_round_radius">8dp</dimen>
+    <dimen name="anylayer_common_text_title">17sp</dimen>
+    <dimen name="anylayer_common_text_content">15sp</dimen>
+
+</resources>

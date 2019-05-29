@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="32dp"
+    android:background="@drawable/anylayer_common_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/anylayer_common_tip_tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:textColor="@color/anylayer_common_text_title"
+        android:textSize="@dimen/anylayer_common_text_title"
+        tools:text="提示" />
+
+    <TextView
+        android:id="@+id/anylayer_common_tip_tv_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingLeft="20dp"
+        android:paddingTop="27dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="27dp"
+        android:textColor="@color/anylayer_common_text_content"
+        android:textSize="@dimen/anylayer_common_text_content"
+        tools:text="提示信息" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/anylayer_common_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/anylayer_common_tip_tv_no"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/anylayer_common_text_btn_no"
+            android:textSize="@dimen/anylayer_common_text_content"
+            tools:text="取消" />
+
+        <View
+            android:id="@+id/anylayer_common_tip_v_line"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/anylayer_common_line" />
+
+        <TextView
+            android:id="@+id/anylayer_common_tip_tv_yes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/anylayer_common_text_btn_yes"
+            android:textSize="@dimen/anylayer_common_text_content"
+            tools:text="确定" />
+
+    </LinearLayout>
+
+</LinearLayout>

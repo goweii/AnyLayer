@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/anylayer_common_white" android:state_window_focused="false" />
+    <item android:drawable="@color/anylayer_common_ripple" android:state_focused="true" android:state_pressed="true" />
+    <item android:drawable="@color/anylayer_common_ripple" android:state_focused="false" android:state_pressed="true" />
+    <item android:drawable="@color/anylayer_common_ripple" android:state_selected="true" />
+    <item android:drawable="@color/anylayer_common_ripple" android:state_focused="true" />
+</selector>

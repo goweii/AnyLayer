@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="anylayer_common_bg">#55000000</color>
+    <color name="anylayer_common_ripple">#11000000</color>
+    <color name="anylayer_common_white">#ffffff</color>
+    <color name="anylayer_common_line">#f5f5f5</color>
+
+    <color name="anylayer_common_text_title">#232323</color>
+    <color name="anylayer_common_text_content">#232323</color>
+    <color name="anylayer_common_text_btn_yes">#232323</color>
+    <color name="anylayer_common_text_btn_no">#999999</color>
+
+    <color name="anylayer_common_loading_rect">#88000000</color>
+    <color name="anylayer_common_loading_pb">#ffffff</color>
+
+</resources>

@@ -38,10 +38,24 @@ public abstract class BaseLayer implements LayerManager.OnVisibleChangeListener 
         return null;
     }
 
+    protected void onCreateLayer() {
+        if (getTarget() != null) {
+            mAnyLayer = AnyLayer.target(getTarget());
+        } else if (getParent() != null) {
+            mAnyLayer = AnyLayer.with(getParent());
+        } else if (getContext() != null) {
+            mAnyLayer = AnyLayer.with(getContext());
+        } else {
+            mAnyLayer = AnyLayer.with();
+        }
+        mAnyLayer.contentView(getLayoutId());
+        mAnyLayer.onVisibleChangeListener(this);
+    }
+
     /**
      * 浮层已创建，可在这里进行浮层的初始化和数据绑定
      */
-    protected void onCreate() {
+    protected void onLayerCreated() {
     }
 
     /**
@@ -55,7 +69,7 @@ public abstract class BaseLayer implements LayerManager.OnVisibleChangeListener 
 
     @Override
     public void onShow(AnyLayer anyLayer) {
-        onCreate();
+        onLayerCreated();
     }
 
     @Override
@@ -67,7 +81,7 @@ public abstract class BaseLayer implements LayerManager.OnVisibleChangeListener 
 
     public void show() {
         if (mAnyLayer == null) {
-            createLayer();
+            onCreateLayer();
         }
         mAnyLayer.show();
     }
@@ -76,19 +90,5 @@ public abstract class BaseLayer implements LayerManager.OnVisibleChangeListener 
         if (mAnyLayer != null) {
             mAnyLayer.dismiss();
         }
-    }
-
-    private void createLayer() {
-        if (getTarget() != null) {
-            mAnyLayer = AnyLayer.target(getTarget());
-        } else if (getParent() != null) {
-            mAnyLayer = AnyLayer.with(getParent());
-        } else if (getContext() != null) {
-            mAnyLayer = AnyLayer.with(getContext());
-        } else {
-            mAnyLayer = AnyLayer.with();
-        }
-        mAnyLayer.contentView(getLayoutId());
-        mAnyLayer.onVisibleChangeListener(this);
     }
 }
