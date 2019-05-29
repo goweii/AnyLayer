@@ -21,6 +21,16 @@
 
 
 
+从2.4.0版本开始，添加了一个通用弹窗库，里面会封装一些比较常见的弹窗，不定期更新。
+
+已有通用弹窗：
+
+1. 提示弹窗
+2. 列表弹窗（可实现单选和菜单效果）
+3. 加载中弹窗
+
+
+
 # 说明
 
 可以看到我的GitHub上面有3个功能比较类似的可以实现弹窗的框架。分别为AnyDialog、AnyLayer和FloatingLayer。可能大家有点混淆，为什么同一个功能要写3个框架？为了骗点击数？在这里向大家说明下每个框架的针对点。
@@ -62,11 +72,16 @@ allprojects {
 
   [点击查看最新版本号](https://github.com/goweii/AnyLayer/releases)
   从2.3.1版本开始，版本号前不加v，引用时需要注意。
-  
 ```java
 // build.gradle(Module:)
 dependencies {
-    implementation 'com.github.goweii:AnyLayer:2.3.1'
+    // 完整引入
+    implementation 'com.github.goweii:AnyLayer:2.4.0'
+    
+    // 基础库
+    implementation 'com.github.goweii.AnyLayer:anylayer:2.4.0'
+    // 通用弹窗（依赖基础库）
+    implementation 'com.github.goweii.AnyLayer:anylayer-common:2.4.0'
 }
 ```
 
