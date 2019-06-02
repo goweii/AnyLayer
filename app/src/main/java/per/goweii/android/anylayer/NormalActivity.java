@@ -138,6 +138,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_target_right:
                 AnyLayer.target(findViewById(R.id.tv_show_target_right))
+                        .outsideInterceptTouchEvent(false)
                         .contentView(R.layout.dialog_test_5)
                         .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, true)
                         .contentAnim(new LayerManager.IAnim() {
@@ -191,6 +192,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_target_bottom:
                 AnyLayer.target(findViewById(R.id.tv_show_target_bottom))
+                        .outsideInterceptTouchEvent(false)
                         .contentView(R.layout.dialog_test_4)
                         .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
                         .backgroundColorRes(R.color.dialog_bg)

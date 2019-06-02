@@ -37,7 +37,7 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
 
     final Config mConfig;
     final ListenerHolder mListenerHolder;
-    
+
     private boolean mInAnimRunning = false;
     private boolean mOutAnimRunning = false;
     private boolean mContentInAnimEnd = false;
@@ -225,13 +225,18 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
     }
 
     private void initContainer() {
-        if (mConfig.mCancelableOnTouchOutside) {
-            mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
+        if (mConfig.mOutsideInterceptTouchEvent) {
+            mViewHolder.getContainer().setClickable(true);
+            if (mConfig.mCancelableOnTouchOutside) {
+                mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss();
+                    }
+                });
+            }
+        } else {
+            mViewHolder.getContainer().setClickable(false);
         }
         if (mViewHolder.getActivityContentView() != null) {
             // 非指定父布局的，添加到DecorView，此时mViewHolder.getRootView()为DecorView
@@ -257,6 +262,7 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
     }
 
     private void initContainerWithTarget() {
+        mViewHolder.getContainer().setClipToPadding(false);
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
         contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
         contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
@@ -269,92 +275,113 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
         final int targetY = (locationTarget[1] - locationRoot[1]);
         final int targetWidth = mViewHolder.getTargetView().getWidth();
         final int targetHeight = mViewHolder.getTargetView().getHeight();
-        int paddingTop = 0;
-        int paddingBottom = 0;
-        int paddingLeft = 0;
-        int paddingRight = 0;
-        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
-        if (mConfig.mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
-            if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-                paddingRight = containerParams.width - targetX;
-            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
-                paddingLeft = targetX + targetWidth;
-            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
-                paddingLeft = targetX;
-            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-                paddingRight = containerParams.width - targetX - targetWidth;
-            }
-        } else if (mConfig.mAlignmentDirection == Alignment.Direction.VERTICAL) {
-            if (mConfig.mAlignmentVertical == Alignment.Vertical.ABOVE) {
-                paddingBottom = containerParams.height - targetY;
-            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.BELOW) {
-                paddingTop = targetY + targetHeight;
-            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
-                paddingTop = targetY;
-            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-                paddingBottom = containerParams.height - targetY - targetHeight;
-            }
-        }
-        mViewHolder.getContainer().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-        final int finalPaddingLeft = paddingLeft;
-        final int finalPaddingTop = paddingTop;
+        final int[] padding = initContainerWithTargetPadding(targetX, targetY, targetWidth, targetHeight);
         mViewHolder.getContainer().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
                 if (mViewHolder.getContainer().getViewTreeObserver().isAlive()) {
                     mViewHolder.getContainer().getViewTreeObserver().removeOnPreDrawListener(this);
                 }
-                final int width = mViewHolder.getContentWrapper().getWidth();
-                final int height = mViewHolder.getContentWrapper().getHeight();
-                int x = 0;
-                int y = 0;
-                if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
-                    x = targetX - (width - targetWidth) / 2;
-                } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-                    x = targetX - width;
-                } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
-                    x = targetX + targetWidth;
-                } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
-                    x = targetX;
-                } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-                    x = targetX - (width - targetWidth);
-                }
-                if (mConfig.mAlignmentVertical == Alignment.Vertical.CENTER) {
-                    y = targetY - (height - targetHeight) / 2;
-                } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ABOVE) {
-                    y = targetY - height;
-                } else if (mConfig.mAlignmentVertical == Alignment.Vertical.BELOW) {
-                    y = targetY + targetHeight;
-                } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
-                    y = targetY;
-                } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-                    y = targetY - (height - targetHeight);
-                }
-                x = x - finalPaddingLeft;
-                y = y - finalPaddingTop;
-                if (mConfig.mAlignmentInside) {
-                    final int maxWidth = mViewHolder.getContainer().getWidth() - mViewHolder.getContainer().getPaddingLeft() - mViewHolder.getContainer().getPaddingRight();
-                    final int maxHeight = mViewHolder.getContainer().getHeight() - mViewHolder.getContainer().getPaddingTop() - mViewHolder.getContainer().getPaddingBottom();
-                    final int maxX = maxWidth - width;
-                    final int maxY = maxHeight - height;
-                    if (x < 0) {
-                        x = 0;
-                    } else if (x > maxX) {
-                        x = maxX;
-                    }
-                    if (y < 0) {
-                        y = 0;
-                    } else if (y > maxY) {
-                        y = maxY;
-                    }
-                }
-                FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
-                contentWrapperParams.leftMargin = x;
-                contentWrapperParams.topMargin = y;
-                mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+                initContainerWithTargetMargin(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
                 return false;
             }
         });
+        if (!mConfig.mOutsideInterceptTouchEvent) {
+            mViewHolder.getContainer().getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                @Override
+                public void onScrollChanged() {
+                    final int[] locationTarget = new int[2];
+                    mViewHolder.getTargetView().getLocationOnScreen(locationTarget);
+                    final int[] locationRoot = new int[2];
+                    mViewHolder.getRootView().getLocationOnScreen(locationRoot);
+                    final int targetX = (locationTarget[0] - locationRoot[0]);
+                    final int targetY = (locationTarget[1] - locationRoot[1]);
+                    final int targetWidth = mViewHolder.getTargetView().getWidth();
+                    final int targetHeight = mViewHolder.getTargetView().getHeight();
+                    final int[] padding = initContainerWithTargetPadding(targetX, targetY, targetWidth, targetHeight);
+                    initContainerWithTargetMargin(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
+                }
+            });
+        }
+    }
+
+    private int[] initContainerWithTargetPadding(int targetX, int targetY, int targetWidth, int targetHeight) {
+        final int[] padding = new int[]{0, 0, 0, 0};
+        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
+        if (mConfig.mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
+            if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
+                padding[2] = containerParams.width - targetX;
+            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
+                padding[0] = targetX + targetWidth;
+            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
+                padding[0] = targetX;
+            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
+                padding[2] = containerParams.width - targetX - targetWidth;
+            }
+        } else if (mConfig.mAlignmentDirection == Alignment.Direction.VERTICAL) {
+            if (mConfig.mAlignmentVertical == Alignment.Vertical.ABOVE) {
+                padding[3] = containerParams.height - targetY;
+            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.BELOW) {
+                padding[1] = targetY + targetHeight;
+            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
+                padding[1] = targetY;
+            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
+                padding[3] = containerParams.height - targetY - targetHeight;
+            }
+        }
+        mViewHolder.getContainer().setPadding(padding[0], padding[1], padding[2], padding[3]);
+        return padding;
+    }
+
+    private void initContainerWithTargetMargin(int targetX, int targetY, int targetWidth, int targetHeight, int paddingLeft, int paddingTop) {
+        final int width = mViewHolder.getContentWrapper().getWidth();
+        final int height = mViewHolder.getContentWrapper().getHeight();
+        int x = 0;
+        int y = 0;
+        if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
+            x = targetX - (width - targetWidth) / 2;
+        } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
+            x = targetX - width;
+        } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
+            x = targetX + targetWidth;
+        } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
+            x = targetX;
+        } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
+            x = targetX - (width - targetWidth);
+        }
+        if (mConfig.mAlignmentVertical == Alignment.Vertical.CENTER) {
+            y = targetY - (height - targetHeight) / 2;
+        } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ABOVE) {
+            y = targetY - height;
+        } else if (mConfig.mAlignmentVertical == Alignment.Vertical.BELOW) {
+            y = targetY + targetHeight;
+        } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
+            y = targetY;
+        } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
+            y = targetY - (height - targetHeight);
+        }
+        x = x - paddingLeft;
+        y = y - paddingTop;
+        if (mConfig.mAlignmentInside) {
+            final int maxWidth = mViewHolder.getContainer().getWidth() - mViewHolder.getContainer().getPaddingLeft() - mViewHolder.getContainer().getPaddingRight();
+            final int maxHeight = mViewHolder.getContainer().getHeight() - mViewHolder.getContainer().getPaddingTop() - mViewHolder.getContainer().getPaddingBottom();
+            final int maxX = maxWidth - width;
+            final int maxY = maxHeight - height;
+            if (x < 0) {
+                x = 0;
+            } else if (x > maxX) {
+                x = maxX;
+            }
+            if (y < 0) {
+                y = 0;
+            } else if (y > maxY) {
+                y = maxY;
+            }
+        }
+        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+        contentWrapperParams.leftMargin = x;
+        contentWrapperParams.topMargin = y;
+        mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
     }
 
     private void initBackground() {

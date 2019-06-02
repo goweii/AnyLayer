@@ -15,6 +15,8 @@ import android.view.Gravity;
  * GitHub: https://github.com/goweii
  */
 final class Config {
+    boolean mOutsideInterceptTouchEvent = true;
+
     boolean mCancelableOnTouchOutside = true;
     boolean mCancelableOnClickKeyBack = true;
 

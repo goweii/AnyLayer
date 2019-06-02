@@ -22,7 +22,7 @@
                 <TextView
                     android:id="@+id/tv_show_full"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="全屏"
                     android:textColor="#232323"
@@ -31,7 +31,7 @@
                 <TextView
                     android:id="@+id/tv_show_app_context"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="AppContext弹出"
                     android:textColor="#232323"
@@ -40,7 +40,7 @@
                 <TextView
                     android:id="@+id/tv_show_no_context"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="无需Context弹出"
                     android:textColor="#232323"
@@ -49,7 +49,7 @@
                 <TextView
                     android:id="@+id/tv_show_top"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="顶部"
                     android:textColor="#232323"
@@ -58,7 +58,7 @@
                 <TextView
                     android:id="@+id/tv_show_bottom"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="底部"
                     android:textColor="#232323"
@@ -67,21 +67,48 @@
                 <TextView
                     android:id="@+id/tv_show_top_view_group"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="顶部(指定ViewGroup)"
                     android:textColor="#232323"
                     android:textSize="14sp" />
 
+                <TextView
+                    android:id="@+id/tv_show_blur_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="背景高斯模糊"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_show_dark_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="背景变暗"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_show_tran_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="背景全透明"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/tv_show_target_right"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="在右边"
@@ -91,7 +118,7 @@
                     <TextView
                         android:id="@+id/tv_show_target_top"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="在上面"
@@ -101,7 +128,7 @@
                     <TextView
                         android:id="@+id/tv_show_target_bottom"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="在下面"
@@ -111,7 +138,7 @@
                     <TextView
                         android:id="@+id/tv_show_target_left"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="在左边"
@@ -121,36 +148,9 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tv_show_blur_bg"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:text="背景高斯模糊"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_dark_bg"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:text="背景变暗"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_tran_bg"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:gravity="center"
-                    android:text="背景全透明"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
                     android:id="@+id/tv_show_bottom_in"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="底部进入底部退出"
                     android:textColor="#232323"
@@ -159,7 +159,7 @@
                 <TextView
                     android:id="@+id/tv_show_bottom_alpha_in"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="底部进入底部退出alpha"
                     android:textColor="#232323"
@@ -168,7 +168,7 @@
                 <TextView
                     android:id="@+id/tv_show_top_in"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="顶部进入顶部退出"
                     android:textColor="#232323"
@@ -177,7 +177,7 @@
                 <TextView
                     android:id="@+id/tv_show_top_alpha_in"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="顶部进入顶部退出alpha"
                     android:textColor="#232323"
@@ -186,7 +186,7 @@
                 <TextView
                     android:id="@+id/tv_show_top_bottom"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="顶部进入底部退出"
                     android:textColor="#232323"
@@ -195,7 +195,7 @@
                 <TextView
                     android:id="@+id/tv_show_top_bottom_alpha"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="顶部进入底部退出alpha"
                     android:textColor="#232323"
@@ -204,7 +204,7 @@
                 <TextView
                     android:id="@+id/tv_show_bottom_top"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="底部进入顶部退出"
                     android:textColor="#232323"
@@ -213,7 +213,7 @@
                 <TextView
                     android:id="@+id/tv_show_bottom_top_alpha"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="底部进入顶部退出alpha"
                     android:textColor="#232323"
@@ -222,7 +222,7 @@
                 <TextView
                     android:id="@+id/tv_show_left_in"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="左侧进入左侧退出"
                     android:textColor="#232323"
@@ -231,7 +231,7 @@
                 <TextView
                     android:id="@+id/tv_show_left_alpha_in"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="左侧进入左侧退出alpha"
                     android:textColor="#232323"
@@ -240,7 +240,7 @@
                 <TextView
                     android:id="@+id/tv_show_right_in"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="右侧进入右侧退出"
                     android:textColor="#232323"
@@ -249,7 +249,7 @@
                 <TextView
                     android:id="@+id/tv_show_right_alpha_in"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="右侧进入右侧退出alpha"
                     android:textColor="#232323"
@@ -258,7 +258,7 @@
                 <TextView
                     android:id="@+id/tv_show_left_right"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="左侧进入右侧退出"
                     android:textColor="#232323"
@@ -267,7 +267,7 @@
                 <TextView
                     android:id="@+id/tv_show_left_right_alpha"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="左侧进入右侧退出alpha"
                     android:textColor="#232323"
@@ -276,7 +276,7 @@
                 <TextView
                     android:id="@+id/tv_show_right_left"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="右侧进入左侧退出"
                     android:textColor="#232323"
@@ -285,7 +285,7 @@
                 <TextView
                     android:id="@+id/tv_show_right_left_alpha"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="右侧进入左侧退出alpha"
                     android:textColor="#232323"
@@ -294,7 +294,7 @@
                 <TextView
                     android:id="@+id/tv_show_reveal"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="圆形揭露"
                     android:textColor="#232323"

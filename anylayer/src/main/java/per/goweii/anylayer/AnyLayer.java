@@ -512,6 +512,17 @@ public final class AnyLayer {
     }
 
     /**
+     * 设置浮层外部是否拦截触摸
+     * 默认为true，false则事件有activityContent本身消费
+     *
+     * @param touchable 外部是否拦截触摸
+     */
+    public AnyLayer outsideInterceptTouchEvent(boolean touchable) {
+        mLayerManager.mConfig.mOutsideInterceptTouchEvent = touchable;
+        return this;
+    }
+
+    /**
      * 设置点击浮层以外区域是否可关闭
      *
      * @param cancelable 是否可关闭
