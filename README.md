@@ -6,6 +6,8 @@
 
 [Demo下载](https://github.com/goweii/AnyLayer/raw/master/app/release/app-release.apk)
 
+
+
 # 简介
 
 - 链式调用
@@ -21,14 +23,12 @@
 
 
 
-从2.4.0版本开始，添加了一个通用弹窗库，里面会封装一些比较常见的弹窗，不定期更新。
+**从2.4.0版本开始，添加了一个通用弹窗库，里面会封装一些比较常见的弹窗，不定期更新，已有通用弹窗：**
 
-已有通用弹窗：
-
-1. 提示弹窗
-2. 列表弹窗（可实现单选和菜单效果）
-3. 加载中弹窗
-4. 菜单弹窗（ToolBar右上角的更多菜单）
+- 提示弹窗
+- 列表弹窗（可实现单选和菜单效果）
+- 加载中弹窗
+- 菜单弹窗（ToolBar右上角的更多菜单）
 
 
 
@@ -64,6 +64,7 @@ E-mail:goweii@163.com
 截图效果较差，建议[下载Demo](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)体验
 
 ![anylayer.gif](https://github.com/goweii/AnyLayer/blob/master/picture/demo.gif?raw=true)
+
 
 
 # 使用说明
@@ -149,7 +150,9 @@ AnyLayer.target(targetView)
 ```java
 /**
  * 如果需要全局弹窗，必须现在Application中初始化
+ * 2.4.0之后不再需要初始化也可全局弹窗
  **/
+@Deprecated
 public static void init(@NonNull Application application)
 
 /**

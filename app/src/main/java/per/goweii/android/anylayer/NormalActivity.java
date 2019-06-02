@@ -3,6 +3,7 @@ package per.goweii.android.anylayer;
 import android.animation.Animator;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.FrameLayout;
 import per.goweii.anylayer.Alignment;
 import per.goweii.anylayer.AnimHelper;
 import per.goweii.anylayer.AnyLayer;
+import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.LayerManager;
 
 public class NormalActivity extends AppCompatActivity implements View.OnClickListener {
@@ -35,6 +37,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
     private void initView() {
         flContent = findViewById(R.id.fl_content);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
+        findViewById(R.id.tv_show_app_context).setOnClickListener(this);
         findViewById(R.id.tv_show_no_context).setOnClickListener(this);
         findViewById(R.id.tv_show_top).setOnClickListener(this);
         findViewById(R.id.tv_show_top_view_group).setOnClickListener(this);
@@ -75,6 +78,17 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_test_1)
                         .onClickToDismiss(R.id.iv_1)
                         .show();
+                break;
+            case R.id.tv_show_app_context:
+                AnyLayer.with(this.getApplicationContext(), new LayerActivity.OnLayerCreatedCallback() {
+                    @Override
+                    public void onLayerCreated(@NonNull AnyLayer anyLayer) {
+                        anyLayer.contentView(R.layout.dialog_test_2)
+                                .backgroundColorRes(R.color.dialog_bg)
+                                .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                                .show();
+                    }
+                });
                 break;
             case R.id.tv_show_no_context:
                 AnyLayer.with()

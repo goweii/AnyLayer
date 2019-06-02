@@ -1,7 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="per.goweii.anylayer" >
+    package="per.goweii.anylayer">
 
     <application>
+        <activity
+            android:name=".LayerActivity"
+            android:theme="@style/LayerActivityTheme" />
         <provider
             android:name=".ActivityProvider"
             android:authorities="${applicationId}.activityprovider"

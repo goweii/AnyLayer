@@ -3,6 +3,7 @@ package per.goweii.android.anylayer;
 import android.animation.Animator;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import per.goweii.anylayer.Alignment;
 import per.goweii.anylayer.AnimHelper;
 import per.goweii.anylayer.AnyLayer;
+import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.LayerManager;
 
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
@@ -33,6 +35,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         flContent = findViewById(R.id.fl_content);
         tvTitle = findViewById(R.id.tv_title);
         tvTitle.setOnClickListener(this);
+        findViewById(R.id.tv_show_app_context).setOnClickListener(this);
         findViewById(R.id.tv_show_multi).setOnClickListener(this);
         findViewById(R.id.tv_show_edit).setOnClickListener(this);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
@@ -73,6 +76,17 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_title:
                 Toast.makeText(FullScreenActivity.this, "点击了title", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.tv_show_app_context:
+                AnyLayer.with(this.getApplicationContext(), new LayerActivity.OnLayerCreatedCallback() {
+                    @Override
+                    public void onLayerCreated(@NonNull AnyLayer anyLayer) {
+                        anyLayer.contentView(R.layout.dialog_test_2)
+                                .backgroundColorRes(R.color.dialog_bg)
+                                .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                                .show();
+                    }
+                });
                 break;
             case R.id.tv_show_multi:
                 showMulti();

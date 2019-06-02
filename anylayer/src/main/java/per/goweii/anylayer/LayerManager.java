@@ -36,7 +36,7 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
     final AnimExecutor mBackgroundOutAnimExecutor;
 
     final Config mConfig;
-    final Listener mListener;
+    final ListenerHolder mListenerHolder;
     
     private boolean mInAnimRunning = false;
     private boolean mOutAnimRunning = false;
@@ -57,7 +57,7 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
         mContentOutAnimExecutor = new AnimExecutor();
         mBackgroundOutAnimExecutor = new AnimExecutor();
         mConfig = new Config();
-        mListener = new Listener();
+        mListenerHolder = new ListenerHolder();
         init();
     }
 
@@ -171,12 +171,8 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
                 return AnimHelper.createAlphaOutAnim(target);
             }
         });
-        if (mListener.mOnVisibleChangeListener != null) {
-            mListener.mOnVisibleChangeListener.onShow(mAnyLayer);
-        }
-        if (mListener.mDataBinder != null) {
-            mListener.mDataBinder.bind(mAnyLayer);
-        }
+        mListenerHolder.notifyVisibleChangeOnShow(mAnyLayer);
+        mListenerHolder.notifyDataBinder(mAnyLayer);
     }
 
     @Override
@@ -185,18 +181,14 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
             return;
         }
         mInAnimRunning = true;
-        if (mListener.mOnLayerShowListener != null) {
-            mListener.mOnLayerShowListener.onShowing(mAnyLayer);
-        }
+        mListenerHolder.notifyLayerOnShowing(mAnyLayer);
         mContentInAnimExecutor.start();
         mBackgroundInAnimExecutor.start();
     }
 
     public void onShow() {
         mInAnimRunning = false;
-        if (mListener.mOnLayerShowListener != null) {
-            mListener.mOnLayerShowListener.onShown(mAnyLayer);
-        }
+        mListenerHolder.notifyLayerOnShown(mAnyLayer);
     }
 
     public void onPerRemove() {
@@ -204,9 +196,7 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
             return;
         }
         mOutAnimRunning = true;
-        if (mListener.mOnLayerDismissListener != null) {
-            mListener.mOnLayerDismissListener.onDismissing(mAnyLayer);
-        }
+        mListenerHolder.notifyLayerOnDismissing(mAnyLayer);
         mContentInAnimExecutor.cancel();
         mBackgroundInAnimExecutor.cancel();
         mContentOutAnimExecutor.start();
@@ -216,12 +206,8 @@ public final class LayerManager implements ViewManager.OnLifeListener, ViewManag
     @Override
     public void onDetach() {
         mOutAnimRunning = false;
-        if (mListener.mOnVisibleChangeListener != null) {
-            mListener.mOnVisibleChangeListener.onDismiss(mAnyLayer);
-        }
-        if (mListener.mOnLayerDismissListener != null) {
-            mListener.mOnLayerDismissListener.onDismissed(mAnyLayer);
-        }
+        mListenerHolder.notifyVisibleChangeOnDismiss(mAnyLayer);
+        mListenerHolder.notifyLayerOnDismissed(mAnyLayer);
         mViewHolder.recycle();
     }
 

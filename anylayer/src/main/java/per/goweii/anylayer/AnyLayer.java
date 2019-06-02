@@ -54,6 +54,22 @@ public final class AnyLayer {
     }
 
     /**
+     * 此时不需要APP存在Activity实例
+     * 会新启动一个Activity并向根布局添加一个浮层
+     *
+     * @param context 上下文
+     */
+    public static void with(@Nullable Context context, LayerActivity.OnLayerCreatedCallback callback) {
+        final Context contextFinal;
+        if (context == null) {
+            contextFinal = ActivityHolder.getApplication();
+        } else {
+            contextFinal = context;
+        }
+        LayerActivity.start(contextFinal, callback);
+    }
+
+    /**
      * 向窗口根布局添加一个浮层
      */
     public static AnyLayer with() {
@@ -89,7 +105,7 @@ public final class AnyLayer {
     }
 
     private AnyLayer() {
-        Activity activity = ActivityHolder.currentActivity();
+        Activity activity = ActivityHolder.getCurrentActivity();
         if (activity == null) {
             throw new RuntimeException("要是用全局弹窗必须先在Application中调用AnyLayer.init(Application)方法初始化");
         }
@@ -152,17 +168,17 @@ public final class AnyLayer {
      * @param dataBinder 实现该接口进行数据绑定
      */
     public AnyLayer bindData(LayerManager.IDataBinder dataBinder) {
-        mLayerManager.mListener.mDataBinder = dataBinder;
+        mLayerManager.mListenerHolder.addDataBinder(dataBinder);
         return this;
     }
 
     /**
      * 设置显示状态改变的监听
      *
-     * @param mOnVisibleChangeListener OnVisibleChangeListener
+     * @param onVisibleChangeListener OnVisibleChangeListener
      */
-    public AnyLayer onVisibleChangeListener(LayerManager.OnVisibleChangeListener mOnVisibleChangeListener) {
-        mLayerManager.mListener.mOnVisibleChangeListener = mOnVisibleChangeListener;
+    public AnyLayer onVisibleChangeListener(LayerManager.OnVisibleChangeListener onVisibleChangeListener) {
+        mLayerManager.mListenerHolder.addOnVisibleChangeListener(onVisibleChangeListener);
         return this;
     }
 
@@ -172,7 +188,7 @@ public final class AnyLayer {
      * @param onLayerShowListener OnLayerShowListener
      */
     public AnyLayer onLayerShowListener(LayerManager.OnLayerShowListener onLayerShowListener) {
-        mLayerManager.mListener.mOnLayerShowListener = onLayerShowListener;
+        mLayerManager.mListenerHolder.addOnLayerShowListener(onLayerShowListener);
         return this;
     }
 
@@ -182,7 +198,7 @@ public final class AnyLayer {
      * @param onLayerDismissListener OnLayerDismissListener
      */
     public AnyLayer onLayerDismissListener(LayerManager.OnLayerDismissListener onLayerDismissListener) {
-        mLayerManager.mListener.mOnLayerDismissListener = onLayerDismissListener;
+        mLayerManager.mListenerHolder.addOnLayerDismissListener(onLayerDismissListener);
         return this;
     }
 

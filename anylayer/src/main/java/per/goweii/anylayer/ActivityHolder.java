@@ -24,9 +24,11 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
 
     private static ActivityHolder INSTANCE = null;
 
-    private Stack<Activity> mActivityStack = new Stack<>();
+    private final Application mApplication;
+    private final Stack<Activity> mActivityStack = new Stack<>();
 
     private ActivityHolder(@NonNull Application application) {
+        mApplication = application;
         application.registerActivityLifecycleCallbacks(this);
     }
 
@@ -36,8 +38,15 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         }
     }
 
+    static Application getApplication() {
+        if (INSTANCE == null) {
+            return null;
+        }
+        return INSTANCE.mApplication;
+    }
+
     @Nullable
-    static Activity currentActivity() {
+    static Activity getCurrentActivity() {
         if (INSTANCE == null) {
             return null;
         }
