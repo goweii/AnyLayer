@@ -11,8 +11,8 @@
 # 简介
 
 - 链式调用
-- 可实现dialog效果
-- 可实现popupWindow效果
+- 可实现Dialog效果
+- 可实现PopupWindow效果
 - 可实现悬浮菜单效果
 - 可自定义数据绑定
 - 可自定义进出场动画
@@ -20,6 +20,9 @@
 - 可自定义背景变暗或者显示图片
 - 可一行代码实现背景高斯模糊
 - 占用区域不会超过当前Activity，避免导航栏遮挡问题
+- PopupWindow效果时可跟随目标View移动
+- 可全局弹出
+- 可从ApplicationContext弹出
 
 
 
@@ -61,7 +64,7 @@ E-mail:goweii@163.com
 
 # 截图
 
-截图效果较差，建议[下载Demo](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)体验
+截图效果较差且版本较老，建议[下载Demo](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)体验最新功能
 
 ![anylayer.gif](https://github.com/goweii/AnyLayer/blob/master/picture/demo.gif?raw=true)
 
@@ -91,12 +94,12 @@ allprojects {
 // build.gradle(Module:)
 dependencies {
     // 完整引入
-    implementation 'com.github.goweii:AnyLayer:2.4.0'
+    implementation 'com.github.goweii:AnyLayer:2.5.0'
     
     // 基础库
-    implementation 'com.github.goweii.AnyLayer:anylayer:2.4.0'
+    implementation 'com.github.goweii.AnyLayer:anylayer:2.5.0'
     // 通用弹窗（依赖基础库）
-    implementation 'com.github.goweii.AnyLayer:anylayer-common:2.4.0'
+    implementation 'com.github.goweii.AnyLayer:anylayer-common:2.5.0'
 }
 ```
 
@@ -158,8 +161,20 @@ public static void init(@NonNull Application application)
 /**
  * 有背景高斯模糊弹窗，建议提前调用该方法初始化
  * 不用在Application调用，可放到启动页中进行，避免影响APP启动速度
+ * 也可在用到的Activity的onCreate方法中
  **/
 public static void initBlurred(@NonNull Context context)
+
+/**
+ * 有背景高斯模糊弹窗，在用到的Activity的onCreate方法中初始化后可在onDestroy中回收
+ **/
+public static void recycleBlurred()
+    
+/**
+ * 此时不需要APP存在Activity实例
+ * 会新启动一个Activity并向根布局添加一个浮层
+ */
+public static void with(@Nullable Context context, LayerActivity.OnLayerCreatedCallback callback)
 
 /**
  * 向窗口根布局添加一个浮层
@@ -368,6 +383,12 @@ public AnyLayer backgroundColorInt(@ColorInt int colorInt)
  * 设置背景颜色
  **/
 public AnyLayer backgroundColorRes(@ColorRes int colorRes)
+
+/**
+ * 设置浮层外部是否拦截触摸
+ * 默认为true，false则事件由activityContent本身消费
+ **/
+public AnyLayer outsideInterceptTouchEvent(boolean intercept)
 
 /**
  * 设置点击浮层以外区域是否可关闭

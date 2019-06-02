@@ -515,10 +515,10 @@ public final class AnyLayer {
      * 设置浮层外部是否拦截触摸
      * 默认为true，false则事件有activityContent本身消费
      *
-     * @param touchable 外部是否拦截触摸
+     * @param intercept 外部是否拦截触摸
      */
-    public AnyLayer outsideInterceptTouchEvent(boolean touchable) {
-        mLayerManager.mConfig.mOutsideInterceptTouchEvent = touchable;
+    public AnyLayer outsideInterceptTouchEvent(boolean intercept) {
+        mLayerManager.mConfig.mOutsideInterceptTouchEvent = intercept;
         return this;
     }
 
