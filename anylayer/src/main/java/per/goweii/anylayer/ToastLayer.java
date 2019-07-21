@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 /**
  * @author CuiZhen
@@ -17,14 +18,27 @@ import android.widget.FrameLayout;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class ToastLayer extends Layer {
-
-    private long mDuration = 3000L;
+public class ToastLayer extends Layer implements Runnable {
 
     private final Context mContext;
 
+    private long mDuration = 3000L;
+    private CharSequence message = "";
+
     public ToastLayer(@NonNull Context context) {
         mContext = context;
+        interceptKeyEvent(false);
+        cancelableOnKeyDown(false);
+    }
+
+    public ToastLayer duration(long duration) {
+        mDuration = duration;
+        return this;
+    }
+
+    public ToastLayer message(@NonNull CharSequence message) {
+        this.message = message;
+        return this;
     }
 
     @NonNull
@@ -43,18 +57,44 @@ public class ToastLayer extends Layer {
     @NonNull
     @Override
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return null;
+        return inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
     }
 
     @Nullable
     @Override
     protected Animator onCreateViewInAnimator(@NonNull View view) {
-        return null;
+        return AnimatorHelper.createLeftInAnim(view);
     }
 
     @Nullable
     @Override
     protected Animator onCreateViewOutAnimator(@NonNull View view) {
-        return null;
+        return AnimatorHelper.createLeftOutAnim(view);
+    }
+
+    @Override
+    public void onAttach() {
+        super.onAttach();
+        TextView tvMsg = getViewManager().getChild().findViewById(R.id.tv_msg);
+        tvMsg.setText(message);
+    }
+
+    @Override
+    public void onShow() {
+        super.onShow();
+        if (mDuration > 0) {
+            getViewManager().getChild().postDelayed(this, mDuration);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        getViewManager().getChild().removeCallbacks(this);
+    }
+
+    @Override
+    public void run() {
+        dismiss();
     }
 }

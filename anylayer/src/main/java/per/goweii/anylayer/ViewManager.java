@@ -19,8 +19,9 @@ public final class ViewManager {
 
     private final ViewGroup mParent;
     private final View mChild;
-    private final LayerKeyListener mLayerKeyListener;
-    private final LayerGlobalFocusChangeListener mLayerGlobalFocusChangeListener;
+
+    private LayerKeyListener mLayerKeyListener = null;
+    private LayerGlobalFocusChangeListener mLayerGlobalFocusChangeListener = null;
 
     private View currentKeyView = null;
 
@@ -32,8 +33,6 @@ public final class ViewManager {
         mParent = parent;
         mChild = child;
         checkChildParent();
-        mLayerKeyListener = new LayerKeyListener();
-        mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
     }
 
     public ViewGroup getParent() {
@@ -93,13 +92,19 @@ public final class ViewManager {
      * 添加到父View
      */
     private void onAttach() {
-        mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
+        if (mOnKeyListener != null) {
+            mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
+            mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
+        }
         mChild.getViewTreeObserver().addOnPreDrawListener(new LayerPreDrawListener());
         mChild.setFocusable(true);
         mChild.setFocusableInTouchMode(true);
         mChild.requestFocus();
         currentKeyView = mChild;
-        currentKeyView.setOnKeyListener(mLayerKeyListener);
+        if (mOnKeyListener != null) {
+            mLayerKeyListener = new LayerKeyListener();
+            currentKeyView.setOnKeyListener(mLayerKeyListener);
+        }
         mParent.addView(mChild);
         if (mOnLifeListener != null){
             mOnLifeListener.onAttach();

@@ -652,7 +652,7 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
      * @param cancelable 是否可关闭
      */
     public DialogLayer cancelableOnClickKeyBack(boolean cancelable) {
-        mConfig.mCancelableOnClickKeyBack = cancelable;
+        cancelableOnKeyDown(cancelable);
         return this;
     }
 
@@ -769,7 +769,11 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
      * @return boolean
      */
     public boolean isShow() {
-        return mViewManager.isAttached();
+        ViewManager viewManager = getViewManager();
+        if (viewManager == null) {
+            return false;
+        }
+        return getViewManager().isAttached();
     }
 
     /**
@@ -991,7 +995,6 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
         private boolean mOutsideInterceptTouchEvent = true;
 
         private boolean mCancelableOnTouchOutside = true;
-        private boolean mCancelableOnClickKeyBack = true;
 
         @IdRes
         private int mAsStatusBarViewId = 0;

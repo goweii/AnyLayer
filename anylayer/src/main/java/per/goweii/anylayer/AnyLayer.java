@@ -75,4 +75,12 @@ public final class AnyLayer {
     public static DialogLayer target(@NonNull View targetView) {
         return new DialogLayer(targetView);
     }
+
+    public static ToastLayer toast() {
+        return new ToastLayer(Objects.requireNonNull(ActivityHolder.getCurrentActivity()));
+    }
+
+    public static ToastLayer toast(@NonNull Context context) {
+        return new ToastLayer(context);
+    }
 }

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import per.goweii.anylayer.AnyLayer;
+
 public class CommonActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
@@ -23,6 +25,7 @@ public class CommonActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.tv_show_list_no_title_no_btn).setOnClickListener(this);
         findViewById(R.id.tv_show_loading).setOnClickListener(this);
         findViewById(R.id.tv_show_loading_no_text).setOnClickListener(this);
+        findViewById(R.id.tv_toast).setOnClickListener(this);
     }
 
     @Override
@@ -45,6 +48,9 @@ public class CommonActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_loading:
                 break;
             case R.id.tv_show_loading_no_text:
+                break;
+            case R.id.tv_toast:
+                AnyLayer.toast().duration(1000).message("哈哈，这个一个自定义样式的吐司").show();
                 break;
         }
     }

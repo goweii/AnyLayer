@@ -18,9 +18,10 @@ import android.view.ViewGroup;
  */
 public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
 
-    protected ViewManager mViewManager;
+    private ViewManager mViewManager;
 
-    protected boolean mCancelableOnClickKeyBack = true;
+    private boolean mInterceptKeyEvent = true;
+    private boolean mCancelableOnKeyDown = true;
 
     private Animator mAnimatorIn = null;
     private Animator mAnimatorOut = null;
@@ -33,13 +34,27 @@ public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.O
             mViewManager = new ViewManager(parent, child);
             mViewManager.setOnLifeListener(this);
             mViewManager.setOnPreDrawListener(this);
-            mViewManager.setOnKeyListener(this);
+            if (mInterceptKeyEvent) {
+                mViewManager.setOnKeyListener(this);
+            }
         }
         mViewManager.attach();
     }
 
     public void dismiss() {
         onPerRemove();
+    }
+
+    public ViewManager getViewManager() {
+        return mViewManager;
+    }
+
+    public void interceptKeyEvent(boolean interceptKeyEvent) {
+        mInterceptKeyEvent = interceptKeyEvent;
+    }
+
+    public void cancelableOnKeyDown(boolean cancelable) {
+        mCancelableOnKeyDown = cancelable;
     }
 
     @NonNull
@@ -130,7 +145,7 @@ public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.O
     public boolean onKey(int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (mCancelableOnClickKeyBack) {
+                if (mCancelableOnKeyDown) {
                     dismiss();
                 }
                 return true;
