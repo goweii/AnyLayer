@@ -43,6 +43,7 @@ import per.goweii.burred.Blurred;
  */
 public class DialogLayer extends Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
 
+    private final Context mContext;
     private final Config mConfig;
     private final ListenerHolder mListenerHolder;
     private final ViewHolder mViewHolder;
@@ -53,33 +54,32 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     @Nullable
     private SoftInputHelper mSoftInputHelper = null;
 
-    public DialogLayer() {
+    public DialogLayer(@NonNull ViewGroup parent) {
+        mContext = parent.getContext();
         mConfig = new Config();
         mListenerHolder = new ListenerHolder();
         mViewHolder = new ViewHolder();
-    }
-
-    public DialogLayer(@NonNull ViewGroup parent) {
-        this();
         mViewHolder.setRootView(parent);
     }
 
-    public DialogLayer(@NonNull Context context) {
-        this();
-        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
+    public DialogLayer(@NonNull Activity activity) {
+        mContext = activity;
+        mConfig = new Config();
+        mListenerHolder = new ListenerHolder();
+        mViewHolder = new ViewHolder();
+        FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
         FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
         mViewHolder.setRootView(rootView);
         mViewHolder.setActivityContentView(activityContentView);
     }
 
+    public DialogLayer(@NonNull Context context) {
+        this(Objects.requireNonNull(Utils.getActivity(context)));
+    }
+
     public DialogLayer(@NonNull View targetView) {
-        this();
-        Context context = targetView.getContext();
-        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        mViewHolder.setRootView(rootView);
+        this(targetView.getContext());
         mViewHolder.setTargetView(targetView);
-        mViewHolder.setActivityContentView(activityContentView);
     }
 
     @NonNull
@@ -92,6 +92,9 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     @Override
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
         FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
+        if (mViewHolder.getContent() == null) {
+            mViewHolder.setContent(LayoutInflater.from(mContext).inflate(mConfig.contentViewId, container, false));
+        }
         mViewHolder.setContainer(container);
         return container;
     }
@@ -429,7 +432,8 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
      * @param contentViewId 自定义布局ID
      */
     public DialogLayer contentView(@LayoutRes int contentViewId) {
-        return contentView(LayoutInflater.from(mContext).inflate(contentViewId, mViewHolder.getContainer(), false));
+        mConfig.contentViewId = contentViewId;
+        return this;
     }
 
     /**
@@ -981,6 +985,9 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     }
 
     private final class Config {
+        @LayoutRes
+        private int contentViewId = 0;
+
         private boolean mOutsideInterceptTouchEvent = true;
 
         private boolean mCancelableOnTouchOutside = true;

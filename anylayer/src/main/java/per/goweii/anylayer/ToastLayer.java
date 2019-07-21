@@ -19,6 +19,8 @@ import android.widget.FrameLayout;
  */
 public class ToastLayer extends Layer {
 
+    private long mDuration = 3000L;
+
     private final Context mContext;
 
     public ToastLayer(@NonNull Context context) {

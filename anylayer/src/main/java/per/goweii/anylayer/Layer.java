@@ -18,7 +18,6 @@ import android.view.ViewGroup;
  */
 public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
 
-    protected Context mContext;
     protected ViewGroup mParentView;
     protected View mContentView;
     protected ViewManager mViewManager;
@@ -27,6 +26,9 @@ public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.O
 
     private Animator mAnimatorIn = null;
     private Animator mAnimatorOut = null;
+
+    public Layer() {
+    }
 
     public void show() {
         init();
@@ -40,8 +42,8 @@ public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.O
     private void init() {
         if (mParentView == null) {
             mParentView = onGetParent();
-            mContext = mParentView.getContext();
-            mContentView = onCreateView(LayoutInflater.from(mContext), mParentView);
+            Context context = mParentView.getContext();
+            mContentView = onCreateView(LayoutInflater.from(context), mParentView);
             mViewManager = new ViewManager(mParentView, mContentView);
             mViewManager.setOnLifeListener(this);
             mViewManager.setOnPreDrawListener(this);
