@@ -16,7 +16,7 @@ import per.goweii.statusbarcompat.StatusBarCompat;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class LayerActivity extends AppCompatActivity implements LayerManager.OnVisibleChangeListener {
+public class LayerActivity extends AppCompatActivity implements DialogLayer.OnVisibleChangeListener {
 
     private static OnLayerCreatedCallback sOnLayerCreatedCallback = null;
 
@@ -32,19 +32,19 @@ public class LayerActivity extends AppCompatActivity implements LayerManager.OnV
         overridePendingTransition(0, 0);
         super.onCreate(savedInstanceState);
         StatusBarCompat.transparent(this);
-        AnyLayer anyLayer = AnyLayer.with(this);
-        anyLayer.onVisibleChangeListener(this);
+        DialogLayer dialogLayer = AnyLayer.with(this);
+        dialogLayer.onVisibleChangeListener(this);
         if (sOnLayerCreatedCallback != null) {
-            sOnLayerCreatedCallback.onLayerCreated(anyLayer);
+            sOnLayerCreatedCallback.onLayerCreated(dialogLayer);
         }
     }
 
     @Override
-    public void onShow(AnyLayer anyLayer) {
+    public void onShow(DialogLayer dialogLayer) {
     }
 
     @Override
-    public void onDismiss(AnyLayer anyLayer) {
+    public void onDismiss(DialogLayer dialogLayer) {
         finish();
         overridePendingTransition(0, 0);
     }
@@ -53,7 +53,7 @@ public class LayerActivity extends AppCompatActivity implements LayerManager.OnV
         /**
          * 浮层已创建，可在这里进行浮层的初始化和数据绑定
          */
-        void onLayerCreated(@NonNull AnyLayer anyLayer);
+        void onLayerCreated(@NonNull DialogLayer dialogLayer);
     }
 
 }

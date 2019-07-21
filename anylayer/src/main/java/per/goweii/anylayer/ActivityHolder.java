@@ -2,14 +2,10 @@ package per.goweii.anylayer;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.ContentProvider;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.util.Stack;
 
@@ -43,6 +39,24 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
             return null;
         }
         return INSTANCE.mApplication;
+    }
+
+    @Nullable
+    static Activity getActivity(@NonNull Class<Activity> clazz) {
+        if (INSTANCE == null) {
+            return null;
+        }
+        if (INSTANCE.mActivityStack.empty()) {
+            return null;
+        }
+        final int size = INSTANCE.mActivityStack.size();
+        for (int i = size - 1; i >= 0; i--) {
+            Activity activity = INSTANCE.mActivityStack.get(i);
+            if (TextUtils.equals(clazz.getName(), activity.getClass().getName())) {
+                return activity;
+            }
+        }
+        return null;
     }
 
     @Nullable

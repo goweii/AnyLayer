@@ -23,7 +23,7 @@ import java.util.List;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class AnimHelper {
+public class AnimatorHelper {
 
     public static Animator createAlphaInAnim(@NonNull final View target) {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);

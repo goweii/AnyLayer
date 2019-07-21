@@ -1,8 +1,7 @@
 package per.goweii.android.anylayer;
 
 import android.app.Application;
-
-import per.goweii.anylayer.AnyLayer;
+import android.os.Handler;
 
 /**
  * @author CuiZhen
@@ -12,6 +11,9 @@ import per.goweii.anylayer.AnyLayer;
  * GitHub: https://github.com/goweii
  */
 public class App extends Application {
+
+    public static Handler sHandler = new Handler();
+
     @Override
     public void onCreate() {
         super.onCreate();

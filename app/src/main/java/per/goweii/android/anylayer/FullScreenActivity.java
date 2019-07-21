@@ -13,10 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import per.goweii.anylayer.Alignment;
-import per.goweii.anylayer.AnimHelper;
+import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
+import per.goweii.anylayer.DialogLayer;
 import per.goweii.anylayer.LayerActivity;
-import per.goweii.anylayer.LayerManager;
 
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -78,9 +78,9 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 Toast.makeText(FullScreenActivity.this, "点击了title", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.tv_show_app_context:
-                AnyLayer.with(this.getApplicationContext(), new LayerActivity.OnLayerCreatedCallback() {
+                AnyLayer.with(new LayerActivity.OnLayerCreatedCallback() {
                     @Override
-                    public void onLayerCreated(@NonNull AnyLayer anyLayer) {
+                    public void onLayerCreated(@NonNull DialogLayer anyLayer) {
                         anyLayer.contentView(R.layout.dialog_test_2)
                                 .backgroundColorRes(R.color.dialog_bg)
                                 .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -96,33 +96,33 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_test_7)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.CENTER)
-                        .onVisibleChangeListener(new LayerManager.OnVisibleChangeListener() {
+                        .onVisibleChangeListener(new DialogLayer.OnVisibleChangeListener() {
                             @Override
-                            public void onShow(AnyLayer anyLayer) {
+                            public void onShow(DialogLayer anyLayer) {
                                 EditText editText = anyLayer.getView(R.id.et_dialog_content);
                                 anyLayer.compatSoftInput(editText);
                             }
 
                             @Override
-                            public void onDismiss(AnyLayer anyLayer) {
+                            public void onDismiss(DialogLayer anyLayer) {
                                 anyLayer.removeSoftInput();
                             }
                         })
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createZoomAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createZoomAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createZoomAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createZoomAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
+                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
                             @Override
-                            public void onClick(AnyLayer anyLayer, View v) {
+                            public void onClick(DialogLayer anyLayer, View v) {
                                 anyLayer.dismiss();
                                 EditText et = anyLayer.getView(R.id.et_dialog_content);
                                 Toast.makeText(FullScreenActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
@@ -142,15 +142,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .asStatusBar(R.id.v_status_bar)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createTopInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createTopInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createTopOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
@@ -161,15 +161,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_test_3)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createTopInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createTopInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createTopOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
@@ -180,15 +180,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .outsideInterceptTouchEvent(false)
                         .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, true)
                         .contentView(R.layout.dialog_test_5)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createLeftInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createLeftInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createLeftOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createLeftOutAnim(content);
                             }
                         })
                         .show();
@@ -197,15 +197,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.target(findViewById(R.id.tv_show_target_left))
                         .contentView(R.layout.dialog_test_5)
                         .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_LEFT, Alignment.Vertical.CENTER, true)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createRightInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createRightInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createRightOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createRightOutAnim(content);
                             }
                         })
                         .show();
@@ -216,15 +216,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.ABOVE, true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createBottomInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createBottomInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createBottomOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
                         .show();
@@ -235,15 +235,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_test_4)
                         .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createTopInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createTopInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createTopOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
                         .show();
@@ -253,15 +253,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_test_3)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createBottomInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createBottomInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createBottomOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
@@ -292,15 +292,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createBottomInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createBottomInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createBottomOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -310,15 +310,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createBottomAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createBottomAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createBottomAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createBottomAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -328,15 +328,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createTopInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createTopInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createTopOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -346,15 +346,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createTopAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createTopAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createTopAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createTopAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -364,15 +364,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createTopInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createTopInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createBottomOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -382,15 +382,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createBottomInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createBottomInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createTopOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -400,15 +400,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createTopAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createTopAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createBottomAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createBottomAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -418,15 +418,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createBottomAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createBottomAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createTopAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createTopAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -436,15 +436,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createLeftInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createLeftInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createLeftOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createLeftOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -454,15 +454,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createLeftAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createLeftAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createLeftAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createLeftAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -472,15 +472,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createRightInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createRightInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createRightOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createRightOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -490,15 +490,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createRightAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createRightAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createRightAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createRightAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -508,15 +508,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createLeftInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createLeftInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createRightOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createRightOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -526,15 +526,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createRightInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createRightInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createLeftOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createLeftOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -544,15 +544,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createLeftAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createLeftAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createRightAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createRightAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -562,15 +562,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createRightAlphaInAnim(content);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createRightAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createLeftAlphaOutAnim(content);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createLeftAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -580,19 +580,19 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.with(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
+                            public Animator createInAnimator(View content) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    return AnimHelper.createCircularRevealInAnim(content, content.getMeasuredWidth() / 2, content.getMeasuredHeight() / 2);
+                                    return AnimatorHelper.createCircularRevealInAnim(content, content.getMeasuredWidth() / 2, content.getMeasuredHeight() / 2);
                                 }
                                 return null;
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
+                            public Animator createOutAnimator(View content) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    return AnimHelper.createCircularRevealOutAnim(content, content.getMeasuredWidth() / 2, content.getMeasuredHeight() / 2);
+                                    return AnimatorHelper.createCircularRevealOutAnim(content, content.getMeasuredWidth() / 2, content.getMeasuredHeight() / 2);
                                 }
                                 return null;
                             }
@@ -604,15 +604,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.target(findViewById(R.id.tv_show_delayed_zoom))
                         .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.ALIGN_RIGHT, Alignment.Vertical.BELOW, true)
                         .contentView(R.layout.dialog_test_8)
-                        .contentAnim(new LayerManager.IAnim() {
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator inAnim(View content) {
-                                return AnimHelper.createDelayedZoomInAnim(content, 1F, 0F);
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createDelayedZoomInAnim(content, 1F, 0F);
                             }
 
                             @Override
-                            public Animator outAnim(View content) {
-                                return AnimHelper.createDelayedZoomOutAnim(content, 1F, 0F);
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createDelayedZoomOutAnim(content, 1F, 0F);
                             }
                         })
                         .show();
@@ -627,26 +627,26 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 .gravity(Gravity.CENTER)
                 .cancelableOnTouchOutside(false)
                 .cancelableOnClickKeyBack(false)
-                .contentAnim(new LayerManager.IAnim() {
+                .contentAnimator(new DialogLayer.AnimatorCreator() {
                     @Override
-                    public Animator inAnim(View content) {
-                        return AnimHelper.createZoomAlphaInAnim(content);
+                    public Animator createInAnimator(View content) {
+                        return AnimatorHelper.createZoomAlphaInAnim(content);
                     }
 
                     @Override
-                    public Animator outAnim(View content) {
-                        return AnimHelper.createZoomAlphaOutAnim(content);
+                    public Animator createOutAnimator(View content) {
+                        return AnimatorHelper.createZoomAlphaOutAnim(content);
                     }
                 })
-                .onClick(R.id.fl_dialog_no, new LayerManager.OnLayerClickListener() {
+                .onClick(R.id.fl_dialog_no, new DialogLayer.OnLayerClickListener() {
                     @Override
-                    public void onClick(AnyLayer anyLayer, View v) {
+                    public void onClick(DialogLayer anyLayer, View v) {
                         anyLayer.dismiss();
                     }
                 })
-                .onClick(R.id.fl_dialog_yes, new LayerManager.OnLayerClickListener() {
+                .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
                     @Override
-                    public void onClick(AnyLayer anyLayer, View v) {
+                    public void onClick(DialogLayer anyLayer, View v) {
                         showMulti();
                     }
                 })

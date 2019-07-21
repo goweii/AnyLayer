@@ -10,9 +10,6 @@ import java.lang.reflect.Method;
 
 /**
  * 描述：弹出软件盘辅助类
- *
- * @author Yanbo
- * @date 18/9/1
  */
 final class InputMethodUtils {
 

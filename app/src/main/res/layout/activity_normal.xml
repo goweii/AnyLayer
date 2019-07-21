@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -43,6 +42,15 @@
                     android:layout_height="60dp"
                     android:gravity="center"
                     android:text="无需Context弹出"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_show_delay"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="5秒后弹出"
                     android:textColor="#232323"
                     android:textSize="14sp" />
 

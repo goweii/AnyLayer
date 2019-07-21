@@ -1,6 +1,5 @@
 package per.goweii.anylayer;
 
-import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.View;
