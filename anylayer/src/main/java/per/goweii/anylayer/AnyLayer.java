@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Objects;
+
 import per.goweii.burred.Blurred;
 
 /**
@@ -36,22 +38,14 @@ public final class AnyLayer {
      * 向窗口根布局添加一个浮层
      */
     public static DialogLayer with() {
-        Activity activity = ActivityHolder.getCurrentActivity();
-        if (activity == null) {
-            return null;
-        }
-        return new DialogLayer(activity);
+        return new DialogLayer(Objects.requireNonNull(ActivityHolder.getCurrentActivity()));
     }
 
     /**
      * 向窗口根布局添加一个浮层
      */
     public static DialogLayer with(@NonNull Class<Activity> clazz) {
-        Activity activity = ActivityHolder.getActivity(clazz);
-        if (activity == null) {
-            return null;
-        }
-        return new DialogLayer(activity);
+        return new DialogLayer(Objects.requireNonNull(ActivityHolder.getActivity(clazz)));
     }
 
     /**

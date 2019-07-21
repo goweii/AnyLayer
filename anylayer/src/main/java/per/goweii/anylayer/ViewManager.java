@@ -36,6 +36,14 @@ public final class ViewManager {
         mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
     }
 
+    public ViewGroup getParent() {
+        return mParent;
+    }
+
+    public View getChild() {
+        return mChild;
+    }
+
     /**
      * 确保子控件未被添加到非当前父布局，否则移除
      */

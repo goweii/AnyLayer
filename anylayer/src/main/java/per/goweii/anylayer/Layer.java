@@ -18,8 +18,6 @@ import android.view.ViewGroup;
  */
 public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
 
-    protected ViewGroup mParentView;
-    protected View mContentView;
     protected ViewManager mViewManager;
 
     protected boolean mCancelableOnClickKeyBack = true;
@@ -27,28 +25,21 @@ public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.O
     private Animator mAnimatorIn = null;
     private Animator mAnimatorOut = null;
 
-    public Layer() {
-    }
-
     public void show() {
-        init();
+        if (mViewManager == null) {
+            ViewGroup parent = onGetParent();
+            Context context = parent.getContext();
+            View child = onCreateView(LayoutInflater.from(context), parent);
+            mViewManager = new ViewManager(parent, child);
+            mViewManager.setOnLifeListener(this);
+            mViewManager.setOnPreDrawListener(this);
+            mViewManager.setOnKeyListener(this);
+        }
         mViewManager.attach();
     }
 
     public void dismiss() {
         onPerRemove();
-    }
-
-    private void init() {
-        if (mParentView == null) {
-            mParentView = onGetParent();
-            Context context = mParentView.getContext();
-            mContentView = onCreateView(LayoutInflater.from(context), mParentView);
-            mViewManager = new ViewManager(mParentView, mContentView);
-            mViewManager.setOnLifeListener(this);
-            mViewManager.setOnPreDrawListener(this);
-            mViewManager.setOnKeyListener(this);
-        }
     }
 
     @NonNull
@@ -69,7 +60,7 @@ public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.O
 
     @Override
     public void onPreDraw() {
-        mAnimatorIn = onCreateViewInAnimator(mContentView);
+        mAnimatorIn = onCreateViewInAnimator(mViewManager.getChild());
         if (mAnimatorIn != null) {
             mAnimatorIn.addListener(new Animator.AnimatorListener() {
                 @Override
@@ -102,7 +93,7 @@ public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.O
     }
 
     public void onPerRemove() {
-        mAnimatorOut = onCreateViewOutAnimator(mContentView);
+        mAnimatorOut = onCreateViewOutAnimator(mViewManager.getChild());
         if (mAnimatorOut != null) {
             mAnimatorOut.addListener(new Animator.AnimatorListener() {
                 @Override
