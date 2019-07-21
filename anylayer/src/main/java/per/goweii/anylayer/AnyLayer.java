@@ -5,9 +5,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
-import java.util.Objects;
 
 import per.goweii.burred.Blurred;
 
@@ -43,9 +40,7 @@ public final class AnyLayer {
         if (activity == null) {
             return null;
         }
-        FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        return new DialogLayer(rootView, null, activityContentView);
+        return new DialogLayer(activity);
     }
 
     /**
@@ -56,9 +51,7 @@ public final class AnyLayer {
         if (activity == null) {
             return null;
         }
-        FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        return new DialogLayer(rootView, null, activityContentView);
+        return new DialogLayer(activity);
     }
 
     /**
@@ -67,7 +60,7 @@ public final class AnyLayer {
      * @param viewGroup 浮层父布局
      */
     public static DialogLayer with(@NonNull ViewGroup viewGroup) {
-        return new DialogLayer(viewGroup, null, null);
+        return new DialogLayer(viewGroup);
     }
 
     /**
@@ -76,9 +69,7 @@ public final class AnyLayer {
      * @param context 上下文，不能是ApplicationContext
      */
     public static DialogLayer with(@NonNull Context context) {
-        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        return new DialogLayer(rootView, null, activityContentView);
+        return new DialogLayer(context);
     }
 
     /**
@@ -88,9 +79,6 @@ public final class AnyLayer {
      * @param targetView 位置参照View
      */
     public static DialogLayer target(@NonNull View targetView) {
-        Context context = targetView.getContext();
-        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        return new DialogLayer(rootView, targetView, activityContentView);
+        return new DialogLayer(targetView);
     }
 }

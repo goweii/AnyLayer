@@ -18,33 +18,39 @@ import android.view.ViewGroup;
  */
 public abstract class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
 
-    protected final Context mContext;
-    protected final ViewGroup mParentView;
-    protected final View mContentView;
-    protected final ViewManager mViewManager;
+    protected Context mContext;
+    protected ViewGroup mParentView;
+    protected View mContentView;
+    protected ViewManager mViewManager;
 
     protected boolean mCancelableOnClickKeyBack = true;
 
     private Animator mAnimatorIn = null;
     private Animator mAnimatorOut = null;
 
-    public Layer(@NonNull ViewGroup parent) {
-        mContext = parent.getContext();
-        mParentView = parent;
-        mContentView = onCreateView(LayoutInflater.from(mContext), parent);
-        mViewManager = new ViewManager(mParentView, mContentView);
-        mViewManager.setOnLifeListener(this);
-        mViewManager.setOnPreDrawListener(this);
-        mViewManager.setOnKeyListener(this);
-    }
-
     public void show() {
+        init();
         mViewManager.attach();
     }
 
     public void dismiss() {
         onPerRemove();
     }
+
+    private void init() {
+        if (mParentView == null) {
+            mParentView = onGetParent();
+            mContext = mParentView.getContext();
+            mContentView = onCreateView(LayoutInflater.from(mContext), mParentView);
+            mViewManager = new ViewManager(mParentView, mContentView);
+            mViewManager.setOnLifeListener(this);
+            mViewManager.setOnPreDrawListener(this);
+            mViewManager.setOnKeyListener(this);
+        }
+    }
+
+    @NonNull
+    protected abstract ViewGroup onGetParent();
 
     @NonNull
     protected abstract View onCreateView(LayoutInflater inflater, ViewGroup parent);

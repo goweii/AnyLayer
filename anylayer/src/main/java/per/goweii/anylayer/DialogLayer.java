@@ -30,6 +30,7 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import per.goweii.burred.Blurred;
 
@@ -42,9 +43,9 @@ import per.goweii.burred.Blurred;
  */
 public class DialogLayer extends Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
 
-    private final ViewHolder mViewHolder;
     private final Config mConfig;
     private final ListenerHolder mListenerHolder;
+    private final ViewHolder mViewHolder;
 
     private AnimatorCreator mBackgroundAnimatorCreator = null;
     private AnimatorCreator mContentAnimatorCreator = null;
@@ -52,17 +53,47 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     @Nullable
     private SoftInputHelper mSoftInputHelper = null;
 
-    public DialogLayer(@NonNull ViewGroup parent, @Nullable View targetView, @Nullable FrameLayout activityContentView) {
-        super(parent);
-        mViewHolder = new ViewHolder(parent, activityContentView, targetView, (FrameLayout) mContentView);
+    public DialogLayer() {
         mConfig = new Config();
         mListenerHolder = new ListenerHolder();
+        mViewHolder = new ViewHolder();
+    }
+
+    public DialogLayer(@NonNull ViewGroup parent) {
+        this();
+        mViewHolder.setRootView(parent);
+    }
+
+    public DialogLayer(@NonNull Context context) {
+        this();
+        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
+        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
+        mViewHolder.setRootView(rootView);
+        mViewHolder.setActivityContentView(activityContentView);
+    }
+
+    public DialogLayer(@NonNull View targetView) {
+        this();
+        Context context = targetView.getContext();
+        FrameLayout rootView = (FrameLayout) Objects.requireNonNull(Utils.getActivity(context)).getWindow().getDecorView();
+        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
+        mViewHolder.setRootView(rootView);
+        mViewHolder.setTargetView(targetView);
+        mViewHolder.setActivityContentView(activityContentView);
+    }
+
+    @NonNull
+    @Override
+    protected ViewGroup onGetParent() {
+        return mViewHolder.getRootView();
     }
 
     @NonNull
     @Override
     protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.layout_any_layer, parent, false);
+        FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
+        mViewHolder.setContainer(container);
+        return container;
     }
 
     @Override
@@ -835,10 +866,10 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
 
     final class ViewHolder {
 
-        private final ViewGroup mRootView;
-        private final FrameLayout mActivityContentView;
-        private final View mTargetView;
-        private final FrameLayout mContainer;
+        private ViewGroup mRootView;
+        private FrameLayout mActivityContentView;
+        private View mTargetView;
+        private FrameLayout mContainer;
 
         private ImageView mBackground;
         private FrameLayout mContentWrapper;
@@ -847,20 +878,29 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
         private SparseArray<View> views = null;
         private SparseArray<DialogLayer.OnLayerClickListener> onClickListeners = null;
 
-        ViewHolder(ViewGroup rootView, FrameLayout activityContentView, View targetView, FrameLayout container) {
-            this.mRootView = rootView;
-            this.mActivityContentView = activityContentView;
-            this.mTargetView = targetView;
-            this.mContainer = container;
-            mContentWrapper = mContainer.findViewById(R.id.fl_content_wrapper);
-            mBackground = mContainer.findViewById(R.id.iv_background);
-        }
-
         void recycle() {
             if (mBackground.getDrawable() instanceof BitmapDrawable) {
                 BitmapDrawable bd = (BitmapDrawable) mBackground.getDrawable();
                 bd.getBitmap().recycle();
             }
+        }
+
+        public void setRootView(ViewGroup rootView) {
+            mRootView = rootView;
+        }
+
+        public void setActivityContentView(FrameLayout activityContentView) {
+            mActivityContentView = activityContentView;
+        }
+
+        public void setTargetView(View targetView) {
+            mTargetView = targetView;
+        }
+
+        public void setContainer(FrameLayout container) {
+            mContainer = container;
+            mContentWrapper = mContainer.findViewById(R.id.fl_content_wrapper);
+            mBackground = mContainer.findViewById(R.id.iv_background);
         }
 
         public ViewGroup getRootView() {
