@@ -30,21 +30,21 @@ public final class AnyLayer {
      * 此时不需要APP存在Activity实例
      * 会新启动一个Activity并向根布局添加一个浮层
      */
-    public static void with(LayerActivity.OnLayerCreatedCallback callback) {
+    public static void dialog(LayerActivity.OnLayerCreatedCallback callback) {
         LayerActivity.start(ActivityHolder.getApplication(), callback);
     }
 
     /**
      * 向窗口根布局添加一个浮层
      */
-    public static DialogLayer with() {
+    public static DialogLayer dialog() {
         return new DialogLayer(Objects.requireNonNull(ActivityHolder.getCurrentActivity()));
     }
 
     /**
      * 向窗口根布局添加一个浮层
      */
-    public static DialogLayer with(@NonNull Class<Activity> clazz) {
+    public static DialogLayer dialog(@NonNull Class<Activity> clazz) {
         return new DialogLayer(Objects.requireNonNull(ActivityHolder.getActivity(clazz)));
     }
 
@@ -53,7 +53,7 @@ public final class AnyLayer {
      *
      * @param viewGroup 浮层父布局
      */
-    public static DialogLayer with(@NonNull ViewGroup viewGroup) {
+    public static DialogLayer dialog(@NonNull ViewGroup viewGroup) {
         return new DialogLayer(viewGroup);
     }
 
@@ -62,7 +62,7 @@ public final class AnyLayer {
      *
      * @param context 上下文，不能是ApplicationContext
      */
-    public static DialogLayer with(@NonNull Context context) {
+    public static DialogLayer dialog(@NonNull Context context) {
         return new DialogLayer(context);
     }
 
@@ -72,7 +72,7 @@ public final class AnyLayer {
      *
      * @param targetView 位置参照View
      */
-    public static DialogLayer target(@NonNull View targetView) {
+    public static DialogLayer popup(@NonNull View targetView) {
         return new DialogLayer(targetView);
     }
 

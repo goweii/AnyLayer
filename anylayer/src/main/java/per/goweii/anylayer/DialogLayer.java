@@ -62,12 +62,6 @@ public class DialogLayer extends DecorLayer implements ViewManager.OnLifeListene
         mViewHolder.setActivityContentView(activityContentView);
     }
 
-    @Level
-    @Override
-    protected int getLevel() {
-        return Level.DIALOG;
-    }
-
     public DialogLayer(@NonNull Context context) {
         this(Objects.requireNonNull(Utils.getActivity(context)));
     }
@@ -75,6 +69,12 @@ public class DialogLayer extends DecorLayer implements ViewManager.OnLifeListene
     public DialogLayer(@NonNull View targetView) {
         this(targetView.getContext());
         mViewHolder.setTargetView(targetView);
+    }
+
+    @Level
+    @Override
+    protected int getLevel() {
+        return Level.DIALOG;
     }
 
     @NonNull

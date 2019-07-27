@@ -32,7 +32,7 @@ public class LayerActivity extends AppCompatActivity implements Layer.OnVisibleC
         overridePendingTransition(0, 0);
         super.onCreate(savedInstanceState);
         StatusBarCompat.transparent(this);
-        DialogLayer dialogLayer = AnyLayer.with(this);
+        DialogLayer dialogLayer = AnyLayer.dialog(this);
         dialogLayer.onVisibleChangeListener(this);
         if (sOnLayerCreatedCallback != null) {
             sOnLayerCreatedCallback.onLayerCreated(dialogLayer);

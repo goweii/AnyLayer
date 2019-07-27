@@ -25,7 +25,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normal);
         initView();
-        AnyLayer.with(this)
+        AnyLayer.dialog(this)
                 .contentView(R.layout.dialog_test_2)
                 .gravity(Gravity.CENTER)
                 .backgroundColorRes(R.color.dialog_bg)
@@ -80,13 +80,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.toast().duration(1000).message("哈哈，这个一个自定义样式的吐司").show();
                 break;
             case R.id.tv_show_full:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_1)
                         .onClickToDismiss(R.id.iv_1)
                         .show();
                 break;
             case R.id.tv_show_app_context:
-                AnyLayer.with(new LayerActivity.OnLayerCreatedCallback() {
+                AnyLayer.dialog(new LayerActivity.OnLayerCreatedCallback() {
                     @Override
                     public void onLayerCreated(@NonNull DialogLayer anyLayer) {
                         anyLayer.contentView(R.layout.dialog_test_2)
@@ -97,7 +97,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 });
                 break;
             case R.id.tv_show_no_context:
-                AnyLayer.with()
+                AnyLayer.dialog()
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -107,7 +107,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 App.sHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        AnyLayer.with(NormalActivity.this)
+                        AnyLayer.dialog(NormalActivity.this)
                                 .contentView(R.layout.dialog_test_2)
                                 .backgroundColorRes(R.color.dialog_bg)
                                 .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -116,7 +116,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 }, 5000);
                 break;
             case R.id.tv_show_top:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_3)
                         .asStatusBar(R.id.v_status_bar)
                         .backgroundColorRes(R.color.dialog_bg)
@@ -136,7 +136,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_top_view_group:
-                AnyLayer.with(flContent)
+                AnyLayer.dialog(flContent)
                         .contentView(R.layout.dialog_test_3)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP)
@@ -155,7 +155,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_target_right:
-                AnyLayer.target(findViewById(R.id.tv_show_target_right))
+                AnyLayer.popup(findViewById(R.id.tv_show_target_right))
                         .outsideInterceptTouchEvent(false)
                         .contentView(R.layout.dialog_test_5)
                         .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, true)
@@ -173,7 +173,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_target_left:
-                AnyLayer.target(findViewById(R.id.tv_show_target_left))
+                AnyLayer.popup(findViewById(R.id.tv_show_target_left))
                         .contentView(R.layout.dialog_test_5)
                         .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_LEFT, Alignment.Vertical.CENTER, true)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -190,7 +190,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_target_top:
-                AnyLayer.target(findViewById(R.id.tv_show_target_top))
+                AnyLayer.popup(findViewById(R.id.tv_show_target_top))
                         .contentView(R.layout.dialog_test_4)
                         .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.ABOVE, true)
                         .backgroundColorRes(R.color.dialog_bg)
@@ -209,7 +209,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_target_bottom:
-                AnyLayer.target(findViewById(R.id.tv_show_target_bottom))
+                AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
                         .outsideInterceptTouchEvent(false)
                         .contentView(R.layout.dialog_test_4)
                         .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
@@ -229,7 +229,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_bottom:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_3)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM)
@@ -248,7 +248,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_blur_bg:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundBlurPercent(0.05f)
                         .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
@@ -262,7 +262,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_dark_bg:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -275,7 +275,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_tran_bg:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnLayerClickListener() {
@@ -287,7 +287,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_bottom_in:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -311,7 +311,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_bottom_alpha_in:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -335,7 +335,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_top_in:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -359,7 +359,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_top_alpha_in:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -383,7 +383,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_top_bottom:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -407,7 +407,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_bottom_top:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -431,7 +431,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_top_bottom_alpha:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -455,7 +455,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_bottom_top_alpha:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -479,7 +479,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_left_in:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -503,7 +503,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_left_alpha_in:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -527,7 +527,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_right_in:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -551,7 +551,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_right_alpha_in:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -575,7 +575,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_left_right:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -599,7 +599,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_right_left:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -623,7 +623,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_left_right_alpha:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -647,7 +647,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_right_left_alpha:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -671,7 +671,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_reveal:
-                AnyLayer.with(NormalActivity.this)
+                AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
