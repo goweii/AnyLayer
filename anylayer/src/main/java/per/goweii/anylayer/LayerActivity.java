@@ -16,7 +16,7 @@ import per.goweii.statusbarcompat.StatusBarCompat;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class LayerActivity extends AppCompatActivity implements DialogLayer.OnVisibleChangeListener {
+public class LayerActivity extends AppCompatActivity implements Layer.OnVisibleChangeListener {
 
     private static OnLayerCreatedCallback sOnLayerCreatedCallback = null;
 
@@ -40,11 +40,11 @@ public class LayerActivity extends AppCompatActivity implements DialogLayer.OnVi
     }
 
     @Override
-    public void onShow(DialogLayer dialogLayer) {
+    public void onShow(Layer layer) {
     }
 
     @Override
-    public void onDismiss(DialogLayer dialogLayer) {
+    public void onDismiss(Layer layer) {
         finish();
         overridePendingTransition(0, 0);
     }

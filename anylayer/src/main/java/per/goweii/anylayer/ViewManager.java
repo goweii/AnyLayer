@@ -17,8 +17,8 @@ import android.view.ViewTreeObserver;
  */
 public final class ViewManager {
 
-    private final ViewGroup mParent;
-    private final View mChild;
+    private ViewGroup mParent = null;
+    private View mChild = null;
 
     private LayerKeyListener mLayerKeyListener = null;
     private LayerGlobalFocusChangeListener mLayerGlobalFocusChangeListener = null;
@@ -29,10 +29,15 @@ public final class ViewManager {
     private OnPreDrawListener mOnPreDrawListener = null;
     private OnKeyListener mOnKeyListener = null;
 
-    public ViewManager(@NonNull ViewGroup parent, @NonNull View child) {
+    public ViewManager() {
+    }
+
+    public void setParent(@NonNull ViewGroup parent) {
         mParent = parent;
+    }
+
+    public void setChild(@NonNull View child) {
         mChild = child;
-        checkChildParent();
     }
 
     public ViewGroup getParent() {
@@ -43,9 +48,6 @@ public final class ViewManager {
         return mChild;
     }
 
-    /**
-     * 确保子控件未被添加到非当前父布局，否则移除
-     */
     private void checkChildParent() {
         ViewGroup parent = (ViewGroup) mChild.getParent();
         if (parent != null && parent != mParent) {
@@ -54,6 +56,13 @@ public final class ViewManager {
     }
 
     public void attach() {
+        if (mParent == null) {
+            throw new RuntimeException("parent cannot be null on attach");
+        }
+        if (mChild == null) {
+            throw new RuntimeException("parent cannot be null on attach");
+        }
+        checkChildParent();
         if (!isAttached()) {
             mParent.post(new Runnable() {
                 @Override
@@ -92,19 +101,17 @@ public final class ViewManager {
      * 添加到父View
      */
     private void onAttach() {
-        if (mOnKeyListener != null) {
-            mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
-            mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
-        }
-        mChild.getViewTreeObserver().addOnPreDrawListener(new LayerPreDrawListener());
         mChild.setFocusable(true);
         mChild.setFocusableInTouchMode(true);
         mChild.requestFocus();
         currentKeyView = mChild;
         if (mOnKeyListener != null) {
+            mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
+            mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
             mLayerKeyListener = new LayerKeyListener();
             currentKeyView.setOnKeyListener(mLayerKeyListener);
         }
+        mChild.getViewTreeObserver().addOnPreDrawListener(new LayerPreDrawListener());
         mParent.addView(mChild);
         if (mOnLifeListener != null){
             mOnLifeListener.onAttach();
@@ -117,8 +124,10 @@ public final class ViewManager {
     private void onDetach() {
         if (currentKeyView != null) {
             currentKeyView.setOnKeyListener(null);
+            mLayerKeyListener = null;
+            mChild.getViewTreeObserver().removeOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
+            mLayerGlobalFocusChangeListener = null;
         }
-        mChild.getViewTreeObserver().removeOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
         mParent.removeView(mChild);
         if (mOnLifeListener != null){
             mOnLifeListener.onDetach();

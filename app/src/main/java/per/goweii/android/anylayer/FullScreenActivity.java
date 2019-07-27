@@ -16,6 +16,7 @@ import per.goweii.anylayer.Alignment;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
+import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
@@ -96,18 +97,6 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_test_7)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.CENTER)
-                        .onVisibleChangeListener(new DialogLayer.OnVisibleChangeListener() {
-                            @Override
-                            public void onShow(DialogLayer anyLayer) {
-                                EditText editText = anyLayer.getView(R.id.et_dialog_content);
-                                anyLayer.compatSoftInput(editText);
-                            }
-
-                            @Override
-                            public void onDismiss(DialogLayer anyLayer) {
-                                anyLayer.removeSoftInput();
-                            }
-                        })
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -120,14 +109,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                                 EditText et = anyLayer.getView(R.id.et_dialog_content);
                                 Toast.makeText(FullScreenActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_full:
@@ -638,18 +627,18 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         return AnimatorHelper.createZoomAlphaOutAnim(content);
                     }
                 })
-                .onClick(R.id.fl_dialog_no, new DialogLayer.OnLayerClickListener() {
+                .onClick(new Layer.OnLayerClickListener() {
                     @Override
-                    public void onClick(DialogLayer anyLayer, View v) {
+                    public void onClick(Layer anyLayer, View v) {
                         anyLayer.dismiss();
                     }
-                })
-                .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                }, R.id.fl_dialog_no)
+                .onClick(new Layer.OnLayerClickListener() {
                     @Override
-                    public void onClick(DialogLayer anyLayer, View v) {
+                    public void onClick(Layer anyLayer, View v) {
                         showMulti();
                     }
-                })
+                }, R.id.fl_dialog_yes)
                 .show();
     }
 }

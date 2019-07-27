@@ -41,11 +41,9 @@ import per.goweii.burred.Blurred;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class DialogLayer extends Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
+public class DialogLayer extends DecorLayer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
 
-    private final Context mContext;
     private final Config mConfig;
-    private final ListenerHolder mListenerHolder;
     private final ViewHolder mViewHolder;
 
     private AnimatorCreator mBackgroundAnimatorCreator = null;
@@ -54,23 +52,20 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     @Nullable
     private SoftInputHelper mSoftInputHelper = null;
 
-    public DialogLayer(@NonNull ViewGroup parent) {
-        mContext = parent.getContext();
-        mConfig = new Config();
-        mListenerHolder = new ListenerHolder();
-        mViewHolder = new ViewHolder();
-        mViewHolder.setRootView(parent);
-    }
-
     public DialogLayer(@NonNull Activity activity) {
-        mContext = activity;
+        super(activity);
         mConfig = new Config();
-        mListenerHolder = new ListenerHolder();
         mViewHolder = new ViewHolder();
         FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
         FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
         mViewHolder.setRootView(rootView);
         mViewHolder.setActivityContentView(activityContentView);
+    }
+
+    @Level
+    @Override
+    protected int getLevel() {
+        return Level.DIALOG;
     }
 
     public DialogLayer(@NonNull Context context) {
@@ -84,13 +79,7 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
 
     @NonNull
     @Override
-    protected ViewGroup onGetParent() {
-        return mViewHolder.getRootView();
-    }
-
-    @NonNull
-    @Override
-    protected View onCreateView(LayoutInflater inflater, ViewGroup parent) {
+    protected View onCreateLayer(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
         FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
         if (mViewHolder.getContent() == null) {
             mViewHolder.setContent(LayoutInflater.from(mContext).inflate(mConfig.contentViewId, container, false));
@@ -100,7 +89,7 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     }
 
     @Override
-    protected Animator onCreateViewInAnimator(@NonNull View view) {
+    protected Animator onCreateInAnimator(@NonNull View view) {
         Animator backgroundAnimator;
         if (mBackgroundAnimatorCreator != null) {
             backgroundAnimator = mBackgroundAnimatorCreator.createInAnimator(mViewHolder.getBackground());
@@ -119,7 +108,7 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     }
 
     @Override
-    protected Animator onCreateViewOutAnimator(@NonNull View view) {
+    protected Animator onCreateOutAnimator(@NonNull View view) {
         Animator backgroundAnimator;
         if (mBackgroundAnimatorCreator != null) {
             backgroundAnimator = mBackgroundAnimatorCreator.createOutAnimator(mViewHolder.getBackground());
@@ -144,33 +133,26 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
         initContent();
         mViewHolder.bindListener();
         super.onAttach();
-        mListenerHolder.notifyVisibleChangeOnShow();
-        mListenerHolder.notifyDataBinder();
     }
 
     @Override
     public void onPreDraw() {
         super.onPreDraw();
-        mListenerHolder.notifyLayerOnShowing();
     }
 
     @Override
     public void onShow() {
         super.onShow();
-        mListenerHolder.notifyLayerOnShown();
     }
 
     @Override
     public void onPerRemove() {
         super.onPerRemove();
-        mListenerHolder.notifyLayerOnDismissing();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListenerHolder.notifyVisibleChangeOnDismiss();
-        mListenerHolder.notifyLayerOnDismissed();
         mViewHolder.recycle();
     }
 
@@ -448,47 +430,6 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     }
 
     /**
-     * 绑定数据
-     * 获取子控件ID为{@link #getView(int)}
-     *
-     * @param dataBinder 实现该接口进行数据绑定
-     */
-    public DialogLayer bindData(DataBinder dataBinder) {
-        mListenerHolder.addDataBinder(dataBinder);
-        return this;
-    }
-
-    /**
-     * 设置显示状态改变的监听
-     *
-     * @param onVisibleChangeListener OnVisibleChangeListener
-     */
-    public DialogLayer onVisibleChangeListener(DialogLayer.OnVisibleChangeListener onVisibleChangeListener) {
-        mListenerHolder.addOnVisibleChangeListener(onVisibleChangeListener);
-        return this;
-    }
-
-    /**
-     * 设置变更为显示状态监听
-     *
-     * @param onLayerShowListener OnLayerShowListener
-     */
-    public DialogLayer onLayerShowListener(DialogLayer.OnLayerShowListener onLayerShowListener) {
-        mListenerHolder.addOnLayerShowListener(onLayerShowListener);
-        return this;
-    }
-
-    /**
-     * 设置变更为隐藏状态监听
-     *
-     * @param onLayerDismissListener OnLayerDismissListener
-     */
-    public DialogLayer onLayerDismissListener(DialogLayer.OnLayerDismissListener onLayerDismissListener) {
-        mListenerHolder.addOnLayerDismissListener(onLayerDismissListener);
-        return this;
-    }
-
-    /**
      * 设置子布局的gravity
      * 可直接在布局文件指定layout_gravity属性，作用相同
      *
@@ -657,95 +598,6 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
     }
 
     /**
-     * 对一个View绑定点击事件
-     *
-     * @param viewId   控件ID
-     * @param listener 监听器
-     */
-    public DialogLayer onClick(@IdRes int viewId, DialogLayer.OnLayerClickListener listener) {
-        return onClick(listener, viewId, null);
-    }
-
-    /**
-     * 对一个View绑定点击事件
-     * 绑定该控件点击时直接隐藏浮层
-     *
-     * @param viewId   控件ID
-     * @param listener 监听器
-     */
-    public DialogLayer onClickToDismiss(@IdRes int viewId, DialogLayer.OnLayerClickListener listener) {
-        return onClickToDismiss(listener, viewId, null);
-    }
-
-    /**
-     * 对多个View绑定点击事件
-     *
-     * @param listener 监听器
-     * @param viewId   控件ID
-     * @param viewIds  控件ID
-     */
-    public DialogLayer onClick(DialogLayer.OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
-        mViewHolder.addOnClickListener(listener, viewId, viewIds);
-        return this;
-    }
-
-    /**
-     * 对多个View绑定点击事件
-     * 绑定该控件点击时直接隐藏浮层
-     *
-     * @param listener 监听器
-     * @param viewId   控件ID
-     * @param viewIds  控件ID
-     */
-    public DialogLayer onClickToDismiss(DialogLayer.OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
-        mViewHolder.addOnClickListener(new DialogLayer.OnLayerClickListener() {
-            @Override
-            public void onClick(DialogLayer DialogLayer, View v) {
-                if (listener != null) {
-                    listener.onClick(DialogLayer, v);
-                }
-                dismiss();
-            }
-        }, viewId, viewIds);
-        return this;
-    }
-
-    /**
-     * 绑定该控件点击时直接隐藏浮层
-     *
-     * @param viewId  控件ID
-     * @param viewIds 控件ID
-     */
-    public DialogLayer onClickToDismiss(@IdRes int viewId, @IdRes int... viewIds) {
-        return onClickToDismiss(null, viewId, viewIds);
-    }
-
-    @Nullable
-    public Context getContext() {
-        return mContext;
-    }
-
-    /**
-     * 获取布局子控件
-     *
-     * @param viewId 控件ID
-     * @param <V>    子控件
-     * @return 子控件
-     */
-    public <V extends View> V getView(@IdRes int viewId) {
-        return mViewHolder.getView(viewId);
-    }
-
-    /**
-     * 获取View管理容器
-     *
-     * @return ViewHolder
-     */
-    public DialogLayer.ViewHolder getViewHolder() {
-        return mViewHolder;
-    }
-
-    /**
      * 获取自定义的浮层控件
      *
      * @return View
@@ -761,19 +613,6 @@ public class DialogLayer extends Layer implements ViewManager.OnLifeListener, Vi
      */
     public ImageView getBackground() {
         return mViewHolder.getBackground();
-    }
-
-    /**
-     * 获取浮层是否已显示
-     *
-     * @return boolean
-     */
-    public boolean isShow() {
-        ViewManager viewManager = getViewManager();
-        if (viewManager == null) {
-            return false;
-        }
-        return getViewManager().isAttached();
     }
 
     /**

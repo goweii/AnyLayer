@@ -13,6 +13,7 @@ import per.goweii.anylayer.Alignment;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
+import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 
 public class NormalActivity extends AppCompatActivity implements View.OnClickListener {
@@ -36,6 +37,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
 
     private void initView() {
         flContent = findViewById(R.id.fl_content);
+        findViewById(R.id.tv_show_toast).setOnClickListener(this);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
         findViewById(R.id.tv_show_app_context).setOnClickListener(this);
         findViewById(R.id.tv_show_no_context).setOnClickListener(this);
@@ -73,6 +75,9 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             default:
+                break;
+            case R.id.tv_show_toast:
+                AnyLayer.toast().duration(1000).message("哈哈，这个一个自定义样式的吐司").show();
                 break;
             case R.id.tv_show_full:
                 AnyLayer.with(NormalActivity.this)
@@ -248,12 +253,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundBlurPercent(0.05f)
                         .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_dark_bg:
@@ -261,24 +266,24 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_tran_bg:
                 AnyLayer.with(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_bottom_in:
@@ -297,12 +302,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_bottom_alpha_in:
@@ -321,12 +326,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_top_in:
@@ -345,12 +350,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_top_alpha_in:
@@ -369,12 +374,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_top_bottom:
@@ -393,12 +398,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_bottom_top:
@@ -417,12 +422,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_top_bottom_alpha:
@@ -441,12 +446,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_bottom_top_alpha:
@@ -465,12 +470,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_left_in:
@@ -489,12 +494,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_left_alpha_in:
@@ -513,12 +518,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_right_in:
@@ -537,12 +542,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_right_alpha_in:
@@ -561,12 +566,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_left_right:
@@ -585,12 +590,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_right_left:
@@ -609,12 +614,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_left_right_alpha:
@@ -633,12 +638,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_right_left_alpha:
@@ -657,12 +662,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_reveal:
@@ -689,12 +694,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(R.id.fl_dialog_yes, new DialogLayer.OnLayerClickListener() {
+                        .onClick(new Layer.OnLayerClickListener() {
                             @Override
-                            public void onClick(DialogLayer anyLayer, View v) {
+                            public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
                             }
-                        })
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
         }
