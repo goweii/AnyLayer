@@ -9,6 +9,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import java.util.Random;
+
 import per.goweii.anylayer.Alignment;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
@@ -77,7 +79,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             default:
                 break;
             case R.id.tv_show_toast:
-                AnyLayer.toast().duration(1000).message("哈哈，这个一个自定义样式的吐司").show();
+                boolean isSucc = new Random().nextBoolean();
+                AnyLayer.toast()
+                        .duration(3000)
+                        .icon(isSucc ? R.drawable.ic_success : R.drawable.ic_fail)
+                        .message(isSucc ? "哈哈，成功了" : "哎呀，失败了")
+                        .show();
                 break;
             case R.id.tv_show_full:
                 AnyLayer.dialog(NormalActivity.this)

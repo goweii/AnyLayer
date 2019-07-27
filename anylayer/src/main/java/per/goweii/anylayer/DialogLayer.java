@@ -41,7 +41,7 @@ import per.goweii.burred.Blurred;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class DialogLayer extends DecorLayer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
+public class DialogLayer extends DecorLayer {
 
     private final Config mConfig;
     private final ViewHolder mViewHolder;
@@ -56,10 +56,8 @@ public class DialogLayer extends DecorLayer implements ViewManager.OnLifeListene
         super(activity);
         mConfig = new Config();
         mViewHolder = new ViewHolder();
-        FrameLayout rootView = (FrameLayout) activity.getWindow().getDecorView();
-        FrameLayout activityContentView = rootView.findViewById(android.R.id.content);
-        mViewHolder.setRootView(rootView);
-        mViewHolder.setActivityContentView(activityContentView);
+        mViewHolder.setRootView(mDecor);
+        mViewHolder.setActivityContentView(mDecor.findViewById(android.R.id.content));
     }
 
     public DialogLayer(@NonNull Context context) {
