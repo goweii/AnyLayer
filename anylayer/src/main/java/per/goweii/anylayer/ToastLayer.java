@@ -24,20 +24,10 @@ import java.util.Objects;
  */
 public class ToastLayer extends DecorLayer implements Runnable {
 
-    private boolean mRemoveOthers = true;
-    private long mDuration = 3000L;
-    private CharSequence mMessage = "";
-    private int mIcon = 0;
-
     public ToastLayer(@NonNull Context context) {
         super(Objects.requireNonNull(Utils.getActivity(context)));
         interceptKeyEvent(false);
         cancelableOnKeyBack(false);
-    }
-
-    @Override
-    public void show() {
-        super.show();
     }
 
     @Level
@@ -46,28 +36,69 @@ public class ToastLayer extends DecorLayer implements Runnable {
         return Level.TOAST;
     }
 
+    @NonNull
+    @Override
+    protected ViewHolder onCreateViewHolder() {
+        return new ViewHolder();
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder getViewHolder() {
+        return (ViewHolder) super.getViewHolder();
+    }
+
+    @NonNull
+    @Override
+    protected Config onCreateConfig() {
+        return new Config();
+    }
+
+    @NonNull
+    @Override
+    public Config getConfig() {
+        return (Config) super.getConfig();
+    }
+
+    @NonNull
+    @Override
+    protected ListenerHolder onCreateListenerHolder() {
+        return new ListenerHolder();
+    }
+
+    @NonNull
+    @Override
+    public ListenerHolder getListenerHolder() {
+        return (ListenerHolder) super.getListenerHolder();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+    }
+
     public ToastLayer removeOthers(boolean removeOthers) {
-        mRemoveOthers = removeOthers;
+        getConfig().mRemoveOthers = removeOthers;
         return this;
     }
 
     public ToastLayer duration(long duration) {
-        mDuration = duration;
+        getConfig().mDuration = duration;
         return this;
     }
 
     public ToastLayer message(@NonNull CharSequence message) {
-        mMessage = message;
+        getConfig().mMessage = message;
         return this;
     }
 
     public ToastLayer message(@StringRes int message) {
-        mMessage = getActivity().getString(message);
+        getConfig().mMessage = getActivity().getString(message);
         return this;
     }
 
     public ToastLayer icon(@DrawableRes int icon) {
-        mIcon = icon;
+        getConfig().mIcon = icon;
         return this;
     }
 
@@ -89,38 +120,40 @@ public class ToastLayer extends DecorLayer implements Runnable {
         return AnimatorHelper.createLeftOutAnim(view);
     }
 
+    private void bindData() {
+        if (getConfig().mIcon > 0) {
+            getViewHolder().getIcon().setVisibility(View.VISIBLE);
+            getViewHolder().getIcon().setImageResource(getConfig().mIcon);
+        } else {
+            getViewHolder().getIcon().setVisibility(View.GONE);
+        }
+        if (TextUtils.isEmpty(getConfig().mMessage)) {
+            getViewHolder().getMessage().setVisibility(View.GONE);
+            getViewHolder().getMessage().setText("");
+        } else {
+            getViewHolder().getMessage().setVisibility(View.VISIBLE);
+            getViewHolder().getMessage().setText(getConfig().mMessage);
+        }
+    }
+
     @Override
     public void onAttach() {
         super.onAttach();
-        if (mRemoveOthers) {
+        if (getConfig().mRemoveOthers) {
             final ViewGroup parent = getParent();
             final int count = parent.getChildCount();
             if (count > 1) {
                 parent.removeViews(0, count - 1);
             }
         }
-        final ImageView ivIcon = getView(R.id.iv_icon);
-        if (mIcon > 0) {
-            ivIcon.setVisibility(View.VISIBLE);
-            ivIcon.setImageResource(mIcon);
-        } else {
-            ivIcon.setVisibility(View.GONE);
-        }
-        final TextView tvMsg = getView(R.id.tv_msg);
-        if (TextUtils.isEmpty(mMessage)) {
-            tvMsg.setVisibility(View.GONE);
-            tvMsg.setText("");
-        } else {
-            tvMsg.setVisibility(View.VISIBLE);
-            tvMsg.setText(mMessage);
-        }
+        bindData();
     }
 
     @Override
     public void onShow() {
         super.onShow();
-        if (mDuration > 0) {
-            getChild().postDelayed(this, mDuration);
+        if (getConfig().mDuration > 0) {
+            getChild().postDelayed(this, getConfig().mDuration);
         }
     }
 
@@ -133,5 +166,35 @@ public class ToastLayer extends DecorLayer implements Runnable {
     @Override
     public void run() {
         dismiss();
+    }
+
+    public static class ViewHolder extends DecorLayer.ViewHolder {
+        private ImageView mIcon;
+        private TextView mMessage;
+
+        @Override
+        public void setChild(@NonNull View child) {
+            super.setChild(child);
+            mIcon = child.findViewById(R.id.iv_icon);
+            mMessage = child.findViewById(R.id.tv_msg);
+        }
+
+        public ImageView getIcon() {
+            return mIcon;
+        }
+
+        public TextView getMessage() {
+            return mMessage;
+        }
+    }
+
+    protected static class Config extends DecorLayer.Config {
+        private boolean mRemoveOthers = true;
+        private long mDuration = 3000L;
+        private CharSequence mMessage = "";
+        private int mIcon = 0;
+    }
+
+    protected static class ListenerHolder extends DecorLayer.ListenerHolder {
     }
 }

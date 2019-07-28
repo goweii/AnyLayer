@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +20,6 @@ import per.goweii.anylayer.LayerActivity;
 
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private FrameLayout flContent;
     private TextView tvTitle;
 
     @Override
@@ -33,7 +31,6 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initView() {
-        flContent = findViewById(R.id.fl_content);
         tvTitle = findViewById(R.id.tv_title);
         tvTitle.setOnClickListener(this);
         findViewById(R.id.tv_show_app_context).setOnClickListener(this);
@@ -41,7 +38,6 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.tv_show_edit).setOnClickListener(this);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
         findViewById(R.id.tv_show_top).setOnClickListener(this);
-        findViewById(R.id.tv_show_top_view_group).setOnClickListener(this);
         findViewById(R.id.tv_show_target_right).setOnClickListener(this);
         findViewById(R.id.tv_show_target_top).setOnClickListener(this);
         findViewById(R.id.tv_show_target_bottom).setOnClickListener(this);
@@ -129,25 +125,6 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_test_3)
                         .asStatusBar(R.id.v_status_bar)
-                        .backgroundColorRes(R.color.dialog_bg)
-                        .gravity(Gravity.TOP)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createTopInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createTopOutAnim(content);
-                            }
-                        })
-                        .onClickToDismiss(R.id.fl_dialog_no)
-                        .show();
-                break;
-            case R.id.tv_show_top_view_group:
-                AnyLayer.dialog(flContent)
-                        .contentView(R.layout.dialog_test_3)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {

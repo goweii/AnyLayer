@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.Objects;
 
@@ -46,15 +45,6 @@ public final class AnyLayer {
      */
     public static DialogLayer dialog(@NonNull Class<Activity> clazz) {
         return new DialogLayer(Objects.requireNonNull(ActivityHolder.getActivity(clazz)));
-    }
-
-    /**
-     * 向父布局viewGroup添加一个浮层
-     *
-     * @param viewGroup 浮层父布局
-     */
-    public static DialogLayer dialog(@NonNull ViewGroup viewGroup) {
-        return new DialogLayer(viewGroup);
     }
 
     /**

@@ -8,11 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
-
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="22dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,26 +19,26 @@
                 android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:layout_centerVertical="true"
-                android:text="@string/app_name"
                 android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:text="@string/app_name"
                 android:textColor="#fff"
-                android:textStyle="bold"
-                android:textSize="18sp"/>
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_show_delayed_zoom"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
+                android:gravity="center"
                 android:text="菜单效果"
                 android:textColor="#fff"
-                android:textStyle="bold"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
@@ -139,15 +136,6 @@
                     android:layout_height="60dp"
                     android:gravity="center"
                     android:text="背景全透明"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_top_view_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="顶部(指定ViewGroup)"
                     android:textColor="#232323"
                     android:textSize="14sp" />
 

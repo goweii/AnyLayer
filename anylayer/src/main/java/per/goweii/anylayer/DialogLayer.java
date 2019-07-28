@@ -741,4 +741,7 @@ public class DialogLayer extends DecorLayer {
         private Alignment.Horizontal mAlignmentHorizontal = Alignment.Horizontal.CENTER;
         private Alignment.Vertical mAlignmentVertical = Alignment.Vertical.BELOW;
     }
+
+    protected static class ListenerHolder extends Layer.ListenerHolder {
+    }
 }

@@ -82,15 +82,6 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/tv_show_top_view_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="顶部(指定ViewGroup)"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
                     android:id="@+id/tv_show_blur_bg"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"

@@ -67,6 +67,18 @@ public class DecorLayer extends Layer {
 
     @NonNull
     @Override
+    protected ListenerHolder onCreateListenerHolder() {
+        return new ListenerHolder();
+    }
+
+    @NonNull
+    @Override
+    public ListenerHolder getListenerHolder() {
+        return (ListenerHolder) super.getListenerHolder();
+    }
+
+    @NonNull
+    @Override
     protected ViewGroup onGetParent() {
         final ViewGroup decor = getViewHolder().mDecor;
         LevelLayout parent = null;
@@ -138,9 +150,6 @@ public class DecorLayer extends Layer {
         }
     }
 
-    protected static class Config extends Layer.Config {
-    }
-
     public static class ViewHolder extends Layer.ViewHolder {
         private FrameLayout mDecor;
 
@@ -151,6 +160,9 @@ public class DecorLayer extends Layer {
         public FrameLayout getDecor() {
             return mDecor;
         }
+    }
+
+    protected static class Config extends Layer.Config {
     }
 
     protected static class ListenerHolder extends Layer.ListenerHolder {
