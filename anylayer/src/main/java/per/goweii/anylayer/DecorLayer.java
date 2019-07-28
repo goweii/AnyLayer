@@ -26,11 +26,6 @@ public class DecorLayer extends Layer {
         getViewHolder().mDecor = (FrameLayout) activity.getWindow().getDecorView();
     }
 
-    public DecorLayer cancelableOnClickKeyBack(boolean cancelable) {
-        cancelableOnKeyBack(cancelable);
-        return this;
-    }
-
     @Level
     protected int getLevel() {
         return Level.DIALOG;
@@ -148,6 +143,11 @@ public class DecorLayer extends Layer {
                 parent.removeView(container);
             }
         }
+    }
+
+    public DecorLayer cancelableOnClickKeyBack(boolean cancelable) {
+        cancelableOnKeyBack(cancelable);
+        return this;
     }
 
     public static class ViewHolder extends Layer.ViewHolder {
