@@ -27,10 +27,16 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         initView();
         AnyLayer.dialog(this)
                 .contentView(R.layout.dialog_test_2)
-                .gravity(Gravity.CENTER)
                 .backgroundColorRes(R.color.dialog_bg)
+                .gravity(Gravity.CENTER)
                 .cancelableOnTouchOutside(true)
                 .cancelableOnClickKeyBack(true)
+                .bindData(new Layer.DataBinder() {
+                    @Override
+                    public void bindData(Layer layer) {
+                        // TODO 绑定数据
+                    }
+                })
                 .onClickToDismiss(R.id.fl_dialog_no)
                 .show();
     }

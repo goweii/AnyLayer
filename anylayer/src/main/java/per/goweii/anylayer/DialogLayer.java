@@ -91,9 +91,16 @@ public class DialogLayer extends DecorLayer {
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
         FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
-        if (getViewHolder().getContent() == null) {
-            getViewHolder().setContent(inflater.inflate(getConfig().contentViewId, container, false));
+        getViewHolder().setChild(container);
+        if (getViewHolder().getContent() != null) {
+            ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
+            if (contentParent != null) {
+                contentParent.removeView(getViewHolder().getContent());
+            }
+        } else {
+            getViewHolder().setContent(inflater.inflate(getConfig().contentViewId, getViewHolder().getContentWrapper(), false));
         }
+        getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
         return container;
     }
 
@@ -137,10 +144,10 @@ public class DialogLayer extends DecorLayer {
 
     @Override
     public void onAttach() {
+        super.onAttach();
         initContainer();
         initBackground();
         initContent();
-        super.onAttach();
     }
 
     @Override
@@ -373,35 +380,28 @@ public class DialogLayer extends DecorLayer {
     }
 
     private void initContent() {
-        if (getViewHolder().getContent() != null) {
-            ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
-            if (contentParent != null) {
-                contentParent.removeView(getViewHolder().getContent());
+        getViewHolder().getContent().setClickable(true);
+        if (getViewHolder().getTarget() == null && getConfig().mGravity != -1) {
+            ViewGroup.LayoutParams params = getViewHolder().getContent().getLayoutParams();
+            FrameLayout.LayoutParams contentParams;
+            if (params == null) {
+                contentParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            } else if (params instanceof FrameLayout.LayoutParams) {
+                contentParams = (FrameLayout.LayoutParams) params;
+            } else {
+                contentParams = new FrameLayout.LayoutParams(params.width, params.height);
             }
-            getViewHolder().getContent().setClickable(true);
-            if (getViewHolder().getTarget() == null && getConfig().mGravity != -1) {
-                ViewGroup.LayoutParams params = getViewHolder().getContent().getLayoutParams();
-                FrameLayout.LayoutParams contentParams;
-                if (params == null) {
-                    contentParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                } else if (params instanceof FrameLayout.LayoutParams) {
-                    contentParams = (FrameLayout.LayoutParams) params;
-                } else {
-                    contentParams = new FrameLayout.LayoutParams(params.width, params.height);
-                }
-                contentParams.gravity = getConfig().mGravity;
-                getViewHolder().getContent().setLayoutParams(contentParams);
+            contentParams.gravity = getConfig().mGravity;
+            getViewHolder().getContent().setLayoutParams(contentParams);
+        }
+        if (getConfig().mAsStatusBarViewId > 0) {
+            View statusBar = getViewHolder().getContent().findViewById(getConfig().mAsStatusBarViewId);
+            if (statusBar != null) {
+                ViewGroup.LayoutParams params = statusBar.getLayoutParams();
+                params.height = Utils.getStatusBarHeight(getActivity());
+                statusBar.setLayoutParams(params);
+                statusBar.setVisibility(View.VISIBLE);
             }
-            if (getConfig().mAsStatusBarViewId > 0) {
-                View statusBar = getViewHolder().getContent().findViewById(getConfig().mAsStatusBarViewId);
-                if (statusBar != null) {
-                    ViewGroup.LayoutParams params = statusBar.getLayoutParams();
-                    params.height = Utils.getStatusBarHeight(getActivity());
-                    statusBar.setLayoutParams(params);
-                    statusBar.setVisibility(View.VISIBLE);
-                }
-            }
-            getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
         }
     }
 
