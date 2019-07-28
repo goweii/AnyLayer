@@ -1,6 +1,7 @@
 package per.goweii.android.anylayer;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -51,6 +52,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.tv_show_tran_bg).setOnClickListener(this);
         findViewById(R.id.tv_show_bottom_in).setOnClickListener(this);
         findViewById(R.id.tv_show_bottom_alpha_in).setOnClickListener(this);
+        findViewById(R.id.tv_show_bottom_zoom_alpha_in).setOnClickListener(this);
         findViewById(R.id.tv_show_top_in).setOnClickListener(this);
         findViewById(R.id.tv_show_top_alpha_in).setOnClickListener(this);
         findViewById(R.id.tv_show_top_bottom).setOnClickListener(this);
@@ -315,6 +317,30 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
+                        .show();
+                break;
+            case R.id.tv_show_bottom_zoom_alpha_in:
+                AnyLayer.dialog(NormalActivity.this)
+                        .contentView(R.layout.dialog_test_2)
+                        .backgroundColorRes(R.color.dialog_bg)
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                            @Override
+                            public Animator createInAnimator(View content) {
+                                AnimatorSet set = new AnimatorSet();
+                                set.playTogether(AnimatorHelper.createBottomAlphaInAnim(content),
+                                        AnimatorHelper.createZoomAlphaInAnim(content));
+                                return set;
+                            }
+
+                            @Override
+                            public Animator createOutAnimator(View content) {
+                                AnimatorSet set = new AnimatorSet();
+                                set.playTogether(AnimatorHelper.createBottomAlphaOutAnim(content),
+                                        AnimatorHelper.createZoomAlphaOutAnim(content));
+                                return set;
+                            }
+                        })
+                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_top_in:
