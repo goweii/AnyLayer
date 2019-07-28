@@ -18,7 +18,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,8 +27,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import per.goweii.burred.Blurred;
@@ -43,21 +40,12 @@ import per.goweii.burred.Blurred;
  */
 public class DialogLayer extends DecorLayer {
 
-    private final Config mConfig;
-    private final ViewHolder mViewHolder;
-
-    private AnimatorCreator mBackgroundAnimatorCreator = null;
-    private AnimatorCreator mContentAnimatorCreator = null;
-
     @Nullable
     private SoftInputHelper mSoftInputHelper = null;
 
     public DialogLayer(@NonNull Activity activity) {
         super(activity);
-        mConfig = new Config();
-        mViewHolder = new ViewHolder();
-        mViewHolder.setRootView(mDecor);
-        mViewHolder.setActivityContentView(mDecor.findViewById(android.R.id.content));
+        getViewHolder().setActivityContent(getViewHolder().getDecor().findViewById(android.R.id.content));
     }
 
     public DialogLayer(@NonNull Context context) {
@@ -66,7 +54,7 @@ public class DialogLayer extends DecorLayer {
 
     public DialogLayer(@NonNull View targetView) {
         this(targetView.getContext());
-        mViewHolder.setTargetView(targetView);
+        getViewHolder().setTarget(targetView);
     }
 
     @Level
@@ -77,28 +65,51 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     @Override
-    protected View onCreateLayer(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+    protected ViewHolder onCreateViewHolder() {
+        return new ViewHolder();
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder getViewHolder() {
+        return (ViewHolder) super.getViewHolder();
+    }
+
+    @NonNull
+    @Override
+    protected Config onCreateConfig() {
+        return new Config();
+    }
+
+    @NonNull
+    @Override
+    public Config getConfig() {
+        return (Config) super.getConfig();
+    }
+
+    @NonNull
+    @Override
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
         FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
-        if (mViewHolder.getContent() == null) {
-            mViewHolder.setContent(LayoutInflater.from(mContext).inflate(mConfig.contentViewId, container, false));
+        if (getViewHolder().getContent() == null) {
+            getViewHolder().setContent(inflater.inflate(getConfig().contentViewId, container, false));
         }
-        mViewHolder.setContainer(container);
         return container;
     }
 
     @Override
     protected Animator onCreateInAnimator(@NonNull View view) {
         Animator backgroundAnimator;
-        if (mBackgroundAnimatorCreator != null) {
-            backgroundAnimator = mBackgroundAnimatorCreator.createInAnimator(mViewHolder.getBackground());
+        if (getConfig().mBackgroundAnimatorCreator != null) {
+            backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createInAnimator(getViewHolder().getBackground());
         } else {
-            backgroundAnimator = AnimatorHelper.createAlphaInAnim(mViewHolder.getBackground());
+            backgroundAnimator = AnimatorHelper.createAlphaInAnim(getViewHolder().getBackground());
         }
         Animator contentAnimator;
-        if (mContentAnimatorCreator != null) {
-            contentAnimator = mContentAnimatorCreator.createInAnimator(mViewHolder.getContent());
+        if (getConfig().mContentAnimatorCreator != null) {
+            contentAnimator = getConfig().mContentAnimatorCreator.createInAnimator(getViewHolder().getContent());
         } else {
-            contentAnimator = AnimatorHelper.createZoomAlphaInAnim(mViewHolder.getContent());
+            contentAnimator = AnimatorHelper.createZoomAlphaInAnim(getViewHolder().getContent());
         }
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(backgroundAnimator, contentAnimator);
@@ -108,16 +119,16 @@ public class DialogLayer extends DecorLayer {
     @Override
     protected Animator onCreateOutAnimator(@NonNull View view) {
         Animator backgroundAnimator;
-        if (mBackgroundAnimatorCreator != null) {
-            backgroundAnimator = mBackgroundAnimatorCreator.createOutAnimator(mViewHolder.getBackground());
+        if (getConfig().mBackgroundAnimatorCreator != null) {
+            backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createOutAnimator(getViewHolder().getBackground());
         } else {
-            backgroundAnimator = AnimatorHelper.createAlphaOutAnim(mViewHolder.getBackground());
+            backgroundAnimator = AnimatorHelper.createAlphaOutAnim(getViewHolder().getBackground());
         }
         Animator contentAnimator;
-        if (mContentAnimatorCreator != null) {
-            contentAnimator = mContentAnimatorCreator.createOutAnimator(mViewHolder.getContent());
+        if (getConfig().mContentAnimatorCreator != null) {
+            contentAnimator = getConfig().mContentAnimatorCreator.createOutAnimator(getViewHolder().getContent());
         } else {
-            contentAnimator = AnimatorHelper.createZoomAlphaOutAnim(mViewHolder.getContent());
+            contentAnimator = AnimatorHelper.createZoomAlphaOutAnim(getViewHolder().getContent());
         }
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(backgroundAnimator, contentAnimator);
@@ -129,7 +140,6 @@ public class DialogLayer extends DecorLayer {
         initContainer();
         initBackground();
         initContent();
-        mViewHolder.bindListener();
         super.onAttach();
     }
 
@@ -151,14 +161,14 @@ public class DialogLayer extends DecorLayer {
     @Override
     public void onDetach() {
         super.onDetach();
-        mViewHolder.recycle();
+        getViewHolder().recycle();
     }
 
     private void initContainer() {
-        if (mConfig.mOutsideInterceptTouchEvent) {
-            mViewHolder.getContainer().setClickable(true);
-            if (mConfig.mCancelableOnTouchOutside) {
-                mViewHolder.getContainer().setOnClickListener(new View.OnClickListener() {
+        if (getConfig().mOutsideInterceptTouchEvent) {
+            getViewHolder().getChild().setClickable(true);
+            if (getConfig().mCancelableOnTouchOutside) {
+                getViewHolder().getChild().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dismiss();
@@ -166,68 +176,68 @@ public class DialogLayer extends DecorLayer {
                 });
             }
         } else {
-            mViewHolder.getContainer().setClickable(false);
+            getViewHolder().getChild().setClickable(false);
         }
-        if (mViewHolder.getActivityContentView() != null) {
-            // 非指定父布局的，添加到DecorView，此时mViewHolder.getRootView()为DecorView
+        if (getViewHolder().getActivityContent() != null) {
+            // 非指定父布局的，添加到DecorView，此时getViewHolder().getRootView()为DecorView
             final int[] locationDecor = new int[2];
-            mViewHolder.getRootView().getLocationOnScreen(locationDecor);
+            getViewHolder().getDecor().getLocationOnScreen(locationDecor);
             final int[] locationActivityContent = new int[2];
-            mViewHolder.getActivityContentView().getLocationOnScreen(locationActivityContent);
-            FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
+            getViewHolder().getActivityContent().getLocationOnScreen(locationActivityContent);
+            FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
             containerParams.leftMargin = locationActivityContent[0] - locationDecor[0];
             containerParams.topMargin = 0;
-            containerParams.width = mViewHolder.getActivityContentView().getWidth();
-            containerParams.height = mViewHolder.getActivityContentView().getHeight() + (locationActivityContent[1] - locationDecor[1]);
-            mViewHolder.getContainer().setLayoutParams(containerParams);
+            containerParams.width = getViewHolder().getActivityContent().getWidth();
+            containerParams.height = getViewHolder().getActivityContent().getHeight() + (locationActivityContent[1] - locationDecor[1]);
+            getViewHolder().getChild().setLayoutParams(containerParams);
         }
-        if (mViewHolder.getTargetView() == null) {
-            FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+        if (getViewHolder().getTarget() == null) {
+            FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
             contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
             contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
-            mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+            getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
         } else {
             initContainerWithTarget();
         }
     }
 
     private void initContainerWithTarget() {
-        mViewHolder.getContainer().setClipToPadding(false);
-        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+        getViewHolder().getChild().setClipToPadding(false);
+        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
         contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
         contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
-        mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+        getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
         final int[] locationTarget = new int[2];
-        mViewHolder.getTargetView().getLocationOnScreen(locationTarget);
+        getViewHolder().getTarget().getLocationOnScreen(locationTarget);
         final int[] locationRoot = new int[2];
-        mViewHolder.getRootView().getLocationOnScreen(locationRoot);
+        getViewHolder().getDecor().getLocationOnScreen(locationRoot);
         final int targetX = (locationTarget[0] - locationRoot[0]);
         final int targetY = (locationTarget[1] - locationRoot[1]);
-        final int targetWidth = mViewHolder.getTargetView().getWidth();
-        final int targetHeight = mViewHolder.getTargetView().getHeight();
+        final int targetWidth = getViewHolder().getTarget().getWidth();
+        final int targetHeight = getViewHolder().getTarget().getHeight();
         final int[] padding = initContainerWithTargetPadding(targetX, targetY, targetWidth, targetHeight);
-        mViewHolder.getContainer().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        getViewHolder().getChild().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                if (mViewHolder.getContainer().getViewTreeObserver().isAlive()) {
-                    mViewHolder.getContainer().getViewTreeObserver().removeOnPreDrawListener(this);
+                if (getViewHolder().getChild().getViewTreeObserver().isAlive()) {
+                    getViewHolder().getChild().getViewTreeObserver().removeOnPreDrawListener(this);
                 }
                 initContainerWithTargetMargin(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
                 return false;
             }
         });
-        if (!mConfig.mOutsideInterceptTouchEvent) {
-            mViewHolder.getContainer().getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+        if (!getConfig().mOutsideInterceptTouchEvent) {
+            getViewHolder().getChild().getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
                 public void onScrollChanged() {
                     final int[] locationTarget = new int[2];
-                    mViewHolder.getTargetView().getLocationOnScreen(locationTarget);
+                    getViewHolder().getTarget().getLocationOnScreen(locationTarget);
                     final int[] locationRoot = new int[2];
-                    mViewHolder.getRootView().getLocationOnScreen(locationRoot);
+                    getViewHolder().getDecor().getLocationOnScreen(locationRoot);
                     final int targetX = (locationTarget[0] - locationRoot[0]);
                     final int targetY = (locationTarget[1] - locationRoot[1]);
-                    final int targetWidth = mViewHolder.getTargetView().getWidth();
-                    final int targetHeight = mViewHolder.getTargetView().getHeight();
+                    final int targetWidth = getViewHolder().getTarget().getWidth();
+                    final int targetHeight = getViewHolder().getTarget().getHeight();
                     final int[] padding = initContainerWithTargetPadding(targetX, targetY, targetWidth, targetHeight);
                     initContainerWithTargetMargin(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
                 }
@@ -237,64 +247,64 @@ public class DialogLayer extends DecorLayer {
 
     private int[] initContainerWithTargetPadding(int targetX, int targetY, int targetWidth, int targetHeight) {
         final int[] padding = new int[]{0, 0, 0, 0};
-        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) mViewHolder.getContainer().getLayoutParams();
-        if (mConfig.mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
-            if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
+        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
+        if (getConfig().mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
+            if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
                 padding[2] = containerParams.width - targetX;
-            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
+            } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
                 padding[0] = targetX + targetWidth;
-            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
+            } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
                 padding[0] = targetX;
-            } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
+            } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
                 padding[2] = containerParams.width - targetX - targetWidth;
             }
-        } else if (mConfig.mAlignmentDirection == Alignment.Direction.VERTICAL) {
-            if (mConfig.mAlignmentVertical == Alignment.Vertical.ABOVE) {
+        } else if (getConfig().mAlignmentDirection == Alignment.Direction.VERTICAL) {
+            if (getConfig().mAlignmentVertical == Alignment.Vertical.ABOVE) {
                 padding[3] = containerParams.height - targetY;
-            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.BELOW) {
+            } else if (getConfig().mAlignmentVertical == Alignment.Vertical.BELOW) {
                 padding[1] = targetY + targetHeight;
-            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
+            } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
                 padding[1] = targetY;
-            } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
+            } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
                 padding[3] = containerParams.height - targetY - targetHeight;
             }
         }
-        mViewHolder.getContainer().setPadding(padding[0], padding[1], padding[2], padding[3]);
+        getViewHolder().getChild().setPadding(padding[0], padding[1], padding[2], padding[3]);
         return padding;
     }
 
     private void initContainerWithTargetMargin(int targetX, int targetY, int targetWidth, int targetHeight, int paddingLeft, int paddingTop) {
-        final int width = mViewHolder.getContentWrapper().getWidth();
-        final int height = mViewHolder.getContentWrapper().getHeight();
+        final int width = getViewHolder().getContentWrapper().getWidth();
+        final int height = getViewHolder().getContentWrapper().getHeight();
         int x = 0;
         int y = 0;
-        if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
+        if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
             x = targetX - (width - targetWidth) / 2;
-        } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
+        } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
             x = targetX - width;
-        } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
+        } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
             x = targetX + targetWidth;
-        } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
+        } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
             x = targetX;
-        } else if (mConfig.mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
+        } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
             x = targetX - (width - targetWidth);
         }
-        if (mConfig.mAlignmentVertical == Alignment.Vertical.CENTER) {
+        if (getConfig().mAlignmentVertical == Alignment.Vertical.CENTER) {
             y = targetY - (height - targetHeight) / 2;
-        } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ABOVE) {
+        } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ABOVE) {
             y = targetY - height;
-        } else if (mConfig.mAlignmentVertical == Alignment.Vertical.BELOW) {
+        } else if (getConfig().mAlignmentVertical == Alignment.Vertical.BELOW) {
             y = targetY + targetHeight;
-        } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
+        } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
             y = targetY;
-        } else if (mConfig.mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
+        } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
             y = targetY - (height - targetHeight);
         }
         x = x - paddingLeft;
         y = y - paddingTop;
-        if (mConfig.mAlignmentInside) {
-            final int maxWidth = mViewHolder.getContainer().getWidth() - mViewHolder.getContainer().getPaddingLeft() - mViewHolder.getContainer().getPaddingRight();
-            final int maxHeight = mViewHolder.getContainer().getHeight() - mViewHolder.getContainer().getPaddingTop() - mViewHolder.getContainer().getPaddingBottom();
+        if (getConfig().mAlignmentInside) {
+            final int maxWidth = getViewHolder().getChild().getWidth() - getViewHolder().getChild().getPaddingLeft() - getViewHolder().getChild().getPaddingRight();
+            final int maxHeight = getViewHolder().getChild().getHeight() - getViewHolder().getChild().getPaddingTop() - getViewHolder().getChild().getPaddingBottom();
             final int maxX = maxWidth - width;
             final int maxY = maxHeight - height;
             if (x < 0) {
@@ -308,69 +318,69 @@ public class DialogLayer extends DecorLayer {
                 y = maxY;
             }
         }
-        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) mViewHolder.getContentWrapper().getLayoutParams();
+        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
         contentWrapperParams.leftMargin = x;
         contentWrapperParams.topMargin = y;
-        mViewHolder.getContentWrapper().setLayoutParams(contentWrapperParams);
+        getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
     }
 
     private void initBackground() {
-        if (mConfig.mBackgroundBlurPercent > 0 || mConfig.mBackgroundBlurRadius > 0) {
-            mViewHolder.getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        if (getConfig().mBackgroundBlurPercent > 0 || getConfig().mBackgroundBlurRadius > 0) {
+            getViewHolder().getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
-                    mViewHolder.getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
-                    Bitmap snapshot = Utils.snapshot(mViewHolder.getRootView());
+                    getViewHolder().getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
+                    Bitmap snapshot = Utils.snapshot(getViewHolder().getDecor(), getLevel());
                     int[] locationRootView = new int[2];
-                    mViewHolder.getRootView().getLocationOnScreen(locationRootView);
+                    getViewHolder().getDecor().getLocationOnScreen(locationRootView);
                     int[] locationBackground = new int[2];
-                    mViewHolder.getBackground().getLocationOnScreen(locationBackground);
+                    getViewHolder().getBackground().getLocationOnScreen(locationBackground);
                     int x = locationBackground[0] - locationRootView[0];
                     int y = locationBackground[1] - locationRootView[1];
-                    Bitmap original = Bitmap.createBitmap(snapshot, x, y, mViewHolder.getBackground().getWidth(), mViewHolder.getBackground().getHeight());
+                    Bitmap original = Bitmap.createBitmap(snapshot, x, y, getViewHolder().getBackground().getWidth(), getViewHolder().getBackground().getHeight());
                     snapshot.recycle();
-                    Blurred.init(mContext);
+                    Blurred.init(getActivity());
                     Blurred blurred = Blurred.with(original)
                             .recycleOriginal(true)
                             .keepSize(false)
-                            .scale(mConfig.mBackgroundBlurScale);
-                    if (mConfig.mBackgroundBlurPercent > 0) {
-                        blurred.percent(mConfig.mBackgroundBlurPercent);
-                    } else if (mConfig.mBackgroundBlurRadius > 0) {
-                        blurred.radius(mConfig.mBackgroundBlurRadius);
+                            .scale(getConfig().mBackgroundBlurScale);
+                    if (getConfig().mBackgroundBlurPercent > 0) {
+                        blurred.percent(getConfig().mBackgroundBlurPercent);
+                    } else if (getConfig().mBackgroundBlurRadius > 0) {
+                        blurred.radius(getConfig().mBackgroundBlurRadius);
                     }
                     Bitmap blurBitmap = blurred.blur();
-                    mViewHolder.getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    mViewHolder.getBackground().setImageBitmap(blurBitmap);
-                    mViewHolder.getBackground().setColorFilter(mConfig.mBackgroundColor);
+                    getViewHolder().getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    getViewHolder().getBackground().setImageBitmap(blurBitmap);
+                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
                     return true;
                 }
             });
         } else {
-            if (mConfig.mBackgroundBitmap != null) {
-                mViewHolder.getBackground().setImageBitmap(mConfig.mBackgroundBitmap);
-                mViewHolder.getBackground().setColorFilter(mConfig.mBackgroundColor);
-            } else if (mConfig.mBackgroundResource != -1) {
-                mViewHolder.getBackground().setImageResource(mConfig.mBackgroundResource);
-                mViewHolder.getBackground().setColorFilter(mConfig.mBackgroundColor);
-            } else if (mConfig.mBackgroundDrawable != null) {
-                mViewHolder.getBackground().setImageDrawable(mConfig.mBackgroundDrawable);
-                mViewHolder.getBackground().setColorFilter(mConfig.mBackgroundColor);
+            if (getConfig().mBackgroundBitmap != null) {
+                getViewHolder().getBackground().setImageBitmap(getConfig().mBackgroundBitmap);
+                getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+            } else if (getConfig().mBackgroundResource != -1) {
+                getViewHolder().getBackground().setImageResource(getConfig().mBackgroundResource);
+                getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+            } else if (getConfig().mBackgroundDrawable != null) {
+                getViewHolder().getBackground().setImageDrawable(getConfig().mBackgroundDrawable);
+                getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
             } else {
-                mViewHolder.getBackground().setImageDrawable(new ColorDrawable(mConfig.mBackgroundColor));
+                getViewHolder().getBackground().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
             }
         }
     }
 
     private void initContent() {
-        if (mViewHolder.getContent() != null) {
-            ViewGroup contentParent = (ViewGroup) mViewHolder.getContent().getParent();
+        if (getViewHolder().getContent() != null) {
+            ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
             if (contentParent != null) {
-                contentParent.removeView(mViewHolder.getContent());
+                contentParent.removeView(getViewHolder().getContent());
             }
-            mViewHolder.getContent().setClickable(true);
-            if (mViewHolder.getTargetView() == null && mConfig.mGravity != -1) {
-                ViewGroup.LayoutParams params = mViewHolder.getContent().getLayoutParams();
+            getViewHolder().getContent().setClickable(true);
+            if (getViewHolder().getTarget() == null && getConfig().mGravity != -1) {
+                ViewGroup.LayoutParams params = getViewHolder().getContent().getLayoutParams();
                 FrameLayout.LayoutParams contentParams;
                 if (params == null) {
                     contentParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -379,19 +389,19 @@ public class DialogLayer extends DecorLayer {
                 } else {
                     contentParams = new FrameLayout.LayoutParams(params.width, params.height);
                 }
-                contentParams.gravity = mConfig.mGravity;
-                mViewHolder.getContent().setLayoutParams(contentParams);
+                contentParams.gravity = getConfig().mGravity;
+                getViewHolder().getContent().setLayoutParams(contentParams);
             }
-            if (mConfig.mAsStatusBarViewId > 0) {
-                View statusBar = mViewHolder.getContent().findViewById(mConfig.mAsStatusBarViewId);
+            if (getConfig().mAsStatusBarViewId > 0) {
+                View statusBar = getViewHolder().getContent().findViewById(getConfig().mAsStatusBarViewId);
                 if (statusBar != null) {
                     ViewGroup.LayoutParams params = statusBar.getLayoutParams();
-                    params.height = Utils.getStatusBarHeight(mContext);
+                    params.height = Utils.getStatusBarHeight(getActivity());
                     statusBar.setLayoutParams(params);
                     statusBar.setVisibility(View.VISIBLE);
                 }
             }
-            mViewHolder.getContentWrapper().addView(mViewHolder.getContent());
+            getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
         }
     }
 
@@ -402,7 +412,7 @@ public class DialogLayer extends DecorLayer {
      * @param contentView 自定以View
      */
     public DialogLayer contentView(@NonNull View contentView) {
-        mViewHolder.setContent(contentView);
+        getViewHolder().setContent(contentView);
         return this;
     }
 
@@ -412,7 +422,7 @@ public class DialogLayer extends DecorLayer {
      * @param contentViewId 自定义布局ID
      */
     public DialogLayer contentView(@LayoutRes int contentViewId) {
-        mConfig.contentViewId = contentViewId;
+        getConfig().contentViewId = contentViewId;
         return this;
     }
 
@@ -423,7 +433,7 @@ public class DialogLayer extends DecorLayer {
      * @param statusBarId 状态栏的占位View
      */
     public DialogLayer asStatusBar(@IdRes int statusBarId) {
-        mConfig.mAsStatusBarViewId = statusBarId;
+        getConfig().mAsStatusBarViewId = statusBarId;
         return this;
     }
 
@@ -434,7 +444,7 @@ public class DialogLayer extends DecorLayer {
      * @param gravity {@link Gravity}
      */
     public DialogLayer gravity(int gravity) {
-        mConfig.mGravity = gravity;
+        getConfig().mGravity = gravity;
         return this;
     }
 
@@ -451,10 +461,10 @@ public class DialogLayer extends DecorLayer {
                                  @NonNull Alignment.Horizontal horizontal,
                                  @NonNull Alignment.Vertical vertical,
                                  boolean inside) {
-        mConfig.mAlignmentDirection = direction;
-        mConfig.mAlignmentHorizontal = horizontal;
-        mConfig.mAlignmentVertical = vertical;
-        mConfig.mAlignmentInside = inside;
+        getConfig().mAlignmentDirection = direction;
+        getConfig().mAlignmentHorizontal = horizontal;
+        getConfig().mAlignmentVertical = vertical;
+        getConfig().mAlignmentInside = inside;
         return this;
     }
 
@@ -465,7 +475,7 @@ public class DialogLayer extends DecorLayer {
      * @param contentAnimatorCreator AnimatorCreator
      */
     public DialogLayer contentAnimator(AnimatorCreator contentAnimatorCreator) {
-        mContentAnimatorCreator = contentAnimatorCreator;
+        getConfig().mContentAnimatorCreator = contentAnimatorCreator;
         return this;
     }
 
@@ -476,7 +486,7 @@ public class DialogLayer extends DecorLayer {
      * @param backgroundAnimatorCreator AnimatorCreator
      */
     public DialogLayer backgroundAnimator(AnimatorCreator backgroundAnimatorCreator) {
-        mBackgroundAnimatorCreator = backgroundAnimatorCreator;
+        getConfig().mBackgroundAnimatorCreator = backgroundAnimatorCreator;
         return this;
     }
 
@@ -489,12 +499,12 @@ public class DialogLayer extends DecorLayer {
      * @param radius 模糊半径
      */
     public DialogLayer backgroundBlurRadius(@FloatRange(from = 0, fromInclusive = false, to = 25) float radius) {
-        mConfig.mBackgroundBlurRadius = radius;
+        getConfig().mBackgroundBlurRadius = radius;
         return this;
     }
 
     public DialogLayer backgroundBlurPercent(@FloatRange(from = 0, fromInclusive = false) float percent) {
-        mConfig.mBackgroundBlurPercent = percent;
+        getConfig().mBackgroundBlurPercent = percent;
         return this;
     }
 
@@ -504,7 +514,7 @@ public class DialogLayer extends DecorLayer {
      * @param scale 缩小比例
      */
     public DialogLayer backgroundBlurScale(@FloatRange(from = 1) float scale) {
-        mConfig.mBackgroundBlurScale = scale;
+        getConfig().mBackgroundBlurScale = scale;
         return this;
     }
 
@@ -514,7 +524,7 @@ public class DialogLayer extends DecorLayer {
      * @param bitmap 图片
      */
     public DialogLayer backgroundBitmap(@NonNull Bitmap bitmap) {
-        mConfig.mBackgroundBitmap = bitmap;
+        getConfig().mBackgroundBitmap = bitmap;
         return this;
     }
 
@@ -524,7 +534,7 @@ public class DialogLayer extends DecorLayer {
      * @param resource 资源ID
      */
     public DialogLayer backgroundResource(@DrawableRes int resource) {
-        mConfig.mBackgroundResource = resource;
+        getConfig().mBackgroundResource = resource;
         return this;
     }
 
@@ -534,7 +544,7 @@ public class DialogLayer extends DecorLayer {
      * @param drawable Drawable
      */
     public DialogLayer backgroundDrawable(@NonNull Drawable drawable) {
-        mConfig.mBackgroundDrawable = drawable;
+        getConfig().mBackgroundDrawable = drawable;
         return this;
     }
 
@@ -547,7 +557,7 @@ public class DialogLayer extends DecorLayer {
      * @param colorInt 颜色值
      */
     public DialogLayer backgroundColorInt(@ColorInt int colorInt) {
-        mConfig.mBackgroundColor = colorInt;
+        getConfig().mBackgroundColor = colorInt;
         return this;
     }
 
@@ -560,7 +570,7 @@ public class DialogLayer extends DecorLayer {
      * @param colorRes 颜色资源ID
      */
     public DialogLayer backgroundColorRes(@ColorRes int colorRes) {
-        mConfig.mBackgroundColor = ContextCompat.getColor(mContext, colorRes);
+        getConfig().mBackgroundColor = ContextCompat.getColor(getActivity(), colorRes);
         return this;
     }
 
@@ -571,7 +581,7 @@ public class DialogLayer extends DecorLayer {
      * @param intercept 外部是否拦截触摸
      */
     public DialogLayer outsideInterceptTouchEvent(boolean intercept) {
-        mConfig.mOutsideInterceptTouchEvent = intercept;
+        getConfig().mOutsideInterceptTouchEvent = intercept;
         return this;
     }
 
@@ -581,7 +591,7 @@ public class DialogLayer extends DecorLayer {
      * @param cancelable 是否可关闭
      */
     public DialogLayer cancelableOnTouchOutside(boolean cancelable) {
-        mConfig.mCancelableOnTouchOutside = cancelable;
+        getConfig().mCancelableOnTouchOutside = cancelable;
         return this;
     }
 
@@ -590,9 +600,9 @@ public class DialogLayer extends DecorLayer {
      *
      * @param cancelable 是否可关闭
      */
+    @Override
     public DialogLayer cancelableOnClickKeyBack(boolean cancelable) {
-        cancelableOnKeyDown(cancelable);
-        return this;
+        return (DialogLayer) super.cancelableOnClickKeyBack(cancelable);
     }
 
     /**
@@ -601,7 +611,7 @@ public class DialogLayer extends DecorLayer {
      * @return View
      */
     public View getContentView() {
-        return mViewHolder.getContent();
+        return getViewHolder().getContent();
     }
 
     /**
@@ -610,29 +620,29 @@ public class DialogLayer extends DecorLayer {
      * @return ImageView
      */
     public ImageView getBackground() {
-        return mViewHolder.getBackground();
+        return getViewHolder().getBackground();
     }
 
     /**
      * 适配软键盘的弹出，布局自动上移
      * 在某几个EditText获取焦点时布局上移
-     * 在{@link DialogLayer.OnVisibleChangeListener#onShow(DialogLayer)}中调用
+     * 在{@link OnVisibleChangeListener#onShow(Layer)}中调用
      * 应该和{@link #removeSoftInput()}成对出现
      *
      * @param editText 焦点EditTexts
      */
     public void compatSoftInput(EditText... editText) {
-        Activity activity = Utils.getActivity(mContext);
+        Activity activity = Utils.getActivity(getActivity());
         if (activity != null) {
             mSoftInputHelper = SoftInputHelper.attach(activity)
-                    .init(mViewHolder.getContentWrapper(), mViewHolder.getContent(), editText)
+                    .init(getViewHolder().getContentWrapper(), getViewHolder().getContent(), editText)
                     .moveWithTranslation();
         }
     }
 
     /**
      * 移除软键盘适配
-     * 在{@link DialogLayer.OnVisibleChangeListener#onDismiss(DialogLayer)}中调用
+     * 在{@link OnVisibleChangeListener#onDismiss(Layer)}中调用
      * 应该和{@link #compatSoftInput(EditText...)}成对出现
      */
     public void removeSoftInput() {
@@ -641,123 +651,48 @@ public class DialogLayer extends DecorLayer {
         }
     }
 
-    public interface AnimatorCreator {
-        /**
-         * 内容进入动画
-         *
-         * @param target 内容
-         */
-        @NonNull
-        Animator createInAnimator(View target);
+    public static class ViewHolder extends DecorLayer.ViewHolder {
 
-        /**
-         * 内容消失动画
-         *
-         * @param target 内容
-         */
-        @NonNull
-        Animator createOutAnimator(View target);
-    }
-
-    public interface DataBinder {
-        /**
-         * 绑定数据
-         */
-        void bindData(DialogLayer dialogLayer);
-    }
-
-    public interface OnLayerClickListener {
-        /**
-         * 点击事件回调
-         */
-        void onClick(DialogLayer dialogLayer, View v);
-    }
-
-    public interface OnLayerDismissListener {
-        /**
-         * 开始隐藏，动画刚开始执行
-         */
-        void onDismissing(DialogLayer dialogLayer);
-
-        /**
-         * 已隐藏，浮层已被移除
-         */
-        void onDismissed(DialogLayer dialogLayer);
-    }
-
-    public interface OnLayerShowListener {
-        /**
-         * 开始显示，动画刚开始执行
-         */
-        void onShowing(DialogLayer dialogLayer);
-
-        /**
-         * 已显示，浮层已显示且动画结束
-         */
-        void onShown(DialogLayer dialogLayer);
-    }
-
-    public interface OnVisibleChangeListener {
-        /**
-         * 浮层显示，刚被添加到父布局，进入动画未开始
-         */
-        void onShow(DialogLayer dialogLayer);
-
-        /**
-         * 浮层隐藏，已被从父布局移除，隐藏动画已结束
-         */
-        void onDismiss(DialogLayer dialogLayer);
-    }
-
-    final class ViewHolder {
-
-        private ViewGroup mRootView;
-        private FrameLayout mActivityContentView;
-        private View mTargetView;
-        private FrameLayout mContainer;
+        private FrameLayout mActivityContent;
+        private View mTarget;
 
         private ImageView mBackground;
         private FrameLayout mContentWrapper;
         private View mContent;
 
-        private SparseArray<View> views = null;
-        private SparseArray<DialogLayer.OnLayerClickListener> onClickListeners = null;
-
-        void recycle() {
+        public void recycle() {
             if (mBackground.getDrawable() instanceof BitmapDrawable) {
                 BitmapDrawable bd = (BitmapDrawable) mBackground.getDrawable();
                 bd.getBitmap().recycle();
             }
         }
 
-        public void setRootView(ViewGroup rootView) {
-            mRootView = rootView;
+        public void setActivityContent(FrameLayout activityContent) {
+            mActivityContent = activityContent;
         }
 
-        public void setActivityContentView(FrameLayout activityContentView) {
-            mActivityContentView = activityContentView;
+        public FrameLayout getActivityContent() {
+            return mActivityContent;
         }
 
-        public void setTargetView(View targetView) {
-            mTargetView = targetView;
+        public void setTarget(View target) {
+            mTarget = target;
         }
 
-        public void setContainer(FrameLayout container) {
-            mContainer = container;
-            mContentWrapper = mContainer.findViewById(R.id.fl_content_wrapper);
-            mBackground = mContainer.findViewById(R.id.iv_background);
+        public View getTarget() {
+            return mTarget;
         }
 
-        public ViewGroup getRootView() {
-            return mRootView;
+        @Override
+        public void setChild(@NonNull View child) {
+            super.setChild(child);
+            mContentWrapper = getChild().findViewById(R.id.fl_content_wrapper);
+            mBackground = getChild().findViewById(R.id.iv_background);
         }
 
-        public FrameLayout getActivityContentView() {
-            return mActivityContentView;
-        }
-
-        public View getTargetView() {
-            return mTargetView;
+        @Override
+        public FrameLayout getChild() {
+            return (FrameLayout) super.getChild();
         }
 
         void setContent(View content) {
@@ -768,10 +703,6 @@ public class DialogLayer extends DecorLayer {
             return mContent;
         }
 
-        public FrameLayout getContainer() {
-            return mContainer;
-        }
-
         public FrameLayout getContentWrapper() {
             return mContentWrapper;
         }
@@ -779,53 +710,12 @@ public class DialogLayer extends DecorLayer {
         public ImageView getBackground() {
             return mBackground;
         }
-
-        void bindListener() {
-            if (onClickListeners == null) {
-                return;
-            }
-            for (int i = 0; i < onClickListeners.size(); i++) {
-                int viewId = onClickListeners.keyAt(i);
-                final DialogLayer.OnLayerClickListener listener = onClickListeners.valueAt(i);
-                getView(viewId).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.onClick(DialogLayer.this, v);
-                    }
-                });
-            }
-        }
-
-        public <V extends View> V getView(@IdRes int viewId) {
-            if (views == null) {
-                views = new SparseArray<>();
-            }
-            if (views.indexOfKey(viewId) < 0) {
-                V view = mContent.findViewById(viewId);
-                views.put(viewId, view);
-                return view;
-            }
-            return (V) views.get(viewId);
-        }
-
-        void addOnClickListener(DialogLayer.OnLayerClickListener listener, @IdRes int viewId, @IdRes int... viewIds) {
-            if (onClickListeners == null) {
-                onClickListeners = new SparseArray<>();
-            }
-            if (onClickListeners.indexOfKey(viewId) < 0) {
-                onClickListeners.put(viewId, listener);
-            }
-            if (viewIds != null && viewIds.length > 0) {
-                for (int id : viewIds) {
-                    if (onClickListeners.indexOfKey(id) < 0) {
-                        onClickListeners.put(id, listener);
-                    }
-                }
-            }
-        }
     }
 
-    private final class Config {
+    protected static class Config extends DecorLayer.Config {
+        private AnimatorCreator mBackgroundAnimatorCreator = null;
+        private AnimatorCreator mContentAnimatorCreator = null;
+
         @LayoutRes
         private int contentViewId = 0;
 
@@ -850,97 +740,5 @@ public class DialogLayer extends DecorLayer {
         private Alignment.Direction mAlignmentDirection = Alignment.Direction.VERTICAL;
         private Alignment.Horizontal mAlignmentHorizontal = Alignment.Horizontal.CENTER;
         private Alignment.Vertical mAlignmentVertical = Alignment.Vertical.BELOW;
-    }
-
-    private final class ListenerHolder {
-
-        private List<DataBinder> mDataBinders = null;
-        private List<DialogLayer.OnVisibleChangeListener> mOnVisibleChangeListeners = null;
-        private List<DialogLayer.OnLayerShowListener> mOnLayerShowListeners = null;
-        private List<DialogLayer.OnLayerDismissListener> mOnLayerDismissListeners = null;
-
-        void addDataBinder(DataBinder dataBinder) {
-            if (mDataBinders == null) {
-                mDataBinders = new ArrayList<>(1);
-            }
-            mDataBinders.add(dataBinder);
-        }
-
-        void addOnVisibleChangeListener(DialogLayer.OnVisibleChangeListener onVisibleChangeListener) {
-            if (mOnVisibleChangeListeners == null) {
-                mOnVisibleChangeListeners = new ArrayList<>(1);
-            }
-            mOnVisibleChangeListeners.add(onVisibleChangeListener);
-        }
-
-        void addOnLayerShowListener(DialogLayer.OnLayerShowListener onLayerShowListener) {
-            if (mOnLayerShowListeners == null) {
-                mOnLayerShowListeners = new ArrayList<>(1);
-            }
-            mOnLayerShowListeners.add(onLayerShowListener);
-        }
-
-        void addOnLayerDismissListener(DialogLayer.OnLayerDismissListener onLayerDismissListener) {
-            if (mOnLayerDismissListeners == null) {
-                mOnLayerDismissListeners = new ArrayList<>(1);
-            }
-            mOnLayerDismissListeners.add(onLayerDismissListener);
-        }
-
-        void notifyDataBinder() {
-            if (mDataBinders != null) {
-                for (DataBinder dataBinder : mDataBinders) {
-                    dataBinder.bindData(DialogLayer.this);
-                }
-            }
-        }
-
-        void notifyVisibleChangeOnShow() {
-            if (mOnVisibleChangeListeners != null) {
-                for (DialogLayer.OnVisibleChangeListener onVisibleChangeListener : mOnVisibleChangeListeners) {
-                    onVisibleChangeListener.onShow(DialogLayer.this);
-                }
-            }
-        }
-
-        void notifyVisibleChangeOnDismiss() {
-            if (mOnVisibleChangeListeners != null) {
-                for (DialogLayer.OnVisibleChangeListener onVisibleChangeListener : mOnVisibleChangeListeners) {
-                    onVisibleChangeListener.onDismiss(DialogLayer.this);
-                }
-            }
-        }
-
-        void notifyLayerOnShowing() {
-            if (mOnLayerShowListeners != null) {
-                for (DialogLayer.OnLayerShowListener onLayerShowListener : mOnLayerShowListeners) {
-                    onLayerShowListener.onShowing(DialogLayer.this);
-                }
-            }
-        }
-
-        void notifyLayerOnShown() {
-            if (mOnLayerShowListeners != null) {
-                for (DialogLayer.OnLayerShowListener onLayerShowListener : mOnLayerShowListeners) {
-                    onLayerShowListener.onShown(DialogLayer.this);
-                }
-            }
-        }
-
-        void notifyLayerOnDismissing() {
-            if (mOnLayerDismissListeners != null) {
-                for (DialogLayer.OnLayerDismissListener onLayerDismissListener : mOnLayerDismissListeners) {
-                    onLayerDismissListener.onDismissing(DialogLayer.this);
-                }
-            }
-        }
-
-        void notifyLayerOnDismissed() {
-            if (mOnLayerDismissListeners != null) {
-                for (DialogLayer.OnLayerDismissListener onLayerDismissListener : mOnLayerDismissListeners) {
-                    onLayerDismissListener.onDismissed(DialogLayer.this);
-                }
-            }
-        }
     }
 }

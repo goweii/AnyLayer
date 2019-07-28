@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.FrameLayout;
 
 /**
  * 描述：
@@ -43,11 +45,20 @@ final class Utils {
         return null;
     }
 
-    static Bitmap snapshot(View view){
-        view.setDrawingCacheEnabled(true);
-        view.buildDrawingCache(true);
-        view.destroyDrawingCache();
-        view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_LOW);
-        return view.getDrawingCache();
+    static Bitmap snapshot(FrameLayout decor, int level) {
+        Bitmap bitmap = Bitmap.createBitmap(decor.getWidth(), decor.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        decor.getBackground().draw(canvas);
+        for (int i = 0; i < decor.getChildCount(); i++) {
+            View view = decor.getChildAt(i);
+            if (view instanceof DecorLayer.LevelLayout) {
+                DecorLayer.LevelLayout levelLayout = (DecorLayer.LevelLayout) view;
+                if (levelLayout.getLevel() < level) {
+                    break;
+                }
+            }
+            view.draw(canvas);
+        }
+        return bitmap;
     }
 }

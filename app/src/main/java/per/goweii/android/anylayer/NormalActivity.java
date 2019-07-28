@@ -260,7 +260,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundBlurPercent(0.05f)
                         .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -273,7 +273,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_test_2)
                         .backgroundColorRes(R.color.dialog_bg)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -285,7 +285,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_test_2)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -309,7 +309,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -333,7 +333,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -357,7 +357,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -381,7 +381,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -405,7 +405,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -429,7 +429,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -453,7 +453,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -477,7 +477,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -501,7 +501,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -525,7 +525,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -549,7 +549,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -573,7 +573,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -597,7 +597,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -621,7 +621,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -645,7 +645,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -669,7 +669,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -701,7 +701,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();

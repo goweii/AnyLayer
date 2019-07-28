@@ -109,7 +109,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
-                        .onClick(new Layer.OnLayerClickListener() {
+                        .onClick(new Layer.OnClickListener() {
                             @Override
                             public void onClick(Layer anyLayer, View v) {
                                 anyLayer.dismiss();
@@ -627,13 +627,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         return AnimatorHelper.createZoomAlphaOutAnim(content);
                     }
                 })
-                .onClick(new Layer.OnLayerClickListener() {
+                .onClick(new Layer.OnClickListener() {
                     @Override
                     public void onClick(Layer anyLayer, View v) {
                         anyLayer.dismiss();
                     }
                 }, R.id.fl_dialog_no)
-                .onClick(new Layer.OnLayerClickListener() {
+                .onClick(new Layer.OnClickListener() {
                     @Override
                     public void onClick(Layer anyLayer, View v) {
                         showMulti();

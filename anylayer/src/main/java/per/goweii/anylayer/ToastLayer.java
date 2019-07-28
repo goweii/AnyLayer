@@ -32,7 +32,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
     public ToastLayer(@NonNull Context context) {
         super(Objects.requireNonNull(Utils.getActivity(context)));
         interceptKeyEvent(false);
-        cancelableOnKeyDown(false);
+        cancelableOnKeyBack(false);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     public ToastLayer message(@StringRes int message) {
-        mMessage = mContext.getString(message);
+        mMessage = getActivity().getString(message);
         return this;
     }
 
@@ -73,7 +73,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
 
     @NonNull
     @Override
-    protected View onCreateLayer(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
         return inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
     }
 

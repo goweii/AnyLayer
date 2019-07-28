@@ -82,7 +82,7 @@ public final class ViewManager {
     }
 
     public boolean isAttached(){
-        return mChild.getParent() != null;
+        return mChild != null && mChild.getParent() != null;
     }
 
     public void setOnLifeListener(OnLifeListener onLifeListener) {
