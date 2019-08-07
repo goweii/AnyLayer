@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -23,7 +24,7 @@ public class DecorLayer extends Layer {
     public DecorLayer(@NonNull Activity activity) {
         super();
         mActivity = activity;
-        getViewHolder().mDecor = (FrameLayout) activity.getWindow().getDecorView();
+        getViewHolder().setDecor((FrameLayout) activity.getWindow().getDecorView());
     }
 
     @Level
@@ -75,13 +76,16 @@ public class DecorLayer extends Layer {
     @NonNull
     @Override
     protected ViewGroup onGetParent() {
-        final ViewGroup decor = getViewHolder().mDecor;
+        LayerLayout group = findLayerLayoutFromDecor();
+        if (group == null) {
+            group = addNewLayerLayoutToDecor();
+        }
         LevelLayout parent = null;
-        int lastIndex = 0;
-        final int count = decor.getChildCount();
+        int lastIndex = -1;
+        final int count = group.getChildCount();
         for (int i = 0; i < count; i++) {
             lastIndex = i;
-            View child = decor.getChildAt(i);
+            View child = group.getChildAt(i);
             if (child instanceof LevelLayout) {
                 LevelLayout levelLayout = (LevelLayout) child;
                 if (getLevel() == levelLayout.getLevel()) {
@@ -94,9 +98,9 @@ public class DecorLayer extends Layer {
             }
         }
         if (parent == null) {
-            parent = new LevelLayout(decor.getContext(), getLevel());
+            parent = new LevelLayout(group.getContext(), getLevel());
             parent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            decor.addView(parent, lastIndex + 1);
+            group.addView(parent, lastIndex + 1);
         }
         getViewHolder().setParent(parent);
         return parent;
@@ -125,24 +129,60 @@ public class DecorLayer extends Layer {
     @Override
     public void onDetach() {
         super.onDetach();
-        final ViewGroup parent = getViewHolder().mDecor;
-        LevelLayout container = null;
-        final int count = parent.getChildCount();
+        final LayerLayout group = findLayerLayoutFromDecor();
+        if (group == null) {
+            return;
+        }
+        LevelLayout parent = null;
+        final int count = group.getChildCount();
         for (int i = 0; i < count; i++) {
-            View child = parent.getChildAt(i);
+            View child = group.getChildAt(i);
             if (child instanceof LevelLayout) {
                 LevelLayout levelLayout = (LevelLayout) child;
                 if (getLevel() == levelLayout.getLevel()) {
-                    container = levelLayout;
+                    parent = levelLayout;
                     break;
                 }
             }
         }
-        if (container != null) {
-            if (container.getChildCount() == 0) {
-                parent.removeView(container);
+        if (parent == null) {
+            return;
+        }
+        if (parent.getChildCount() == 0) {
+            group.removeView(parent);
+        }
+        if (group.getChildCount() == 0) {
+            removeLayerLayoutFromDecor(group);
+        }
+    }
+
+    @Nullable
+    private LayerLayout findLayerLayoutFromDecor() {
+        final ViewGroup decor = getViewHolder().mDecor;
+        LayerLayout layerLayout = null;
+        final int count = decor.getChildCount();
+        for (int i = 0; i < count; i++) {
+            View child = decor.getChildAt(i);
+            if (child instanceof LayerLayout) {
+                layerLayout = (LayerLayout) child;
+                break;
             }
         }
+        return layerLayout;
+    }
+
+    @NonNull
+    private LayerLayout addNewLayerLayoutToDecor() {
+        final ViewGroup decor = getViewHolder().mDecor;
+        LayerLayout layerLayout = new LayerLayout(decor.getContext());
+        layerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        decor.addView(layerLayout, decor.getChildCount() - 1);
+        return layerLayout;
+    }
+
+    private void removeLayerLayoutFromDecor(LayerLayout layerLayout) {
+        final ViewGroup decor = getViewHolder().mDecor;
+        decor.removeView(layerLayout);
     }
 
     public DecorLayer cancelableOnClickKeyBack(boolean cancelable) {
@@ -181,6 +221,16 @@ public class DecorLayer extends Layer {
         int TOAST = 1;
         int DIALOG = 2;
         int GUIDE = 3;
+    }
+
+    /**
+     * 各个层级浮层的容器，直接添加进DecorView
+     */
+    @SuppressLint("ViewConstructor")
+    public static class LayerLayout extends FrameLayout {
+        public LayerLayout(@NonNull Context context) {
+            super(context);
+        }
     }
 
     /**
