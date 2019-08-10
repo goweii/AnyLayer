@@ -176,7 +176,7 @@ public class DecorLayer extends Layer {
         final ViewGroup decor = getViewHolder().mDecor;
         LayerLayout layerLayout = new LayerLayout(decor.getContext());
         layerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        decor.addView(layerLayout, decor.getChildCount() - 1);
+        decor.addView(layerLayout, decor.getChildCount());
         return layerLayout;
     }
 

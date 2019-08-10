@@ -337,26 +337,28 @@ public class DialogLayer extends DecorLayer {
                 @Override
                 public boolean onPreDraw() {
                     getViewHolder().getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
-                    Bitmap snapshot = Utils.snapshot(getViewHolder().getDecor(), getLevel());
-                    int[] locationRootView = new int[2];
-                    getViewHolder().getDecor().getLocationOnScreen(locationRootView);
-                    int[] locationBackground = new int[2];
-                    getViewHolder().getBackground().getLocationOnScreen(locationBackground);
-                    int x = locationBackground[0] - locationRootView[0];
-                    int y = locationBackground[1] - locationRootView[1];
-                    Bitmap original = Bitmap.createBitmap(snapshot, x, y, getViewHolder().getBackground().getWidth(), getViewHolder().getBackground().getHeight());
-                    snapshot.recycle();
+                    float radius = getConfig().mBackgroundBlurRadius;
+                    if (getConfig().mBackgroundBlurPercent > 0) {
+                        int w = getViewHolder().getBackground().getWidth();
+                        int h = getViewHolder().getBackground().getHeight();
+                        int min = Math.min(w, h);
+                        radius = min * getConfig().mBackgroundBlurPercent;
+                    }
+                    float scale = getConfig().mBackgroundBlurScale;
+                    if (radius > 25) {
+                        scale = scale * (radius / 25);
+                        radius = 25;
+                    }
+                    Bitmap snapshot = Utils.snapshot(getViewHolder().getDecor(),
+                            getViewHolder().getBackground(),
+                            scale,
+                            getLevel());
                     Blurred.init(getActivity());
-                    Blurred blurred = Blurred.with(original)
+                    Bitmap blurBitmap = Blurred.with(snapshot)
                             .recycleOriginal(true)
                             .keepSize(false)
-                            .scale(getConfig().mBackgroundBlurScale);
-                    if (getConfig().mBackgroundBlurPercent > 0) {
-                        blurred.percent(getConfig().mBackgroundBlurPercent);
-                    } else if (getConfig().mBackgroundBlurRadius > 0) {
-                        blurred.radius(getConfig().mBackgroundBlurRadius);
-                    }
-                    Bitmap blurBitmap = blurred.blur();
+                            .radius(radius)
+                            .blur();
                     getViewHolder().getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
                     getViewHolder().getBackground().setImageBitmap(blurBitmap);
                     getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
