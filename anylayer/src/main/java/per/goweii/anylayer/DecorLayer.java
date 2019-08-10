@@ -213,14 +213,18 @@ public class DecorLayer extends Layer {
      * 数字越小层级越高，显示在越上层
      */
     @IntDef({
+            Level.FLOAT,
             Level.TOAST,
             Level.DIALOG,
+            Level.POPUP,
             Level.GUIDE
     })
     protected @interface Level {
-        int TOAST = 1;
-        int DIALOG = 2;
-        int GUIDE = 3;
+        int FLOAT = 1;  // 悬浮窗
+        int TOAST = 2;  // 吐司
+        int DIALOG = 3; // 弹窗
+        int POPUP = 4;  // PopupWindow
+        int GUIDE = 5;  // 引导层
     }
 
     /**
