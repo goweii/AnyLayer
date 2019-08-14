@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -55,11 +54,13 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
         }
     };
 
-    public static SoftInputHelper attach(@NonNull Activity activity) {
+    public static SoftInputHelper attach(Activity activity) {
+        Utils.requestNonNull(activity, "activity == null");
         return new SoftInputHelper(activity);
     }
 
-    private SoftInputHelper(@NonNull Activity activity) {
+    private SoftInputHelper(Activity activity) {
+        Utils.requestNonNull(activity, "activity == null");
         this.window = activity.getWindow();
         this.rootView = window.getDecorView().getRootView();
         ViewTreeObserver observer = rootView.getViewTreeObserver();
@@ -67,7 +68,7 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
         observer.addOnGlobalFocusChangeListener(this);
     }
 
-    public void detach(){
+    public void detach() {
         if (rootView.getViewTreeObserver().isAlive()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -78,7 +79,9 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
         }
     }
 
-    public SoftInputHelper init(@NonNull View moveView, @NonNull View bottomView, @NonNull EditText... focusViews) {
+    public SoftInputHelper init(View moveView, View bottomView, EditText... focusViews) {
+        Utils.requestNonNull(moveView, "moveView == null");
+        Utils.requestNonNull(bottomView, "bottomView == null");
         this.moveView = moveView;
         this.bottomView = bottomView;
         this.focusViews = focusViews;

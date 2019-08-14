@@ -2,18 +2,12 @@ package per.goweii.anylayer;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.Objects;
 
 /**
  * @author CuiZhen
@@ -24,49 +18,42 @@ import java.util.Objects;
  */
 public class ToastLayer extends DecorLayer implements Runnable {
 
-    public ToastLayer(@NonNull Context context) {
-        super(Objects.requireNonNull(Utils.getActivity(context)));
+    public ToastLayer(Context context) {
+        super(Utils.requestNonNull(Utils.getActivity(Utils.requestNonNull(context, "connect == null"))));
         interceptKeyEvent(false);
         cancelableOnKeyBack(false);
     }
 
-    @Level
     @Override
-    protected int getLevel() {
+    protected Level getLevel() {
         return Level.TOAST;
     }
 
-    @NonNull
     @Override
     protected ViewHolder onCreateViewHolder() {
         return new ViewHolder();
     }
 
-    @NonNull
     @Override
     public ViewHolder getViewHolder() {
         return (ViewHolder) super.getViewHolder();
     }
 
-    @NonNull
     @Override
     protected Config onCreateConfig() {
         return new Config();
     }
 
-    @NonNull
     @Override
     public Config getConfig() {
         return (Config) super.getConfig();
     }
 
-    @NonNull
     @Override
     protected ListenerHolder onCreateListenerHolder() {
         return new ListenerHolder();
     }
 
-    @NonNull
     @Override
     public ListenerHolder getListenerHolder() {
         return (ListenerHolder) super.getListenerHolder();
@@ -87,36 +74,34 @@ public class ToastLayer extends DecorLayer implements Runnable {
         return this;
     }
 
-    public ToastLayer message(@NonNull CharSequence message) {
+    public ToastLayer message(CharSequence message) {
+        Utils.requestNonNull(message, "message == null");
         getConfig().mMessage = message;
         return this;
     }
 
-    public ToastLayer message(@StringRes int message) {
+    public ToastLayer message(int message) {
         getConfig().mMessage = getActivity().getString(message);
         return this;
     }
 
-    public ToastLayer icon(@DrawableRes int icon) {
+    public ToastLayer icon(int icon) {
         getConfig().mIcon = icon;
         return this;
     }
 
-    @NonNull
     @Override
-    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+    protected View onCreateChild(LayoutInflater inflater, ViewGroup parent) {
         return inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
     }
 
-    @Nullable
     @Override
-    protected Animator onCreateInAnimator(@NonNull View view) {
+    protected Animator onCreateInAnimator(View view) {
         return AnimatorHelper.createLeftInAnim(view);
     }
 
-    @Nullable
     @Override
-    protected Animator onCreateOutAnimator(@NonNull View view) {
+    protected Animator onCreateOutAnimator(View view) {
         return AnimatorHelper.createLeftOutAnim(view);
     }
 
@@ -173,7 +158,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
         private TextView mMessage;
 
         @Override
-        public void setChild(@NonNull View child) {
+        public void setChild(View child) {
             super.setChild(child);
             mIcon = child.findViewById(R.id.iv_icon);
             mMessage = child.findViewById(R.id.tv_msg);

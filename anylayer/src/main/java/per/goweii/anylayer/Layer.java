@@ -1,10 +1,6 @@
 package per.goweii.anylayer;
 
 import android.animation.Animator;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -34,67 +30,62 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     private Animator mAnimatorOut = null;
 
     public Layer() {
-        mConfig = onCreateConfig();
-        mViewHolder = onCreateViewHolder();
-        mListenerHolder = onCreateListenerHolder();
+        mConfig = Utils.requestNonNull(onCreateConfig(), "onCreateConfig() == null");
+        mViewHolder = Utils.requestNonNull(onCreateViewHolder(), "onCreateViewHolder() == null");
+        mListenerHolder = Utils.requestNonNull(onCreateListenerHolder(), "onCreateListenerHolder() == null");
         mViewManager = new ViewManager();
         mViewManager.setOnLifeListener(this);
         mViewManager.setOnPreDrawListener(this);
     }
 
-    @NonNull
-    protected ViewHolder onCreateViewHolder() {
-        return new ViewHolder();
-    }
-
-    @NonNull
     public ViewHolder getViewHolder() {
+        Utils.requestNonNull(mViewHolder, "mViewHolder == null");
         return mViewHolder;
     }
 
-    @NonNull
+    public Config getConfig() {
+        Utils.requestNonNull(mConfig, "mConfig == null");
+        return mConfig;
+    }
+
+    public ListenerHolder getListenerHolder() {
+        Utils.requestNonNull(mListenerHolder, "mListenerHolder == null");
+        return mListenerHolder;
+    }
+
     protected Config onCreateConfig() {
         return new Config();
     }
 
-    @NonNull
-    public Config getConfig() {
-        return mConfig;
+    protected ViewHolder onCreateViewHolder() {
+        return new ViewHolder();
     }
 
-    @NonNull
     protected ListenerHolder onCreateListenerHolder() {
         return new ListenerHolder();
     }
 
-    @NonNull
-    public ListenerHolder getListenerHolder() {
-        return mListenerHolder;
-    }
-
-    @NonNull
     protected ViewGroup onGetParent() {
         return mViewHolder.getParent();
     }
 
-    @NonNull
-    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+    protected View onCreateChild(LayoutInflater inflater, ViewGroup parent) {
         if (mViewHolder.getChild() == null) {
             mViewHolder.setChild(inflater.inflate(mConfig.mChildId, parent, false));
         }
         return mViewHolder.getChild();
     }
 
-    @Nullable
-    protected Animator onCreateInAnimator(@NonNull View view) {
+    protected Animator onCreateInAnimator(View view) {
+        Utils.requestNonNull(view, "view == null");
         if (mConfig.mAnimatorCreator == null) {
             return null;
         }
         return mConfig.mAnimatorCreator.createInAnimator(view);
     }
 
-    @Nullable
-    protected Animator onCreateOutAnimator(@NonNull View view) {
+    protected Animator onCreateOutAnimator(View view) {
+        Utils.requestNonNull(view, "view == null");
         if (mConfig.mAnimatorCreator == null) {
             return null;
         }
@@ -196,7 +187,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     public void show() {
         mViewHolder.setParent(onGetParent());
-        mViewHolder.setChild(onCreateChild(LayoutInflater.from(mViewHolder.getParent().getContext()), mViewHolder.getParent()));
+        final View view = onCreateChild(LayoutInflater.from(mViewHolder.getParent().getContext()), mViewHolder.getParent());
+        mViewHolder.setChild(Utils.requestNonNull(view, "onCreateChild() == null"));
         mViewManager.setParent(mViewHolder.getParent());
         mViewManager.setChild(mViewHolder.getChild());
         mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? this : null);
@@ -211,29 +203,19 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return mViewManager.isAttached();
     }
 
-    @NonNull
     public ViewManager getViewManager() {
         return mViewManager;
     }
 
-    @NonNull
     public ViewGroup getParent() {
-        if (mViewHolder.getParent() == null) {
-            throw new RuntimeException("You have to call it after the show method");
-        }
         return mViewHolder.getParent();
     }
 
-    @NonNull
     public View getChild() {
-        if (mViewHolder.getChild() == null) {
-            throw new RuntimeException("You have to call it after the show method");
-        }
         return mViewHolder.getChild();
     }
 
-    @NonNull
-    public <V extends View> V getView(@IdRes int id) {
+    public <V extends View> V getView(int id) {
         if (mViewCaches == null) {
             mViewCaches = new SparseArray<>();
         }
@@ -245,17 +227,19 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return (V) mViewCaches.get(id);
     }
 
-    public Layer parent(@NonNull ViewGroup parent) {
+    public Layer parent(ViewGroup parent) {
+        Utils.requestNonNull(parent, "parent == null");
         mViewHolder.setParent(parent);
         return this;
     }
 
-    public Layer child(@NonNull View child) {
+    public Layer child(View child) {
+        Utils.requestNonNull(child, "child == null");
         mViewHolder.setChild(child);
         return this;
     }
 
-    public Layer child(@LayoutRes int child) {
+    public Layer child(int child) {
         mConfig.mChildId = child;
         return this;
     }
@@ -323,7 +307,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      * @param listener 监听器
      * @param viewIds  控件ID
      */
-    public Layer onClickToDismiss(OnClickListener listener, @IdRes int... viewIds) {
+    public Layer onClickToDismiss(OnClickListener listener, int... viewIds) {
         onClick(new OnClickListener() {
             @Override
             public void onClick(Layer decorLayer, View v) {
@@ -342,7 +326,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      *
      * @param viewIds 控件ID
      */
-    public Layer onClickToDismiss(@IdRes int... viewIds) {
+    public Layer onClickToDismiss(int... viewIds) {
         onClick(new OnClickListener() {
             @Override
             public void onClick(Layer decorLayer, View v) {
@@ -358,7 +342,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      * @param listener 回调
      * @param viewIds  控件ID
      */
-    public Layer onClick(OnClickListener listener, @IdRes int... viewIds) {
+    public Layer onClick(OnClickListener listener, int... viewIds) {
         mListenerHolder.addOnClickListener(listener, viewIds);
         return this;
     }
@@ -376,20 +360,20 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         private ViewGroup mParent;
         private View mChild;
 
-        public void setParent(@NonNull ViewGroup parent) {
-            mParent = parent;
+        public void setParent(ViewGroup parent) {
+            mParent = Utils.requestNonNull(parent, "parent == null");
         }
 
         public ViewGroup getParent() {
-            return mParent;
+            return Utils.requestNonNull(mParent, "parent == null, You have to call it after the show method");
         }
 
-        public void setChild(@NonNull View child) {
-            mChild = child;
+        public void setChild(View child) {
+            mChild = Utils.requestNonNull(child, "child == null");
         }
 
         public View getChild() {
-            return mChild;
+            return Utils.requestNonNull(mChild, "child == null, You have to call it after the show method");
         }
     }
 
@@ -400,7 +384,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         private List<OnShowListener> mOnShowListeners = null;
         private List<OnDismissListener> mOnDismissListeners = null;
 
-        private void bindClickListeners(@NonNull Layer layer) {
+        private void bindClickListeners(Layer layer) {
+            Utils.requestNonNull(layer, "layer == null");
             if (mOnClickListeners == null) {
                 return;
             }
@@ -416,7 +401,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        public void addOnClickListener(OnClickListener listener, @IdRes int... viewIds) {
+        public void addOnClickListener(OnClickListener listener, int... viewIds) {
             if (mOnClickListeners == null) {
                 mOnClickListeners = new SparseArray<>();
             }
@@ -457,7 +442,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             mOnDismissListeners.add(onDismissListener);
         }
 
-        private void notifyDataBinder(@NonNull Layer layer) {
+        private void notifyDataBinder(Layer layer) {
+            Utils.requestNonNull(layer, "layer == null");
             if (mDataBinders != null) {
                 for (DataBinder dataBinder : mDataBinders) {
                     dataBinder.bindData(layer);
@@ -465,7 +451,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyVisibleChangeOnShow(@NonNull Layer layer) {
+        private void notifyVisibleChangeOnShow(Layer layer) {
+            Utils.requestNonNull(layer, "layer == null");
             if (mOnVisibleChangeListeners != null) {
                 for (OnVisibleChangeListener onVisibleChangeListener : mOnVisibleChangeListeners) {
                     onVisibleChangeListener.onShow(layer);
@@ -473,7 +460,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyVisibleChangeOnDismiss(@NonNull Layer layer) {
+        private void notifyVisibleChangeOnDismiss(Layer layer) {
+            Utils.requestNonNull(layer, "layer == null");
             if (mOnVisibleChangeListeners != null) {
                 for (OnVisibleChangeListener onVisibleChangeListener : mOnVisibleChangeListeners) {
                     onVisibleChangeListener.onDismiss(layer);
@@ -481,7 +469,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyLayerOnShowing(@NonNull Layer layer) {
+        private void notifyLayerOnShowing(Layer layer) {
+            Utils.requestNonNull(layer, "layer == null");
             if (mOnShowListeners != null) {
                 for (OnShowListener onShowListener : mOnShowListeners) {
                     onShowListener.onShowing(layer);
@@ -489,7 +478,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyLayerOnShown(@NonNull Layer layer) {
+        private void notifyLayerOnShown(Layer layer) {
+            Utils.requestNonNull(layer, "layer == null");
             if (mOnShowListeners != null) {
                 for (OnShowListener onShowListener : mOnShowListeners) {
                     onShowListener.onShown(layer);
@@ -497,7 +487,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyLayerOnDismissing(@NonNull Layer layer) {
+        private void notifyLayerOnDismissing(Layer layer) {
+            Utils.requestNonNull(layer, "layer == null");
             if (mOnDismissListeners != null) {
                 for (OnDismissListener onDismissListener : mOnDismissListeners) {
                     onDismissListener.onDismissing(layer);
@@ -505,7 +496,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyLayerOnDismissed(@NonNull Layer layer) {
+        private void notifyLayerOnDismissed(Layer layer) {
+            Utils.requestNonNull(layer, "layer == null");
             if (mOnDismissListeners != null) {
                 for (OnDismissListener onDismissListener : mOnDismissListeners) {
                     onDismissListener.onDismissed(layer);

@@ -14,26 +14,6 @@ import java.lang.reflect.Method;
 final class InputMethodUtils {
 
     /**
-     * 禁止EditText弹出软件盘，光标依然正常显示。
-     */
-    public static void disableShowSoftInput(EditText editText) {
-        Class<EditText> cls = EditText.class;
-        Method method;
-        try {
-            method = cls.getMethod("setShowSoftInputOnFocus", boolean.class);
-            method.setAccessible(true);
-            method.invoke(editText, false);
-        } catch (Exception ignore) {
-        }
-        try {
-            method = cls.getMethod("setSoftInputShownOnFocus", boolean.class);
-            method.setAccessible(true);
-            method.invoke(editText, false);
-        } catch (Exception ignore) {
-        }
-    }
-
-    /**
      * 隐藏虚拟键盘
      */
     public static void hide(View v) {

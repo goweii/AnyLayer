@@ -3,8 +3,6 @@ package per.goweii.anylayer;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.Stack;
@@ -23,12 +21,14 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
     private final Application mApplication;
     private final Stack<Activity> mActivityStack = new Stack<>();
 
-    private ActivityHolder(@NonNull Application application) {
+    private ActivityHolder(Application application) {
+        Utils.requestNonNull(application, "application == null");
         mApplication = application;
         application.registerActivityLifecycleCallbacks(this);
     }
 
-    static void init(@NonNull Application application) {
+    static void init(Application application) {
+        Utils.requestNonNull(application, "application == null");
         if (INSTANCE == null) {
             INSTANCE = new ActivityHolder(application);
         }
@@ -41,8 +41,8 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         return INSTANCE.mApplication;
     }
 
-    @Nullable
-    static Activity getActivity(@NonNull Class<Activity> clazz) {
+    static Activity getActivity(Class<Activity> clazz) {
+        Utils.requestNonNull(clazz, "clazz == null");
         if (INSTANCE == null) {
             return null;
         }
@@ -59,7 +59,6 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         return null;
     }
 
-    @Nullable
     static Activity getCurrentActivity() {
         if (INSTANCE == null) {
             return null;

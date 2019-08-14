@@ -3,9 +3,6 @@ package per.goweii.anylayer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -21,59 +18,52 @@ public class DecorLayer extends Layer {
 
     private final Activity mActivity;
 
-    public DecorLayer(@NonNull Activity activity) {
+    public DecorLayer(Activity activity) {
         super();
+        Utils.requestNonNull(activity, "activity == null");
         mActivity = activity;
         getViewHolder().setDecor((FrameLayout) activity.getWindow().getDecorView());
     }
 
-    @Level
-    protected int getLevel() {
+    protected Level getLevel() {
         return Level.DIALOG;
     }
 
-    @NonNull
     public Activity getActivity() {
+        Utils.requestNonNull(mActivity, "activity == null");
         return mActivity;
     }
 
-    @NonNull
     @Override
     protected ViewHolder onCreateViewHolder() {
         return new ViewHolder();
     }
 
-    @NonNull
     @Override
     public ViewHolder getViewHolder() {
         return (ViewHolder) super.getViewHolder();
     }
 
-    @NonNull
     @Override
     protected Config onCreateConfig() {
         return new Config();
     }
 
-    @NonNull
     @Override
     public Config getConfig() {
         return (Config) super.getConfig();
     }
 
-    @NonNull
     @Override
     protected ListenerHolder onCreateListenerHolder() {
         return new ListenerHolder();
     }
 
-    @NonNull
     @Override
     public ListenerHolder getListenerHolder() {
         return (ListenerHolder) super.getListenerHolder();
     }
 
-    @NonNull
     @Override
     protected ViewGroup onGetParent() {
         LayerLayout group = findLayerLayoutFromDecor();
@@ -91,7 +81,7 @@ public class DecorLayer extends Layer {
                 if (getLevel() == levelLayout.getLevel()) {
                     parent = levelLayout;
                     break;
-                } else if (getLevel() > levelLayout.getLevel()) {
+                } else if (getLevel().level() > levelLayout.getLevel().level()) {
                     lastIndex--;
                     break;
                 }
@@ -156,7 +146,6 @@ public class DecorLayer extends Layer {
         }
     }
 
-    @Nullable
     private LayerLayout findLayerLayoutFromDecor() {
         final ViewGroup decor = getViewHolder().mDecor;
         LayerLayout layerLayout = null;
@@ -171,7 +160,6 @@ public class DecorLayer extends Layer {
         return layerLayout;
     }
 
-    @NonNull
     private LayerLayout addNewLayerLayoutToDecor() {
         final ViewGroup decor = getViewHolder().mDecor;
         LayerLayout layerLayout = new LayerLayout(decor.getContext());
@@ -212,19 +200,22 @@ public class DecorLayer extends Layer {
      * 浮层层级
      * 数字越小层级越高，显示在越上层
      */
-    @IntDef({
-            Level.FLOAT,
-            Level.TOAST,
-            Level.DIALOG,
-            Level.POPUP,
-            Level.GUIDE
-    })
-    protected @interface Level {
-        int FLOAT = 1;  // 悬浮窗
-        int TOAST = 2;  // 吐司
-        int DIALOG = 3; // 弹窗
-        int POPUP = 4;  // PopupWindow
-        int GUIDE = 5;  // 引导层
+    protected enum Level {
+        FLOAT(1),  // 悬浮窗
+        TOAST(2),  // 吐司
+        DIALOG(3), // 弹窗
+        POPUP(4),  // PopupWindow
+        GUIDE(5);  // 引导层
+
+        private final int level;
+
+        Level(int level) {
+            this.level = level;
+        }
+
+        protected int level() {
+            return level;
+        }
     }
 
     /**
@@ -232,7 +223,7 @@ public class DecorLayer extends Layer {
      */
     @SuppressLint("ViewConstructor")
     public static class LayerLayout extends FrameLayout {
-        public LayerLayout(@NonNull Context context) {
+        public LayerLayout(Context context) {
             super(context);
         }
     }
@@ -242,14 +233,14 @@ public class DecorLayer extends Layer {
      */
     @SuppressLint("ViewConstructor")
     public static class LevelLayout extends FrameLayout {
-        private final int mLevel;
+        private final Level mLevel;
 
-        public LevelLayout(@NonNull Context context, @Level int level) {
+        public LevelLayout(Context context, Level level) {
             super(context);
             mLevel = level;
         }
 
-        public int getLevel() {
+        public Level getLevel() {
             return mLevel;
         }
     }

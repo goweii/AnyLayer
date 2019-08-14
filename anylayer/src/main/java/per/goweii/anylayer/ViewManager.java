@@ -1,6 +1,5 @@
 package per.goweii.anylayer;
 
-import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +31,13 @@ public final class ViewManager {
     public ViewManager() {
     }
 
-    public void setParent(@NonNull ViewGroup parent) {
+    public void setParent(ViewGroup parent) {
+        Utils.requestNonNull(parent, "parent == null");
         mParent = parent;
     }
 
-    public void setChild(@NonNull View child) {
+    public void setChild(View child) {
+        Utils.requestNonNull(child, "child == null");
         mChild = child;
     }
 
@@ -81,7 +82,7 @@ public final class ViewManager {
         }
     }
 
-    public boolean isAttached(){
+    public boolean isAttached() {
         return mChild != null && mChild.getParent() != null;
     }
 
@@ -113,7 +114,7 @@ public final class ViewManager {
         }
         mChild.getViewTreeObserver().addOnPreDrawListener(new LayerPreDrawListener());
         mParent.addView(mChild);
-        if (mOnLifeListener != null){
+        if (mOnLifeListener != null) {
             mOnLifeListener.onAttach();
         }
     }
@@ -129,12 +130,12 @@ public final class ViewManager {
             mLayerGlobalFocusChangeListener = null;
         }
         mParent.removeView(mChild);
-        if (mOnLifeListener != null){
+        if (mOnLifeListener != null) {
             mOnLifeListener.onDetach();
         }
     }
 
-    private final class LayerPreDrawListener implements ViewTreeObserver.OnPreDrawListener{
+    private final class LayerPreDrawListener implements ViewTreeObserver.OnPreDrawListener {
         @Override
         public boolean onPreDraw() {
             if (mChild.getViewTreeObserver().isAlive()) {
@@ -178,6 +179,7 @@ public final class ViewManager {
 
     public interface OnLifeListener {
         void onAttach();
+
         void onDetach();
     }
 

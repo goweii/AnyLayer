@@ -1,13 +1,9 @@
 package per.goweii.anylayer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-
-import per.goweii.statusbarcompat.StatusBarCompat;
 
 /**
  * @author CuiZhen
@@ -16,7 +12,7 @@ import per.goweii.statusbarcompat.StatusBarCompat;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class LayerActivity extends AppCompatActivity implements Layer.OnVisibleChangeListener {
+public class LayerActivity extends Activity implements Layer.OnVisibleChangeListener {
 
     private static OnLayerCreatedCallback sOnLayerCreatedCallback = null;
 
@@ -28,10 +24,10 @@ public class LayerActivity extends AppCompatActivity implements Layer.OnVisibleC
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         overridePendingTransition(0, 0);
         super.onCreate(savedInstanceState);
-        StatusBarCompat.transparent(this);
+        Utils.transparent(this);
         DialogLayer dialogLayer = AnyLayer.dialog(this);
         dialogLayer.onVisibleChangeListener(this);
         if (sOnLayerCreatedCallback != null) {
@@ -53,7 +49,7 @@ public class LayerActivity extends AppCompatActivity implements Layer.OnVisibleC
         /**
          * 浮层已创建，可在这里进行浮层的初始化和数据绑定
          */
-        void onLayerCreated(@NonNull DialogLayer dialogLayer);
+        void onLayerCreated(DialogLayer dialogLayer);
     }
 
 }
