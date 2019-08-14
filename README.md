@@ -86,18 +86,21 @@ allprojects {
   
   因框架重构，在3.0.0版本中暂时删除通用库，会在后续添加。
   
+  从3.1.0版本开始移除support-v7依赖，可同时兼容support和androidx
+  
   因重构代码变化较大，不建议使用较多的老项目升级，保持2.5.0版即可，在实现Dialog/Popup/BottomSheet等效果上无本质差别。
+  
 ```groovy
 // build.gradle(Module:)
 dependencies {
     // 完整引入
-    implementation 'com.github.goweii:AnyLayer:3.0.0'
+    implementation 'com.github.goweii:AnyLayer:3.1.0'
     
     // 基础库
     // implementation 'com.github.goweii.AnyLayer:anylayer:2.5.0'
     
     // 通用弹窗（依赖基础库）
-    // 3.0.0版本暂时删除
+    // 从3.0.0版本暂时删除
     // implementation 'com.github.goweii.AnyLayer:anylayer-common:2.5.0'
 }
 ```
