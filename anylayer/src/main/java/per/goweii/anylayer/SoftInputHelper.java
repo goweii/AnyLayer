@@ -55,12 +55,12 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
     };
 
     public static SoftInputHelper attach(Activity activity) {
-        Utils.requestNonNull(activity, "activity == null");
+        Utils.requireNonNull(activity, "activity == null");
         return new SoftInputHelper(activity);
     }
 
     private SoftInputHelper(Activity activity) {
-        Utils.requestNonNull(activity, "activity == null");
+        Utils.requireNonNull(activity, "activity == null");
         this.window = activity.getWindow();
         this.rootView = window.getDecorView().getRootView();
         ViewTreeObserver observer = rootView.getViewTreeObserver();
@@ -80,8 +80,8 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
     }
 
     public SoftInputHelper init(View moveView, View bottomView, EditText... focusViews) {
-        Utils.requestNonNull(moveView, "moveView == null");
-        Utils.requestNonNull(bottomView, "bottomView == null");
+        Utils.requireNonNull(moveView, "moveView == null");
+        Utils.requireNonNull(bottomView, "bottomView == null");
         this.moveView = moveView;
         this.bottomView = bottomView;
         this.focusViews = focusViews;

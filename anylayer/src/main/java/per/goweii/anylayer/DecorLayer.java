@@ -20,7 +20,7 @@ public class DecorLayer extends Layer {
 
     public DecorLayer(Activity activity) {
         super();
-        Utils.requestNonNull(activity, "activity == null");
+        Utils.requireNonNull(activity, "activity == null");
         mActivity = activity;
         getViewHolder().setDecor((FrameLayout) activity.getWindow().getDecorView());
     }
@@ -30,7 +30,7 @@ public class DecorLayer extends Layer {
     }
 
     public Activity getActivity() {
-        Utils.requestNonNull(mActivity, "activity == null");
+        Utils.requireNonNull(mActivity, "activity == null");
         return mActivity;
     }
 

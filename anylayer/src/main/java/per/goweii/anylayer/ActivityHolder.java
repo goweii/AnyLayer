@@ -22,13 +22,13 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
     private final Stack<Activity> mActivityStack = new Stack<>();
 
     private ActivityHolder(Application application) {
-        Utils.requestNonNull(application, "application == null");
+        Utils.requireNonNull(application, "application == null");
         mApplication = application;
         application.registerActivityLifecycleCallbacks(this);
     }
 
     static void init(Application application) {
-        Utils.requestNonNull(application, "application == null");
+        Utils.requireNonNull(application, "application == null");
         if (INSTANCE == null) {
             INSTANCE = new ActivityHolder(application);
         }
@@ -42,7 +42,7 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
     }
 
     static Activity getActivity(Class<Activity> clazz) {
-        Utils.requestNonNull(clazz, "clazz == null");
+        Utils.requireNonNull(clazz, "clazz == null");
         if (INSTANCE == null) {
             return null;
         }

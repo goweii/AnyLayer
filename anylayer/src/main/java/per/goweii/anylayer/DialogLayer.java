@@ -18,8 +18,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import java.util.Objects;
-
 import per.goweii.burred.Blurred;
 
 /**
@@ -34,17 +32,12 @@ public class DialogLayer extends DecorLayer {
     private SoftInputHelper mSoftInputHelper = null;
 
     public DialogLayer(Activity activity) {
-        super(Utils.requestNonNull(activity, "activity == null"));
+        super(Utils.requireNonNull(activity, "activity == null"));
         getViewHolder().setActivityContent(getViewHolder().getDecor().findViewById(android.R.id.content));
     }
 
     public DialogLayer(Context context) {
-        this(Objects.requireNonNull(Utils.getActivity(Utils.requestNonNull(context, "context == null"))));
-    }
-
-    public DialogLayer(View targetView) {
-        this(Utils.requestNonNull(targetView.getContext(), "targetView == null"));
-        getViewHolder().setTarget(targetView);
+        this(Utils.requireNonNull(Utils.getActivity(Utils.requireNonNull(context, "context == null"))));
     }
 
     @Override
@@ -155,19 +148,15 @@ public class DialogLayer extends DecorLayer {
         getViewHolder().recycle();
     }
 
-    private void initContainer() {
-        if (getConfig().mOutsideInterceptTouchEvent) {
-            getViewHolder().getChild().setClickable(true);
-            if (getConfig().mCancelableOnTouchOutside) {
-                getViewHolder().getChild().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dismiss();
-                    }
-                });
-            }
-        } else {
-            getViewHolder().getChild().setClickable(false);
+    protected void initContainer() {
+        getViewHolder().getChild().setClickable(true);
+        if (getConfig().mCancelableOnTouchOutside) {
+            getViewHolder().getChild().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                }
+            });
         }
         if (getViewHolder().getActivityContent() != null) {
             // 非指定父布局的，添加到DecorView，此时getViewHolder().getRootView()为DecorView
@@ -182,140 +171,13 @@ public class DialogLayer extends DecorLayer {
             containerParams.height = getViewHolder().getActivityContent().getHeight() + (locationActivityContent[1] - locationDecor[1]);
             getViewHolder().getChild().setLayoutParams(containerParams);
         }
-        if (getViewHolder().getTarget() == null) {
-            FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
-            contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
-            contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
-            getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
-        } else {
-            initContainerWithTarget();
-        }
-    }
-
-    private void initContainerWithTarget() {
-        getViewHolder().getChild().setClipToPadding(false);
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
-        contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
-        contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
-        getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
-        final int[] locationTarget = new int[2];
-        getViewHolder().getTarget().getLocationOnScreen(locationTarget);
-        final int[] locationRoot = new int[2];
-        getViewHolder().getDecor().getLocationOnScreen(locationRoot);
-        final int targetX = (locationTarget[0] - locationRoot[0]);
-        final int targetY = (locationTarget[1] - locationRoot[1]);
-        final int targetWidth = getViewHolder().getTarget().getWidth();
-        final int targetHeight = getViewHolder().getTarget().getHeight();
-        final int[] padding = initContainerWithTargetPadding(targetX, targetY, targetWidth, targetHeight);
-        getViewHolder().getChild().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                if (getViewHolder().getChild().getViewTreeObserver().isAlive()) {
-                    getViewHolder().getChild().getViewTreeObserver().removeOnPreDrawListener(this);
-                }
-                initContainerWithTargetMargin(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
-                return false;
-            }
-        });
-        if (!getConfig().mOutsideInterceptTouchEvent) {
-            getViewHolder().getChild().getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-                @Override
-                public void onScrollChanged() {
-                    final int[] locationTarget = new int[2];
-                    getViewHolder().getTarget().getLocationOnScreen(locationTarget);
-                    final int[] locationRoot = new int[2];
-                    getViewHolder().getDecor().getLocationOnScreen(locationRoot);
-                    final int targetX = (locationTarget[0] - locationRoot[0]);
-                    final int targetY = (locationTarget[1] - locationRoot[1]);
-                    final int targetWidth = getViewHolder().getTarget().getWidth();
-                    final int targetHeight = getViewHolder().getTarget().getHeight();
-                    final int[] padding = initContainerWithTargetPadding(targetX, targetY, targetWidth, targetHeight);
-                    initContainerWithTargetMargin(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
-                }
-            });
-        }
-    }
-
-    private int[] initContainerWithTargetPadding(int targetX, int targetY, int targetWidth, int targetHeight) {
-        final int[] padding = new int[]{0, 0, 0, 0};
-        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
-        if (getConfig().mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
-            if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-                padding[2] = containerParams.width - targetX;
-            } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
-                padding[0] = targetX + targetWidth;
-            } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
-                padding[0] = targetX;
-            } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-                padding[2] = containerParams.width - targetX - targetWidth;
-            }
-        } else if (getConfig().mAlignmentDirection == Alignment.Direction.VERTICAL) {
-            if (getConfig().mAlignmentVertical == Alignment.Vertical.ABOVE) {
-                padding[3] = containerParams.height - targetY;
-            } else if (getConfig().mAlignmentVertical == Alignment.Vertical.BELOW) {
-                padding[1] = targetY + targetHeight;
-            } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
-                padding[1] = targetY;
-            } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-                padding[3] = containerParams.height - targetY - targetHeight;
-            }
-        }
-        getViewHolder().getChild().setPadding(padding[0], padding[1], padding[2], padding[3]);
-        return padding;
-    }
-
-    private void initContainerWithTargetMargin(int targetX, int targetY, int targetWidth, int targetHeight, int paddingLeft, int paddingTop) {
-        final int width = getViewHolder().getContentWrapper().getWidth();
-        final int height = getViewHolder().getContentWrapper().getHeight();
-        int x = 0;
-        int y = 0;
-        if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.CENTER) {
-            x = targetX - (width - targetWidth) / 2;
-        } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.TO_LEFT) {
-            x = targetX - width;
-        } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.TO_RIGHT) {
-            x = targetX + targetWidth;
-        } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.ALIGN_LEFT) {
-            x = targetX;
-        } else if (getConfig().mAlignmentHorizontal == Alignment.Horizontal.ALIGN_RIGHT) {
-            x = targetX - (width - targetWidth);
-        }
-        if (getConfig().mAlignmentVertical == Alignment.Vertical.CENTER) {
-            y = targetY - (height - targetHeight) / 2;
-        } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ABOVE) {
-            y = targetY - height;
-        } else if (getConfig().mAlignmentVertical == Alignment.Vertical.BELOW) {
-            y = targetY + targetHeight;
-        } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ALIGN_TOP) {
-            y = targetY;
-        } else if (getConfig().mAlignmentVertical == Alignment.Vertical.ALIGN_BOTTOM) {
-            y = targetY - (height - targetHeight);
-        }
-        x = x - paddingLeft;
-        y = y - paddingTop;
-        if (getConfig().mAlignmentInside) {
-            final int maxWidth = getViewHolder().getChild().getWidth() - getViewHolder().getChild().getPaddingLeft() - getViewHolder().getChild().getPaddingRight();
-            final int maxHeight = getViewHolder().getChild().getHeight() - getViewHolder().getChild().getPaddingTop() - getViewHolder().getChild().getPaddingBottom();
-            final int maxX = maxWidth - width;
-            final int maxY = maxHeight - height;
-            if (x < 0) {
-                x = 0;
-            } else if (x > maxX) {
-                x = maxX;
-            }
-            if (y < 0) {
-                y = 0;
-            } else if (y > maxY) {
-                y = maxY;
-            }
-        }
-        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
-        contentWrapperParams.leftMargin = x;
-        contentWrapperParams.topMargin = y;
+        contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+        contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
         getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
     }
 
-    private void initBackground() {
+    protected void initBackground() {
         if (getConfig().mBackgroundBlurPercent > 0 || getConfig().mBackgroundBlurRadius > 0) {
             getViewHolder().getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -352,34 +214,45 @@ public class DialogLayer extends DecorLayer {
         } else {
             if (getConfig().mBackgroundBitmap != null) {
                 getViewHolder().getBackground().setImageBitmap(getConfig().mBackgroundBitmap);
-                getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
-            } else if (getConfig().mBackgroundResource != -1) {
-                getViewHolder().getBackground().setImageResource(getConfig().mBackgroundResource);
-                getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                if (getConfig().mBackgroundColor != -1) {
+                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                }
             } else if (getConfig().mBackgroundDrawable != null) {
                 getViewHolder().getBackground().setImageDrawable(getConfig().mBackgroundDrawable);
-                getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
-            } else {
+                if (getConfig().mBackgroundColor != -1) {
+                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                }
+            } else if (getConfig().mBackgroundResource != -1) {
+                getViewHolder().getBackground().setImageResource(getConfig().mBackgroundResource);
+                if (getConfig().mBackgroundColor != -1) {
+                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                }
+            } else if (getConfig().mBackgroundColor != -1) {
                 getViewHolder().getBackground().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
+            } else if (getConfig().mBackgroundDimAmount != -1) {
+                int color = Color.argb((int) (255 * Utils.floatRange01(getConfig().mBackgroundDimAmount)), 0, 0, 0);
+                getViewHolder().getBackground().setImageDrawable(new ColorDrawable(color));
+            } else {
+                getViewHolder().getBackground().setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
             }
         }
     }
 
-    private void initContent() {
+    protected void initContent() {
         getViewHolder().getContent().setClickable(true);
-        if (getViewHolder().getTarget() == null && getConfig().mGravity != -1) {
-            ViewGroup.LayoutParams params = getViewHolder().getContent().getLayoutParams();
-            FrameLayout.LayoutParams contentParams;
-            if (params == null) {
-                contentParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            } else if (params instanceof FrameLayout.LayoutParams) {
-                contentParams = (FrameLayout.LayoutParams) params;
-            } else {
-                contentParams = new FrameLayout.LayoutParams(params.width, params.height);
-            }
-            contentParams.gravity = getConfig().mGravity;
-            getViewHolder().getContent().setLayoutParams(contentParams);
+        ViewGroup.LayoutParams layoutParams = getViewHolder().getContent().getLayoutParams();
+        FrameLayout.LayoutParams contentParams;
+        if (layoutParams == null) {
+            contentParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        } else if (layoutParams instanceof FrameLayout.LayoutParams) {
+            contentParams = (FrameLayout.LayoutParams) layoutParams;
+        } else {
+            contentParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
         }
+        if (getConfig().mGravity != -1) {
+            contentParams.gravity = getConfig().mGravity;
+        }
+        getViewHolder().getContent().setLayoutParams(contentParams);
         if (getConfig().mAsStatusBarViewId > 0) {
             View statusBar = getViewHolder().getContent().findViewById(getConfig().mAsStatusBarViewId);
             if (statusBar != null) {
@@ -391,14 +264,13 @@ public class DialogLayer extends DecorLayer {
         }
     }
 
-
     /**
      * 设置自自定义View
      *
      * @param contentView 自定以View
      */
     public DialogLayer contentView(View contentView) {
-        Utils.requestNonNull(contentView, "contentView == null");
+        Utils.requireNonNull(contentView, "contentView == null");
         getViewHolder().setContent(contentView);
         return this;
     }
@@ -432,26 +304,6 @@ public class DialogLayer extends DecorLayer {
      */
     public DialogLayer gravity(int gravity) {
         getConfig().mGravity = gravity;
-        return this;
-    }
-
-    /**
-     * 当以target方式创建时为参照View位置显示
-     * 可自己指定浮层相对于参照View的对齐方式
-     *
-     * @param direction  主方向
-     * @param horizontal 水平对齐方式
-     * @param vertical   垂直对齐方式
-     * @param inside     是否强制位于屏幕内部
-     */
-    public DialogLayer alignment(Alignment.Direction direction,
-                                 Alignment.Horizontal horizontal,
-                                 Alignment.Vertical vertical,
-                                 boolean inside) {
-        getConfig().mAlignmentDirection = Utils.requestNonNull(direction, "direction == null");
-        getConfig().mAlignmentHorizontal = Utils.requestNonNull(horizontal, "horizontal == null");
-        getConfig().mAlignmentVertical = Utils.requestNonNull(vertical, "vertical == null");
-        getConfig().mAlignmentInside = inside;
         return this;
     }
 
@@ -511,8 +363,18 @@ public class DialogLayer extends DecorLayer {
      * @param bitmap 图片
      */
     public DialogLayer backgroundBitmap(Bitmap bitmap) {
-        Utils.requestNonNull(bitmap, "bitmap == null");
+        Utils.requireNonNull(bitmap, "bitmap == null");
         getConfig().mBackgroundBitmap = bitmap;
+        return this;
+    }
+
+    /**
+     * 设置背景变暗程度
+     *
+     * @param dimAmount 变暗程度 0~1
+     */
+    public DialogLayer backgroundDimAmount(float dimAmount) {
+        getConfig().mBackgroundDimAmount = Utils.floatRange01(dimAmount);
         return this;
     }
 
@@ -532,7 +394,7 @@ public class DialogLayer extends DecorLayer {
      * @param drawable Drawable
      */
     public DialogLayer backgroundDrawable(Drawable drawable) {
-        Utils.requestNonNull(drawable, "drawable == null");
+        Utils.requireNonNull(drawable, "drawable == null");
         getConfig().mBackgroundDrawable = drawable;
         return this;
     }
@@ -560,17 +422,6 @@ public class DialogLayer extends DecorLayer {
      */
     public DialogLayer backgroundColorRes(int colorRes) {
         getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
-        return this;
-    }
-
-    /**
-     * 设置浮层外部是否拦截触摸
-     * 默认为true，false则事件有activityContent本身消费
-     *
-     * @param intercept 外部是否拦截触摸
-     */
-    public DialogLayer outsideInterceptTouchEvent(boolean intercept) {
-        getConfig().mOutsideInterceptTouchEvent = intercept;
         return this;
     }
 
@@ -641,10 +492,7 @@ public class DialogLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
-
         private FrameLayout mActivityContent;
-        private View mTarget;
-
         private ImageView mBackground;
         private FrameLayout mContentWrapper;
         private View mContent;
@@ -662,14 +510,6 @@ public class DialogLayer extends DecorLayer {
 
         public FrameLayout getActivityContent() {
             return mActivityContent;
-        }
-
-        public void setTarget(View target) {
-            mTarget = target;
-        }
-
-        public View getTarget() {
-            return mTarget;
         }
 
         @Override
@@ -702,32 +542,26 @@ public class DialogLayer extends DecorLayer {
     }
 
     protected static class Config extends DecorLayer.Config {
-        private AnimatorCreator mBackgroundAnimatorCreator = null;
-        private AnimatorCreator mContentAnimatorCreator = null;
+        protected AnimatorCreator mBackgroundAnimatorCreator = null;
+        protected AnimatorCreator mContentAnimatorCreator = null;
 
-        private int contentViewId = 0;
+        protected int contentViewId = 0;
 
-        private boolean mOutsideInterceptTouchEvent = true;
+        protected boolean mCancelableOnTouchOutside = true;
 
-        private boolean mCancelableOnTouchOutside = true;
+        protected int mAsStatusBarViewId = 0;
 
-        private int mAsStatusBarViewId = 0;
-
-        private int mGravity = Gravity.CENTER;
-        private float mBackgroundBlurPercent = 0;
-        private float mBackgroundBlurRadius = 0;
-        private float mBackgroundBlurScale = 2;
-        private Bitmap mBackgroundBitmap = null;
-        private int mBackgroundResource = -1;
-        private Drawable mBackgroundDrawable = null;
-        private int mBackgroundColor = Color.TRANSPARENT;
-
-        private boolean mAlignmentInside = false;
-        private Alignment.Direction mAlignmentDirection = Alignment.Direction.VERTICAL;
-        private Alignment.Horizontal mAlignmentHorizontal = Alignment.Horizontal.CENTER;
-        private Alignment.Vertical mAlignmentVertical = Alignment.Vertical.BELOW;
+        protected int mGravity = Gravity.CENTER;
+        protected float mBackgroundBlurPercent = 0F;
+        protected float mBackgroundBlurRadius = 0F;
+        protected float mBackgroundBlurScale = 2F;
+        protected Bitmap mBackgroundBitmap = null;
+        protected int mBackgroundResource = -1;
+        protected Drawable mBackgroundDrawable = null;
+        protected float mBackgroundDimAmount = -1;
+        protected int mBackgroundColor = -1;
     }
 
-    protected static class ListenerHolder extends Layer.ListenerHolder {
+    protected static class ListenerHolder extends DecorLayer.ListenerHolder {
     }
 }

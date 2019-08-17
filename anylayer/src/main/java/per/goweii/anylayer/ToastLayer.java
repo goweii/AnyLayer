@@ -19,7 +19,7 @@ import android.widget.TextView;
 public class ToastLayer extends DecorLayer implements Runnable {
 
     public ToastLayer(Context context) {
-        super(Utils.requestNonNull(Utils.getActivity(Utils.requestNonNull(context, "connect == null"))));
+        super(Utils.requireNonNull(Utils.getActivity(Utils.requireNonNull(context, "context == null"))));
         interceptKeyEvent(false);
         cancelableOnKeyBack(false);
     }
@@ -75,7 +75,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     public ToastLayer message(CharSequence message) {
-        Utils.requestNonNull(message, "message == null");
+        Utils.requireNonNull(message, "message == null");
         getConfig().mMessage = message;
         return this;
     }

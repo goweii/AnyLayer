@@ -32,12 +32,12 @@ public final class ViewManager {
     }
 
     public void setParent(ViewGroup parent) {
-        Utils.requestNonNull(parent, "parent == null");
+        Utils.requireNonNull(parent, "parent == null");
         mParent = parent;
     }
 
     public void setChild(View child) {
-        Utils.requestNonNull(child, "child == null");
+        Utils.requireNonNull(child, "child == null");
         mChild = child;
     }
 

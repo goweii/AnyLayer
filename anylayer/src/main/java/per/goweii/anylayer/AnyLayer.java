@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
-import java.util.Objects;
-
 import per.goweii.burred.Blurred;
 
 /**
@@ -17,7 +15,7 @@ import per.goweii.burred.Blurred;
 public final class AnyLayer {
 
     public static void initBlurred(Context context) {
-        Utils.requestNonNull(context, "context == null");
+        Utils.requireNonNull(context, "context == null");
         Blurred.init(context);
     }
 
@@ -37,15 +35,15 @@ public final class AnyLayer {
      * 向窗口根布局添加一个浮层
      */
     public static DialogLayer dialog() {
-        return new DialogLayer(Objects.requireNonNull(ActivityHolder.getCurrentActivity()));
+        return new DialogLayer(ActivityHolder.getCurrentActivity());
     }
 
     /**
      * 向窗口根布局添加一个浮层
      */
     public static DialogLayer dialog(Class<Activity> clazz) {
-        Utils.requestNonNull(clazz, "clazz == null");
-        return new DialogLayer(Objects.requireNonNull(ActivityHolder.getActivity(clazz)));
+        Utils.requireNonNull(clazz, "clazz == null");
+        return new DialogLayer(ActivityHolder.getActivity(clazz));
     }
 
     /**
@@ -54,7 +52,6 @@ public final class AnyLayer {
      * @param context 上下文，不能是ApplicationContext
      */
     public static DialogLayer dialog(Context context) {
-        Utils.requestNonNull(context, "context == null");
         return new DialogLayer(context);
     }
 
@@ -64,17 +61,15 @@ public final class AnyLayer {
      *
      * @param targetView 位置参照View
      */
-    public static DialogLayer popup(View targetView) {
-        Utils.requestNonNull(targetView, "targetView == null");
-        return new DialogLayer(targetView);
+    public static PopupLayer popup(View targetView) {
+        return new PopupLayer(targetView);
     }
 
     public static ToastLayer toast() {
-        return new ToastLayer(Objects.requireNonNull(ActivityHolder.getCurrentActivity()));
+        return new ToastLayer(ActivityHolder.getCurrentActivity());
     }
 
     public static ToastLayer toast(Context context) {
-        Utils.requestNonNull(context, "context == null");
         return new ToastLayer(context);
     }
 }

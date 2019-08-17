@@ -21,14 +21,14 @@ import android.widget.ImageView;
  */
 final class Utils {
 
-    static <T> T requestNonNull(T obj, String msg){
+    static <T> T requireNonNull(T obj, String msg) {
         if (obj == null) {
             throw new NullPointerException(msg);
         }
         return obj;
     }
 
-    static <T> T requestNonNull(T obj){
+    static <T> T requireNonNull(T obj) {
         if (obj == null) {
             throw new NullPointerException();
         }

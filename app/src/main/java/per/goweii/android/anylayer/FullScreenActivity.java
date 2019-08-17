@@ -146,8 +146,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_right:
                 if (anyLayer_show_target_right == null) {
                     anyLayer_show_target_right = AnyLayer.popup(findViewById(R.id.tv_show_target_right))
-                            .outsideInterceptTouchEvent(false)
                             .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, true)
+                            .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.dialog_test_5)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
@@ -169,8 +169,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_left:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_left))
-                        .contentView(R.layout.dialog_test_5)
                         .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_LEFT, Alignment.Vertical.CENTER, true)
+                        .contentView(R.layout.dialog_test_5)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -186,8 +186,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_top:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_top))
-                        .contentView(R.layout.dialog_test_4)
                         .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.ABOVE, true)
+                        .contentView(R.layout.dialog_test_4)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -206,9 +206,9 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_bottom:
                 if (anyLayer_show_target_bottom == null) {
                     anyLayer_show_target_bottom = AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
+                            .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
                             .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.dialog_test_4)
-                            .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(View content) {
