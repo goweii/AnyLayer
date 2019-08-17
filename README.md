@@ -1,6 +1,8 @@
 # AnyLayer
 
-Android稳定高效的浮层创建管理框架。可取代系统自带Dialog/Popup/BottomSheet等弹窗，可实现单Activity架构的Toast提示，可定制任意样式的Guide引导层，可实现依附Activity的Float悬浮按钮。
+Android稳定高效的浮层创建管理框架。
+
+可取代系统自带Dialog/Popup/BottomSheet等弹窗，可实现单Activity架构的Toast提示，可定制任意样式的Guide引导层，可实现依附Activity的Float悬浮按钮。
 
 [GitHub主页](https://github.com/goweii/AnyLayer)
 
@@ -12,26 +14,32 @@ Android稳定高效的浮层创建管理框架。可取代系统自带Dialog/Pop
 
 # 简介
 
+- 同时兼容support和androidx
 - 链式调用
-- 众多实现
-  - Dialog效果（Dialog/Popup/BottomSheet等效果）
+- 支持自由扩展
+- 实现几种常用效果
+  - Dialog效果
     - 占用区域不会超过当前Activity避免导航栏遮挡
-    - 支持自由控制浮层大小和显示位置
+    - 支持自定义大小和显示位置
     - 支持自定义数据绑定
     - 支持自定义进出场动画
     - 支持自定义背景颜色/图片/高斯模糊
-    - 支持Popup效果时跟随目标View移动
     - 支持在Activity的onCreate生命周期弹出
-  - Toast效果（依附Activity非全局）
+    - 支持从ApplicationContext中弹出
+  - Popup效果
+    - 拥有Dialog效果特性
+    - 支持跟随目标View移动
+  - Toast效果
     - 支持自定义图标和文字
     - 支持自定义显示时长
-    - 待完善
-  - Guide效果（引导层）
-    - 待开发
-  - Float效果（悬浮按钮）
-    - 待开发
-  - 其他效果可自由扩展
-- 同时兼容support和androidx
+    - 支持自定义位置
+    - 支持自定义背景资源和颜色
+    - 支持自定义透明度
+    - 支持自定义进出场动画
+  - Guide效果
+    - 引导层效果待开发
+  - Float
+    - 悬浮按钮效果待开发
 
 
 
