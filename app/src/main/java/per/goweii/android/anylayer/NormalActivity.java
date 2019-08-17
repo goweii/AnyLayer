@@ -2,6 +2,7 @@ package per.goweii.android.anylayer;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -81,17 +82,41 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.tv_show_reveal).setOnClickListener(this);
     }
 
+    private Random mRandom = new Random();
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             default:
                 break;
             case R.id.tv_show_toast:
-                boolean isSucc = new Random().nextBoolean();
+                boolean isSucc = mRandom.nextBoolean();
                 AnyLayer.toast()
                         .duration(3000)
                         .icon(isSucc ? R.drawable.ic_success : R.drawable.ic_fail)
                         .message(isSucc ? "哈哈，成功了" : "哎呀，失败了")
+                        .alpha(mRandom.nextFloat())
+                        .backgroundColorInt(Color.argb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)))
+                        .gravity(
+                                mRandom.nextBoolean() ?
+                                        mRandom.nextBoolean() ?
+                                                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL :
+                                                Gravity.TOP | Gravity.CENTER_HORIZONTAL :
+                                        mRandom.nextBoolean() ?
+                                                Gravity.LEFT | Gravity.CENTER_VERTICAL :
+                                                Gravity.RIGHT | Gravity.CENTER_VERTICAL
+                        )
+                        .animator(new Layer.AnimatorCreator() {
+                            @Override
+                            public Animator createInAnimator(View target) {
+                                return AnimatorHelper.createZoomAlphaInAnim(target);
+                            }
+
+                            @Override
+                            public Animator createOutAnimator(View target) {
+                                return AnimatorHelper.createZoomAlphaOutAnim(target);
+                            }
+                        })
                         .show();
                 break;
             case R.id.tv_show_full:

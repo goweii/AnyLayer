@@ -2,10 +2,16 @@ package per.goweii.anylayer;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -60,8 +66,8 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     @Override
-    public void show() {
-        super.show();
+    public void dismiss(boolean withAnim) {
+        super.dismiss(withAnim);
     }
 
     public ToastLayer removeOthers(boolean removeOthers) {
@@ -90,6 +96,51 @@ public class ToastLayer extends DecorLayer implements Runnable {
         return this;
     }
 
+    public ToastLayer gravity(int gravity) {
+        getConfig().mGravity = gravity;
+        return this;
+    }
+
+    public ToastLayer marginLeft(int marginLeft) {
+        getConfig().mMarginLeft = marginLeft;
+        return this;
+    }
+
+    public ToastLayer marginTop(int marginTop) {
+        getConfig().mMarginTop = marginTop;
+        return this;
+    }
+
+    public ToastLayer marginRight(int marginRight) {
+        getConfig().mMarginRight = marginRight;
+        return this;
+    }
+
+    public ToastLayer marginBottom(int marginBottom) {
+        getConfig().mMarginBottom = marginBottom;
+        return this;
+    }
+
+    public ToastLayer alpha(float alpha) {
+        getConfig().mAlpha = alpha;
+        return this;
+    }
+
+    public ToastLayer backgroundDrawable(Drawable backgroundDrawable) {
+        getConfig().mBackgroundDrawable = backgroundDrawable;
+        return this;
+    }
+
+    public ToastLayer backgroundColorInt(int colorInt) {
+        getConfig().mBackgroundColor = colorInt;
+        return this;
+    }
+
+    public ToastLayer backgroundColorRes(int colorRes) {
+        getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
+        return this;
+    }
+
     @Override
     protected View onCreateChild(LayoutInflater inflater, ViewGroup parent) {
         return inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
@@ -97,12 +148,20 @@ public class ToastLayer extends DecorLayer implements Runnable {
 
     @Override
     protected Animator onCreateInAnimator(View view) {
-        return AnimatorHelper.createLeftInAnim(view);
+        Animator animator = super.onCreateInAnimator(view);
+        if (animator == null) {
+            animator = AnimatorHelper.createBottomInAnim(view);
+        }
+        return animator;
     }
 
     @Override
     protected Animator onCreateOutAnimator(View view) {
-        return AnimatorHelper.createLeftOutAnim(view);
+        Animator animator = super.onCreateOutAnimator(view);
+        if (animator == null) {
+            animator = AnimatorHelper.createBottomOutAnim(view);
+        }
+        return animator;
     }
 
     private void bindData() {
@@ -119,19 +178,53 @@ public class ToastLayer extends DecorLayer implements Runnable {
             getViewHolder().getMessage().setVisibility(View.VISIBLE);
             getViewHolder().getMessage().setText(getConfig().mMessage);
         }
+        if (getConfig().mBackgroundDrawable != null) {
+            getChild().setBackgroundDrawable(getConfig().mBackgroundDrawable);
+        } else {
+            Drawable backgroundDrawable = getChild().getBackground();
+            if (backgroundDrawable instanceof GradientDrawable) {
+                backgroundDrawable.setColorFilter(getConfig().mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+        getChild().setAlpha(getConfig().mAlpha);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
+        params.gravity = getConfig().mGravity;
+        if (getConfig().mMarginLeft >= 0) {
+            params.leftMargin = getConfig().mMarginLeft;
+        }
+        if (getConfig().mMarginTop >= 0) {
+            params.topMargin = getConfig().mMarginTop;
+        }
+        if (getConfig().mMarginRight >= 0) {
+            params.rightMargin = getConfig().mMarginRight;
+        }
+        if (getConfig().mMarginBottom >= 0) {
+            params.bottomMargin = getConfig().mMarginBottom;
+        }
+        getChild().setLayoutParams(params);
     }
 
     @Override
     public void onAttach() {
         super.onAttach();
+        getChild().setTag(this);
         if (getConfig().mRemoveOthers) {
             final ViewGroup parent = getParent();
             final int count = parent.getChildCount();
-            if (count > 1) {
-                parent.removeViews(0, count - 1);
+            for (int i = count - 2; i >= 0; i--) {
+                final View child = parent.getChildAt(i);
+                Object tag = child.getTag();
+                if (tag instanceof ToastLayer) {
+                    ((ToastLayer) tag).dismiss(false);
+                }
             }
         }
         bindData();
+    }
+
+    @Override
+    public void onPreDraw() {
+        super.onPreDraw();
     }
 
     @Override
@@ -143,14 +236,22 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPerRemove() {
         getChild().removeCallbacks(this);
+        super.onPerRemove();
+    }
+
+    @Override
+    public void onDetach() {
+        getChild().setTag(null);
+        super.onDetach();
     }
 
     @Override
     public void run() {
-        dismiss();
+        if (isShow()) {
+            dismiss();
+        }
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
@@ -178,6 +279,14 @@ public class ToastLayer extends DecorLayer implements Runnable {
         private long mDuration = 3000L;
         private CharSequence mMessage = "";
         private int mIcon = 0;
+        private Drawable mBackgroundDrawable = null;
+        private int mBackgroundColor = Color.BLACK;
+        private float mAlpha = 1F;
+        private int mGravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        private int mMarginLeft = -1;
+        private int mMarginTop = -1;
+        private int mMarginRight = -1;
+        private int mMarginBottom = -1;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

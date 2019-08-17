@@ -26,6 +26,9 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     private SparseArray<View> mViewCaches = null;
 
+    private boolean mShowWithAnim = false;
+    private boolean mDismissWithAnim = false;
+
     private Animator mAnimatorIn = null;
     private Animator mAnimatorOut = null;
 
@@ -102,27 +105,37 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     @Override
     public void onPreDraw() {
         mListenerHolder.notifyLayerOnShowing(this);
-        mAnimatorIn = onCreateInAnimator(mViewManager.getChild());
-        if (mAnimatorIn != null) {
-            mAnimatorIn.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                }
+        cancelAnimator();
+        if (mShowWithAnim) {
+            mAnimatorIn = onCreateInAnimator(mViewManager.getChild());
+            if (mAnimatorIn != null) {
+                mAnimatorIn.addListener(new Animator.AnimatorListener() {
+                    private boolean beenCanceled = false;
 
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    onShow();
-                }
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
 
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                }
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (!beenCanceled) {
+                            onShow();
+                        }
+                    }
 
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
-            mAnimatorIn.start();
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        beenCanceled = true;
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+                mAnimatorIn.start();
+            } else {
+                onShow();
+            }
         } else {
             onShow();
         }
@@ -137,27 +150,32 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     public void onPerRemove() {
         mListenerHolder.notifyLayerOnDismissing(this);
-        mAnimatorOut = onCreateOutAnimator(mViewManager.getChild());
-        if (mAnimatorOut != null) {
-            mAnimatorOut.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                }
+        cancelAnimator();
+        if (mDismissWithAnim) {
+            mAnimatorOut = onCreateOutAnimator(mViewManager.getChild());
+            if (mAnimatorOut != null) {
+                mAnimatorOut.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
 
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mViewManager.detach();
-                }
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mViewManager.detach();
+                    }
 
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                }
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
 
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
-            mAnimatorOut.start();
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+                mAnimatorOut.start();
+            } else {
+                mViewManager.detach();
+            }
         } else {
             mViewManager.detach();
         }
@@ -168,6 +186,17 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         mListenerHolder.notifyVisibleChangeOnDismiss(this);
         mListenerHolder.notifyLayerOnDismissed(this);
         if (mAnimatorOut != null) {
+            mAnimatorOut = null;
+        }
+    }
+
+    private void cancelAnimator() {
+        if (mAnimatorIn != null) {
+            mAnimatorIn.cancel();
+            mAnimatorIn = null;
+        }
+        if (mAnimatorOut != null) {
+            mAnimatorOut.cancel();
             mAnimatorOut = null;
         }
     }
@@ -186,6 +215,11 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public void show() {
+        show(true);
+    }
+
+    public void show(boolean withAnim) {
+        mShowWithAnim = withAnim;
         mViewHolder.setParent(onGetParent());
         final View view = onCreateChild(LayoutInflater.from(mViewHolder.getParent().getContext()), mViewHolder.getParent());
         mViewHolder.setChild(Utils.requireNonNull(view, "onCreateChild() == null"));
@@ -196,6 +230,11 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public void dismiss() {
+        dismiss(true);
+    }
+
+    public void dismiss(boolean withAnim) {
+        mDismissWithAnim = withAnim;
         onPerRemove();
     }
 

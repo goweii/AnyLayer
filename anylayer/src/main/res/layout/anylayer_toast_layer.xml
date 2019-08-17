@@ -4,22 +4,25 @@
     android:id="@+id/ll_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="left|bottom"
+    android:layout_gravity="center_horizontal|bottom"
+    android:layout_marginLeft="50dp"
+    android:layout_marginTop="50dp"
+    android:layout_marginRight="50dp"
     android:layout_marginBottom="50dp"
     android:background="@drawable/anylayer_toast_bg"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingLeft="15dp"
+    android:paddingLeft="20dp"
     android:paddingTop="5dp"
-    android:paddingRight="25dp"
+    android:paddingRight="20dp"
     android:paddingBottom="5dp">
 
     <ImageView
         android:id="@+id/iv_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
         android:layout_margin="5dp"
+        android:scaleType="fitCenter"
         tools:layout_height="22dp"
         tools:layout_width="22dp"
         tools:src="#fff" />
@@ -31,6 +34,6 @@
         android:layout_margin="5dp"
         android:textColor="#fff"
         android:textSize="14sp"
-        tools:text="TOAST LAYER" />
+        tools:text="TOAST LAYER TOAST LAYER TOAST LAYER TOAST LAYER" />
 
 </LinearLayout>
