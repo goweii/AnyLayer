@@ -35,13 +35,30 @@ public class AnimatorHelper {
         return alpha;
     }
 
-    public static Animator createZoomAlphaInAnim(final View target, int centerX, int centerY) {
+    public static Animator createZoomAlphaInAnim(final View target, int centerX, int centerY, float fromScale) {
         if (target == null) return null;
         target.setPivotX(centerX);
         target.setPivotY(centerY);
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", 0.618f, 1);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY", 0.618f, 1);
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", fromScale, 1);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY", fromScale, 1);
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(alpha, scaleX, scaleY);
+        set.setInterpolator(new DecelerateInterpolator());
+        return set;
+    }
+
+    public static Animator createZoomAlphaInAnim(final View target, int centerX, int centerY) {
+        return createZoomAlphaInAnim(target, centerX, centerY, 0.618f);
+    }
+
+    public static Animator createZoomAlphaOutAnim(final View target, int centerX, int centerY, float toScale) {
+        if (target == null) return null;
+        target.setPivotX(centerX);
+        target.setPivotY(centerY);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", target.getScaleX(), toScale);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY", target.getScaleY(), toScale);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, scaleX, scaleY);
         set.setInterpolator(new DecelerateInterpolator());
@@ -49,16 +66,7 @@ public class AnimatorHelper {
     }
 
     public static Animator createZoomAlphaOutAnim(final View target, int centerX, int centerY) {
-        if (target == null) return null;
-        target.setPivotX(centerX);
-        target.setPivotY(centerY);
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", target.getScaleX(), 0.618f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY", target.getScaleY(), 0.618f);
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(alpha, scaleX, scaleY);
-        set.setInterpolator(new DecelerateInterpolator());
-        return set;
+        return createZoomAlphaOutAnim(target, centerX, centerY, 1 - 0.618f);
     }
 
     public static Animator createZoomAlphaInAnim(final View target,
@@ -70,6 +78,16 @@ public class AnimatorHelper {
         return createZoomAlphaInAnim(target, centerX, centerY);
     }
 
+    public static Animator createZoomAlphaInAnim(final View target,
+                                                 float centerPercentX,
+                                                 float centerPercentY,
+                                                 float fromScale) {
+        if (target == null) return null;
+        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
+        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        return createZoomAlphaInAnim(target, centerX, centerY, fromScale);
+    }
+
     public static Animator createZoomAlphaOutAnim(final View target,
                                                   float centerPercentX,
                                                   float centerPercentY) {
@@ -79,9 +97,28 @@ public class AnimatorHelper {
         return createZoomAlphaOutAnim(target, centerX, centerY);
     }
 
+    public static Animator createZoomAlphaOutAnim(final View target,
+                                                  float centerPercentX,
+                                                  float centerPercentY,
+                                                  float toScale) {
+        if (target == null) return null;
+        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
+        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        return createZoomAlphaOutAnim(target, centerX, centerY, toScale);
+    }
+
+    public static Animator createZoomAlphaInAnim(final View target, float fromScale) {
+        return createZoomAlphaInAnim(target, 0.5F, 0.5F, fromScale);
+    }
+
     public static Animator createZoomAlphaInAnim(final View target) {
         if (target == null) return null;
         return createZoomAlphaInAnim(target, 0.5F, 0.5F);
+    }
+
+    public static Animator createZoomAlphaOutAnim(final View target, float toScale) {
+        if (target == null) return null;
+        return createZoomAlphaOutAnim(target, 0.5F, 0.5F, toScale);
     }
 
     public static Animator createZoomAlphaOutAnim(final View target) {
@@ -103,9 +140,9 @@ public class AnimatorHelper {
         return translationY;
     }
 
-    public static Animator createTopAlphaInAnim(final View target) {
+    public static Animator createTopAlphaInAnim(final View target, final float percentTargetHeight) {
         if (target == null) return null;
-        float y = (1 - 0.618f) * target.getMeasuredHeight();
+        float y = percentTargetHeight * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", -y, 0);
         AnimatorSet set = new AnimatorSet();
@@ -114,15 +151,23 @@ public class AnimatorHelper {
         return set;
     }
 
-    public static Animator createTopAlphaOutAnim(final View target) {
+    public static Animator createTopAlphaInAnim(final View target) {
+        return createTopAlphaInAnim(target, 1 - 0.618f);
+    }
+
+    public static Animator createTopAlphaOutAnim(final View target, final float percentTargetHeight) {
         if (target == null) return null;
-        float y = (1 - 0.618f) * target.getMeasuredHeight();
+        float y = percentTargetHeight * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 1, 0);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), -y);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationY);
         set.setInterpolator(new DecelerateInterpolator());
         return set;
+    }
+
+    public static Animator createTopAlphaOutAnim(final View target) {
+        return createTopAlphaOutAnim(target, 1 - 0.618f);
     }
 
     public static Animator createBottomInAnim(final View target) {
@@ -141,9 +186,9 @@ public class AnimatorHelper {
         return translationY;
     }
 
-    public static Animator createBottomAlphaInAnim(final View target) {
+    public static Animator createBottomAlphaInAnim(final View target, final float percentTargetHeight) {
         if (target == null) return null;
-        float y = (1 - 0.618f) * target.getMeasuredHeight();
+        float y = percentTargetHeight * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", y, 0);
         AnimatorSet set = new AnimatorSet();
@@ -152,15 +197,23 @@ public class AnimatorHelper {
         return set;
     }
 
-    public static Animator createBottomAlphaOutAnim(final View target) {
+    public static Animator createBottomAlphaInAnim(final View target) {
+        return createBottomAlphaInAnim(target, 1 - 0.618f);
+    }
+
+    public static Animator createBottomAlphaOutAnim(final View target, final float percentTargetHeight) {
         if (target == null) return null;
-        float y = (1 - 0.618f) * target.getMeasuredHeight();
+        float y = percentTargetHeight * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 1, 0);
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), y);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationY);
         set.setInterpolator(new DecelerateInterpolator());
         return set;
+    }
+
+    public static Animator createBottomAlphaOutAnim(final View target) {
+        return createBottomAlphaOutAnim(target, 1 - 0.618f);
     }
 
     public static Animator createLeftInAnim(final View target) {
@@ -178,9 +231,9 @@ public class AnimatorHelper {
         return translationX;
     }
 
-    public static Animator createLeftAlphaInAnim(final View target) {
+    public static Animator createLeftAlphaInAnim(final View target, final float percentTargetWidth) {
         if (target == null) return null;
-        float x = (1 - 0.618f) * target.getMeasuredWidth();
+        float x = percentTargetWidth * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", -x, 0);
         AnimatorSet set = new AnimatorSet();
@@ -189,15 +242,23 @@ public class AnimatorHelper {
         return set;
     }
 
-    public static Animator createLeftAlphaOutAnim(final View target) {
+    public static Animator createLeftAlphaInAnim(final View target) {
+        return createLeftAlphaInAnim(target, 1 - 0.618f);
+    }
+
+    public static Animator createLeftAlphaOutAnim(final View target, final float percentTargetWidth) {
         if (target == null) return null;
-        float x = (1 - 0.618f) * target.getMeasuredWidth();
+        float x = percentTargetWidth * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 1, 0);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), -x);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationX);
         set.setInterpolator(new DecelerateInterpolator());
         return set;
+    }
+
+    public static Animator createLeftAlphaOutAnim(final View target) {
+        return createLeftAlphaOutAnim(target, 1 - 0.618f);
     }
 
     public static Animator createRightInAnim(final View target) {
@@ -216,9 +277,9 @@ public class AnimatorHelper {
         return translationX;
     }
 
-    public static Animator createRightAlphaInAnim(final View target) {
+    public static Animator createRightAlphaInAnim(final View target, final float percentTargetWidth) {
         if (target == null) return null;
-        float x = (1 - 0.618f) * target.getMeasuredWidth();
+        float x = percentTargetWidth * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", x, 0);
         AnimatorSet set = new AnimatorSet();
@@ -227,15 +288,23 @@ public class AnimatorHelper {
         return set;
     }
 
-    public static Animator createRightAlphaOutAnim(final View target) {
+    public static Animator createRightAlphaInAnim(final View target) {
+        return createRightAlphaInAnim(target, 1 - 0.618f);
+    }
+
+    public static Animator createRightAlphaOutAnim(final View target, final float percentTargetWidth) {
         if (target == null) return null;
-        float x = (1 - 0.618f) * target.getMeasuredWidth();
+        float x = percentTargetWidth * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 1, 0);
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), x);
         AnimatorSet set = new AnimatorSet();
         set.playTogether(alpha, translationX);
         set.setInterpolator(new DecelerateInterpolator());
         return set;
+    }
+
+    public static Animator createRightAlphaOutAnim(final View target) {
+        return createRightAlphaOutAnim(target, 1 - 0.618f);
     }
 
     // @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -312,7 +381,7 @@ public class AnimatorHelper {
         if (target == null) return null;
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
-        return createZoomAlphaInAnim(target, centerX, centerY);
+        return createZoomInAnim(target, centerX, centerY);
     }
 
     public static Animator createZoomOutAnim(final View target,
@@ -321,17 +390,17 @@ public class AnimatorHelper {
         if (target == null) return null;
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
-        return createZoomAlphaOutAnim(target, centerX, centerY);
+        return createZoomOutAnim(target, centerX, centerY);
     }
 
     public static Animator createZoomInAnim(final View target) {
         if (target == null) return null;
-        return createZoomAlphaInAnim(target, 0.5F, 0.5F);
+        return createZoomInAnim(target, 0.5F, 0.5F);
     }
 
     public static Animator createZoomOutAnim(final View target) {
         if (target == null) return null;
-        return createZoomAlphaOutAnim(target, 0.5F, 0.5F);
+        return createZoomOutAnim(target, 0.5F, 0.5F);
     }
 
     public static Animator createDelayedZoomInAnim(final View target, int centerX, int centerY) {

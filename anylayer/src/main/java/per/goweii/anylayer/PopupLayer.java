@@ -17,6 +17,8 @@ import android.widget.FrameLayout;
  */
 public class PopupLayer extends DialogLayer {
 
+    private ViewTreeObserver.OnScrollChangedListener mOnScrollChangedListener;
+
     public PopupLayer(View targetView) {
         super(Utils.requireNonNull(targetView, "targetView == null").getContext());
         getViewHolder().setTarget(targetView);
@@ -112,6 +114,10 @@ public class PopupLayer extends DialogLayer {
 
     @Override
     public void onDetach() {
+        if (mOnScrollChangedListener != null) {
+            getViewHolder().getParent().getViewTreeObserver().removeOnScrollChangedListener(mOnScrollChangedListener);
+            mOnScrollChangedListener = null;
+        }
         super.onDetach();
     }
 
@@ -131,6 +137,28 @@ public class PopupLayer extends DialogLayer {
         contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
         contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
         getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
+        getViewHolder().getChild().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if (getViewHolder().getChild().getViewTreeObserver().isAlive()) {
+                    getViewHolder().getChild().getViewTreeObserver().removeOnPreDrawListener(this);
+                }
+                initContentWrapperLocation();
+                return false;
+            }
+        });
+        if (!getConfig().mOutsideInterceptTouchEvent) {
+            mOnScrollChangedListener = new ViewTreeObserver.OnScrollChangedListener() {
+                @Override
+                public void onScrollChanged() {
+                    initContentWrapperLocation();
+                }
+            };
+            getViewHolder().getParent().getViewTreeObserver().addOnScrollChangedListener(mOnScrollChangedListener);
+        }
+    }
+
+    private void initContentWrapperLocation() {
         final int[] locationTarget = new int[2];
         getViewHolder().getTarget().getLocationOnScreen(locationTarget);
         final int[] locationRoot = new int[2];
@@ -139,37 +167,11 @@ public class PopupLayer extends DialogLayer {
         final int targetY = (locationTarget[1] - locationRoot[1]);
         final int targetWidth = getViewHolder().getTarget().getWidth();
         final int targetHeight = getViewHolder().getTarget().getHeight();
-        final int[] padding = initContainerWithTargetPadding(targetX, targetY, targetWidth, targetHeight);
-        getViewHolder().getChild().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                if (getViewHolder().getChild().getViewTreeObserver().isAlive()) {
-                    getViewHolder().getChild().getViewTreeObserver().removeOnPreDrawListener(this);
-                }
-                initContainerWithTargetMargin(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
-                return false;
-            }
-        });
-        if (!getConfig().mOutsideInterceptTouchEvent) {
-            getViewHolder().getChild().getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-                @Override
-                public void onScrollChanged() {
-                    final int[] locationTarget = new int[2];
-                    getViewHolder().getTarget().getLocationOnScreen(locationTarget);
-                    final int[] locationRoot = new int[2];
-                    getViewHolder().getDecor().getLocationOnScreen(locationRoot);
-                    final int targetX = (locationTarget[0] - locationRoot[0]);
-                    final int targetY = (locationTarget[1] - locationRoot[1]);
-                    final int targetWidth = getViewHolder().getTarget().getWidth();
-                    final int targetHeight = getViewHolder().getTarget().getHeight();
-                    final int[] padding = initContainerWithTargetPadding(targetX, targetY, targetWidth, targetHeight);
-                    initContainerWithTargetMargin(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
-                }
-            });
-        }
+        final int[] padding = initContainerPadding(targetX, targetY, targetWidth, targetHeight);
+        initContentWrapperTranslation(targetX, targetY, targetWidth, targetHeight, padding[0], padding[1]);
     }
 
-    private int[] initContainerWithTargetPadding(int targetX, int targetY, int targetWidth, int targetHeight) {
+    private int[] initContainerPadding(int targetX, int targetY, int targetWidth, int targetHeight) {
         final int[] padding = new int[]{0, 0, 0, 0};
         FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
         if (getConfig().mAlignmentDirection == Alignment.Direction.HORIZONTAL) {
@@ -193,11 +195,23 @@ public class PopupLayer extends DialogLayer {
                 padding[3] = containerParams.height - targetY - targetHeight;
             }
         }
+        if (getConfig().mAlignmentInside) {
+            final int width = getViewHolder().getContentWrapper().getWidth();
+            final int height = getViewHolder().getContentWrapper().getHeight();
+            final int maxWidth = getViewHolder().getChild().getWidth();
+            final int maxHeight = getViewHolder().getChild().getHeight();
+            final int maxPaddingLeft = maxWidth - width;
+            final int maxPaddingTop = maxHeight - height;
+            padding[0] = Utils.intRange(padding[0], 0, maxPaddingLeft);
+            padding[1] = Utils.intRange(padding[1], 0, maxPaddingTop);
+        }
+        padding[0] = Utils.intRange(padding[0], 0, padding[0]);
+        padding[1] = Utils.intRange(padding[1], 0, padding[1]);
         getViewHolder().getChild().setPadding(padding[0], padding[1], padding[2], padding[3]);
         return padding;
     }
 
-    private void initContainerWithTargetMargin(int targetX, int targetY, int targetWidth, int targetHeight, int paddingLeft, int paddingTop) {
+    private void initContentWrapperTranslation(int targetX, int targetY, int targetWidth, int targetHeight, int paddingLeft, int paddingTop) {
         final int width = getViewHolder().getContentWrapper().getWidth();
         final int height = getViewHolder().getContentWrapper().getHeight();
         int x = 0;
@@ -231,21 +245,12 @@ public class PopupLayer extends DialogLayer {
             final int maxHeight = getViewHolder().getChild().getHeight() - getViewHolder().getChild().getPaddingTop() - getViewHolder().getChild().getPaddingBottom();
             final int maxX = maxWidth - width;
             final int maxY = maxHeight - height;
-            if (x < 0) {
-                x = 0;
-            } else if (x > maxX) {
-                x = maxX;
-            }
-            if (y < 0) {
-                y = 0;
-            } else if (y > maxY) {
-                y = maxY;
-            }
+            x = Utils.intRange(x, 0, maxX);
+            y = Utils.intRange(y, 0, maxY);
         }
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
-        contentWrapperParams.leftMargin = x;
-        contentWrapperParams.topMargin = y;
-        getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
+        getViewHolder().getContentWrapper().setTranslationX(x - contentWrapperParams.leftMargin);
+        getViewHolder().getContentWrapper().setTranslationY(y - contentWrapperParams.topMargin);
     }
 
     @Override
@@ -256,6 +261,9 @@ public class PopupLayer extends DialogLayer {
     @Override
     protected void initContent() {
         super.initContent();
+        FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
+        contentParams.gravity = -1;
+        getViewHolder().getContent().setLayoutParams(contentParams);
     }
 
     /**
@@ -304,7 +312,7 @@ public class PopupLayer extends DialogLayer {
      *
      * @param vertical 垂直对齐方式
      */
-    public PopupLayer alignment(Alignment.Vertical vertical) {
+    public PopupLayer vertical(Alignment.Vertical vertical) {
         getConfig().mAlignmentVertical = Utils.requireNonNull(vertical, "vertical == null");
         return this;
     }
@@ -314,7 +322,7 @@ public class PopupLayer extends DialogLayer {
      *
      * @param horizontal 水平对齐方式
      */
-    public PopupLayer direction(Alignment.Horizontal horizontal) {
+    public PopupLayer horizontal(Alignment.Horizontal horizontal) {
         getConfig().mAlignmentHorizontal = Utils.requireNonNull(horizontal, "horizontal == null");
         return this;
     }
@@ -344,7 +352,7 @@ public class PopupLayer extends DialogLayer {
     protected static class Config extends DialogLayer.Config {
         protected boolean mOutsideInterceptTouchEvent = true;
 
-        protected boolean mAlignmentInside = false;
+        protected boolean mAlignmentInside = true;
         protected Alignment.Direction mAlignmentDirection = Alignment.Direction.VERTICAL;
         protected Alignment.Horizontal mAlignmentHorizontal = Alignment.Horizontal.CENTER;
         protected Alignment.Vertical mAlignmentVertical = Alignment.Vertical.BELOW;

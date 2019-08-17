@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 import java.util.Random;
 
@@ -151,7 +153,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_target_right:
                 if (anyLayer_show_target_right == null) {
                     anyLayer_show_target_right = AnyLayer.popup(findViewById(R.id.tv_show_target_right))
-                            .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, true)
+                            .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, false)
                             .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.dialog_test_5)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -211,7 +213,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_target_bottom:
                 if (anyLayer_show_target_bottom == null) {
                     anyLayer_show_target_bottom = AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
-                            .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
+                            .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, false)
                             .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.dialog_test_4)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -346,16 +348,22 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             @Override
                             public Animator createInAnimator(View content) {
                                 AnimatorSet set = new AnimatorSet();
-                                set.playTogether(AnimatorHelper.createBottomAlphaInAnim(content),
-                                        AnimatorHelper.createZoomAlphaInAnim(content));
+                                Animator a1 = AnimatorHelper.createBottomAlphaInAnim(content, 0.4F);
+                                a1.setInterpolator(new DecelerateInterpolator());
+                                Animator a2 = AnimatorHelper.createZoomAlphaInAnim(content, 0.9F);
+                                a2.setInterpolator(new AccelerateInterpolator());
+                                set.playTogether(a1, a2);
                                 return set;
                             }
 
                             @Override
                             public Animator createOutAnimator(View content) {
                                 AnimatorSet set = new AnimatorSet();
-                                set.playTogether(AnimatorHelper.createBottomAlphaOutAnim(content),
-                                        AnimatorHelper.createZoomAlphaOutAnim(content));
+                                Animator a1 = AnimatorHelper.createBottomAlphaOutAnim(content, 0.4F);
+                                a1.setInterpolator(new AccelerateInterpolator());
+                                Animator a2 = AnimatorHelper.createZoomAlphaOutAnim(content, 0.9F);
+                                a2.setInterpolator(new DecelerateInterpolator());
+                                set.playTogether(a1, a2);
                                 return set;
                             }
                         })

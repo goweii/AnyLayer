@@ -108,6 +108,15 @@
                     android:textColor="#232323"
                     android:textSize="14sp" />
 
+                <TextView
+                    android:id="@+id/tv_show_bottom_zoom_alpha_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="底部缩放进入底部缩放退出alpha"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
@@ -170,15 +179,6 @@
                     android:layout_height="60dp"
                     android:gravity="center"
                     android:text="底部进入底部退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_bottom_zoom_alpha_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="底部缩放进入底部缩放退出alpha"
                     android:textColor="#232323"
                     android:textSize="14sp" />
 
