@@ -32,12 +32,12 @@ public class DialogLayer extends DecorLayer {
     private SoftInputHelper mSoftInputHelper = null;
 
     public DialogLayer(Activity activity) {
-        super(Utils.requireNonNull(activity, "activity == null"));
+        super(activity);
         getViewHolder().setActivityContent(getViewHolder().getDecor().findViewById(android.R.id.content));
     }
 
     public DialogLayer(Context context) {
-        this(Utils.requireNonNull(Utils.getActivity(Utils.requireNonNull(context, "context == null"))));
+        this(Utils.getActivity(Utils.requireNonNull(context, "context == null")));
     }
 
     @Override

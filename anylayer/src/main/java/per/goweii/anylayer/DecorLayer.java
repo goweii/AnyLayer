@@ -201,11 +201,26 @@ public class DecorLayer extends Layer {
      * 数字越小层级越高，显示在越上层
      */
     protected enum Level {
-        FLOAT(1),  // 悬浮窗
-        TOAST(2),  // 吐司
-        DIALOG(3), // 弹窗
-        POPUP(4),  // PopupWindow
-        GUIDE(5);  // 引导层
+        /**
+         * 悬浮窗
+         */
+        FLOAT(1),
+        /**
+         * 吐司
+         */
+        TOAST(2),
+        /**
+         * 弹窗
+         */
+        DIALOG(3),
+        /**
+         * PopupWindow
+         */
+        POPUP(4),
+        /**
+         * 引导层
+         */
+        GUIDE(5);
 
         private final int level;
 

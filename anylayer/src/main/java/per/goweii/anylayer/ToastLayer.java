@@ -19,7 +19,7 @@ import android.widget.TextView;
 public class ToastLayer extends DecorLayer implements Runnable {
 
     public ToastLayer(Context context) {
-        super(Utils.requireNonNull(Utils.getActivity(Utils.requireNonNull(context, "context == null"))));
+        super(Utils.getActivity(Utils.requireNonNull(context, "context == null")));
         interceptKeyEvent(false);
         cancelableOnKeyBack(false);
     }
