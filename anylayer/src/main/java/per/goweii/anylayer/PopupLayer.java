@@ -144,17 +144,13 @@ public class PopupLayer extends DialogLayer {
             contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
         }
         getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
-        initLocation();
-    }
-
-    private void initLocation() {
         getViewHolder().getChild().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
                 if (getViewHolder().getChild().getViewTreeObserver().isAlive()) {
                     getViewHolder().getChild().getViewTreeObserver().removeOnPreDrawListener(this);
                 }
-                initLocationByTranslation();
+                initLocation();
                 return false;
             }
         });
@@ -162,14 +158,14 @@ public class PopupLayer extends DialogLayer {
             mOnScrollChangedListener = new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
                 public void onScrollChanged() {
-                    initLocationByTranslation();
+                    initLocation();
                 }
             };
             getViewHolder().getParent().getViewTreeObserver().addOnScrollChangedListener(mOnScrollChangedListener);
         }
     }
 
-    private void initLocationByTranslation() {
+    private void initLocation() {
         final int[] locationTarget = new int[2];
         getViewHolder().getTarget().getLocationOnScreen(locationTarget);
         final int[] locationRoot = new int[2];
@@ -178,13 +174,13 @@ public class PopupLayer extends DialogLayer {
         final int targetY = (locationTarget[1] - locationRoot[1]);
         final int targetWidth = getViewHolder().getTarget().getWidth();
         final int targetHeight = getViewHolder().getTarget().getHeight();
-        initContentWrapperTranslation(targetX, targetY, targetWidth, targetHeight);
+        initContentWrapperLocation(targetX, targetY, targetWidth, targetHeight);
         if (getConfig().mBackgroundAlign) {
-            initBackgroundTranslation(targetX, targetY, targetWidth, targetHeight);
+            initBackgroundLocation(targetX, targetY, targetWidth, targetHeight);
         }
     }
 
-    private void initBackgroundTranslation(int targetX, int targetY, int targetWidth, int targetHeight) {
+    private void initBackgroundLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
         final int width = getViewHolder().getContentWrapper().getWidth();
         final int height = getViewHolder().getContentWrapper().getHeight();
         final int maxWidth = getViewHolder().getChild().getWidth();
@@ -240,11 +236,11 @@ public class PopupLayer extends DialogLayer {
                     break;
             }
         }
-        getViewHolder().getBackground().setTranslationX(x);
-        getViewHolder().getBackground().setTranslationY(y);
+        getViewHolder().getBackground().setX(x);
+        getViewHolder().getBackground().setY(y);
     }
 
-    private void initContentWrapperTranslation(int targetX, int targetY, int targetWidth, int targetHeight) {
+    private void initContentWrapperLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
         final int width = getViewHolder().getContentWrapper().getWidth();
         final int height = getViewHolder().getContentWrapper().getHeight();
         int x = 0, y = 0;
@@ -294,8 +290,8 @@ public class PopupLayer extends DialogLayer {
             x = Utils.intRange(x, 0, maxX);
             y = Utils.intRange(y, 0, maxY);
         }
-        getViewHolder().getContentWrapper().setTranslationX(x);
-        getViewHolder().getContentWrapper().setTranslationY(y);
+        getViewHolder().getContentWrapper().setX(x);
+        getViewHolder().getContentWrapper().setY(y);
     }
 
     @Override
@@ -323,26 +319,6 @@ public class PopupLayer extends DialogLayer {
     }
 
     /**
-     * 当以target方式创建时为参照View位置显示
-     * 可自己指定浮层相对于参照View的对齐方式
-     *
-     * @param direction  主方向
-     * @param horizontal 水平对齐方式
-     * @param vertical   垂直对齐方式
-     * @param inside     是否强制位于屏幕内部
-     */
-    public PopupLayer align(Align.Direction direction,
-                            Align.Horizontal horizontal,
-                            Align.Vertical vertical,
-                            boolean inside) {
-        getConfig().mAlignDirection = Utils.requireNonNull(direction, "direction == null");
-        getConfig().mAlignHorizontal = Utils.requireNonNull(horizontal, "horizontal == null");
-        getConfig().mAlignVertical = Utils.requireNonNull(vertical, "vertical == null");
-        getConfig().mInside = inside;
-        return this;
-    }
-
-    /**
      * 是否裁剪contentView至包裹边界
      *
      * @param clip 是否裁剪contentView至包裹边界
@@ -363,11 +339,21 @@ public class PopupLayer extends DialogLayer {
     }
 
     /**
-     * 指定浮层是否强制位于屏幕内部
+     * 当以target方式创建时为参照View位置显示
+     * 可自己指定浮层相对于参照View的对齐方式
      *
-     * @param inside 是否强制位于屏幕内部
+     * @param direction  主方向
+     * @param horizontal 水平对齐方式
+     * @param vertical   垂直对齐方式
+     * @param inside     是否强制位于屏幕内部
      */
-    public PopupLayer inside(boolean inside) {
+    public PopupLayer align(Align.Direction direction,
+                            Align.Horizontal horizontal,
+                            Align.Vertical vertical,
+                            boolean inside) {
+        getConfig().mAlignDirection = Utils.requireNonNull(direction, "direction == null");
+        getConfig().mAlignHorizontal = Utils.requireNonNull(horizontal, "horizontal == null");
+        getConfig().mAlignVertical = Utils.requireNonNull(vertical, "vertical == null");
         getConfig().mInside = inside;
         return this;
     }
@@ -375,10 +361,10 @@ public class PopupLayer extends DialogLayer {
     /**
      * 指定浮层相对于参照View的对齐方式
      *
-     * @param vertical 垂直对齐方式
+     * @param direction 主方向
      */
-    public PopupLayer vertical(Align.Vertical vertical) {
-        getConfig().mAlignVertical = Utils.requireNonNull(vertical, "vertical == null");
+    public PopupLayer direction(Align.Direction direction) {
+        getConfig().mAlignDirection = Utils.requireNonNull(direction, "direction == null");
         return this;
     }
 
@@ -395,10 +381,20 @@ public class PopupLayer extends DialogLayer {
     /**
      * 指定浮层相对于参照View的对齐方式
      *
-     * @param direction 主方向
+     * @param vertical 垂直对齐方式
      */
-    public PopupLayer direction(Align.Direction direction) {
-        getConfig().mAlignDirection = Utils.requireNonNull(direction, "direction == null");
+    public PopupLayer vertical(Align.Vertical vertical) {
+        getConfig().mAlignVertical = Utils.requireNonNull(vertical, "vertical == null");
+        return this;
+    }
+
+    /**
+     * 指定浮层是否强制位于屏幕内部
+     *
+     * @param inside 是否强制位于屏幕内部
+     */
+    public PopupLayer inside(boolean inside) {
+        getConfig().mInside = inside;
         return this;
     }
 
