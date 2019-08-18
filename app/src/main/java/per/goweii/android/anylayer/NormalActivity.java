@@ -239,17 +239,30 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 if (anyLayer_show_target_bottom == null) {
                     anyLayer_show_target_bottom = AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
                             .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.BELOW, false)
+                            .contentClip(false)
                             .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.popup_meun)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(View content) {
-                                    return AnimatorHelper.createTopInAnim(content);
+                                    AnimatorSet set = new AnimatorSet();
+                                    Animator a1 = AnimatorHelper.createTopAlphaInAnim(content, 0.4F);
+                                    a1.setInterpolator(new DecelerateInterpolator());
+                                    Animator a2 = AnimatorHelper.createZoomAlphaInAnim(content, 0.9F);
+                                    a2.setInterpolator(new AccelerateInterpolator());
+                                    set.playTogether(a1, a2);
+                                    return set;
                                 }
 
                                 @Override
                                 public Animator createOutAnimator(View content) {
-                                    return AnimatorHelper.createTopOutAnim(content);
+                                    AnimatorSet set = new AnimatorSet();
+                                    Animator a1 = AnimatorHelper.createTopAlphaOutAnim(content, 0.4F);
+                                    a1.setInterpolator(new AccelerateInterpolator());
+                                    Animator a2 = AnimatorHelper.createZoomAlphaOutAnim(content, 0.9F);
+                                    a2.setInterpolator(new DecelerateInterpolator());
+                                    set.playTogether(a1, a2);
+                                    return set;
                                 }
                             });
                 }

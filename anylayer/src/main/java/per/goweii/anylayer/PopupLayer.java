@@ -128,6 +128,8 @@ public class PopupLayer extends DialogLayer {
             getViewHolder().getChild().setOnClickListener(null);
             getViewHolder().getChild().setClickable(false);
         }
+        getViewHolder().getContentWrapper().setClipChildren(getConfig().mContentClip);
+        getViewHolder().getChild().setClipChildren(getConfig().mContentClip);
         getViewHolder().getChild().setClipToPadding(false);
         FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
@@ -341,6 +343,16 @@ public class PopupLayer extends DialogLayer {
     }
 
     /**
+     * 是否裁剪contentView至包裹边界
+     *
+     * @param clip 是否裁剪contentView至包裹边界
+     */
+    public PopupLayer contentClip(boolean clip) {
+        getConfig().mContentClip = clip;
+        return this;
+    }
+
+    /**
      * 是否偏移背景对齐目标控件
      *
      * @param align 是否偏移背景对齐目标控件
@@ -405,6 +417,7 @@ public class PopupLayer extends DialogLayer {
     protected static class Config extends DialogLayer.Config {
         protected boolean mOutsideInterceptTouchEvent = true;
 
+        protected boolean mContentClip = true;
         protected boolean mBackgroundAlign = true;
         protected boolean mInside = true;
         protected Align.Direction mAlignDirection = Align.Direction.VERTICAL;
