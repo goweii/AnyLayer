@@ -75,7 +75,7 @@ public class DialogLayer extends DecorLayer {
                 contentParent.removeView(getViewHolder().getContent());
             }
         } else {
-            getViewHolder().setContent(inflater.inflate(getConfig().contentViewId, getViewHolder().getContentWrapper(), false));
+            getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, getViewHolder().getContentWrapper(), false));
         }
         getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
         return container;
@@ -175,6 +175,14 @@ public class DialogLayer extends DecorLayer {
         contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
         contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
         getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
+        if (getConfig().mAvoidStatusBar) {
+            final int statusBarH = Utils.getStatusBarHeight(getActivity());
+            getViewHolder().getContentWrapper().setPadding(0, statusBarH, 0, 0);
+            getViewHolder().getContentWrapper().setClipToPadding(false);
+        } else {
+            getViewHolder().getContentWrapper().setPadding(0, 0, 0, 0);
+            getViewHolder().getContentWrapper().setClipToPadding(true);
+        }
     }
 
     protected void initBackground() {
@@ -281,7 +289,7 @@ public class DialogLayer extends DecorLayer {
      * @param contentViewId 自定义布局ID
      */
     public DialogLayer contentView(int contentViewId) {
-        getConfig().contentViewId = contentViewId;
+        getConfig().mContentViewId = contentViewId;
         return this;
     }
 
@@ -293,6 +301,16 @@ public class DialogLayer extends DecorLayer {
      */
     public DialogLayer asStatusBar(int statusBarId) {
         getConfig().mAsStatusBarViewId = statusBarId;
+        return this;
+    }
+
+    /**
+     * 设置避免状态栏
+     *
+     * @param avoid 设置避免状态栏
+     */
+    public DialogLayer avoidStatusBar(boolean avoid) {
+        getConfig().mAvoidStatusBar = avoid;
         return this;
     }
 
@@ -545,11 +563,12 @@ public class DialogLayer extends DecorLayer {
         protected AnimatorCreator mBackgroundAnimatorCreator = null;
         protected AnimatorCreator mContentAnimatorCreator = null;
 
-        protected int contentViewId = 0;
+        protected int mContentViewId = 0;
 
         protected boolean mCancelableOnTouchOutside = true;
 
         protected int mAsStatusBarViewId = 0;
+        protected boolean mAvoidStatusBar = false;
 
         protected int mGravity = Gravity.CENTER;
         protected float mBackgroundBlurPercent = 0F;

@@ -158,7 +158,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_top:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_match_width)
-                        .asStatusBar(R.id.v_status_bar)
+                        .avoidStatusBar(true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {

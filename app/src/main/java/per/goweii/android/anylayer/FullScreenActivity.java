@@ -126,7 +126,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_top:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_match_width)
-                        .asStatusBar(R.id.v_status_bar)
+                        .avoidStatusBar(true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -146,7 +146,10 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_right:
                 if (anyLayer_show_target_right == null) {
                     anyLayer_show_target_right = AnyLayer.popup(findViewById(R.id.tv_show_target_right))
-                            .align(Align.Direction.HORIZONTAL, Align.Horizontal.TO_RIGHT, Align.Vertical.CENTER, true)
+                            .direction(Align.Direction.HORIZONTAL)
+                            .horizontal(Align.Horizontal.TO_RIGHT)
+                            .vertical(Align.Vertical.CENTER)
+                            .inside(true)
                             .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.popup_normal)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
