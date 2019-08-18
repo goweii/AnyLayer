@@ -105,7 +105,7 @@ allprojects {
 // build.gradle(Module:)
 dependencies {
     // 完整引入
-    implementation 'com.github.goweii:AnyLayer:3.1.0'
+    implementation 'com.github.goweii:AnyLayer:3.2.0'
     
     // 基础库
     // implementation 'com.github.goweii.AnyLayer:anylayer:2.5.0'
