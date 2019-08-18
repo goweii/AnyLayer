@@ -7,7 +7,7 @@ package per.goweii.anylayer;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public final class Alignment {
+public final class Align {
     public enum Direction {
         /**
          * 主方向

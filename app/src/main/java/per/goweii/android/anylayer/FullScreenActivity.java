@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import per.goweii.anylayer.Alignment;
+import per.goweii.anylayer.Align;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
@@ -146,8 +146,9 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_right:
                 if (anyLayer_show_target_right == null) {
                     anyLayer_show_target_right = AnyLayer.popup(findViewById(R.id.tv_show_target_right))
-                            .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_RIGHT, Alignment.Vertical.CENTER, true)
+                            .align(Align.Direction.HORIZONTAL, Align.Horizontal.TO_RIGHT, Align.Vertical.CENTER, true)
                             .outsideInterceptTouchEvent(false)
+                            .backgroundColorRes(R.color.dialog_bg)
                             .contentView(R.layout.dialog_test_5)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
@@ -169,7 +170,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_left:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_left))
-                        .alignment(Alignment.Direction.HORIZONTAL, Alignment.Horizontal.TO_LEFT, Alignment.Vertical.CENTER, true)
+                        .align(Align.Direction.HORIZONTAL, Align.Horizontal.TO_LEFT, Align.Vertical.CENTER, true)
                         .contentView(R.layout.dialog_test_5)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
@@ -186,7 +187,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_top:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_top))
-                        .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.ABOVE, true)
+                        .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.ABOVE, true)
                         .contentView(R.layout.dialog_test_4)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
@@ -206,8 +207,9 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_bottom:
                 if (anyLayer_show_target_bottom == null) {
                     anyLayer_show_target_bottom = AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
-                            .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.CENTER, Alignment.Vertical.BELOW, true)
+                            .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.BELOW, true)
                             .outsideInterceptTouchEvent(false)
+                            .backgroundColorRes(R.color.dialog_bg)
                             .contentView(R.layout.dialog_test_4)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
@@ -581,7 +583,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_delayed_zoom:
                 AnyLayer.popup(findViewById(R.id.tv_show_delayed_zoom))
-                        .alignment(Alignment.Direction.VERTICAL, Alignment.Horizontal.ALIGN_RIGHT, Alignment.Vertical.BELOW, true)
+                        .align(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
                         .contentView(R.layout.dialog_test_8)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override

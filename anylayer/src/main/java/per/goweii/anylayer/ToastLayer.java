@@ -126,8 +126,13 @@ public class ToastLayer extends DecorLayer implements Runnable {
         return this;
     }
 
-    public ToastLayer backgroundDrawable(Drawable backgroundDrawable) {
-        getConfig().mBackgroundDrawable = backgroundDrawable;
+    public ToastLayer backgroundDrawable(Drawable drawable) {
+        getConfig().mBackgroundDrawable = drawable;
+        return this;
+    }
+
+    public ToastLayer backgroundDrawable(int drawableRes) {
+        getConfig().mBackgroundDrawableRes = drawableRes;
         return this;
     }
 
@@ -150,7 +155,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
     protected Animator onCreateInAnimator(View view) {
         Animator animator = super.onCreateInAnimator(view);
         if (animator == null) {
-            animator = AnimatorHelper.createBottomInAnim(view);
+            animator = AnimatorHelper.createZoomAlphaInAnim(view);
         }
         return animator;
     }
@@ -159,7 +164,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
     protected Animator onCreateOutAnimator(View view) {
         Animator animator = super.onCreateOutAnimator(view);
         if (animator == null) {
-            animator = AnimatorHelper.createBottomOutAnim(view);
+            animator = AnimatorHelper.createZoomAlphaOutAnim(view);
         }
         return animator;
     }
@@ -180,6 +185,8 @@ public class ToastLayer extends DecorLayer implements Runnable {
         }
         if (getConfig().mBackgroundDrawable != null) {
             getChild().setBackgroundDrawable(getConfig().mBackgroundDrawable);
+        } else if (getConfig().mBackgroundDrawableRes != -1) {
+            getChild().setBackgroundResource(getConfig().mBackgroundDrawableRes);
         } else {
             Drawable backgroundDrawable = getChild().getBackground();
             if (backgroundDrawable instanceof GradientDrawable) {
@@ -211,11 +218,14 @@ public class ToastLayer extends DecorLayer implements Runnable {
         if (getConfig().mRemoveOthers) {
             final ViewGroup parent = getParent();
             final int count = parent.getChildCount();
-            for (int i = count - 2; i >= 0; i--) {
+            for (int i = count - 1; i >= 0; i--) {
                 final View child = parent.getChildAt(i);
                 Object tag = child.getTag();
                 if (tag instanceof ToastLayer) {
-                    ((ToastLayer) tag).dismiss(false);
+                    ToastLayer toastLayer = (ToastLayer) tag;
+                    if (toastLayer != this) {
+                        toastLayer.dismiss(false);
+                    }
                 }
             }
         }
@@ -279,6 +289,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
         private long mDuration = 3000L;
         private CharSequence mMessage = "";
         private int mIcon = 0;
+        private int mBackgroundDrawableRes = -1;
         private Drawable mBackgroundDrawable = null;
         private int mBackgroundColor = Color.BLACK;
         private float mAlpha = 1F;
