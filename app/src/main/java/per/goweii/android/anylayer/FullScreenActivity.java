@@ -586,6 +586,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_delayed_zoom:
                 AnyLayer.popup(findViewById(R.id.tv_show_delayed_zoom))
                         .align(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
+                        .offsetYdp(15)
                         .contentView(R.layout.popup_meun)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
