@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">AnyLayer</string>
-    <string name="dialog_msg">完美替换Android系统Dialog，具有高定制性，高易用性。</string>
+    <string name="dialog_msg">Android稳定高效的浮层创建管理框架</string>
 </resources>

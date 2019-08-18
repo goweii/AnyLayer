@@ -122,9 +122,9 @@ public class DialogLayer extends DecorLayer {
     @Override
     public void onAttach() {
         super.onAttach();
-        initContainer();
-        initBackground();
         initContent();
+        initBackground();
+        initContainer();
     }
 
     @Override

@@ -66,7 +66,7 @@ public class AnimatorHelper {
     }
 
     public static Animator createZoomAlphaOutAnim(final View target, int centerX, int centerY) {
-        return createZoomAlphaOutAnim(target, centerX, centerY, 1 - 0.618f);
+        return createZoomAlphaOutAnim(target, centerX, centerY, 0.618f);
     }
 
     public static Animator createZoomAlphaInAnim(final View target,

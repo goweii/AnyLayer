@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="#ffffff"
-    app:cardCornerRadius="5dp"
+    app:cardCornerRadius="6dp"
     app:cardUseCompatPadding="false"
-    android:layout_margin="15dp"
+    android:layout_margin="30dp"
     app:cardElevation="0dp">
 
     <LinearLayout

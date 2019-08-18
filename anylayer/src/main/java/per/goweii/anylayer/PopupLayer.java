@@ -128,15 +128,24 @@ public class PopupLayer extends DialogLayer {
             getViewHolder().getChild().setOnClickListener(null);
             getViewHolder().getChild().setClickable(false);
         }
+        getViewHolder().getChild().setClipToPadding(false);
+        FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
+        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
+        if (contentParams.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+            contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+        } else {
+            contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
+        }
+        if (contentParams.height == FrameLayout.LayoutParams.MATCH_PARENT) {
+            contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
+        } else {
+            contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+        }
+        getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
         initLocation();
     }
 
     private void initLocation() {
-        getViewHolder().getChild().setClipToPadding(false);
-        FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
-        contentWrapperParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
-        contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
-        getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
         getViewHolder().getChild().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
