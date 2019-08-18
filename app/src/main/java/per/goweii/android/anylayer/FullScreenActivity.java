@@ -23,6 +23,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
     private TextView tvTitle;
     private DialogLayer anyLayer_show_target_right = null;
     private DialogLayer anyLayer_show_target_bottom = null;
+    private DialogLayer anyLayer_show_menu = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.tv_show_left_right_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_right_left_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_reveal).setOnClickListener(this);
-        findViewById(R.id.tv_show_delayed_zoom).setOnClickListener(this);
+        findViewById(R.id.tv_show_menu).setOnClickListener(this);
     }
 
     @Override
@@ -583,23 +584,30 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
-            case R.id.tv_show_delayed_zoom:
-                AnyLayer.popup(findViewById(R.id.tv_show_delayed_zoom))
-                        .align(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
-                        .offsetYdp(15)
-                        .contentView(R.layout.popup_meun)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createDelayedZoomInAnim(content, 1F, 0F);
-                            }
+            case R.id.tv_show_menu:
+                if (anyLayer_show_menu == null) {
+                    anyLayer_show_menu = AnyLayer.popup(findViewById(R.id.tv_show_menu))
+                            .align(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
+                            .outsideInterceptTouchEvent(false)
+                            .offsetYdp(15)
+                            .contentView(R.layout.popup_meun)
+                            .contentAnimator(new DialogLayer.AnimatorCreator() {
+                                @Override
+                                public Animator createInAnimator(View content) {
+                                    return AnimatorHelper.createDelayedZoomInAnim(content, 1F, 0F);
+                                }
 
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createDelayedZoomOutAnim(content, 1F, 0F);
-                            }
-                        })
-                        .show();
+                                @Override
+                                public Animator createOutAnimator(View content) {
+                                    return AnimatorHelper.createDelayedZoomOutAnim(content, 1F, 0F);
+                                }
+                            });
+                }
+                if (anyLayer_show_menu.isShow()) {
+                    anyLayer_show_menu.dismiss();
+                } else {
+                    anyLayer_show_menu.show();
+                }
                 break;
         }
     }
