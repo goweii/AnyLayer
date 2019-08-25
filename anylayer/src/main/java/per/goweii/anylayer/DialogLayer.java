@@ -69,16 +69,20 @@ public class DialogLayer extends DecorLayer {
     protected View onCreateChild(LayoutInflater inflater, ViewGroup parent) {
         FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
         getViewHolder().setChild(container);
+        getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getContentWrapper()));
+        getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
+        return container;
+    }
+
+    protected View onCreateContent(LayoutInflater inflater, ViewGroup parent) {
         if (getViewHolder().getContent() != null) {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
             if (contentParent != null) {
                 contentParent.removeView(getViewHolder().getContent());
             }
-        } else {
-            getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, getViewHolder().getContentWrapper(), false));
+            return getViewHolder().getContent();
         }
-        getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
-        return container;
+        return inflater.inflate(getConfig().mContentViewId, parent, false);
     }
 
     @Override
