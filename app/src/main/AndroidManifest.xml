@@ -18,10 +18,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CommonActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"  />
-        <activity android:name=".NormalActivity" />
-        <activity android:name=".FullScreenActivity"
+        <activity
+            android:name=".CommonActivity"
+            android:configChanges="orientation"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".NormalActivity"
+            android:configChanges="orientation|screenSize|keyboard" />
+        <activity
+            android:name=".FullScreenActivity"
+            android:configChanges="orientation|screenSize|keyboard"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 

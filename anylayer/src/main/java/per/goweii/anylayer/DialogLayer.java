@@ -3,7 +3,9 @@ package per.goweii.anylayer;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.app.Activity;
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,7 +29,7 @@ import per.goweii.burred.Blurred;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class DialogLayer extends DecorLayer {
+public class DialogLayer extends DecorLayer implements ComponentCallbacks {
 
     private SoftInputHelper mSoftInputHelper = null;
 
@@ -129,6 +131,7 @@ public class DialogLayer extends DecorLayer {
         initContent();
         initBackground();
         initContainer();
+        getActivity().registerComponentCallbacks(this);
     }
 
     @Override
@@ -148,6 +151,7 @@ public class DialogLayer extends DecorLayer {
 
     @Override
     public void onDetach() {
+        getActivity().unregisterComponentCallbacks(this);
         super.onDetach();
         getViewHolder().recycle();
     }
@@ -162,19 +166,7 @@ public class DialogLayer extends DecorLayer {
                 }
             });
         }
-        if (getViewHolder().getActivityContent() != null) {
-            // 非指定父布局的，添加到DecorView，此时getViewHolder().getRootView()为DecorView
-            final int[] locationDecor = new int[2];
-            getViewHolder().getDecor().getLocationOnScreen(locationDecor);
-            final int[] locationActivityContent = new int[2];
-            getViewHolder().getActivityContent().getLocationOnScreen(locationActivityContent);
-            FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
-            containerParams.leftMargin = locationActivityContent[0] - locationDecor[0];
-            containerParams.topMargin = 0;
-            containerParams.width = getViewHolder().getActivityContent().getWidth();
-            containerParams.height = getViewHolder().getActivityContent().getHeight() + (locationActivityContent[1] - locationDecor[1]);
-            getViewHolder().getChild().setLayoutParams(containerParams);
-        }
+        fitContainerToActivityContent();
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
         contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
         contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
@@ -187,6 +179,23 @@ public class DialogLayer extends DecorLayer {
             getViewHolder().getContentWrapper().setPadding(0, 0, 0, 0);
             getViewHolder().getContentWrapper().setClipToPadding(true);
         }
+    }
+
+    private void fitContainerToActivityContent() {
+        final int dh = getViewHolder().getDecor().getHeight();
+        final int dw = getViewHolder().getDecor().getWidth();
+        final int[] dl = new int[2];
+        getViewHolder().getDecor().getLocationOnScreen(dl);
+        final int ach = getViewHolder().getActivityContent().getHeight();
+        final int acw = getViewHolder().getActivityContent().getWidth();
+        final int[] acl = new int[2];
+        getViewHolder().getActivityContent().getLocationOnScreen(acl);
+        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
+        containerParams.leftMargin = acl[0] - dl[0];
+        containerParams.topMargin = acl[1] - dl[1];
+        containerParams.rightMargin = dl[0] + dw - (acl[0] + acw);
+        containerParams.bottomMargin = dl[1] + dh - (acl[1] + ach);
+        getViewHolder().getChild().setLayoutParams(containerParams);
     }
 
     protected void initBackground() {
@@ -511,6 +520,22 @@ public class DialogLayer extends DecorLayer {
         if (mSoftInputHelper != null) {
             mSoftInputHelper.detach();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        getViewHolder().getDecor().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                getViewHolder().getDecor().getViewTreeObserver().removeOnPreDrawListener(this);
+                fitContainerToActivityContent();
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public void onLowMemory() {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
