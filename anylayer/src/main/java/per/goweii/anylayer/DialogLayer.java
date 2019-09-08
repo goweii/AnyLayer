@@ -145,8 +145,8 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
     }
 
     @Override
-    public void onPerRemove() {
-        super.onPerRemove();
+    public void onPreRemove() {
+        super.onPreRemove();
     }
 
     @Override
@@ -318,9 +318,9 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
     }
 
     /**
-     * 设置避免状态栏
+     * 设置避开状态栏
      *
-     * @param avoid 设置避免状态栏
+     * @param avoid 设置避开状态栏
      */
     public DialogLayer avoidStatusBar(boolean avoid) {
         getConfig().mAvoidStatusBar = avoid;

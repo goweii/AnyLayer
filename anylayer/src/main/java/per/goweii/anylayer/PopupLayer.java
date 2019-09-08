@@ -109,8 +109,8 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    public void onPerRemove() {
-        super.onPerRemove();
+    public void onPreRemove() {
+        super.onPreRemove();
     }
 
     @Override
@@ -181,71 +181,20 @@ public class PopupLayer extends DialogLayer {
         }
     }
 
-    private void initBackgroundLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
-        final int width = getViewHolder().getContentWrapper().getWidth();
-        final int height = getViewHolder().getContentWrapper().getHeight();
-        final int maxWidth = getViewHolder().getChild().getWidth();
-        final int maxHeight = getViewHolder().getChild().getHeight();
-        final int maxX = maxWidth - width;
-        final int maxY = maxHeight - height;
-        final FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
-        int x = 0, y = 0;
-        x += getConfig().mOffsetX;
-        y += getConfig().mOffsetY;
-        if (getConfig().mAlignDirection == Align.Direction.HORIZONTAL) {
-            switch (getConfig().mAlignHorizontal) {
-                case TO_LEFT:
-                    x += -(containerParams.width - targetX);
-                    if (getConfig().mInside) x = Utils.intRange(x, -maxX, 0);
-                    break;
-                case ALIGN_RIGHT:
-                    x += -(containerParams.width - targetX - targetWidth);
-                    if (getConfig().mInside) x = Utils.intRange(x, -maxX, 0);
-                    break;
-                case TO_RIGHT:
-                    x += targetX + targetWidth;
-                    if (getConfig().mInside) x = Utils.intRange(x, 0, maxX);
-                    break;
-                case ALIGN_LEFT:
-                    x += targetX;
-                    if (getConfig().mInside) x = Utils.intRange(x, 0, maxX);
-                    break;
-                case CENTER:
-                    break;
-                default:
-                    break;
-            }
-        } else if (getConfig().mAlignDirection == Align.Direction.VERTICAL) {
-            switch (getConfig().mAlignVertical) {
-                case ABOVE:
-                    y += -(containerParams.height - targetY);
-                    if (getConfig().mInside) y = Utils.intRange(y, -maxY, 0);
-                    break;
-                case ALIGN_BOTTOM:
-                    y += -(containerParams.height - targetY - targetHeight);
-                    if (getConfig().mInside) y = Utils.intRange(y, -maxY, 0);
-                    break;
-                case BELOW:
-                    y += targetY + targetHeight;
-                    if (getConfig().mInside) y = Utils.intRange(y, 0, maxY);
-                    break;
-                case ALIGN_TOP:
-                    y += targetY;
-                    if (getConfig().mInside) y = Utils.intRange(y, 0, maxY);
-                    break;
-                case CENTER:
-                    break;
-                default:
-                    break;
-            }
-        }
-        getViewHolder().getBackground().setX(x);
-        getViewHolder().getBackground().setY(y);
-    }
-
     private void initContentWrapperLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
-        final int width = getViewHolder().getContentWrapper().getWidth();
-        final int height = getViewHolder().getContentWrapper().getHeight();
+        final int width;
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
+        if (params.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+            width = getViewHolder().getChild().getWidth();
+        } else {
+            width = getViewHolder().getContentWrapper().getWidth();
+        }
+        final int height;
+        if (params.height == FrameLayout.LayoutParams.MATCH_PARENT) {
+            height = getViewHolder().getChild().getHeight();
+        } else {
+            height = getViewHolder().getContentWrapper().getHeight();
+        }
         int x = 0, y = 0;
         if (getConfig().mBackgroundOffset) {
             x += getConfig().mOffsetX;
@@ -289,16 +238,108 @@ public class PopupLayer extends DialogLayer {
             default:
                 break;
         }
-        if (getConfig().mInside) {
-            final int maxWidth = getViewHolder().getChild().getWidth();
-            final int maxHeight = getViewHolder().getChild().getHeight();
-            final int maxX = maxWidth - width;
-            final int maxY = maxHeight - height;
-            x = Utils.intRange(x, 0, maxX);
-            y = Utils.intRange(y, 0, maxY);
+        boolean paramsChanged = false;
+        if (params.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+            params.leftMargin = x;
+            paramsChanged = true;
+        } else {
+            if (getConfig().mInside) {
+                final int maxWidth = getViewHolder().getChild().getWidth();
+                final int maxX = maxWidth - width;
+                x = Utils.intRange(x, 0, maxX);
+            }
+            getViewHolder().getContentWrapper().setX(x);
         }
-        getViewHolder().getContentWrapper().setX(x);
-        getViewHolder().getContentWrapper().setY(y);
+        if (params.height == FrameLayout.LayoutParams.MATCH_PARENT) {
+            params.topMargin = y;
+            paramsChanged = true;
+        } else {
+            if (getConfig().mInside) {
+                final int maxHeight = getViewHolder().getChild().getHeight();
+                final int maxY = maxHeight - height;
+                y = Utils.intRange(y, 0, maxY);
+            }
+            getViewHolder().getContentWrapper().setY(y);
+        }
+        if (paramsChanged) {
+            getViewHolder().getContentWrapper().setLayoutParams(params);
+        }
+    }
+
+    private void initBackgroundLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
+        final int width = getViewHolder().getContentWrapper().getWidth();
+        final int height = getViewHolder().getContentWrapper().getHeight();
+        final int maxWidth = getViewHolder().getChild().getWidth();
+        final int maxHeight = getViewHolder().getChild().getHeight();
+        final int maxX = maxWidth - width;
+        final int maxY = maxHeight - height;
+        final FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
+        int x = 0, y = 0;
+        x += getConfig().mOffsetX;
+        y += getConfig().mOffsetY;
+        if (getConfig().mAlignDirection == Align.Direction.HORIZONTAL) {
+            switch (getConfig().mAlignHorizontal) {
+                case TO_LEFT:
+                    x += -(containerParams.width - targetX);
+                    if (getConfig().mInside) {
+                        x = Utils.intRange(x, -maxX, 0);
+                    }
+                    break;
+                case ALIGN_RIGHT:
+                    x += -(containerParams.width - targetX - targetWidth);
+                    if (getConfig().mInside) {
+                        x = Utils.intRange(x, -maxX, 0);
+                    }
+                    break;
+                case TO_RIGHT:
+                    x += targetX + targetWidth;
+                    if (getConfig().mInside) {
+                        x = Utils.intRange(x, 0, maxX);
+                    }
+                    break;
+                case ALIGN_LEFT:
+                    x += targetX;
+                    if (getConfig().mInside) {
+                        x = Utils.intRange(x, 0, maxX);
+                    }
+                    break;
+                case CENTER:
+                default:
+                    break;
+            }
+        } else if (getConfig().mAlignDirection == Align.Direction.VERTICAL) {
+            switch (getConfig().mAlignVertical) {
+                case ABOVE:
+                    y += -(containerParams.height - targetY);
+                    if (getConfig().mInside) {
+                        y = Utils.intRange(y, -maxY, 0);
+                    }
+                    break;
+                case ALIGN_BOTTOM:
+                    y += -(containerParams.height - targetY - targetHeight);
+                    if (getConfig().mInside) {
+                        y = Utils.intRange(y, -maxY, 0);
+                    }
+                    break;
+                case BELOW:
+                    y += targetY + targetHeight;
+                    if (getConfig().mInside) {
+                        y = Utils.intRange(y, 0, maxY);
+                    }
+                    break;
+                case ALIGN_TOP:
+                    y += targetY;
+                    if (getConfig().mInside) {
+                        y = Utils.intRange(y, 0, maxY);
+                    }
+                    break;
+                case CENTER:
+                default:
+                    break;
+            }
+        }
+        getViewHolder().getBackground().setX(x);
+        getViewHolder().getBackground().setY(y);
     }
 
     @Override

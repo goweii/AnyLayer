@@ -148,7 +148,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
     }
 
-    public void onPerRemove() {
+    public void onPreRemove() {
         mListenerHolder.notifyLayerOnDismissing(this);
         cancelAnimator();
         if (mDismissWithAnim) {
@@ -235,7 +235,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     public void dismiss(boolean withAnim) {
         mDismissWithAnim = withAnim;
-        onPerRemove();
+        onPreRemove();
     }
 
     public boolean isShow() {
@@ -294,6 +294,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public Layer cancelableOnKeyBack(boolean cancelable) {
+        if (cancelable) interceptKeyEvent(true);
         mConfig.mCancelableOnKeyBack = cancelable;
         return this;
     }

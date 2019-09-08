@@ -112,8 +112,8 @@ public class DecorLayer extends Layer {
     }
 
     @Override
-    public void onPerRemove() {
-        super.onPerRemove();
+    public void onPreRemove() {
+        super.onPreRemove();
     }
 
     @Override

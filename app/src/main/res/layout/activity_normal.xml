@@ -117,6 +117,15 @@
                     android:textColor="#232323"
                     android:textSize="14sp" />
 
+                <TextView
+                    android:id="@+id/tv_show_target_full"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="在下面全屏"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="60dp"

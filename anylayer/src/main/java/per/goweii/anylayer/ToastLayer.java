@@ -246,9 +246,9 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     @Override
-    public void onPerRemove() {
+    public void onPreRemove() {
         getChild().removeCallbacks(this);
-        super.onPerRemove();
+        super.onPreRemove();
     }
 
     @Override

@@ -54,6 +54,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.tv_show_no_context).setOnClickListener(this);
         findViewById(R.id.tv_show_delay).setOnClickListener(this);
         findViewById(R.id.tv_show_top).setOnClickListener(this);
+        findViewById(R.id.tv_show_target_full).setOnClickListener(this);
         findViewById(R.id.tv_show_target_right).setOnClickListener(this);
         findViewById(R.id.tv_show_target_top).setOnClickListener(this);
         findViewById(R.id.tv_show_target_bottom).setOnClickListener(this);
@@ -173,6 +174,22 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
+                        .show();
+                break;
+            case R.id.tv_show_target_full:
+                AnyLayer.popup(findViewById(R.id.tv_show_target_full))
+                        .contentView(R.layout.dialog_fullscreen)
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                            @Override
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createTopInAnim(content);
+                            }
+
+                            @Override
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createTopOutAnim(content);
+                            }
+                        })
                         .show();
                 break;
             case R.id.tv_show_target_right:
