@@ -8,33 +8,37 @@ package per.goweii.anylayer;
  * GitHub: https://github.com/goweii
  */
 public final class Align {
+    /**
+     * 主方向
+     */
     public enum Direction {
-        /**
-         * 主方向
-         */
         HORIZONTAL,
         VERTICAL
     }
 
+    /**
+     * 水平对齐方式
+     */
     public enum Horizontal {
-        /**
-         * 水平对齐方式
-         */
         CENTER,
         TO_LEFT,
         TO_RIGHT,
         ALIGN_LEFT,
-        ALIGN_RIGHT
+        ALIGN_RIGHT,
+        ALIGN_PARENT_LEFT,
+        ALIGN_PARENT_RIGHT
     }
 
+    /**
+     * 垂直对齐方式
+     */
     public enum Vertical {
-        /**
-         * 垂直对齐方式
-         */
         CENTER,
         ABOVE,
         BELOW,
         ALIGN_TOP,
-        ALIGN_BOTTOM
+        ALIGN_BOTTOM,
+        ALIGN_PARENT_TOP,
+        ALIGN_PARENT_BOTTOM
     }
 }

@@ -145,14 +145,10 @@ public class PopupLayer extends DialogLayer {
             contentWrapperParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
         }
         getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
-        getViewHolder().getChild().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        Utils.getViewSize(getViewHolder().getChild(), new Runnable() {
             @Override
-            public boolean onPreDraw() {
-                if (getViewHolder().getChild().getViewTreeObserver().isAlive()) {
-                    getViewHolder().getChild().getViewTreeObserver().removeOnPreDrawListener(this);
-                }
+            public void run() {
                 initLocation();
-                return false;
             }
         });
         if (!getConfig().mOutsideInterceptTouchEvent) {
@@ -182,88 +178,196 @@ public class PopupLayer extends DialogLayer {
     }
 
     private void initContentWrapperLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
-        final int width;
+        final int[] lp = new int[2];
+        getViewHolder().getChild().getLocationOnScreen(lp);
+        int parentX = lp[0];
+        int parentY = lp[1];
+        int parentW = getViewHolder().getChild().getWidth();
+        int parentH = getViewHolder().getChild().getHeight();
+        int width = getViewHolder().getContentWrapper().getWidth();
+        int height = getViewHolder().getContentWrapper().getHeight();
+        FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
-        if (params.width == FrameLayout.LayoutParams.MATCH_PARENT) {
-            width = getViewHolder().getChild().getWidth();
-        } else {
-            width = getViewHolder().getContentWrapper().getWidth();
-        }
-        final int height;
-        if (params.height == FrameLayout.LayoutParams.MATCH_PARENT) {
-            height = getViewHolder().getChild().getHeight();
-        } else {
-            height = getViewHolder().getContentWrapper().getHeight();
-        }
-        int x = 0, y = 0;
-        if (getConfig().mBackgroundOffset) {
-            x += getConfig().mOffsetX;
-            y += getConfig().mOffsetY;
-        }
+        float w = width;
+        float h = height;
+        float x = 0;
+        float y = 0;
         switch (getConfig().mAlignHorizontal) {
             case CENTER:
-                x += targetX - (width - targetWidth) / 2;
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int l = targetX - parentX;
+                    int r = parentX + parentW - (targetX + targetWidth);
+                    if (l < r) {
+                        w = targetWidth + l * 2;
+                        x = 0;
+                    } else {
+                        w = targetWidth + r * 2;
+                        x = l - r;
+                    }
+                    w -= getConfig().mOffsetX;
+                } else {
+                    x = targetX - (width - targetWidth) / 2;
+                }
                 break;
             case TO_LEFT:
-                x += targetX - width;
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int l = targetX - parentX;
+                    w = l;
+                    x = 0;
+                    w -= getConfig().mOffsetX;
+                } else {
+                    x = targetX - width;
+                }
                 break;
             case TO_RIGHT:
-                x += targetX + targetWidth;
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int r = parentX + parentW - (targetX + targetWidth);
+                    x = targetX + targetWidth;
+                    w = r;
+                    w -= getConfig().mOffsetX;
+                } else {
+                    x = targetX + targetWidth;
+                }
                 break;
             case ALIGN_LEFT:
-                x += targetX;
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int l = targetX - parentX;
+                    w = parentW - l;
+                    x = targetX;
+                    w -= getConfig().mOffsetX;
+                } else {
+                    x = targetX;
+                }
                 break;
             case ALIGN_RIGHT:
-                x += targetX - (width - targetWidth);
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int l = targetX - parentX;
+                    w = l + targetWidth;
+                    x = 0;
+                    w -= getConfig().mOffsetX;
+                } else {
+                    x = targetX - (width - targetWidth);
+                }
+                break;
+            case ALIGN_PARENT_LEFT:
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    x = 0;
+                    w -= getConfig().mOffsetX;
+                } else {
+                    x = 0;
+                }
+                break;
+            case ALIGN_PARENT_RIGHT:
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    x = 0;
+                    w -= getConfig().mOffsetX;
+                } else {
+                    x = parentX + parentW - width;
+                }
                 break;
             default:
                 break;
         }
         switch (getConfig().mAlignVertical) {
             case CENTER:
-                y += targetY - (height - targetHeight) / 2;
+                if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int t = targetY - parentY;
+                    int b = parentY + parentH - (targetY + targetHeight);
+                    if (t < b) {
+                        h = targetHeight + t * 2;
+                        y = 0;
+                    } else {
+                        h = targetHeight + b * 2;
+                        y = t - b;
+                    }
+                } else {
+                    y = targetY - (height - targetHeight) / 2;
+                }
+                h -= getConfig().mOffsetY;
                 break;
             case ABOVE:
-                y += targetY - height;
+                if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int t = targetY - parentY;
+                    h = t;
+                    x = 0;
+                    h -= getConfig().mOffsetY;
+                } else {
+                    y = targetY - height;
+                }
                 break;
             case BELOW:
-                y += targetY + targetHeight;
+                if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int b = parentY + parentH - (targetY + targetHeight);
+                    y = targetY + targetHeight;
+                    h = b;
+                    h -= getConfig().mOffsetY;
+                } else {
+                    y = targetY + targetHeight;
+                }
                 break;
             case ALIGN_TOP:
-                y += targetY;
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int t = targetY - parentY;
+                    h = parentH - t;
+                    y = targetY;
+                    h -= getConfig().mOffsetY;
+                } else {
+                    y = targetY;
+                }
                 break;
             case ALIGN_BOTTOM:
-                y += targetY - (height - targetHeight);
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    int t = targetY - parentY;
+                    h = t + targetHeight;
+                    h -= getConfig().mOffsetY;
+                    y = 0;
+                } else {
+                    y = targetY - (height - targetHeight);
+                }
+                break;
+            case ALIGN_PARENT_TOP:
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    h -= getConfig().mOffsetY;
+                    y = 0;
+                } else {
+                    y = 0;
+                }
+                break;
+            case ALIGN_PARENT_BOTTOM:
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    h -= getConfig().mOffsetY;
+                    y = 0;
+                } else {
+                    y = parentY + parentH - height;
+                }
                 break;
             default:
                 break;
         }
         boolean paramsChanged = false;
-        if (params.width == FrameLayout.LayoutParams.MATCH_PARENT) {
-            params.leftMargin = x;
+        if (width != w) {
             paramsChanged = true;
-        } else {
-            if (getConfig().mInside) {
-                final int maxWidth = getViewHolder().getChild().getWidth();
-                final int maxX = maxWidth - width;
-                x = Utils.intRange(x, 0, maxX);
-            }
-            getViewHolder().getContentWrapper().setX(x);
         }
-        if (params.height == FrameLayout.LayoutParams.MATCH_PARENT) {
-            params.topMargin = y;
+        if (height != h) {
             paramsChanged = true;
-        } else {
-            if (getConfig().mInside) {
-                final int maxHeight = getViewHolder().getChild().getHeight();
-                final int maxY = maxHeight - height;
-                y = Utils.intRange(y, 0, maxY);
-            }
-            getViewHolder().getContentWrapper().setY(y);
         }
         if (paramsChanged) {
+            params.width = (int) w;
+            params.height = (int) h;
             getViewHolder().getContentWrapper().setLayoutParams(params);
         }
+        if (getConfig().mOffsetX != 0) {
+            x += getConfig().mOffsetX;
+        }
+        if (getConfig().mOffsetY != 0) {
+            y += getConfig().mOffsetY;
+        }
+        if (getConfig().mInside) {
+            x = Utils.floatRange(x, 0, parentW - w);
+            y = Utils.floatRange(y, 0, parentH - h);
+        }
+        getViewHolder().getContentWrapper().setY(y);
+        getViewHolder().getContentWrapper().setX(x);
     }
 
     private void initBackgroundLocation(int targetX, int targetY, int targetWidth, int targetHeight) {

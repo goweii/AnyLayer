@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -129,5 +130,22 @@ final class Utils {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
+    }
+
+    static void getViewSize(final View view, Runnable runnable) {
+        requireNonNull(view);
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (view.getViewTreeObserver().isAlive()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    } else {
+                        view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    }
+                }
+                runnable.run();
+            }
+        });
     }
 }

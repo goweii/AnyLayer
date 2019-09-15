@@ -112,7 +112,11 @@ public final class ViewManager {
             mLayerKeyListener = new LayerKeyListener();
             currentKeyView.setOnKeyListener(mLayerKeyListener);
         }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//            mChild.getViewTreeObserver().addOnDrawListener(new LayerDrawListener());
+//        } else {
         mChild.getViewTreeObserver().addOnPreDrawListener(new LayerPreDrawListener());
+//        }
         mParent.addView(mChild);
         if (mOnLifeListener != null) {
             mOnLifeListener.onAttach();
@@ -132,6 +136,18 @@ public final class ViewManager {
         mParent.removeView(mChild);
         if (mOnLifeListener != null) {
             mOnLifeListener.onDetach();
+        }
+    }
+
+    private final class LayerDrawListener implements ViewTreeObserver.OnDrawListener {
+        @Override
+        public void onDraw() {
+            if (mChild.getViewTreeObserver().isAlive()) {
+                mChild.getViewTreeObserver().removeOnDrawListener(this);
+            }
+            if (mOnPreDrawListener != null) {
+                mOnPreDrawListener.onPreDraw();
+            }
         }
     }
 

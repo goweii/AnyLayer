@@ -15,7 +15,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -191,8 +190,8 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
         final int[] acl = new int[2];
         getViewHolder().getActivityContent().getLocationOnScreen(acl);
         FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
-        containerParams.leftMargin = acl[0] - dl[0];
-        containerParams.topMargin = acl[1] - dl[1];
+        containerParams.leftMargin = 0/*acl[0] - dl[0]*/;
+        containerParams.topMargin = 0/*acl[1] - dl[1]*/;
         containerParams.rightMargin = dl[0] + dw - (acl[0] + acw);
         containerParams.bottomMargin = dl[1] + dh - (acl[1] + ach);
         getViewHolder().getChild().setLayoutParams(containerParams);
@@ -200,10 +199,9 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
 
     protected void initBackground() {
         if (getConfig().mBackgroundBlurPercent > 0 || getConfig().mBackgroundBlurRadius > 0) {
-            getViewHolder().getBackground().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
                 @Override
-                public boolean onPreDraw() {
-                    getViewHolder().getBackground().getViewTreeObserver().removeOnPreDrawListener(this);
+                public void run() {
                     float radius = getConfig().mBackgroundBlurRadius;
                     if (getConfig().mBackgroundBlurPercent > 0) {
                         int w = getViewHolder().getBackground().getWidth();
@@ -229,7 +227,6 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
                     getViewHolder().getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
                     getViewHolder().getBackground().setImageBitmap(blurBitmap);
                     getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
-                    return true;
                 }
             });
         } else {
@@ -524,12 +521,10 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        getViewHolder().getDecor().getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
             @Override
-            public boolean onPreDraw() {
-                getViewHolder().getDecor().getViewTreeObserver().removeOnPreDrawListener(this);
+            public void run() {
                 fitContainerToActivityContent();
-                return true;
             }
         });
     }
