@@ -371,21 +371,53 @@ public class PopupLayer extends DialogLayer {
     }
 
     private void initBackgroundLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
+        int w = getViewHolder().getBackground().getWidth();
+        int h = getViewHolder().getBackground().getHeight();
+        int cww = getViewHolder().getContentWrapper().getWidth();
+        int cwh = getViewHolder().getContentWrapper().getHeight();
         final float cwx = getViewHolder().getContentWrapper().getX();
         final float cwy = getViewHolder().getContentWrapper().getY();
         float x = 0, y = 0;
         if (getConfig().mAlignDirection == Align.Direction.HORIZONTAL) {
-            x = cwx;
+            switch (getConfig().mAlignHorizontal) {
+                case TO_RIGHT:
+                case ALIGN_LEFT:
+                case ALIGN_PARENT_LEFT:
+                    x = cwx;
+                    break;
+                case TO_LEFT:
+                case ALIGN_RIGHT:
+                case ALIGN_PARENT_RIGHT:
+                    x = -(w - cwx) + cww;
+                    break;
+                case CENTER:
+                default:
+                    break;
+            }
         } else if (getConfig().mAlignDirection == Align.Direction.VERTICAL) {
-            y = cwy;
+            switch (getConfig().mAlignVertical) {
+                case BELOW:
+                case ALIGN_TOP:
+                case ALIGN_PARENT_TOP:
+                    y = cwy;
+                    break;
+                case ABOVE:
+                case ALIGN_BOTTOM:
+                case ALIGN_PARENT_BOTTOM:
+                    y = -(h - cwy) + cwh;
+                    break;
+                case CENTER:
+                default:
+                    break;
+            }
         }
-        getViewHolder().getBackground().setX(x);
-        getViewHolder().getBackground().setY(y);
         if (getConfig().mBackgroundResize) {
             int parentW = getViewHolder().getChild().getWidth();
             int parentH = getViewHolder().getChild().getHeight();
-            int w = (int) (parentW - x);
-            int h = (int) (parentH - y);
+            int newW = (int) (parentW - cwx);
+            int newH = (int) (parentH - cwy);
+            x += (newW - w);
+            y += (newH - h);
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getViewHolder().getBackground().getLayoutParams();
             boolean changed = false;
             if (params.width != w) {
@@ -400,6 +432,8 @@ public class PopupLayer extends DialogLayer {
                 getViewHolder().getBackground().setLayoutParams(params);
             }
         }
+        getViewHolder().getBackground().setX(x);
+        getViewHolder().getBackground().setY(y);
     }
 
     @Override
