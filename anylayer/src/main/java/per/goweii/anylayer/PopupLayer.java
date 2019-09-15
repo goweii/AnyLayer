@@ -371,24 +371,34 @@ public class PopupLayer extends DialogLayer {
     }
 
     private void initBackgroundLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
-        int w = getViewHolder().getBackground().getWidth();
-        int h = getViewHolder().getBackground().getHeight();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getViewHolder().getBackground().getLayoutParams();
+        int width = getViewHolder().getBackground().getWidth();
+        int height = getViewHolder().getBackground().getHeight();
         int cww = getViewHolder().getContentWrapper().getWidth();
         int cwh = getViewHolder().getContentWrapper().getHeight();
         final float cwx = getViewHolder().getContentWrapper().getX();
         final float cwy = getViewHolder().getContentWrapper().getY();
-        float x = 0, y = 0;
+        float x = 0, y = 0, w = params.width, h = params.height;
+        int parentW = getViewHolder().getChild().getWidth();
+        int parentH = getViewHolder().getChild().getHeight();
         if (getConfig().mAlignDirection == Align.Direction.HORIZONTAL) {
             switch (getConfig().mAlignHorizontal) {
                 case TO_RIGHT:
                 case ALIGN_LEFT:
                 case ALIGN_PARENT_LEFT:
                     x = cwx;
+                    if (getConfig().mBackgroundResize) {
+                        w = (int) (parentW - cwx);
+                    }
                     break;
                 case TO_LEFT:
                 case ALIGN_RIGHT:
                 case ALIGN_PARENT_RIGHT:
-                    x = -(w - cwx) + cww;
+                    x = -(width - (cwx + cww));
+                    if (getConfig().mBackgroundResize) {
+                        w = cwx + cww;
+                        x = 0;
+                    }
                     break;
                 case CENTER:
                 default:
@@ -400,37 +410,35 @@ public class PopupLayer extends DialogLayer {
                 case ALIGN_TOP:
                 case ALIGN_PARENT_TOP:
                     y = cwy;
+                    if (getConfig().mBackgroundResize) {
+                        h = (int) (parentH - cwy);
+                    }
                     break;
                 case ABOVE:
                 case ALIGN_BOTTOM:
                 case ALIGN_PARENT_BOTTOM:
-                    y = -(h - cwy) + cwh;
+                    y = -(height - (cwy + cwh));
+                    if (getConfig().mBackgroundResize) {
+                        h = cwy + cwh;
+                        y = 0;
+                    }
                     break;
                 case CENTER:
                 default:
                     break;
             }
         }
-        if (getConfig().mBackgroundResize) {
-            int parentW = getViewHolder().getChild().getWidth();
-            int parentH = getViewHolder().getChild().getHeight();
-            int newW = (int) (parentW - cwx);
-            int newH = (int) (parentH - cwy);
-            x += (newW - w);
-            y += (newH - h);
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getViewHolder().getBackground().getLayoutParams();
-            boolean changed = false;
-            if (params.width != w) {
-                changed = true;
-            }
-            if (params.height != h) {
-                changed = true;
-            }
-            if (changed) {
-                params.width = w;
-                params.height = h;
-                getViewHolder().getBackground().setLayoutParams(params);
-            }
+        boolean changed = false;
+        if (params.width != w) {
+            changed = true;
+        }
+        if (params.height != h) {
+            changed = true;
+        }
+        if (changed) {
+            params.width = (int) w;
+            params.height = (int) h;
+            getViewHolder().getBackground().setLayoutParams(params);
         }
         getViewHolder().getBackground().setX(x);
         getViewHolder().getBackground().setY(y);
