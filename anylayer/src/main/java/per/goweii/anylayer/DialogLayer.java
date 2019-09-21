@@ -3,7 +3,6 @@ package per.goweii.anylayer;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.app.Activity;
-import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -28,7 +27,7 @@ import per.goweii.burred.Blurred;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class DialogLayer extends DecorLayer implements ComponentCallbacks {
+public class DialogLayer extends DecorLayer {
 
     private SoftInputHelper mSoftInputHelper = null;
 
@@ -130,7 +129,6 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
         initContent();
         initBackground();
         initContainer();
-        getActivity().registerComponentCallbacks(this);
     }
 
     @Override
@@ -150,9 +148,18 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
 
     @Override
     public void onDetach() {
-        getActivity().unregisterComponentCallbacks(this);
         super.onDetach();
         getViewHolder().recycle();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
+            @Override
+            public void run() {
+                fitContainerToActivityContent();
+            }
+        });
     }
 
     protected void initContainer() {
@@ -517,20 +524,6 @@ public class DialogLayer extends DecorLayer implements ComponentCallbacks {
         if (mSoftInputHelper != null) {
             mSoftInputHelper.detach();
         }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
-            @Override
-            public void run() {
-                fitContainerToActivityContent();
-            }
-        });
-    }
-
-    @Override
-    public void onLowMemory() {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {

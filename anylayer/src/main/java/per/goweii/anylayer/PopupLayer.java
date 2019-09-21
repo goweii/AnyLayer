@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.content.res.Configuration;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,6 +121,16 @@ public class PopupLayer extends DialogLayer {
             mOnScrollChangedListener = null;
         }
         super.onDetach();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
+            @Override
+            public void run() {
+                initLocation();
+            }
+        });
     }
 
     @Override

@@ -2,7 +2,9 @@ package per.goweii.anylayer;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,7 +16,7 @@ import android.widget.FrameLayout;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class DecorLayer extends Layer {
+public class DecorLayer extends Layer implements ComponentCallbacks {
 
     private final Activity mActivity;
 
@@ -99,6 +101,7 @@ public class DecorLayer extends Layer {
     @Override
     public void onAttach() {
         super.onAttach();
+        getActivity().registerComponentCallbacks(this);
     }
 
     @Override
@@ -118,6 +121,7 @@ public class DecorLayer extends Layer {
 
     @Override
     public void onDetach() {
+        getActivity().unregisterComponentCallbacks(this);
         super.onDetach();
         final LayerLayout group = findLayerLayoutFromDecor();
         if (group == null) {
@@ -144,6 +148,14 @@ public class DecorLayer extends Layer {
         if (group.getChildCount() == 0) {
             removeLayerLayoutFromDecor(group);
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    }
+
+    @Override
+    public void onLowMemory() {
     }
 
     private LayerLayout findLayerLayoutFromDecor() {
