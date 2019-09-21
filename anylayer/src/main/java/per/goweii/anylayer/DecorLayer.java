@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 /**
@@ -16,7 +17,7 @@ import android.widget.FrameLayout;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class DecorLayer extends Layer implements ComponentCallbacks {
+public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObserver.OnGlobalLayoutListener {
 
     private final Activity mActivity;
 
@@ -102,6 +103,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks {
     public void onAttach() {
         super.onAttach();
         getActivity().registerComponentCallbacks(this);
+        getViewHolder().getDecor().getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     @Override
@@ -121,6 +123,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks {
 
     @Override
     public void onDetach() {
+        getViewHolder().getDecor().getViewTreeObserver().removeGlobalOnLayoutListener(this);
         getActivity().unregisterComponentCallbacks(this);
         super.onDetach();
         final LayerLayout group = findLayerLayoutFromDecor();
@@ -151,6 +154,27 @@ public class DecorLayer extends Layer implements ComponentCallbacks {
     }
 
     @Override
+    public void onGlobalLayout() {
+        final ViewGroup decor = getViewHolder().getDecor();
+        int count = decor.getChildCount();
+        if (count < 2) {
+            return;
+        }
+        LayerLayout layerLayout = findLayerLayoutFromDecor();
+        if (layerLayout == null) {
+            return;
+        }
+        int index = decor.indexOfChild(layerLayout);
+        if (index < 0) {
+            return;
+        }
+        if (index == count - 1) {
+            return;
+        }
+        layerLayout.bringToFront();
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
     }
 
@@ -159,7 +183,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks {
     }
 
     private LayerLayout findLayerLayoutFromDecor() {
-        final ViewGroup decor = getViewHolder().mDecor;
+        final ViewGroup decor = getViewHolder().getDecor();
         LayerLayout layerLayout = null;
         final int count = decor.getChildCount();
         for (int i = 0; i < count; i++) {
