@@ -219,6 +219,9 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public void show(boolean withAnim) {
+        if (isShow()) {
+            return;
+        }
         mShowWithAnim = withAnim;
         mViewHolder.setParent(onGetParent());
         final View view = onCreateChild(LayoutInflater.from(mViewHolder.getParent().getContext()), mViewHolder.getParent());
@@ -234,6 +237,9 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public void dismiss(boolean withAnim) {
+        if (!isShow()) {
+            return;
+        }
         mDismissWithAnim = withAnim;
         onPreRemove();
     }

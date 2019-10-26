@@ -10,8 +10,6 @@ Android稳定高效的浮层创建管理框架。
 
 
 
-
-
 # 简介
 
 - 同时兼容support和androidx
@@ -43,21 +41,29 @@ Android稳定高效的浮层创建管理框架。
 
 
 
-
-
 # 说明
 
 **详细原理和使用说明本人会在后续补上，但因个人开发，时间不定，请谅解。**
 
 **或有大佬在看过源码后，愿意写下分析文章或使用说明来分享的，欢迎联系本人。写得比较详细的本人将会放到README中供大家查阅，提前谢过。**
 
-当然也欢迎加好友共同探讨，共同进步。
+当然也欢迎加群共同探讨，共同进步。
 
-QQ：302833254
-
-QQ群：147715512（爱Android）
+> QQ群：147715512（爱Android）
 
 
+
+# 使用该库的产品
+
+如果你的产品正在使用AnyLayer，欢迎[留下相关信息](https://github.com/goweii/AnyLayer/issues/20)
+
+**这些信息将用来帮助更多开发者关注并使用本框架，增加框架的活跃度。而高活跃度则意味着更多隐藏BUG被发现并修复，即活跃度等同于框架的健壮性。同时这也是我维护项目的最大动力，感谢。**
+
+| APP名 | APP图标 | 公司名 |
+| :--: | :--: | :--: |
+| 玩安卓 | ![](https://user-images.githubusercontent.com/5456892/67614858-88c2e400-f7f6-11e9-868f-d6428a415e49.png) | 个人 |
+| 熊猫淘学 | ![](https://user-images.githubusercontent.com/5456892/67614744-b9a21980-f7f4-11e9-9c2c-bcde1ff5a395.png) | 西安熊猫宝宝网络科技有限公司 |
+| MBA大师 | ![](https://user-images.githubusercontent.com/5456892/67614972-806ba880-f7f8-11e9-81b4-c32ff1ef9d7e.png) | MBA大师 |
 
 
 
@@ -66,8 +72,6 @@ QQ群：147715512（爱Android）
 截图效果较差且版本较老，建议[下载Demo](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)体验最新功能
 
 ![anylayer.gif](https://github.com/goweii/AnyLayer/blob/master/picture/demo.gif?raw=true)
-
-
 
 
 
