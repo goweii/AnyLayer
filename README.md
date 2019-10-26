@@ -10,6 +10,8 @@ Android稳定高效的浮层创建管理框架。
 
 
 
+
+
 # 简介
 
 - 同时兼容support和androidx
@@ -41,6 +43,8 @@ Android稳定高效的浮层创建管理框架。
 
 
 
+
+
 # 说明
 
 **详细原理和使用说明本人会在后续补上，但因个人开发，时间不定，请谅解。**
@@ -50,6 +54,8 @@ Android稳定高效的浮层创建管理框架。
 当然也欢迎加群共同探讨，共同进步。
 
 > QQ群：147715512（爱Android）
+
+
 
 
 
@@ -67,6 +73,8 @@ Android稳定高效的浮层创建管理框架。
 
 
 
+
+
 # 截图
 
 截图效果较差且版本较老，建议[下载Demo](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)体验最新功能
@@ -75,9 +83,15 @@ Android稳定高效的浮层创建管理框架。
 
 
 
+
+
 # 使用说明
 
+
+
 ## 集成
+
+![](https://img.shields.io/badge/Downloads%20Week-655-green) ![](https://img.shields.io/badge/Downloads%20Month-2.4K-blue)
 
 - ### 添加jitpack库
 
