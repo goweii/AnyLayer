@@ -5,7 +5,8 @@ import android.app.Application;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author CuiZhen
@@ -19,16 +20,14 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
     private static ActivityHolder INSTANCE = null;
 
     private final Application mApplication;
-    private final Stack<Activity> mActivityStack = new Stack<>();
+    private final List<Activity> mActivityStack = new LinkedList<>();
 
     private ActivityHolder(Application application) {
-        Utils.requireNonNull(application, "application == null");
-        mApplication = application;
+        mApplication = Utils.requireNonNull(application, "application == null");
         application.registerActivityLifecycleCallbacks(this);
     }
 
     static void init(Application application) {
-        Utils.requireNonNull(application, "application == null");
         if (INSTANCE == null) {
             INSTANCE = new ActivityHolder(application);
         }
@@ -46,7 +45,7 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         if (INSTANCE == null) {
             return null;
         }
-        if (INSTANCE.mActivityStack.empty()) {
+        if (INSTANCE.mActivityStack.isEmpty()) {
             return null;
         }
         final int size = INSTANCE.mActivityStack.size();
@@ -63,17 +62,15 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         if (INSTANCE == null) {
             return null;
         }
-        if (INSTANCE.mActivityStack.empty()) {
+        if (INSTANCE.mActivityStack.isEmpty()) {
             return null;
         }
-        return INSTANCE.mActivityStack.peek();
+        return INSTANCE.mActivityStack.get(INSTANCE.mActivityStack.size() - 1);
     }
-
-    // Application.ActivityLifecycleCallbacks
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        mActivityStack.push(activity);
+        mActivityStack.add(activity);
     }
 
     @Override
@@ -93,11 +90,11 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
     }
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+    public void onActivityDestroyed(Activity activity) {
+        mActivityStack.remove(activity);
     }
 
     @Override
-    public void onActivityDestroyed(Activity activity) {
-        mActivityStack.pop();
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
     }
 }
