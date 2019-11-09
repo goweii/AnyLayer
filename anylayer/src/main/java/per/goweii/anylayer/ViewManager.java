@@ -102,21 +102,17 @@ public final class ViewManager {
      * 添加到父View
      */
     private void onAttach() {
-        mChild.setFocusable(true);
-        mChild.setFocusableInTouchMode(true);
-        mChild.requestFocus();
-        currentKeyView = mChild;
         if (mOnKeyListener != null) {
+            mChild.setFocusable(true);
+            mChild.setFocusableInTouchMode(true);
+            mChild.requestFocus();
+            currentKeyView = mChild;
             mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
             mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
             mLayerKeyListener = new LayerKeyListener();
             currentKeyView.setOnKeyListener(mLayerKeyListener);
         }
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//            mChild.getViewTreeObserver().addOnDrawListener(new LayerDrawListener());
-//        } else {
         mChild.getViewTreeObserver().addOnPreDrawListener(new LayerPreDrawListener());
-//        }
         mParent.addView(mChild);
         if (mOnLifeListener != null) {
             mOnLifeListener.onAttach();
@@ -136,18 +132,6 @@ public final class ViewManager {
         mParent.removeView(mChild);
         if (mOnLifeListener != null) {
             mOnLifeListener.onDetach();
-        }
-    }
-
-    private final class LayerDrawListener implements ViewTreeObserver.OnDrawListener {
-        @Override
-        public void onDraw() {
-            if (mChild.getViewTreeObserver().isAlive()) {
-                mChild.getViewTreeObserver().removeOnDrawListener(this);
-            }
-            if (mOnPreDrawListener != null) {
-                mOnPreDrawListener.onPreDraw();
-            }
         }
     }
 
