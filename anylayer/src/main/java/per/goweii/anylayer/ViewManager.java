@@ -65,14 +65,7 @@ public final class ViewManager {
         }
         checkChildParent();
         if (!isAttached()) {
-            mParent.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isAttached()) {
-                        onAttach();
-                    }
-                }
-            });
+            onAttach();
         }
     }
 

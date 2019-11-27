@@ -31,6 +31,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         StatusBarUtils.translucentStatusBar(this);
         setContentView(R.layout.activity_full_screen);
         initView();
+        Layer dialog = AnyLayer.dialog(this)
+                .contentView(R.layout.dialog_normal)
+                .backgroundColorRes(R.color.dialog_bg)
+                .gravity(Gravity.CENTER)
+                .cancelableOnTouchOutside(true)
+                .cancelableOnClickKeyBack(true)
+                .onClickToDismiss(R.id.fl_dialog_no);
+        dialog.show();
+        dialog.dismiss();
     }
 
     private void initView() {
