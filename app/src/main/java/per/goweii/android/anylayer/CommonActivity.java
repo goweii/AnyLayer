@@ -1,8 +1,9 @@
 package per.goweii.android.anylayer;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class CommonActivity extends AppCompatActivity implements View.OnClickListener {
 

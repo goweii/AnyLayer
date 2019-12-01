@@ -3,13 +3,14 @@ package per.goweii.android.anylayer;
 import android.animation.Animator;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import per.goweii.anylayer.Align;
 import per.goweii.anylayer.AnimatorHelper;
