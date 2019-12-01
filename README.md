@@ -18,7 +18,7 @@ Android稳定高效的浮层创建管理框架。
 - 链式调用
 - 支持自由扩展
 - 实现几种常用效果
-  - Dialog效果
+  - Dialog/BottomSheet效果
     - 占用区域不会超过当前Activity避免导航栏遮挡
     - 支持自定义大小和显示位置
     - 支持自定义数据绑定
@@ -26,6 +26,8 @@ Android稳定高效的浮层创建管理框架。
     - 支持自定义背景颜色/图片/高斯模糊
     - 支持在Activity的onCreate生命周期弹出
     - 支持从ApplicationContext中弹出
+    - 支持拖拽关闭
+    - 支持不拦截外部事件
   - Popup效果
     - 拥有Dialog效果特性
     - 支持跟随目标View移动
@@ -116,11 +118,14 @@ allprojects {
   > 从3.0.0版本开始，框架重构，删除通用库。因重构代码变化较大，不建议使用较多的老项目升级，保持2.5.0版即可，在实现Dialog/Popup等效果上无本质差别。
   >
   > 从3.1.0版本开始移除对support-v7的依赖，可同时兼容support和androidx
+  >
+  > 从3.3.0版本开始分为support和androidx两个分支，主要是适配滚动控件的拖拽关闭
 ```groovy
 // build.gradle(Module:)
 dependencies {
-    // 完整引入
-    implementation 'com.github.goweii:AnyLayer:3.2.0'
+    // 完整引入，二选一
+    implementation 'com.github.goweii:AnyLayer:3.3.0-androidx'
+    implementation 'com.github.goweii:AnyLayer:3.3.0-support'
     
     // 基础库
     // implementation 'com.github.goweii.AnyLayer:anylayer:2.5.0'
