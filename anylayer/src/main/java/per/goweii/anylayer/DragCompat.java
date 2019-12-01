@@ -138,10 +138,7 @@ public class DragCompat {
         return view instanceof ScrollView
                 || view instanceof HorizontalScrollView
                 || view instanceof AbsListView
-//                || view instanceof ViewPager
-                || view instanceof WebView
-//                || view instanceof ScrollingView
-                ;
+                || view instanceof WebView;
     }
 
     public static boolean contains(View view, float x, float y) {
