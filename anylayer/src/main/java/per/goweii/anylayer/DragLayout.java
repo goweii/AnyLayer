@@ -25,7 +25,7 @@ public class DragLayout extends FrameLayout {
     private OnDragListener mOnDragListener = null;
 
     private List<View> mInnerScrollViews;
-    private boolean handleDragEvent = false;
+    private boolean mHandleDragEvent = false;
     private float mDownX;
     private float mDownY;
     private int mLeft;
@@ -61,7 +61,7 @@ public class DragLayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (!isEnable()) {
-            handleDragEvent = false;
+            mHandleDragEvent = false;
             return super.onInterceptTouchEvent(ev);
         }
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
@@ -72,8 +72,8 @@ public class DragLayout extends FrameLayout {
             default:
                 break;
         }
-        handleDragEvent = mDragHelper.shouldInterceptTouchEvent(ev);
-        return handleDragEvent || super.onInterceptTouchEvent(ev);
+        mHandleDragEvent = mDragHelper.shouldInterceptTouchEvent(ev);
+        return mHandleDragEvent || super.onInterceptTouchEvent(ev);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -82,7 +82,7 @@ public class DragLayout extends FrameLayout {
         if (isEnable()) {
             mDragHelper.processTouchEvent(event);
         }
-        return handleDragEvent;
+        return mHandleDragEvent;
     }
 
     @Override
