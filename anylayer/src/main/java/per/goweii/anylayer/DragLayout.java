@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class DragLayout extends FrameLayout {
 
-    private final DragHelper mDragHelper;
+    private final ViewDragHelper mDragHelper;
     private DragStyle mDragStyle = DragStyle.None;
     private OnDragListener mOnDragListener = null;
 
@@ -39,7 +39,7 @@ public class DragLayout extends FrameLayout {
 
     public DragLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mDragHelper = DragHelper.create(this, new DragCallback());
+        mDragHelper = ViewDragHelper.create(this, new DragCallback());
     }
 
     public void setOnDragListener(OnDragListener onDragListener) {
@@ -108,7 +108,7 @@ public class DragLayout extends FrameLayout {
         }
     }
 
-    private class DragCallback extends DragHelper.Callback {
+    private class DragCallback extends ViewDragHelper.Callback {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             return isEnable();

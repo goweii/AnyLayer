@@ -22,8 +22,8 @@ import java.util.Arrays;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class DragHelper {
-    private static final String TAG = "DragHelper";
+public class ViewDragHelper {
+    private static final String TAG = "ViewDragHelper";
 
     /**
      * A null/invalid pointer ID.
@@ -126,9 +126,9 @@ public class DragHelper {
     private final ViewGroup mParentView;
 
     /**
-     * A Callback is used as a communication channel with the DragHelper back to the
+     * A Callback is used as a communication channel with the ViewDragHelper back to the
      * parent view using it. <code>on*</code>methods are invoked on siginficant events and several
-     * accessor methods are expected to provide the DragHelper with more information
+     * accessor methods are expected to provide the ViewDragHelper with more information
      * about the state of the parent view upon request. The callback also makes decisions
      * governing the range and draggability of child views.
      */
@@ -178,10 +178,10 @@ public class DragHelper {
          * <p>Calling code may decide to fling or otherwise release the view to let it
          * settle into place. It should do so using {@link #settleCapturedViewAt(int, int)}
          * or {@link #flingCapturedView(int, int, int, int)}. If the Callback invokes
-         * one of these methods, the DragHelper will enter {@link #STATE_SETTLING}
+         * one of these methods, the ViewDragHelper will enter {@link #STATE_SETTLING}
          * and the view capture will not fully end until it comes to a complete stop.
          * If neither of these methods is invoked before <code>onViewReleased</code> returns,
-         * the view will stop in place and the DragHelper will return to
+         * the view will stop in place and the ViewDragHelper will return to
          * {@link #STATE_IDLE}.</p>
          *
          * @param releasedChild The captured child view now being released
@@ -269,7 +269,7 @@ public class DragHelper {
          * with the pointer indicated by pointerId. The callback should return true if the user
          * is permitted to drag the given view with the indicated pointer.
          *
-         * <p>DragHelper may call this method multiple times for the same view even if
+         * <p>ViewDragHelper may call this method multiple times for the same view even if
          * the view is already captured; this indicates that a new pointer is trying to take
          * control of the view.</p>
          *
@@ -330,42 +330,42 @@ public class DragHelper {
     };
 
     /**
-     * Factory method to create a new DragHelper.
+     * Factory method to create a new ViewDragHelper.
      *
      * @param forParent Parent view to monitor
      * @param cb        Callback to provide information and receive events
-     * @return a new DragHelper instance
+     * @return a new ViewDragHelper instance
      */
-    public static DragHelper create(ViewGroup forParent, Callback cb) {
-        return new DragHelper(forParent.getContext(), forParent, cb);
+    public static ViewDragHelper create(ViewGroup forParent, Callback cb) {
+        return new ViewDragHelper(forParent.getContext(), forParent, cb);
     }
 
     /**
-     * Factory method to create a new DragHelper.
+     * Factory method to create a new ViewDragHelper.
      *
      * @param forParent   Parent view to monitor
      * @param sensitivity Multiplier for how sensitive the helper should be about detecting
      *                    the start of a drag. Larger values are more sensitive. 1.0f is normal.
      * @param cb          Callback to provide information and receive events
-     * @return a new DragHelper instance
+     * @return a new ViewDragHelper instance
      */
-    public static DragHelper create(ViewGroup forParent, float sensitivity,
-                                    Callback cb) {
-        final DragHelper helper = create(forParent, cb);
+    public static ViewDragHelper create(ViewGroup forParent, float sensitivity,
+                                        Callback cb) {
+        final ViewDragHelper helper = create(forParent, cb);
         helper.mTouchSlop = (int) (helper.mTouchSlop * (1 / sensitivity));
         return helper;
     }
 
     /**
-     * Apps should use DragHelper.create() to get a new instance.
+     * Apps should use ViewDragHelper.create() to get a new instance.
      * This will allow VDH to use internal compatibility implementations for different
      * platform versions.
      *
      * @param context   Context to initialize config-dependent params from
      * @param forParent Parent view to monitor
      */
-    private DragHelper(Context context, ViewGroup forParent,
-                       Callback cb) {
+    private ViewDragHelper(Context context, ViewGroup forParent,
+                           Callback cb) {
         if (forParent == null) {
             throw new IllegalArgumentException("Parent view may not be null");
         }
@@ -456,7 +456,7 @@ public class DragHelper {
     public void captureChildView(View childView, int activePointerId) {
         if (childView.getParent() != mParentView) {
             throw new IllegalArgumentException("captureChildView: parameter must be a descendant "
-                    + "of the DragHelper's tracked parent view (" + mParentView + ")");
+                    + "of the ViewDragHelper's tracked parent view (" + mParentView + ")");
         }
 
         mCapturedView = childView;
@@ -974,7 +974,7 @@ public class DragHelper {
 
     /**
      * Check if the given pointer ID represents a pointer that is currently down (to the best
-     * of the DragHelper's knowledge).
+     * of the ViewDragHelper's knowledge).
      *
      * <p>The state used to report this information is populated by the methods
      * {@link #shouldInterceptTouchEvent(android.view.MotionEvent)} or
@@ -1107,7 +1107,7 @@ public class DragHelper {
 
                 saveInitialMotion(x, y, pointerId);
 
-                // A DragHelper can only manipulate one view at a time.
+                // A ViewDragHelper can only manipulate one view at a time.
                 if (mDragState == STATE_IDLE) {
                     final int edgesTouched = mInitialEdgesTouched[pointerId];
                     if ((edgesTouched & mTrackingEdges) != 0) {
@@ -1241,7 +1241,7 @@ public class DragHelper {
 
                 saveInitialMotion(x, y, pointerId);
 
-                // A DragHelper can only manipulate one view at a time.
+                // A ViewDragHelper can only manipulate one view at a time.
                 if (mDragState == STATE_IDLE) {
                     // If we're idle we can do anything! Treat it like a normal down event.
 
@@ -1615,7 +1615,7 @@ public class DragHelper {
         if (!isPointerDown(pointerId)) {
             Log.e(TAG, "Ignoring pointerId=" + pointerId + " because ACTION_DOWN was not received "
                     + "for this pointer before ACTION_MOVE. It likely happened because "
-                    + " DragHelper did not receive all the events in the event stream.");
+                    + " ViewDragHelper did not receive all the events in the event stream.");
             return false;
         }
         return true;
