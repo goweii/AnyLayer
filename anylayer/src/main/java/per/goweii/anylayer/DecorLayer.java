@@ -95,6 +95,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             parent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             group.addView(parent, lastIndex + 1);
         }
+        parent.setVisibility(View.VISIBLE);
         getViewHolder().setParent(parent);
         return parent;
     }
@@ -146,7 +147,9 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             return;
         }
         if (parent.getChildCount() == 0) {
-            group.removeView(parent);
+            parent.setVisibility(View.GONE);
+            // group.removeView(parent);
+            // 存在toastLayer时，滑动关闭会崩溃
         }
         if (group.getChildCount() == 0) {
             removeLayerLayoutFromDecor(group);
@@ -186,7 +189,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
         final ViewGroup decor = getViewHolder().getDecor();
         LayerLayout layerLayout = null;
         final int count = decor.getChildCount();
-        for (int i = 0; i < count; i++) {
+        for (int i = count; i >= 0; i--) {
             View child = decor.getChildAt(i);
             if (child instanceof LayerLayout) {
                 layerLayout = (LayerLayout) child;
