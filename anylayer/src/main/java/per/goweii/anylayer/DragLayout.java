@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public class DragLayout extends FrameLayout {
 
-    private final DragHelper mDragHelper;
+    private final ViewDragHelper mDragHelper;
     private DragStyle mDragStyle = DragStyle.None;
     private OnDragListener mOnDragListener = null;
 
@@ -28,6 +29,8 @@ public class DragLayout extends FrameLayout {
     private float mDownY;
     private int mLeft;
     private int mTop;
+
+    private float mDragFraction = 0F;
 
     public DragLayout(Context context) {
         this(context, null);
@@ -39,7 +42,7 @@ public class DragLayout extends FrameLayout {
 
     public DragLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mDragHelper = DragHelper.create(this, new DragCallback());
+        mDragHelper = ViewDragHelper.create(this, new DragCallback());
     }
 
     public void setOnDragListener(OnDragListener onDragListener) {
@@ -60,7 +63,7 @@ public class DragLayout extends FrameLayout {
             mHandleDragEvent = false;
             return super.onInterceptTouchEvent(ev);
         }
-        switch (ev.getAction()) {
+        switch (ev.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 mDownX = ev.getRawX();
                 mDownY = ev.getRawY();
@@ -108,7 +111,8 @@ public class DragLayout extends FrameLayout {
         }
     }
 
-    private class DragCallback extends DragHelper.Callback {
+    private class DragCallback extends ViewDragHelper.Callback {
+
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             return isEnable();
@@ -147,6 +151,7 @@ public class DragLayout extends FrameLayout {
         @Override
         public void onViewCaptured(View capturedChild, int activePointerId) {
             super.onViewCaptured(capturedChild, activePointerId);
+            mDragFraction = 0F;
             if (mOnDragListener != null) {
                 mOnDragListener.onDragStart();
             }
@@ -220,8 +225,6 @@ public class DragLayout extends FrameLayout {
             }
         }
 
-        private float dragFraction = 0F;
-
         @Override
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
@@ -230,26 +233,26 @@ public class DragLayout extends FrameLayout {
                 case Right:
                     final float xoff = Math.abs(left - mLeft);
                     final float xmax = getViewHorizontalDragRange(changedView);
-                    dragFraction = xoff / xmax;
+                    mDragFraction = xoff / xmax;
                     break;
                 case Top:
                 case Bottom:
                     final float yoff = Math.abs(top - mTop);
                     final float ymax = getViewVerticalDragRange(changedView);
-                    dragFraction = yoff / ymax;
+                    mDragFraction = yoff / ymax;
                     break;
                 case None:
                 default:
                     break;
             }
-            if (dragFraction < 0) {
-                dragFraction = 0;
-            } else if (dragFraction > 1) {
-                dragFraction = 1;
+            if (mDragFraction < 0) {
+                mDragFraction = 0;
+            } else if (mDragFraction > 1) {
+                mDragFraction = 1;
             }
             if (mOnDragListener != null) {
-                mOnDragListener.onDragging(dragFraction);
-                if (dragFraction == 1) mOnDragListener.onDragEnd();
+                mOnDragListener.onDragging(mDragFraction);
+                if (mDragFraction == 1) mOnDragListener.onDragEnd();
             }
         }
 
@@ -257,7 +260,7 @@ public class DragLayout extends FrameLayout {
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
             float dismissFactor = 0.5f;
-            boolean isDismiss = judgeDismissBySpeed(xvel, yvel) || dragFraction >= dismissFactor;
+            boolean isDismiss = judgeDismissBySpeed(xvel, yvel) || mDragFraction >= dismissFactor;
             int l = mLeft;
             int t = mTop;
             if (isDismiss) {
