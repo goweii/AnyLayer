@@ -136,10 +136,6 @@ public class PopupLayer extends DialogLayer {
     @Override
     protected void initContainer() {
         super.initContainer();
-        if (!getConfig().mOutsideInterceptTouchEvent) {
-            getViewHolder().getChild().setOnClickListener(null);
-            getViewHolder().getChild().setClickable(false);
-        }
         getViewHolder().getContentWrapper().setClipChildren(getConfig().mContentClip);
         getViewHolder().getChild().setClipChildren(getConfig().mContentClip);
         getViewHolder().getChild().setClipToPadding(false);
@@ -469,17 +465,6 @@ public class PopupLayer extends DialogLayer {
     }
 
     /**
-     * 设置浮层外部是否拦截触摸
-     * 默认为true，false则事件有activityContent本身消费
-     *
-     * @param intercept 外部是否拦截触摸
-     */
-    public PopupLayer outsideInterceptTouchEvent(boolean intercept) {
-        getConfig().mOutsideInterceptTouchEvent = intercept;
-        return this;
-    }
-
-    /**
      * 是否裁剪contentView至包裹边界
      *
      * @param clip 是否裁剪contentView至包裹边界
@@ -653,8 +638,6 @@ public class PopupLayer extends DialogLayer {
     }
 
     protected static class Config extends DialogLayer.Config {
-        protected boolean mOutsideInterceptTouchEvent = true;
-
         protected boolean mContentClip = true;
         protected boolean mBackgroundAlign = true;
         protected boolean mBackgroundOffset = true;

@@ -615,8 +615,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 if (anyLayer_show_menu == null) {
                     anyLayer_show_menu = AnyLayer.popup(findViewById(R.id.tv_show_menu))
                             .align(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
-                            .outsideInterceptTouchEvent(false)
                             .offsetYdp(15)
+                            .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.popup_meun)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override

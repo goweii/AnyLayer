@@ -50,6 +50,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
 
     private void initView() {
         findViewById(R.id.tv_show_toast).setOnClickListener(this);
+        findViewById(R.id.tv_show_notification).setOnClickListener(this);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
         findViewById(R.id.tv_show_app_context).setOnClickListener(this);
         findViewById(R.id.tv_show_no_context).setOnClickListener(this);
@@ -117,6 +118,26 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             @Override
                             public Animator createOutAnimator(View target) {
                                 return AnimatorHelper.createZoomAlphaOutAnim(target);
+                            }
+                        })
+                        .show();
+                break;
+            case R.id.tv_show_notification:
+                AnyLayer.dialog(NormalActivity.this)
+                        .avoidStatusBar(true)
+                        .contentView(R.layout.dialog_notificationl)
+                        .gravity(Gravity.TOP)
+                        .outsideInterceptTouchEvent(false)
+                        .dragDismiss(DragLayout.DragStyle.Top)
+                        .contentAnimator(new Layer.AnimatorCreator() {
+                            @Override
+                            public Animator createInAnimator(View target) {
+                                return AnimatorHelper.createTopInAnim(target);
+                            }
+
+                            @Override
+                            public Animator createOutAnimator(View target) {
+                                return AnimatorHelper.createTopOutAnim(target);
                             }
                         })
                         .show();

@@ -163,14 +163,19 @@ public class DialogLayer extends DecorLayer {
     }
 
     protected void initContainer() {
-        getViewHolder().getChild().setClickable(true);
-        if (getConfig().mCancelableOnTouchOutside) {
-            getViewHolder().getChild().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
+        if (getConfig().mOutsideInterceptTouchEvent) {
+            getViewHolder().getChild().setClickable(true);
+            if (getConfig().mCancelableOnTouchOutside) {
+                getViewHolder().getChild().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss();
+                    }
+                });
+            }
+        } else {
+            getViewHolder().getChild().setOnClickListener(null);
+            getViewHolder().getChild().setClickable(false);
         }
         fitContainerToActivityContent();
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
@@ -571,6 +576,17 @@ public class DialogLayer extends DecorLayer {
         }
     }
 
+    /**
+     * 设置浮层外部是否拦截触摸
+     * 默认为true，false则事件有activityContent本身消费
+     *
+     * @param intercept 外部是否拦截触摸
+     */
+    public DialogLayer outsideInterceptTouchEvent(boolean intercept) {
+        getConfig().mOutsideInterceptTouchEvent = intercept;
+        return this;
+    }
+
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private FrameLayout mActivityContent;
         private ImageView mBackground;
@@ -622,6 +638,8 @@ public class DialogLayer extends DecorLayer {
     }
 
     protected static class Config extends DecorLayer.Config {
+        protected boolean mOutsideInterceptTouchEvent = true;
+
         protected AnimatorCreator mBackgroundAnimatorCreator = null;
         protected AnimatorCreator mContentAnimatorCreator = null;
 
