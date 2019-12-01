@@ -314,7 +314,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_bottom:
                 AnyLayer.dialog(NormalActivity.this)
-                        .contentView(R.layout.dialog_match_width)
+                        .contentView(R.layout.dialog_list)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM)
                         .dragDismiss(DragLayout.DragStyle.Bottom)

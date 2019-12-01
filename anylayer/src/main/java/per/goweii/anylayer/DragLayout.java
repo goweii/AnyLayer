@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import java.util.List;
+
 /**
  * @author CuiZhen
  * @date 2019/12/1
@@ -31,6 +33,7 @@ public class DragLayout extends FrameLayout {
     public DragLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mDragHelper = DragHelper.create(this, new DragCallback());
+        mTouchSlop = mDragHelper.getTouchSlop();
     }
 
     public void setOnDragListener(OnDragListener onDragListener) {
@@ -46,6 +49,11 @@ public class DragLayout extends FrameLayout {
     }
 
     private boolean handleDragEvent = false;
+    private List<View> mInnerScrollViews;
+    private float mDownX;
+    private float mDownY;
+    private boolean mTouchInnerScrollView = false;
+    private int mTouchSlop;
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -55,6 +63,35 @@ public class DragLayout extends FrameLayout {
         }
         handleDragEvent = mDragHelper.shouldInterceptTouchEvent(ev);
         switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mDownX = ev.getRawX();
+                mDownY = ev.getRawY();
+                mInnerScrollViews = DragCompat.findAllScrollViews(this);
+                mTouchInnerScrollView = DragCompat.contains(mInnerScrollViews, mDownX, mDownY) != null;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (mInnerScrollViews != null && mTouchInnerScrollView) {
+                    float distanceX = Math.abs(ev.getRawX() - mDownX);
+                    float distanceY = Math.abs(ev.getRawY() - mDownY);
+                    switch (mDragStyle) {
+                        case Left:
+                        case Right:
+                            if (distanceY > mTouchSlop && distanceY > distanceX) {
+                                return super.onInterceptTouchEvent(ev);
+                            }
+                            break;
+                        case Top:
+                        case Bottom:
+                            if (distanceX > mTouchSlop && distanceX > distanceY) {
+                                return super.onInterceptTouchEvent(ev);
+                            }
+                            break;
+                        case None:
+                        default:
+                            break;
+                    }
+                }
+                break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 mDragHelper.cancel();
@@ -99,15 +136,9 @@ public class DragLayout extends FrameLayout {
     }
 
     private class DragCallback extends DragHelper.Callback {
-
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             return isEnable();
-        }
-
-        @Override
-        public void onViewDragStateChanged(int state) {
-            super.onViewDragStateChanged(state);
         }
 
         @Override
@@ -152,6 +183,9 @@ public class DragLayout extends FrameLayout {
         public int clampViewPositionHorizontal(View child, int left, int dx) {
             switch (mDragStyle) {
                 case Left:
+                    if (DragCompat.canViewScrollRight(mInnerScrollViews, mDownX, mDownY, false)) {
+                        return mLeft;
+                    }
                     if (left > mLeft) {
                         return mLeft;
                     }
@@ -161,6 +195,9 @@ public class DragLayout extends FrameLayout {
                     }
                     return left;
                 case Right:
+                    if (DragCompat.canViewScrollLeft(mInnerScrollViews, mDownX, mDownY, false)) {
+                        return mLeft;
+                    }
                     if (left > getWidth()) {
                         return getWidth();
                     }
@@ -180,6 +217,9 @@ public class DragLayout extends FrameLayout {
         public int clampViewPositionVertical(View child, int top, int dy) {
             switch (mDragStyle) {
                 case Top:
+                    if (DragCompat.canViewScrollDown(mInnerScrollViews, mDownX, mDownY, false)) {
+                        return mTop;
+                    }
                     if (top > mTop) {
                         return mTop;
                     }
@@ -189,6 +229,9 @@ public class DragLayout extends FrameLayout {
                     }
                     return top;
                 case Bottom:
+                    if (DragCompat.canViewScrollUp(mInnerScrollViews, mDownX, mDownY, false)) {
+                        return mTop;
+                    }
                     if (top > getHeight()) {
                         return getHeight();
                     }
