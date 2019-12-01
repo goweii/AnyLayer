@@ -178,13 +178,38 @@ public class DialogLayer extends DecorLayer {
         contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
         getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
         if (getConfig().mAvoidStatusBar) {
-            final int statusBarH = Utils.getStatusBarHeight(getActivity());
-            getViewHolder().getContentWrapper().setPadding(0, statusBarH, 0, 0);
+            getViewHolder().getContentWrapper().setPadding(0, Utils.getStatusBarHeight(getActivity()), 0, 0);
             getViewHolder().getContentWrapper().setClipToPadding(false);
         } else {
             getViewHolder().getContentWrapper().setPadding(0, 0, 0, 0);
             getViewHolder().getContentWrapper().setClipToPadding(true);
         }
+        getViewHolder().getContentWrapper().setDragStyle(getConfig().mDragStyle);
+        getViewHolder().getContentWrapper().setOnDragListener(new DragLayout.OnDragListener() {
+            @Override
+            public void onDragStart() {
+                if (getConfig().mDragTransformer == null) {
+                    getConfig().mDragTransformer = new DragTransformer() {
+                        @Override
+                        public void onDragging(View content, View background, float f) {
+                            background.setAlpha(1F - f);
+                        }
+                    };
+                }
+            }
+
+            @Override
+            public void onDragging(float f) {
+                if (getConfig().mDragTransformer != null) {
+                    getConfig().mDragTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), f);
+                }
+            }
+
+            @Override
+            public void onDragEnd() {
+                dismiss(false);
+            }
+        });
     }
 
     private void fitContainerToActivityContent() {
@@ -339,6 +364,26 @@ public class DialogLayer extends DecorLayer {
      */
     public DialogLayer gravity(int gravity) {
         getConfig().mGravity = gravity;
+        return this;
+    }
+
+    /**
+     * 自定义浮层的拖拽退出的方向
+     *
+     * @param dragStyle DragLayout.DragStyle
+     */
+    public DialogLayer dragDismiss(DragLayout.DragStyle dragStyle) {
+        getConfig().mDragStyle = dragStyle;
+        return this;
+    }
+
+    /**
+     * 自定义浮层的拖拽退出时的动画
+     *
+     * @param dragTransformer DragTransformer
+     */
+    public DialogLayer dragTransformer(DragTransformer dragTransformer) {
+        getConfig().mDragTransformer = dragTransformer;
         return this;
     }
 
@@ -529,7 +574,7 @@ public class DialogLayer extends DecorLayer {
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private FrameLayout mActivityContent;
         private ImageView mBackground;
-        private FrameLayout mContentWrapper;
+        private DragLayout mContentWrapper;
         private View mContent;
 
         public void recycle() {
@@ -567,7 +612,7 @@ public class DialogLayer extends DecorLayer {
             return mContent;
         }
 
-        public FrameLayout getContentWrapper() {
+        public DragLayout getContentWrapper() {
             return mContentWrapper;
         }
 
@@ -596,8 +641,15 @@ public class DialogLayer extends DecorLayer {
         protected Drawable mBackgroundDrawable = null;
         protected float mBackgroundDimAmount = -1;
         protected int mBackgroundColor = -1;
+
+        protected DragLayout.DragStyle mDragStyle = DragLayout.DragStyle.None;
+        protected DragTransformer mDragTransformer = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
+    }
+
+    public interface DragTransformer {
+        void onDragging(View content, View background, float f);
     }
 }

@@ -18,6 +18,7 @@ import per.goweii.anylayer.Align;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
+import per.goweii.anylayer.DragLayout;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 
@@ -162,6 +163,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .avoidStatusBar(true)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.TOP)
+                        .dragDismiss(DragLayout.DragStyle.Top)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -294,6 +296,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_match_width)
                         .backgroundColorRes(R.color.dialog_bg)
                         .gravity(Gravity.BOTTOM)
+                        .dragDismiss(DragLayout.DragStyle.Bottom)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -351,6 +354,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundColorRes(R.color.dialog_bg)
+                        .dragDismiss(DragLayout.DragStyle.Bottom)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -375,6 +379,13 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundColorRes(R.color.dialog_bg)
+                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .dragTransformer(new DialogLayer.DragTransformer() {
+                            @Override
+                            public void onDragging(View content, View background, float f) {
+                                content.setAlpha(1 - f);
+                            }
+                        })
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -429,6 +440,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundColorRes(R.color.dialog_bg)
+                        .dragDismiss(DragLayout.DragStyle.Top)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -573,6 +585,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundColorRes(R.color.dialog_bg)
+                        .dragDismiss(DragLayout.DragStyle.Left)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -621,6 +634,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundColorRes(R.color.dialog_bg)
+                        .dragDismiss(DragLayout.DragStyle.Right)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
