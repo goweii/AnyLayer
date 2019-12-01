@@ -113,6 +113,7 @@ public class DragLayout extends FrameLayout {
     }
 
     private class DragCallback extends ViewDragHelper.Callback {
+
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             return isEnable();
@@ -151,6 +152,7 @@ public class DragLayout extends FrameLayout {
         @Override
         public void onViewCaptured(View capturedChild, int activePointerId) {
             super.onViewCaptured(capturedChild, activePointerId);
+            mDragFraction = 0F;
             if (mOnDragListener != null) {
                 mOnDragListener.onDragStart();
             }
