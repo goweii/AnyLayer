@@ -67,7 +67,7 @@ public class DialogLayer extends DecorLayer {
 
     @Override
     protected View onCreateChild(LayoutInflater inflater, ViewGroup parent) {
-        FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
+        ContainerLayout container = (ContainerLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
         getViewHolder().setChild(container);
         getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getContentWrapper()));
         getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
@@ -177,6 +177,14 @@ public class DialogLayer extends DecorLayer {
             getViewHolder().getChild().setOnClickListener(null);
             getViewHolder().getChild().setClickable(false);
         }
+        getViewHolder().getChild().setOnTouchedListener(new ContainerLayout.OnTouchedListener() {
+            @Override
+            public void onTouched() {
+                if (getConfig().mOutsideTouchedListener != null) {
+                    getConfig().mOutsideTouchedListener.outsideTouched();
+                }
+            }
+        });
         fitContainerToActivityContent();
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
         contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
@@ -587,6 +595,11 @@ public class DialogLayer extends DecorLayer {
         return this;
     }
 
+    public DialogLayer outsideTouched(OutsideTouchedListener listener) {
+        getConfig().mOutsideTouchedListener = listener;
+        return this;
+    }
+
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private FrameLayout mActivityContent;
         private ImageView mBackground;
@@ -616,8 +629,8 @@ public class DialogLayer extends DecorLayer {
         }
 
         @Override
-        public FrameLayout getChild() {
-            return (FrameLayout) super.getChild();
+        public ContainerLayout getChild() {
+            return (ContainerLayout) super.getChild();
         }
 
         void setContent(View content) {
@@ -639,6 +652,7 @@ public class DialogLayer extends DecorLayer {
 
     protected static class Config extends DecorLayer.Config {
         protected boolean mOutsideInterceptTouchEvent = true;
+        protected OutsideTouchedListener mOutsideTouchedListener = null;
 
         protected AnimatorCreator mBackgroundAnimatorCreator = null;
         protected AnimatorCreator mContentAnimatorCreator = null;
@@ -665,6 +679,10 @@ public class DialogLayer extends DecorLayer {
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
+    }
+
+    public interface OutsideTouchedListener {
+        void outsideTouched();
     }
 
     public interface DragTransformer {

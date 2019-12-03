@@ -38,6 +38,10 @@ public final class AnyLayer {
         return new DialogLayer(context);
     }
 
+    public static PopupLayer popup(Context context) {
+        return new PopupLayer(context);
+    }
+
     public static PopupLayer popup(View targetView) {
         return new PopupLayer(targetView);
     }

@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -20,6 +21,10 @@ import android.widget.FrameLayout;
 public class PopupLayer extends DialogLayer {
 
     private ViewTreeObserver.OnScrollChangedListener mOnScrollChangedListener;
+
+    public PopupLayer(Context context) {
+        super(Utils.requireNonNull(context, "context == null"));
+    }
 
     public PopupLayer(View targetView) {
         super(Utils.requireNonNull(targetView, "targetView == null").getContext());
@@ -128,7 +133,7 @@ public class PopupLayer extends DialogLayer {
         Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
             @Override
             public void run() {
-                initLocation();
+                updateLocation();
             }
         });
     }
@@ -155,32 +160,17 @@ public class PopupLayer extends DialogLayer {
         Utils.getViewSize(getViewHolder().getChild(), new Runnable() {
             @Override
             public void run() {
-                initLocation();
+                updateLocation();
             }
         });
         if (!getConfig().mOutsideInterceptTouchEvent) {
             mOnScrollChangedListener = new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
                 public void onScrollChanged() {
-                    initLocation();
+                    updateLocation();
                 }
             };
             getViewHolder().getParent().getViewTreeObserver().addOnScrollChangedListener(mOnScrollChangedListener);
-        }
-    }
-
-    private void initLocation() {
-        final int[] locationTarget = new int[2];
-        getViewHolder().getTarget().getLocationOnScreen(locationTarget);
-        final int[] locationRoot = new int[2];
-        getViewHolder().getDecor().getLocationOnScreen(locationRoot);
-        final int targetX = (locationTarget[0] - locationRoot[0]);
-        final int targetY = (locationTarget[1] - locationRoot[1]);
-        final int targetWidth = getViewHolder().getTarget().getWidth();
-        final int targetHeight = getViewHolder().getTarget().getHeight();
-        initContentWrapperLocation(targetX, targetY, targetWidth, targetHeight);
-        if (getConfig().mBackgroundAlign) {
-            initBackgroundLocation(targetX, targetY, targetWidth, targetHeight);
         }
     }
 
@@ -189,8 +179,8 @@ public class PopupLayer extends DialogLayer {
         getViewHolder().getChild().getLocationOnScreen(lp);
         int parentX = lp[0];
         int parentY = lp[1];
-        int parentW = getViewHolder().getChild().getWidth();
-        int parentH = getViewHolder().getChild().getHeight();
+        int parentWidth = getViewHolder().getChild().getWidth();
+        int parentHeight = getViewHolder().getChild().getHeight();
         int width = getViewHolder().getContentWrapper().getWidth();
         int height = getViewHolder().getContentWrapper().getHeight();
         FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
@@ -203,7 +193,7 @@ public class PopupLayer extends DialogLayer {
             case CENTER:
                 if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
                     int l = targetX - parentX;
-                    int r = parentX + parentW - (targetX + targetWidth);
+                    int r = parentX + parentWidth - (targetX + targetWidth);
                     if (l < r) {
                         w = targetWidth + l * 2;
                         x = 0;
@@ -228,7 +218,7 @@ public class PopupLayer extends DialogLayer {
                 break;
             case TO_RIGHT:
                 if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
-                    int r = parentX + parentW - (targetX + targetWidth);
+                    int r = parentX + parentWidth - (targetX + targetWidth);
                     x = targetX + targetWidth;
                     w = r;
                     w -= getConfig().mOffsetX;
@@ -239,7 +229,7 @@ public class PopupLayer extends DialogLayer {
             case ALIGN_LEFT:
                 if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
                     int l = targetX - parentX;
-                    w = parentW - l;
+                    w = parentWidth - l;
                     x = targetX;
                     w -= getConfig().mOffsetX;
                 } else {
@@ -269,7 +259,7 @@ public class PopupLayer extends DialogLayer {
                     x = 0;
                     w -= getConfig().mOffsetX;
                 } else {
-                    x = parentX + parentW - width;
+                    x = parentX + parentWidth - width;
                 }
                 break;
             default:
@@ -279,7 +269,7 @@ public class PopupLayer extends DialogLayer {
             case CENTER:
                 if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
                     int t = targetY - parentY;
-                    int b = parentY + parentH - (targetY + targetHeight);
+                    int b = parentY + parentHeight - (targetY + targetHeight);
                     if (t < b) {
                         h = targetHeight + t * 2;
                         y = 0;
@@ -304,7 +294,7 @@ public class PopupLayer extends DialogLayer {
                 break;
             case BELOW:
                 if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
-                    int b = parentY + parentH - (targetY + targetHeight);
+                    int b = parentY + parentHeight - (targetY + targetHeight);
                     y = targetY + targetHeight;
                     h = b;
                     h -= getConfig().mOffsetY;
@@ -315,7 +305,7 @@ public class PopupLayer extends DialogLayer {
             case ALIGN_TOP:
                 if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
                     int t = targetY - parentY;
-                    h = parentH - t;
+                    h = parentHeight - t;
                     y = targetY;
                     h -= getConfig().mOffsetY;
                 } else {
@@ -345,7 +335,7 @@ public class PopupLayer extends DialogLayer {
                     h -= getConfig().mOffsetY;
                     y = 0;
                 } else {
-                    y = parentY + parentH - height;
+                    y = parentY + parentHeight - height;
                 }
                 break;
             default:
@@ -363,6 +353,16 @@ public class PopupLayer extends DialogLayer {
             params.height = (int) h;
             getViewHolder().getContentWrapper().setLayoutParams(params);
         }
+        if (getConfig().mUpdateLocationInterceptor != null) {
+            float[] xy = new float[]{x, y};
+            getConfig().mUpdateLocationInterceptor.interceptor(
+                    xy, params.width, params.height,
+                    targetX, targetY, targetWidth, targetHeight,
+                    parentX, parentY, parentWidth, parentHeight
+            );
+            x = xy[0];
+            y = xy[1];
+        }
         if (getConfig().mOffsetX != 0) {
             x += getConfig().mOffsetX;
         }
@@ -370,14 +370,19 @@ public class PopupLayer extends DialogLayer {
             y += getConfig().mOffsetY;
         }
         if (getConfig().mInside) {
-            x = Utils.floatRange(x, 0, parentW - w);
-            y = Utils.floatRange(y, 0, parentH - h);
+            x = Utils.floatRange(x, 0, parentWidth - w);
+            y = Utils.floatRange(y, 0, parentHeight - h);
         }
         getViewHolder().getContentWrapper().setX(x);
         getViewHolder().getContentWrapper().setY(y);
     }
 
-    private void initBackgroundLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
+    private void initBackgroundLocation() {
+        if (!getConfig().mBackgroundAlign) {
+            getViewHolder().getBackground().setX(0);
+            getViewHolder().getBackground().setY(0);
+            return;
+        }
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getViewHolder().getBackground().getLayoutParams();
         int width = getViewHolder().getBackground().getWidth();
         int height = getViewHolder().getBackground().getHeight();
@@ -462,6 +467,37 @@ public class PopupLayer extends DialogLayer {
         final FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
         contentParams.gravity = -1;
         getViewHolder().getContent().setLayoutParams(contentParams);
+    }
+
+    public void updateLocation() {
+        final View target = getViewHolder().getTarget();
+        final int[] locationTarget = new int[]{0, 0};
+        if (target != null) {
+            target.getLocationOnScreen(locationTarget);
+        }
+        final int[] locationRoot = new int[2];
+        getViewHolder().getDecor().getLocationOnScreen(locationRoot);
+        final int targetX = (locationTarget[0] - locationRoot[0]);
+        final int targetY = (locationTarget[1] - locationRoot[1]);
+        int targetWidth = 0;
+        int targetHeight = 0;
+        if (target != null) {
+            targetWidth = target.getWidth();
+            targetHeight = target.getWidth();
+        }
+        initContentWrapperLocation(targetX, targetY, targetWidth, targetHeight);
+        initBackgroundLocation();
+    }
+
+    public PopupLayer updateLocationInterceptor(UpdateLocationInterceptor interceptor) {
+        getConfig().mUpdateLocationInterceptor = interceptor;
+        return this;
+    }
+
+    public PopupLayer targetView(View targetView) {
+        getViewHolder().setTarget(targetView);
+        updateLocation();
+        return this;
     }
 
     /**
@@ -638,6 +674,7 @@ public class PopupLayer extends DialogLayer {
     }
 
     protected static class Config extends DialogLayer.Config {
+        protected UpdateLocationInterceptor mUpdateLocationInterceptor = null;
         protected boolean mContentClip = true;
         protected boolean mBackgroundAlign = true;
         protected boolean mBackgroundOffset = true;
@@ -651,5 +688,11 @@ public class PopupLayer extends DialogLayer {
     }
 
     protected static class ListenerHolder extends DialogLayer.ListenerHolder {
+    }
+
+    public interface UpdateLocationInterceptor {
+        void interceptor(float[] popupXY, int popupWidth, int popupHeight,
+                         int targetX, int targetY, int targetWidth, int targetHeight,
+                         int parentX, int parentY, int parentWidth, int parentHeight);
     }
 }
