@@ -281,6 +281,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.BELOW, false)
                             .contentClip(false)
                             .outsideInterceptTouchEvent(false)
+                            .outsideTouched(new DialogLayer.OutsideTouchedListener() {
+                                @Override
+                                public void outsideTouched() {
+                                    if (anyLayer_show_target_bottom != null) {
+                                        anyLayer_show_target_bottom.dismiss();
+                                    }
+                                }
+                            })
                             .contentView(R.layout.popup_meun)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
