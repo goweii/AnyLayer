@@ -1,11 +1,9 @@
 package per.goweii.anylayer;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 /**
  * Create by cuizhen on {2019/12/3}
@@ -21,23 +19,22 @@ import android.widget.FrameLayout;
  * ░ ░         ░      ░    ░ ░     ░  ░  ░   ░  ░        ░
  * ░                     ░
  */
-public class ContainerLayout extends FrameLayout {
+public class BackgroundView extends ImageView {
 
     private OnTouchedListener mOnTouchedListener = null;
 
-    public ContainerLayout(Context context) {
+    public BackgroundView(Context context) {
         this(context, null);
     }
 
-    public ContainerLayout(Context context, AttributeSet attrs) {
+    public BackgroundView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ContainerLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BackgroundView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
@@ -49,7 +46,7 @@ public class ContainerLayout extends FrameLayout {
             default:
                 break;
         }
-        return super.onTouchEvent(ev);
+        return false;
     }
 
     public void setOnTouchedListener(OnTouchedListener onTouchedListener) {
