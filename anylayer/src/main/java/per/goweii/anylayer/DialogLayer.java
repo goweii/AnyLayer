@@ -177,14 +177,19 @@ public class DialogLayer extends DecorLayer {
             getViewHolder().getChild().setOnClickListener(null);
             getViewHolder().getChild().setClickable(false);
         }
-        getViewHolder().getChild().setOnTouchedListener(new ContainerLayout.OnTouchedListener() {
-            @Override
-            public void onTouched() {
-                if (getConfig().mOutsideTouchedListener != null) {
-                    getConfig().mOutsideTouchedListener.outsideTouched();
+        if (getConfig().mOutsideTouchedToDismiss || getConfig().mOutsideTouchedListener != null) {
+            getViewHolder().getChild().setOnTouchedListener(new ContainerLayout.OnTouchedListener() {
+                @Override
+                public void onTouched() {
+                    if (getConfig().mOutsideTouchedToDismiss) {
+                        dismiss();
+                    }
+                    if (getConfig().mOutsideTouchedListener != null) {
+                        getConfig().mOutsideTouchedListener.outsideTouched();
+                    }
                 }
-            }
-        });
+            });
+        }
         fitContainerToActivityContent();
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
         contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
@@ -600,9 +605,14 @@ public class DialogLayer extends DecorLayer {
         return this;
     }
 
+    public DialogLayer outsideTouchedToDismiss(boolean toDismiss) {
+        getConfig().mOutsideTouchedToDismiss = toDismiss;
+        return this;
+    }
+
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private FrameLayout mActivityContent;
-        private ImageView mBackground;
+        private BackgroundView mBackground;
         private DragLayout mContentWrapper;
         private View mContent;
 
@@ -645,14 +655,15 @@ public class DialogLayer extends DecorLayer {
             return mContentWrapper;
         }
 
-        public ImageView getBackground() {
-            return mBackground;
+        public BackgroundView getBackground() {
+            return (BackgroundView) mBackground;
         }
     }
 
     protected static class Config extends DecorLayer.Config {
         protected boolean mOutsideInterceptTouchEvent = true;
         protected OutsideTouchedListener mOutsideTouchedListener = null;
+        protected boolean mOutsideTouchedToDismiss = false;
 
         protected AnimatorCreator mBackgroundAnimatorCreator = null;
         protected AnimatorCreator mContentAnimatorCreator = null;

@@ -121,10 +121,8 @@ public class PopupLayer extends DialogLayer {
 
     @Override
     public void onDetach() {
-        if (mOnScrollChangedListener != null) {
-            getViewHolder().getParent().getViewTreeObserver().removeOnScrollChangedListener(mOnScrollChangedListener);
-            mOnScrollChangedListener = null;
-        }
+        getViewHolder().getParent().getViewTreeObserver().removeOnScrollChangedListener(mOnScrollChangedListener);
+        mOnScrollChangedListener = null;
         super.onDetach();
     }
 
@@ -163,15 +161,19 @@ public class PopupLayer extends DialogLayer {
                 updateLocation();
             }
         });
-        if (!getConfig().mOutsideInterceptTouchEvent) {
-            mOnScrollChangedListener = new ViewTreeObserver.OnScrollChangedListener() {
-                @Override
-                public void onScrollChanged() {
-                    updateLocation();
+        mOnScrollChangedListener = new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                if (getConfig().mViewTreeScrollChangedToDismiss) {
+                    dismiss();
                 }
-            };
-            getViewHolder().getParent().getViewTreeObserver().addOnScrollChangedListener(mOnScrollChangedListener);
-        }
+                if (getConfig().mOnViewTreeScrollChangedListener != null) {
+                    getConfig().mOnViewTreeScrollChangedListener.onScrollChanged();
+                }
+                updateLocation();
+            }
+        };
+        getViewHolder().getParent().getViewTreeObserver().addOnScrollChangedListener(mOnScrollChangedListener);
     }
 
     private void initContentWrapperLocation(int targetX, int targetY, int targetWidth, int targetHeight) {
@@ -483,7 +485,7 @@ public class PopupLayer extends DialogLayer {
         int targetHeight = 0;
         if (target != null) {
             targetWidth = target.getWidth();
-            targetHeight = target.getWidth();
+            targetHeight = target.getHeight();
         }
         initContentWrapperLocation(targetX, targetY, targetWidth, targetHeight);
         initBackgroundLocation();
@@ -491,6 +493,16 @@ public class PopupLayer extends DialogLayer {
 
     public PopupLayer updateLocationInterceptor(UpdateLocationInterceptor interceptor) {
         getConfig().mUpdateLocationInterceptor = interceptor;
+        return this;
+    }
+
+    public PopupLayer onViewTreeScrollChangedListener(OnViewTreeScrollChangedListener listener) {
+        getConfig().mOnViewTreeScrollChangedListener = listener;
+        return this;
+    }
+
+    public PopupLayer scrollChangedToDismiss(boolean toDismiss) {
+        getConfig().mViewTreeScrollChangedToDismiss = toDismiss;
         return this;
     }
 
@@ -674,6 +686,8 @@ public class PopupLayer extends DialogLayer {
     }
 
     protected static class Config extends DialogLayer.Config {
+        protected OnViewTreeScrollChangedListener mOnViewTreeScrollChangedListener = null;
+        protected boolean mViewTreeScrollChangedToDismiss = false;
         protected UpdateLocationInterceptor mUpdateLocationInterceptor = null;
         protected boolean mContentClip = true;
         protected boolean mBackgroundAlign = true;
@@ -694,5 +708,9 @@ public class PopupLayer extends DialogLayer {
         void interceptor(float[] popupXY, int popupWidth, int popupHeight,
                          int targetX, int targetY, int targetWidth, int targetHeight,
                          int parentX, int parentY, int parentWidth, int parentHeight);
+    }
+
+    public interface OnViewTreeScrollChangedListener {
+        void onScrollChanged();
     }
 }
