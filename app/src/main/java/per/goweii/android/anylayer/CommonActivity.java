@@ -4,12 +4,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import per.goweii.statusbarcompat.StatusBarCompat;
+
 public class CommonActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarUtils.translucentStatusBar(this);
+        StatusBarCompat.transparent(this);
         setContentView(R.layout.activity_common);
         initView();
     }

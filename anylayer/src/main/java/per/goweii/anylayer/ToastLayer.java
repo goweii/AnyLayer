@@ -1,6 +1,7 @@
 package per.goweii.anylayer;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -25,7 +26,11 @@ import android.widget.TextView;
 public class ToastLayer extends DecorLayer implements Runnable {
 
     public ToastLayer(Context context) {
-        super(Utils.getActivity(Utils.requireNonNull(context, "context == null")));
+        this(Utils.getActivity(Utils.requireNonNull(context, "context == null")));
+    }
+
+    public ToastLayer(Activity activity) {
+        super(activity);
         interceptKeyEvent(false);
         cancelableOnKeyBack(false);
     }

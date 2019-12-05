@@ -155,17 +155,22 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             mAnimatorOut = onCreateOutAnimator(mViewManager.getChild());
             if (mAnimatorOut != null) {
                 mAnimatorOut.addListener(new Animator.AnimatorListener() {
+                    private boolean beenCanceled = false;
+
                     @Override
                     public void onAnimationStart(Animator animation) {
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mViewManager.detach();
+                        if (!beenCanceled) {
+                            mViewManager.detach();
+                        }
                     }
 
                     @Override
                     public void onAnimationCancel(Animator animation) {
+                        beenCanceled = true;
                     }
 
                     @Override
