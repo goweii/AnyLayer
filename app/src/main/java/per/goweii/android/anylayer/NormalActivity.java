@@ -281,14 +281,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.BELOW, false)
                             .contentClip(false)
                             .outsideInterceptTouchEvent(false)
-                            .outsideTouched(new DialogLayer.OutsideTouchedListener() {
-                                @Override
-                                public void outsideTouched() {
-                                    if (anyLayer_show_target_bottom != null) {
-                                        anyLayer_show_target_bottom.dismiss();
-                                    }
-                                }
-                            })
+                            .outsideTouchedToDismiss(true)
                             .contentView(R.layout.popup_meun)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
@@ -315,7 +308,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             });
                 }
                 if (anyLayer_show_target_bottom.isShow()) {
-                    anyLayer_show_target_bottom.dismiss();
+//                    anyLayer_show_target_bottom.dismiss();
                 } else {
                     anyLayer_show_target_bottom.show();
                 }
