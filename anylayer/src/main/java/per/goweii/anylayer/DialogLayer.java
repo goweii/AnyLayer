@@ -567,15 +567,26 @@ public class DialogLayer extends DecorLayer {
      * 在{@link OnVisibleChangeListener#onShow(Layer)}中调用
      * 应该和{@link #removeSoftInput()}成对出现
      *
-     * @param editText 焦点EditTexts
+     * @param editTexts 焦点EditTexts
      */
-    public void compatSoftInput(EditText... editText) {
-        Activity activity = Utils.getActivity(getActivity());
-        if (activity != null) {
-            mSoftInputHelper = SoftInputHelper.attach(activity)
-                    .init(getViewHolder().getContentWrapper(), getViewHolder().getContent(), editText)
-                    .moveWithTranslation();
+    public DialogLayer compatSoftInput(boolean bottomToContentView, EditText... editTexts) {
+        if (mSoftInputHelper == null) {
+            mSoftInputHelper = SoftInputHelper.attach(getActivity())
+                    .moveWithTranslation()
+                    .moveBy(getViewHolder().getContentWrapper());
         }
+        if (bottomToContentView) {
+            mSoftInputHelper.moveWith(getViewHolder().getContent(), editTexts);
+        } else {
+            for (EditText editText : editTexts) {
+                mSoftInputHelper.moveWith(editText, editText);
+            }
+        }
+        return this;
+    }
+
+    public DialogLayer compatSoftInput(EditText... editTexts) {
+        return compatSoftInput(true, editTexts);
     }
 
     /**

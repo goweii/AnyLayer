@@ -11,6 +11,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -51,6 +53,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
     private void initView() {
         findViewById(R.id.tv_show_toast).setOnClickListener(this);
         findViewById(R.id.tv_show_notification).setOnClickListener(this);
+        findViewById(R.id.tv_show_edit).setOnClickListener(this);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
         findViewById(R.id.tv_show_app_context).setOnClickListener(this);
         findViewById(R.id.tv_show_no_context).setOnClickListener(this);
@@ -140,6 +143,54 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 return AnimatorHelper.createTopOutAnim(target);
                             }
                         })
+                        .show();
+                break;
+            case R.id.tv_show_edit:
+                AnyLayer.dialog(NormalActivity.this)
+                        .contentView(R.layout.dialog_edit)
+                        .backgroundColorRes(R.color.dialog_bg)
+                        .gravity(Gravity.BOTTOM)
+                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                            @Override
+                            public Animator createInAnimator(View content) {
+                                return AnimatorHelper.createBottomInAnim(content);
+                            }
+
+                            @Override
+                            public Animator createOutAnimator(View content) {
+                                return AnimatorHelper.createBottomOutAnim(content);
+                            }
+                        })
+                        .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
+                            @Override
+                            public void onShow(Layer layer) {
+                                DialogLayer dialogLayer = (DialogLayer) layer;
+                                dialogLayer.compatSoftInput( false,
+                                        layer.getView(R.id.et_dialog_content),
+                                        layer.getView(R.id.et_dialog_content1),
+                                        layer.getView(R.id.et_dialog_content2),
+                                        layer.getView(R.id.et_dialog_content3),
+                                        layer.getView(R.id.et_dialog_content4),
+                                        layer.getView(R.id.et_dialog_content5)
+                                );
+                            }
+
+                            @Override
+                            public void onDismiss(Layer layer) {
+                                DialogLayer dialogLayer = (DialogLayer) layer;
+                                dialogLayer.removeSoftInput();
+                            }
+                        })
+                        .onClickToDismiss(R.id.fl_dialog_no)
+                        .onClick(new Layer.OnClickListener() {
+                            @Override
+                            public void onClick(Layer anyLayer, View v) {
+                                anyLayer.dismiss();
+                                EditText et = anyLayer.getView(R.id.et_dialog_content);
+                                Toast.makeText(NormalActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_full:
