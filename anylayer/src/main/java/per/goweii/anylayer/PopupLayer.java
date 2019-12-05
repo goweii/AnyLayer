@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.TypedValue;
@@ -23,7 +24,11 @@ public class PopupLayer extends DialogLayer {
     private ViewTreeObserver.OnScrollChangedListener mOnScrollChangedListener;
 
     public PopupLayer(Context context) {
-        super(Utils.requireNonNull(context, "context == null"));
+        super(context);
+    }
+
+    public PopupLayer(Activity activity) {
+        super(activity);
     }
 
     public PopupLayer(View targetView) {

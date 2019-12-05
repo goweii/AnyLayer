@@ -1,6 +1,7 @@
 package per.goweii.anylayer;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,11 @@ import android.view.ViewGroup;
 public class FloatLayer extends DecorLayer {
 
     public FloatLayer(Context context) {
-        super(Utils.getActivity(Utils.requireNonNull(context, "context == null")));
+        this(Utils.getActivity(Utils.requireNonNull(context, "context == null")));
+    }
+
+    public FloatLayer(Activity activity) {
+        super(activity);
         interceptKeyEvent(false);
         cancelableOnKeyBack(false);
     }
