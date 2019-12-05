@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
+    android:layout_gravity="bottom"
     android:layout_margin="15dp"
     app:cardBackgroundColor="#ffffff"
     app:cardCornerRadius="5dp"
@@ -28,6 +28,77 @@
             android:id="@+id/et_dialog_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="left"
+            android:paddingLeft="20dp"
+            android:paddingTop="28dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="25dp"
+            android:text="@string/dialog_msg"
+            android:textColor="#232323"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/et_dialog_content1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="left"
+            android:paddingLeft="20dp"
+            android:paddingTop="28dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="25dp"
+            android:text="@string/dialog_msg"
+            android:textColor="#232323"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/et_dialog_content2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="left"
+            android:paddingLeft="20dp"
+            android:paddingTop="28dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="25dp"
+            android:text="@string/dialog_msg"
+            android:textColor="#232323"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/et_dialog_content3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="left"
+            android:paddingLeft="20dp"
+            android:paddingTop="28dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="25dp"
+            android:text="@string/dialog_msg"
+            android:textColor="#232323"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/et_dialog_content4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="left"
+            android:paddingLeft="20dp"
+            android:paddingTop="28dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="25dp"
+            android:text="@string/dialog_msg"
+            android:textColor="#232323"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/et_dialog_content5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
             android:gravity="left"
             android:paddingLeft="20dp"
             android:paddingTop="28dp"

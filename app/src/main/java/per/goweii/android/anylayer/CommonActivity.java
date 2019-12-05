@@ -3,6 +3,8 @@ package per.goweii.android.anylayer;
 import android.os.Bundle;
 import android.view.View;
 
+import per.goweii.statusbarcompat.StatusBarCompat;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class CommonActivity extends AppCompatActivity implements View.OnClickListener {
@@ -10,7 +12,7 @@ public class CommonActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarUtils.translucentStatusBar(this);
+        StatusBarCompat.transparent(this);
         setContentView(R.layout.activity_common);
         initView();
     }

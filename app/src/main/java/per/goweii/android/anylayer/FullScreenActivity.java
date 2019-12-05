@@ -16,8 +16,10 @@ import per.goweii.anylayer.Align;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
+import per.goweii.anylayer.DragLayout;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
+import per.goweii.statusbarcompat.StatusBarCompat;
 
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -29,7 +31,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarUtils.translucentStatusBar(this);
+        StatusBarCompat.transparent(this);
         setContentView(R.layout.activity_full_screen);
         initView();
         Layer dialog = AnyLayer.dialog(this)
@@ -44,6 +46,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initView() {
+        findViewById(R.id.ll_action_bar).setPadding(0, StatusBarCompat.getHeight(this), 0, 0);
         tvTitle = findViewById(R.id.tv_title);
         tvTitle.setOnClickListener(this);
         findViewById(R.id.tv_show_app_context).setOnClickListener(this);
@@ -86,7 +89,6 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             default:
                 break;
             case R.id.tv_title:
-                Toast.makeText(FullScreenActivity.this, "点击了title", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.tv_show_app_context:
                 AnyLayer.dialog(new LayerActivity.OnLayerCreatedCallback() {
@@ -106,16 +108,35 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_edit)
                         .backgroundColorRes(R.color.dialog_bg)
-                        .gravity(Gravity.CENTER)
+                        .gravity(Gravity.BOTTOM)
+                        .dragDismiss(DragLayout.DragStyle.Bottom)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createZoomAlphaInAnim(content);
+                                return AnimatorHelper.createBottomInAnim(content);
                             }
 
                             @Override
                             public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createZoomAlphaOutAnim(content);
+                                return AnimatorHelper.createBottomOutAnim(content);
+                            }
+                        })
+                        .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
+                            @Override
+                            public void onShow(Layer layer) {
+                                DialogLayer dialogLayer = (DialogLayer) layer;
+                                dialogLayer.compatSoftInput(
+                                        layer.getView(R.id.et_dialog_content2),
+                                        layer.getView(R.id.et_dialog_content3),
+                                        layer.getView(R.id.et_dialog_content4),
+                                        layer.getView(R.id.et_dialog_content5)
+                                );
+                            }
+
+                            @Override
+                            public void onDismiss(Layer layer) {
+                                DialogLayer dialogLayer = (DialogLayer) layer;
+                                dialogLayer.removeSoftInput();
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_no)
@@ -157,6 +178,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_full:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_full))
+                        .outsideTouchedToDismiss(true)
                         .outsideInterceptTouchEvent(false)
                         .contentView(R.layout.dialog_fullscreen)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -617,6 +639,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                     anyLayer_show_menu = AnyLayer.popup(findViewById(R.id.tv_show_menu))
                             .align(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
                             .offsetYdp(15)
+                            .outsideTouchedToDismiss(true)
                             .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.popup_meun)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
