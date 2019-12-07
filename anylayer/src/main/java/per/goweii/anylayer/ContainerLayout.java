@@ -3,23 +3,11 @@ package per.goweii.anylayer;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
 /**
  * Create by cuizhen on {2019/12/3}
- * <p>
- * ▄████▄   █    ██  ██▓▒███████▒ ██░ ██ ▓█████ ███▄    █
- * ▒██▀ ▀█   ██  ▓██▒▓██▒▒ ▒ ▒ ▄▀░▓██░ ██▒▓█   ▀ ██ ▀█   █
- * ▒▓█    ▄ ▓██  ▒██░▒██▒░ ▒ ▄▀▒░ ▒██▀▀██░▒███  ▓██  ▀█ ██▒
- * ▒▓▓▄ ▄██▒▓▓█  ░██░░██░  ▄▀▒   ░░▓█ ░██ ▒▓█  ▄▓██▒  ▐▌██▒
- * ▒ ▓███▀ ░▒▒█████▓ ░██░▒███████▒░▓█▒░██▓░▒████▒██░   ▓██░
- * ░ ░▒ ▒  ░░▒▓▒ ▒ ▒ ░▓  ░▒▒ ▓░▒░▒ ▒ ░░▒░▒░░ ▒░ ░ ▒░   ▒ ▒
- * ░  ▒   ░░▒░ ░ ░  ▒ ░░░▒ ▒ ░ ▒ ▒ ░▒░ ░ ░ ░  ░ ░░   ░ ▒░
- * ░         ░░░ ░ ░  ▒ ░░ ░ ░ ░ ░ ░  ░░ ░   ░     ░   ░ ░
- * ░ ░         ░      ░    ░ ░     ░  ░  ░   ░  ░        ░
- * ░                     ░
  */
 public class ContainerLayout extends FrameLayout {
 

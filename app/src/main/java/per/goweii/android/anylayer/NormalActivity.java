@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -34,20 +33,6 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normal);
         initView();
-        AnyLayer.dialog(this)
-                .contentView(R.layout.dialog_normal)
-                .backgroundColorRes(R.color.dialog_bg)
-                .gravity(Gravity.CENTER)
-                .cancelableOnTouchOutside(true)
-                .cancelableOnClickKeyBack(true)
-                .bindData(new Layer.DataBinder() {
-                    @Override
-                    public void bindData(Layer layer) {
-                        // TODO 绑定数据
-                    }
-                })
-                .onClickToDismiss(R.id.fl_dialog_no)
-                .show();
     }
 
     private void initView() {
@@ -132,41 +117,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .gravity(Gravity.TOP)
                         .outsideInterceptTouchEvent(false)
                         .dragDismiss(DragLayout.DragStyle.Top)
-                        .contentAnimator(new Layer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View target) {
-                                return AnimatorHelper.createTopInAnim(target);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View target) {
-                                return AnimatorHelper.createTopOutAnim(target);
-                            }
-                        })
                         .show();
                 break;
             case R.id.tv_show_edit:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_edit)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
                         .dragDismiss(DragLayout.DragStyle.Bottom)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createBottomInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createBottomOutAnim(content);
-                            }
-                        })
                         .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
                             @Override
                             public void onShow(Layer layer) {
                                 DialogLayer dialogLayer = (DialogLayer) layer;
-                                dialogLayer.compatSoftInput( false,
+                                dialogLayer.compatSoftInput(false,
                                         layer.getView(R.id.et_dialog_content),
                                         layer.getView(R.id.et_dialog_content1),
                                         layer.getView(R.id.et_dialog_content2),
@@ -204,7 +167,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onLayerCreated(@NonNull DialogLayer anyLayer) {
                         anyLayer.contentView(R.layout.dialog_normal)
-                                .backgroundColorRes(R.color.dialog_bg)
+                                .backgroundDimDefault()
                                 .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                                 .show();
                     }
@@ -213,7 +176,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_no_context:
                 AnyLayer.dialog()
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
@@ -223,7 +186,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                     public void run() {
                         AnyLayer.dialog(NormalActivity.this)
                                 .contentView(R.layout.dialog_normal)
-                                .backgroundColorRes(R.color.dialog_bg)
+                                .backgroundDimDefault()
                                 .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                                 .show();
                     }
@@ -233,37 +196,16 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_match_width)
                         .avoidStatusBar(true)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .gravity(Gravity.TOP)
                         .dragDismiss(DragLayout.DragStyle.Top)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createTopInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createTopOutAnim(content);
-                            }
-                        })
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_target_full:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_full))
                         .contentView(R.layout.dialog_fullscreen)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createTopInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createTopOutAnim(content);
-                            }
-                        })
+                        .animStyle(DialogLayer.AnimStyle.TOP)
                         .show();
                 break;
             case R.id.tv_show_target_right:
@@ -272,17 +214,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .align(Align.Direction.HORIZONTAL, Align.Horizontal.TO_RIGHT, Align.Vertical.CENTER, false)
                             .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.popup_normal)
-                            .contentAnimator(new DialogLayer.AnimatorCreator() {
-                                @Override
-                                public Animator createInAnimator(View content) {
-                                    return AnimatorHelper.createLeftInAnim(content);
-                                }
-
-                                @Override
-                                public Animator createOutAnimator(View content) {
-                                    return AnimatorHelper.createLeftOutAnim(content);
-                                }
-                            });
+                            .animStyle(DialogLayer.AnimStyle.LEFT);
                 }
                 if (anyLayer_show_target_right.isShow()) {
                     anyLayer_show_target_right.dismiss();
@@ -294,36 +226,16 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.popup(findViewById(R.id.tv_show_target_left))
                         .align(Align.Direction.HORIZONTAL, Align.Horizontal.TO_LEFT, Align.Vertical.CENTER, true)
                         .contentView(R.layout.popup_normal)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createRightInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createRightOutAnim(content);
-                            }
-                        })
+                        .animStyle(DialogLayer.AnimStyle.RIGHT)
                         .show();
                 break;
             case R.id.tv_show_target_top:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_top))
                         .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.ABOVE, true)
                         .contentView(R.layout.popup_match_width)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createBottomInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createBottomOutAnim(content);
-                            }
-                        })
+                        .animStyle(DialogLayer.AnimStyle.BOTTOM)
                         .show();
                 break;
             case R.id.tv_show_target_bottom:
@@ -337,24 +249,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(View content) {
-                                    AnimatorSet set = new AnimatorSet();
-                                    Animator a1 = AnimatorHelper.createTopAlphaInAnim(content, 0.4F);
-                                    a1.setInterpolator(new DecelerateInterpolator());
-                                    Animator a2 = AnimatorHelper.createZoomAlphaInAnim(content, 0.9F);
-                                    a2.setInterpolator(new AccelerateInterpolator());
-                                    set.playTogether(a1, a2);
-                                    return set;
+                                    return AnimatorHelper.createDelayedZoomInAnim(content, 0.5F, 0F);
                                 }
 
                                 @Override
                                 public Animator createOutAnimator(View content) {
-                                    AnimatorSet set = new AnimatorSet();
-                                    Animator a1 = AnimatorHelper.createTopAlphaOutAnim(content, 0.4F);
-                                    a1.setInterpolator(new AccelerateInterpolator());
-                                    Animator a2 = AnimatorHelper.createZoomAlphaOutAnim(content, 0.9F);
-                                    a2.setInterpolator(new DecelerateInterpolator());
-                                    set.playTogether(a1, a2);
-                                    return set;
+                                    return AnimatorHelper.createDelayedZoomOutAnim(content, 0.5F, 0F);
                                 }
                             });
                 }
@@ -367,41 +267,23 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_bottom:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_list)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
                         .dragDismiss(DragLayout.DragStyle.Bottom)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createBottomInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createBottomOutAnim(content);
-                            }
-                        })
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_blur_bg:
                 AnyLayer.dialog(NormalActivity.this)
-                        .contentView(R.layout.dialog_normal)
+                        .contentView(R.layout.dialog_icon)
                         .backgroundBlurPercent(0.05f)
                         .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnClickListener() {
-                            @Override
-                            public void onClick(Layer anyLayer, View v) {
-                                anyLayer.dismiss();
-                            }
-                        }, R.id.fl_dialog_yes)
                         .show();
                 break;
             case R.id.tv_show_dark_bg:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -426,19 +308,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_bottom_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .dragDismiss(DragLayout.DragStyle.Bottom)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createBottomInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createBottomOutAnim(content);
-                            }
-                        })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -451,23 +322,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_bottom_alpha_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .dragDismiss(DragLayout.DragStyle.Bottom)
                         .dragTransformer(new DialogLayer.DragTransformer() {
                             @Override
                             public void onDragging(View content, View background, float f) {
                                 content.setAlpha(1 - f);
-                            }
-                        })
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createBottomAlphaInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createBottomAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
@@ -482,15 +342,15 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_bottom_zoom_alpha_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
                                 AnimatorSet set = new AnimatorSet();
-                                Animator a1 = AnimatorHelper.createBottomAlphaInAnim(content, 0.4F);
-                                a1.setInterpolator(new DecelerateInterpolator());
+                                Animator a1 = AnimatorHelper.createBottomAlphaInAnim(content, 0.3F);
+                                a1.setInterpolator(new DecelerateInterpolator(1.5f));
                                 Animator a2 = AnimatorHelper.createZoomAlphaInAnim(content, 0.9F);
-                                a2.setInterpolator(new AccelerateInterpolator());
+                                a2.setInterpolator(new DecelerateInterpolator(2.5f));
                                 set.playTogether(a1, a2);
                                 return set;
                             }
@@ -498,10 +358,10 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             @Override
                             public Animator createOutAnimator(View content) {
                                 AnimatorSet set = new AnimatorSet();
-                                Animator a1 = AnimatorHelper.createBottomAlphaOutAnim(content, 0.4F);
-                                a1.setInterpolator(new AccelerateInterpolator());
+                                Animator a1 = AnimatorHelper.createBottomAlphaOutAnim(content, 0.3F);
+                                a1.setInterpolator(new DecelerateInterpolator(1.5f));
                                 Animator a2 = AnimatorHelper.createZoomAlphaOutAnim(content, 0.9F);
-                                a2.setInterpolator(new DecelerateInterpolator());
+                                a2.setInterpolator(new DecelerateInterpolator(2.5f));
                                 set.playTogether(a1, a2);
                                 return set;
                             }
@@ -512,19 +372,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_top_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .dragDismiss(DragLayout.DragStyle.Top)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createTopInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createTopOutAnim(content);
-                            }
-                        })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -537,7 +386,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_top_alpha_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -561,7 +410,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_top_bottom:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -585,7 +434,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_bottom_top:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -609,7 +458,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_top_bottom_alpha:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -633,7 +482,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_bottom_top_alpha:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -657,19 +506,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_left_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .dragDismiss(DragLayout.DragStyle.Left)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createLeftInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createLeftOutAnim(content);
-                            }
-                        })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -682,7 +520,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_left_alpha_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -706,19 +544,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_right_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .dragDismiss(DragLayout.DragStyle.Right)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createRightInAnim(content);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createRightOutAnim(content);
-                            }
-                        })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -731,7 +558,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_right_alpha_in:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -755,7 +582,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_left_right:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -779,7 +606,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_right_left:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -803,7 +630,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_left_right_alpha:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -827,7 +654,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_right_left_alpha:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -851,7 +678,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_reveal:
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {

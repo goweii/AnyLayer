@@ -26,6 +26,9 @@
             android:name=".NormalActivity"
             android:configChanges="orientation|screenSize|keyboard" />
         <activity
+            android:name=".DragActivity"
+            android:configChanges="orientation|screenSize|keyboard" />
+        <activity
             android:name=".FullScreenActivity"
             android:configChanges="orientation|screenSize|keyboard"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
