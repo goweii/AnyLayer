@@ -56,11 +56,8 @@ public class DragLayout extends FrameLayout {
         return mDragStyle != DragStyle.None;
     }
 
-    private MotionEvent currEv = null;
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        currEv = ev;
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 break;
@@ -114,7 +111,6 @@ public class DragLayout extends FrameLayout {
             mHandleDragEvent = false;
             return super.onInterceptTouchEvent(ev);
         }
-        currEv = ev;
         mHandleDragEvent = mDragHelper.shouldInterceptTouchEvent(ev);
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
@@ -133,7 +129,6 @@ public class DragLayout extends FrameLayout {
         if (isEnable()) {
             mDragHelper.processTouchEvent(ev);
         }
-        currEv = ev;
         return mHandleDragEvent;
     }
 
