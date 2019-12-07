@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/dialog_drag_h_v"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="#33000000" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:src="@mipmap/ic_launcher_round" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="30dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:drawableTop="@mipmap/ic_launcher_round"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="按钮"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="@string/dialog_msg"
+                android:textColor="#232323"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/dialog_drag_h_tv_close"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="15dp"
+        android:text="关闭"
+        android:textColor="#232323"
+        android:textSize="15sp" />
+
+</LinearLayout>

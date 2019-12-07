@@ -36,11 +36,11 @@ final class Utils {
         return obj;
     }
 
-    static float floatRange01(float value){
+    static float floatRange01(float value) {
         return floatRange(value, 0F, 1F);
     }
 
-    static float floatRange(float value, float min, float max){
+    static float floatRange(float value, float min, float max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
@@ -79,7 +79,11 @@ final class Utils {
         return null;
     }
 
-    static Bitmap snapshot(FrameLayout decor, ImageView iv, float scale, DecorLayer.Level level) {
+    static Bitmap snapshot(FrameLayout decor,
+                           ImageView iv,
+                           float scale,
+                           DecorLayer.LevelLayout currLevelLayout,
+                           ContainerLayout currContainerLayout) {
         int w = iv.getWidth();
         int h = iv.getHeight();
         int oW = (int) (w / scale);
@@ -100,20 +104,34 @@ final class Utils {
         decor.getBackground().draw(canvas);
         out:
         for (int i = 0; i < decor.getChildCount(); i++) {
-            View view = decor.getChildAt(i);
-            if (view instanceof DecorLayer.LayerLayout) {
-                DecorLayer.LayerLayout layerLayout = (DecorLayer.LayerLayout) view;
+            View decorChildAt = decor.getChildAt(i);
+            if (decorChildAt instanceof DecorLayer.LayerLayout) {
+                DecorLayer.LayerLayout layerLayout = (DecorLayer.LayerLayout) decorChildAt;
                 for (int j = 0; j < layerLayout.getChildCount(); j++) {
-                    View item = layerLayout.getChildAt(j);
-                    if (item instanceof DecorLayer.LevelLayout) {
-                        DecorLayer.LevelLayout levelLayout = (DecorLayer.LevelLayout) item;
-                        if (levelLayout.getLevel().level() < level.level()) {
+                    View layerChildAt = layerLayout.getChildAt(j);
+                    if (layerChildAt instanceof DecorLayer.LevelLayout) {
+                        DecorLayer.LevelLayout levelLayout = (DecorLayer.LevelLayout) layerChildAt;
+                        if (levelLayout == currLevelLayout) {
+                            for (int k = 0; k < levelLayout.getChildCount(); k++) {
+                                View containerLayout = levelLayout.getChildAt(k);
+                                if (containerLayout == currContainerLayout) {
+                                    break out;
+                                } else {
+                                    containerLayout.draw(canvas);
+                                }
+                            }
                             break out;
+                        } else {
+                            levelLayout.draw(canvas);
                         }
+                    } else {
+                        break out;
                     }
                 }
+                break;
+            } else {
+                decorChildAt.draw(canvas);
             }
-            view.draw(canvas);
         }
         canvas.restore();
 

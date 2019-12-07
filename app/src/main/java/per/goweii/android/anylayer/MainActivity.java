@@ -35,6 +35,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, CommonActivity.class));
             }
         });
+        findViewById(R.id.tv_activity_drag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, DragActivity.class));
+            }
+        });
     }
 }
 
