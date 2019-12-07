@@ -415,7 +415,8 @@ public class DialogLayer extends DecorLayer {
                     Bitmap snapshot = Utils.snapshot(getViewHolder().getDecor(),
                             getViewHolder().getBackground(),
                             scale,
-                            getLevel());
+                            getViewHolder().getParent(),
+                            getViewHolder().getChild());
                     Blurred.init(getActivity());
                     Bitmap blurBitmap = Blurred.with(snapshot)
                             .recycleOriginal(true)

@@ -227,6 +227,11 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
         public FrameLayout getDecor() {
             return mDecor;
         }
+
+        @Override
+        public LevelLayout getParent() {
+            return (LevelLayout) super.getParent();
+        }
     }
 
     protected static class Config extends Layer.Config {
@@ -267,8 +272,12 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             this.level = level;
         }
 
-        protected int level() {
+        public int level() {
             return level;
+        }
+
+        public boolean isTopThan(Level other) {
+            return level < other.level;
         }
     }
 
