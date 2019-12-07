@@ -1,7 +1,6 @@
 package per.goweii.anylayer;
 
 import android.animation.Animator;
-import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -67,41 +66,13 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    protected Animator onCreateInAnimator(View view) {
-        Animator backgroundAnimator;
-        if (getConfig().mBackgroundAnimatorCreator != null) {
-            backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createInAnimator(getViewHolder().getBackground());
-        } else {
-            backgroundAnimator = AnimatorHelper.createAlphaInAnim(getViewHolder().getBackground());
-        }
-        Animator contentAnimator;
-        if (getConfig().mContentAnimatorCreator != null) {
-            contentAnimator = getConfig().mContentAnimatorCreator.createInAnimator(getViewHolder().getContent());
-        } else {
-            contentAnimator = AnimatorHelper.createTopInAnim(getViewHolder().getContent());
-        }
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(backgroundAnimator, contentAnimator);
-        return animatorSet;
+    protected Animator onCreateDefContentInAnimator(View view) {
+        return AnimatorHelper.createTopInAnim(view);
     }
 
     @Override
-    protected Animator onCreateOutAnimator(View view) {
-        Animator backgroundAnimator;
-        if (getConfig().mBackgroundAnimatorCreator != null) {
-            backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createOutAnimator(getViewHolder().getBackground());
-        } else {
-            backgroundAnimator = AnimatorHelper.createAlphaOutAnim(getViewHolder().getBackground());
-        }
-        Animator contentAnimator;
-        if (getConfig().mContentAnimatorCreator != null) {
-            contentAnimator = getConfig().mContentAnimatorCreator.createOutAnimator(getViewHolder().getContent());
-        } else {
-            contentAnimator = AnimatorHelper.createTopOutAnim(getViewHolder().getContent());
-        }
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(backgroundAnimator, contentAnimator);
-        return animatorSet;
+    protected Animator onCreateDefContentOutAnimator(View view) {
+        return AnimatorHelper.createTopOutAnim(view);
     }
 
     @Override

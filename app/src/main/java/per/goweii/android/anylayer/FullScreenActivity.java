@@ -25,6 +25,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
     private TextView tvTitle;
     private DialogLayer anyLayer_show_target_right = null;
     private DialogLayer anyLayer_show_target_bottom = null;
+    private DialogLayer anyLayer_show_target_full = null;
     private DialogLayer anyLayer_show_menu = null;
 
     @Override
@@ -35,7 +36,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         initView();
         Layer dialog = AnyLayer.dialog(this)
                 .contentView(R.layout.dialog_normal)
-                .backgroundColorRes(R.color.dialog_bg)
+                .backgroundDimDefault()
                 .gravity(Gravity.CENTER)
                 .cancelableOnTouchOutside(true)
                 .cancelableOnClickKeyBack(true)
@@ -94,7 +95,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onLayerCreated(@NonNull DialogLayer anyLayer) {
                         anyLayer.contentView(R.layout.dialog_normal)
-                                .backgroundColorRes(R.color.dialog_bg)
+                                .backgroundDimDefault()
                                 .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                                 .show();
                     }
@@ -106,7 +107,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_edit:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_edit)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
                         .dragDismiss(DragLayout.DragStyle.Bottom)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -159,7 +160,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_match_width)
                         .avoidStatusBar(true)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .gravity(Gravity.TOP)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
@@ -176,22 +177,27 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .show();
                 break;
             case R.id.tv_show_target_full:
-                AnyLayer.popup(findViewById(R.id.tv_show_target_full))
-                        .outsideTouchedToDismiss(true)
-                        .outsideInterceptTouchEvent(false)
-                        .contentView(R.layout.dialog_fullscreen)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(View content) {
-                                return AnimatorHelper.createTopInAnim(content);
-                            }
+                if (anyLayer_show_target_full == null) {
+                    anyLayer_show_target_full = AnyLayer.popup(findViewById(R.id.tv_show_target_full))
+                            .outsideInterceptTouchEvent(false)
+                            .contentView(R.layout.dialog_fullscreen)
+                            .contentAnimator(new DialogLayer.AnimatorCreator() {
+                                @Override
+                                public Animator createInAnimator(View content) {
+                                    return AnimatorHelper.createTopInAnim(content);
+                                }
 
-                            @Override
-                            public Animator createOutAnimator(View content) {
-                                return AnimatorHelper.createTopOutAnim(content);
-                            }
-                        })
-                        .show();
+                                @Override
+                                public Animator createOutAnimator(View content) {
+                                    return AnimatorHelper.createTopOutAnim(content);
+                                }
+                            });
+                }
+                if (anyLayer_show_target_full.isShow()) {
+                    anyLayer_show_target_full.dismiss();
+                } else {
+                    anyLayer_show_target_full.show();
+                }
                 break;
             case R.id.tv_show_target_right:
                 if (anyLayer_show_target_right == null) {
@@ -241,7 +247,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.popup(findViewById(R.id.tv_show_target_top))
                         .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.ABOVE, true)
                         .contentView(R.layout.popup_match_width)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
@@ -261,7 +267,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                     anyLayer_show_target_bottom = AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
                             .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.BELOW, true)
                             .outsideInterceptTouchEvent(false)
-                            .backgroundColorRes(R.color.dialog_bg)
+                            .backgroundDimDefault()
                             .contentView(R.layout.popup_match_width)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
@@ -284,7 +290,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_bottom:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_match_width)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
@@ -302,16 +308,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_blur_bg:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
+                        .contentView(R.layout.dialog_icon)
                         .backgroundBlurPercent(0.05f)
                         .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_dark_bg:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
@@ -324,7 +329,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_bottom_in:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -342,7 +347,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_bottom_alpha_in:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -360,7 +365,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_top_in:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -378,7 +383,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_top_alpha_in:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -396,7 +401,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_top_bottom:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -414,7 +419,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_bottom_top:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -432,7 +437,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_top_bottom_alpha:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -450,7 +455,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_bottom_top_alpha:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -468,7 +473,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_left_in:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -486,7 +491,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_left_alpha_in:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -504,7 +509,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_right_in:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -522,7 +527,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_right_alpha_in:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -540,7 +545,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_left_right:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -558,7 +563,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_right_left:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -576,7 +581,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_left_right_alpha:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -594,7 +599,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_right_left_alpha:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -612,7 +617,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_reveal:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .contentView(R.layout.dialog_normal)
-                        .backgroundColorRes(R.color.dialog_bg)
+                        .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(View content) {
@@ -665,7 +670,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
     private void showMulti() {
         AnyLayer.dialog(FullScreenActivity.this)
                 .contentView(R.layout.dialog_more)
-                .backgroundColorRes(R.color.dialog_bg)
+                .backgroundDimDefault()
                 .gravity(Gravity.CENTER)
                 .cancelableOnTouchOutside(false)
                 .cancelableOnClickKeyBack(false)

@@ -29,6 +29,9 @@ import per.goweii.burred.Blurred;
  */
 public class DialogLayer extends DecorLayer {
 
+    private static final long ANIM_DUR_DEF = 220L;
+    private static final float BG_DIM_AMOUNT_DEF = 0.6F;
+
     private SoftInputHelper mSoftInputHelper = null;
 
     public DialogLayer(Context context) {
@@ -87,40 +90,185 @@ public class DialogLayer extends DecorLayer {
 
     @Override
     protected Animator onCreateInAnimator(View view) {
-        Animator backgroundAnimator;
-        if (getConfig().mBackgroundAnimatorCreator != null) {
-            backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createInAnimator(getViewHolder().getBackground());
-        } else {
-            backgroundAnimator = AnimatorHelper.createAlphaInAnim(getViewHolder().getBackground());
+        Animator backgroundAnimator = onCreateBackgroundInAnimator(getViewHolder().getBackground());
+        Animator contentAnimator = onCreateContentInAnimator(getViewHolder().getContent());
+        if (backgroundAnimator == null && contentAnimator == null) {
+            return null;
         }
-        Animator contentAnimator;
-        if (getConfig().mContentAnimatorCreator != null) {
-            contentAnimator = getConfig().mContentAnimatorCreator.createInAnimator(getViewHolder().getContent());
-        } else {
-            contentAnimator = AnimatorHelper.createZoomAlphaInAnim(getViewHolder().getContent());
+        if (backgroundAnimator == null) {
+            return contentAnimator;
+        }
+        if (contentAnimator == null) {
+            return backgroundAnimator;
         }
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(backgroundAnimator, contentAnimator);
         return animatorSet;
     }
 
-    @Override
-    protected Animator onCreateOutAnimator(View view) {
+    protected Animator onCreateBackgroundInAnimator(View view) {
         Animator backgroundAnimator;
         if (getConfig().mBackgroundAnimatorCreator != null) {
-            backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createOutAnimator(getViewHolder().getBackground());
+            backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createInAnimator(view);
         } else {
-            backgroundAnimator = AnimatorHelper.createAlphaOutAnim(getViewHolder().getBackground());
+            backgroundAnimator = onCreateDefBackgroundInAnimator(view);
         }
+        return backgroundAnimator;
+    }
+
+    protected Animator onCreateDefBackgroundInAnimator(View view) {
+        return AnimatorHelper.createAlphaInAnim(view);
+    }
+
+    protected Animator onCreateContentInAnimator(View view) {
         Animator contentAnimator;
         if (getConfig().mContentAnimatorCreator != null) {
-            contentAnimator = getConfig().mContentAnimatorCreator.createOutAnimator(getViewHolder().getContent());
+            contentAnimator = getConfig().mContentAnimatorCreator.createInAnimator(view);
         } else {
-            contentAnimator = AnimatorHelper.createZoomAlphaOutAnim(getViewHolder().getContent());
+            if (getConfig().mAnimStyle != null) {
+                switch (getConfig().mAnimStyle) {
+                    case ALPHA:
+                        contentAnimator = AnimatorHelper.createAlphaInAnim(view);
+                        break;
+                    case ZOOM:
+                        contentAnimator = AnimatorHelper.createZoomInAnim(view);
+                        break;
+                    case LEFT:
+                        contentAnimator = AnimatorHelper.createLeftInAnim(view);
+                        break;
+                    case RIGHT:
+                        contentAnimator = AnimatorHelper.createRightInAnim(view);
+                        break;
+                    case TOP:
+                        contentAnimator = AnimatorHelper.createTopInAnim(view);
+                        break;
+                    case BOTTOM:
+                        contentAnimator = AnimatorHelper.createBottomInAnim(view);
+                        break;
+                    default:
+                        contentAnimator = onCreateDefContentInAnimator(view);
+                        break;
+                }
+            } else {
+                switch (getConfig().mDragStyle) {
+                    case Left:
+                        contentAnimator = AnimatorHelper.createLeftInAnim(view);
+                        break;
+                    case Top:
+                        contentAnimator = AnimatorHelper.createTopInAnim(view);
+                        break;
+                    case Right:
+                        contentAnimator = AnimatorHelper.createRightInAnim(view);
+                        break;
+                    case Bottom:
+                        contentAnimator = AnimatorHelper.createBottomInAnim(view);
+                        break;
+                    case None:
+                    default:
+                        contentAnimator = onCreateDefContentInAnimator(view);
+                        break;
+                }
+            }
+            contentAnimator.setDuration(ANIM_DUR_DEF);
+        }
+        return contentAnimator;
+    }
+
+    protected Animator onCreateDefContentInAnimator(View view) {
+        return AnimatorHelper.createZoomAlphaInAnim(view);
+    }
+
+    @Override
+    protected Animator onCreateOutAnimator(View view) {
+        Animator backgroundAnimator = onCreateBackgroundOutAnimator(getViewHolder().getBackground());
+        Animator contentAnimator = onCreateContentOutAnimator(getViewHolder().getContent());
+        if (backgroundAnimator == null && contentAnimator == null) {
+            return null;
+        }
+        if (backgroundAnimator == null) {
+            return contentAnimator;
+        }
+        if (contentAnimator == null) {
+            return backgroundAnimator;
         }
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(backgroundAnimator, contentAnimator);
         return animatorSet;
+    }
+
+    protected Animator onCreateBackgroundOutAnimator(View view) {
+        Animator backgroundAnimator;
+        if (getConfig().mBackgroundAnimatorCreator != null) {
+            backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createOutAnimator(view);
+        } else {
+            backgroundAnimator = AnimatorHelper.createAlphaOutAnim(view);
+        }
+        if (getConfig().mContentAnimatorCreator == null) {
+            backgroundAnimator.setDuration(ANIM_DUR_DEF);
+        }
+        return backgroundAnimator;
+    }
+
+    protected Animator onCreateDefBackgroundOutAnimator(View view) {
+        return AnimatorHelper.createAlphaOutAnim(view);
+    }
+
+    protected Animator onCreateContentOutAnimator(View view) {
+        Animator contentAnimator;
+        if (getConfig().mContentAnimatorCreator != null) {
+            contentAnimator = getConfig().mContentAnimatorCreator.createOutAnimator(view);
+        } else {
+            if (getConfig().mAnimStyle != null) {
+                switch (getConfig().mAnimStyle) {
+                    case ALPHA:
+                        contentAnimator = AnimatorHelper.createAlphaOutAnim(view);
+                        break;
+                    case ZOOM:
+                        contentAnimator = AnimatorHelper.createZoomOutAnim(view);
+                        break;
+                    case LEFT:
+                        contentAnimator = AnimatorHelper.createLeftOutAnim(view);
+                        break;
+                    case RIGHT:
+                        contentAnimator = AnimatorHelper.createRightOutAnim(view);
+                        break;
+                    case TOP:
+                        contentAnimator = AnimatorHelper.createTopOutAnim(view);
+                        break;
+                    case BOTTOM:
+                        contentAnimator = AnimatorHelper.createBottomOutAnim(view);
+                        break;
+                    default:
+                        contentAnimator = onCreateDefContentOutAnimator(view);
+                        break;
+                }
+            } else {
+                switch (getConfig().mDragStyle) {
+                    case Left:
+                        contentAnimator = AnimatorHelper.createLeftOutAnim(view);
+                        break;
+                    case Top:
+                        contentAnimator = AnimatorHelper.createTopOutAnim(view);
+                        break;
+                    case Right:
+                        contentAnimator = AnimatorHelper.createRightOutAnim(view);
+                        break;
+                    case Bottom:
+                        contentAnimator = AnimatorHelper.createBottomOutAnim(view);
+                        break;
+                    case None:
+                    default:
+                        contentAnimator = onCreateDefContentOutAnimator(view);
+                        break;
+                }
+            }
+            contentAnimator.setDuration(ANIM_DUR_DEF);
+        }
+        return contentAnimator;
+    }
+
+    protected Animator onCreateDefContentOutAnimator(View view) {
+        return AnimatorHelper.createZoomAlphaOutAnim(view);
     }
 
     @Override
@@ -406,6 +554,16 @@ public class DialogLayer extends DecorLayer {
     }
 
     /**
+     * 自定义浮层进入和退出动画样式
+     *
+     * @param animStyle AnimStyle
+     */
+    public DialogLayer animStyle(AnimStyle animStyle) {
+        getConfig().mAnimStyle = animStyle;
+        return this;
+    }
+
+    /**
      * 自定义浮层的进入和退出动画
      * 可使用工具类{@link AnimatorHelper}
      *
@@ -474,6 +632,13 @@ public class DialogLayer extends DecorLayer {
     public DialogLayer backgroundDimAmount(float dimAmount) {
         getConfig().mBackgroundDimAmount = Utils.floatRange01(dimAmount);
         return this;
+    }
+
+    /**
+     * 设置背景变暗
+     */
+    public DialogLayer backgroundDimDefault() {
+        return backgroundDimAmount(0.6F);
     }
 
     /**
@@ -678,6 +843,7 @@ public class DialogLayer extends DecorLayer {
 
         protected AnimatorCreator mBackgroundAnimatorCreator = null;
         protected AnimatorCreator mContentAnimatorCreator = null;
+        protected AnimStyle mAnimStyle = null;
 
         protected int mContentViewId = 0;
 
@@ -709,5 +875,14 @@ public class DialogLayer extends DecorLayer {
 
     public interface DragTransformer {
         void onDragging(View content, View background, float f);
+    }
+
+    public enum AnimStyle {
+        ALPHA,
+        ZOOM,
+        LEFT,
+        RIGHT,
+        TOP,
+        BOTTOM
     }
 }
