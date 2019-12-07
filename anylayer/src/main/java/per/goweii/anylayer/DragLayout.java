@@ -56,12 +56,66 @@ public class DragLayout extends FrameLayout {
         return mDragStyle != DragStyle.None;
     }
 
+    private MotionEvent currEv = null;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        currEv = ev;
+        switch (ev.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (!mHandleDragEvent) {
+                    float offX = ev.getRawX() - mDownX;
+                    float offY = ev.getRawY() - mDownY;
+                    boolean dragged = offX * offX + offY * offY > mDragHelper.getTouchSlop();
+                    if (dragged) {
+                        switch (mDragStyle) {
+                            case Top:
+                                if (offY < 0 && !DragCompat.canViewScrollDown(mInnerScrollViews, mDownX, mDownY, false)) {
+                                    mHandleDragEvent = false;
+                                    requestDisallowInterceptTouchEvent(false);
+                                }
+                                break;
+                            case Bottom:
+                                if (offY > 0 && !DragCompat.canViewScrollUp(mInnerScrollViews, mDownX, mDownY, false)) {
+                                    mHandleDragEvent = false;
+                                    requestDisallowInterceptTouchEvent(false);
+                                }
+                                break;
+                            case Left:
+                                if (offX < 0 && !DragCompat.canViewScrollRight(mInnerScrollViews, mDownX, mDownY, false)) {
+                                    mHandleDragEvent = false;
+                                    requestDisallowInterceptTouchEvent(false);
+                                }
+                                break;
+                            case Right:
+                                if (offX > 0 && !DragCompat.canViewScrollLeft(mInnerScrollViews, mDownX, mDownY, false)) {
+                                    mHandleDragEvent = false;
+                                    requestDisallowInterceptTouchEvent(false);
+                                }
+                                break;
+                            case None:
+                            default:
+                                break;
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (!isEnable()) {
             mHandleDragEvent = false;
             return super.onInterceptTouchEvent(ev);
         }
+        currEv = ev;
+        mHandleDragEvent = mDragHelper.shouldInterceptTouchEvent(ev);
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 mDownX = ev.getRawX();
@@ -70,16 +124,16 @@ public class DragLayout extends FrameLayout {
             default:
                 break;
         }
-        mHandleDragEvent = mDragHelper.shouldInterceptTouchEvent(ev);
         return mHandleDragEvent || super.onInterceptTouchEvent(ev);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent ev) {
         if (isEnable()) {
-            mDragHelper.processTouchEvent(event);
+            mDragHelper.processTouchEvent(ev);
         }
+        currEv = ev;
         return mHandleDragEvent;
     }
 
