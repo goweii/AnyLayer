@@ -90,7 +90,6 @@ final class Utils {
         int oH = (int) (h / scale);
         Bitmap bitmap = Bitmap.createBitmap(oW, oH, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
-
         canvas.save();
         int[] locationRootView = new int[2];
         decor.getLocationOnScreen(locationRootView);
@@ -100,8 +99,9 @@ final class Utils {
         int y = locationBackground[1] - locationRootView[1];
         canvas.scale(1 / scale, 1 / scale);
         canvas.translate(x / scale, y / scale);
-
-        decor.getBackground().draw(canvas);
+        if (decor.getBackground() != null) {
+            decor.getBackground().draw(canvas);
+        }
         out:
         for (int i = 0; i < decor.getChildCount(); i++) {
             View decorChildAt = decor.getChildAt(i);
