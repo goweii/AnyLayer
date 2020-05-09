@@ -95,7 +95,6 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             parent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             group.addView(parent, lastIndex + 1);
         }
-        parent.setVisibility(View.VISIBLE);
         getViewHolder().setParent(parent);
         return parent;
     }
@@ -131,25 +130,17 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
         if (group == null) {
             return;
         }
-        LevelLayout parent = null;
-        final int count = group.getChildCount();
-        for (int i = 0; i < count; i++) {
-            View child = group.getChildAt(i);
-            if (child instanceof LevelLayout) {
-                LevelLayout levelLayout = (LevelLayout) child;
-                if (getLevel() == levelLayout.getLevel()) {
-                    parent = levelLayout;
-                    break;
-                }
-            }
-        }
+        final LevelLayout parent = findLevelLayoutFromGroup(group);
         if (parent == null) {
             return;
         }
         if (parent.getChildCount() == 0) {
-            parent.setVisibility(View.GONE);
-            // group.removeView(parent);
-            // 存在toastLayer时，滑动关闭会崩溃
+            parent.post(new Runnable() {
+                @Override
+                public void run() {
+                    group.removeView(parent);
+                }
+            });
         }
         if (group.getChildCount() == 0) {
             removeLayerLayoutFromDecor(group);
@@ -197,6 +188,22 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             }
         }
         return layerLayout;
+    }
+
+    private LevelLayout findLevelLayoutFromGroup(LayerLayout group) {
+        LevelLayout parent = null;
+        final int count = group.getChildCount();
+        for (int i = 0; i < count; i++) {
+            View child = group.getChildAt(i);
+            if (child instanceof LevelLayout) {
+                LevelLayout levelLayout = (LevelLayout) child;
+                if (getLevel() == levelLayout.getLevel()) {
+                    parent = levelLayout;
+                    break;
+                }
+            }
+        }
+        return parent;
     }
 
     private LayerLayout addNewLayerLayoutToDecor() {
