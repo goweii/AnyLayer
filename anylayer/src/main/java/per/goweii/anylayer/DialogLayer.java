@@ -375,6 +375,7 @@ public class DialogLayer extends DecorLayer {
             public void onDragEnd() {
                 // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
                 // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                getViewHolder().getContentWrapper().setVisibility(View.INVISIBLE);
                 getViewHolder().getContentWrapper().post(new Runnable() {
                     @Override
                     public void run() {
@@ -383,6 +384,7 @@ public class DialogLayer extends DecorLayer {
                 });
             }
         });
+        getViewHolder().getContentWrapper().setVisibility(View.VISIBLE);
     }
 
     private void fitContainerToActivityContent() {

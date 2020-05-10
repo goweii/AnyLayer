@@ -32,6 +32,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     private Animator mAnimatorIn = null;
     private Animator mAnimatorOut = null;
 
+    private boolean mInitialized = false;
+
     public Layer() {
         mConfig = Utils.requireNonNull(onCreateConfig(), "onCreateConfig() == null");
         mViewHolder = Utils.requireNonNull(onCreateViewHolder(), "onCreateViewHolder() == null");
@@ -97,8 +99,13 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     @Override
     public void onAttach() {
+        getViewHolder().getChild().setVisibility(View.VISIBLE);
         mListenerHolder.bindClickListeners(this);
         mListenerHolder.notifyVisibleChangeOnShow(this);
+        if (!mInitialized) {
+            mInitialized = true;
+            mListenerHolder.notifyOnInitialize(this);
+        }
         mListenerHolder.notifyDataBinder(this);
     }
 
@@ -166,6 +173,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
                         if (!beenCanceled) {
                             // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
                             // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                            getViewHolder().getChild().setVisibility(View.INVISIBLE);
                             getViewHolder().getChild().post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -329,6 +337,17 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     /**
+     * 初始化
+     * 获取子控件ID为{@link #getView(int)}
+     *
+     * @param onInitialize 该接口仅在第一次加载时调用，可加载初始化数据
+     */
+    public Layer onInitialize(OnInitialize onInitialize) {
+        mListenerHolder.addOnInitialize(onInitialize);
+        return this;
+    }
+
+    /**
      * 设置显示状态改变的监听
      *
      * @param onVisibleChangeListener OnVisibleChangeListener
@@ -437,6 +456,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     protected static class ListenerHolder {
         private SparseArray<OnClickListener> mOnClickListeners = null;
+        private List<OnInitialize> mOnInitializes = null;
         private List<DataBinder> mDataBinders = null;
         private List<OnVisibleChangeListener> mOnVisibleChangeListeners = null;
         private List<OnShowListener> mOnShowListeners = null;
@@ -479,6 +499,13 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             mDataBinders.add(dataBinder);
         }
 
+        private void addOnInitialize(OnInitialize onInitialize) {
+            if (mOnInitializes == null) {
+                mOnInitializes = new ArrayList<>(1);
+            }
+            mOnInitializes.add(onInitialize);
+        }
+
         private void addOnVisibleChangeListener(OnVisibleChangeListener onVisibleChangeListener) {
             if (mOnVisibleChangeListeners == null) {
                 mOnVisibleChangeListeners = new ArrayList<>(1);
@@ -505,6 +532,15 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             if (mDataBinders != null) {
                 for (DataBinder dataBinder : mDataBinders) {
                     dataBinder.bindData(layer);
+                }
+            }
+        }
+
+        private void notifyOnInitialize(Layer layer) {
+            Utils.requireNonNull(layer, "layer == null");
+            if (mOnInitializes != null) {
+                for (OnInitialize onInitialize : mOnInitializes) {
+                    onInitialize.onInit(layer);
                 }
             }
         }
@@ -585,6 +621,13 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
          * 绑定数据
          */
         void bindData(Layer layer);
+    }
+
+    public interface OnInitialize {
+        /**
+         * 首次加载
+         */
+        void onInit(Layer layer);
     }
 
     public interface OnClickListener {

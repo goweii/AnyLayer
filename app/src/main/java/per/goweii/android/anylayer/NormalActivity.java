@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
@@ -27,6 +28,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
 
     private DialogLayer anyLayer_show_target_right = null;
     private DialogLayer anyLayer_show_target_bottom = null;
+    private Layer layer_dark_bg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,17 +283,33 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_dark_bg:
-                AnyLayer.dialog(NormalActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
-                        .onClick(new Layer.OnClickListener() {
-                            @Override
-                            public void onClick(Layer anyLayer, View v) {
-                                anyLayer.dismiss();
-                            }
-                        }, R.id.fl_dialog_yes)
-                        .show();
+                if (layer_dark_bg == null) {
+                    layer_dark_bg = AnyLayer.dialog(NormalActivity.this)
+                            .contentView(R.layout.dialog_normal)
+                            .backgroundDimDefault()
+                            .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                            .onInitialize(new Layer.OnInitialize() {
+                                @Override
+                                public void onInit(Layer layer) {
+                                    TextView tv_dialog_content = layer.getView(R.id.tv_dialog_content);
+                                    tv_dialog_content.setText("这是第一次初始化时绑定的数据" + Math.random());
+                                }
+                            })
+                            .bindData(new Layer.DataBinder() {
+                                @Override
+                                public void bindData(Layer layer) {
+                                    TextView tv_dialog_title = layer.getView(R.id.tv_dialog_title);
+                                    tv_dialog_title.setText("" + tv_dialog_title.toString());
+                                }
+                            })
+                            .onClick(new Layer.OnClickListener() {
+                                @Override
+                                public void onClick(Layer anyLayer, View v) {
+                                    anyLayer.dismiss();
+                                }
+                            }, R.id.fl_dialog_yes);
+                }
+                layer_dark_bg.show();
                 break;
             case R.id.tv_show_tran_bg:
                 AnyLayer.dialog(NormalActivity.this)
