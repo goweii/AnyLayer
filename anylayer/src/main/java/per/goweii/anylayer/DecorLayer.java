@@ -135,12 +135,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             return;
         }
         if (parent.getChildCount() == 0) {
-            parent.post(new Runnable() {
-                @Override
-                public void run() {
-                    group.removeView(parent);
-                }
-            });
+            group.removeView(parent);
         }
         if (group.getChildCount() == 0) {
             removeLayerLayoutFromDecor(group);

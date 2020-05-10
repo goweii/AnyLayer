@@ -201,7 +201,7 @@ public class DialogLayer extends DecorLayer {
         if (getConfig().mBackgroundAnimatorCreator != null) {
             backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createOutAnimator(view);
         } else {
-            backgroundAnimator = AnimatorHelper.createAlphaOutAnim(view);
+            backgroundAnimator = onCreateDefBackgroundOutAnimator(view);
         }
         if (getConfig().mContentAnimatorCreator == null) {
             backgroundAnimator.setDuration(ANIM_DUR_DEF);
@@ -373,9 +373,18 @@ public class DialogLayer extends DecorLayer {
 
             @Override
             public void onDragEnd() {
-                dismiss(false);
+                // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
+                // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                getViewHolder().getContentWrapper().setVisibility(View.INVISIBLE);
+                getViewHolder().getContentWrapper().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        dismiss(false);
+                    }
+                });
             }
         });
+        getViewHolder().getContentWrapper().setVisibility(View.VISIBLE);
     }
 
     private void fitContainerToActivityContent() {
@@ -639,7 +648,7 @@ public class DialogLayer extends DecorLayer {
      * 设置背景变暗
      */
     public DialogLayer backgroundDimDefault() {
-        return backgroundDimAmount(0.6F);
+        return backgroundDimAmount(BG_DIM_AMOUNT_DEF);
     }
 
     /**
