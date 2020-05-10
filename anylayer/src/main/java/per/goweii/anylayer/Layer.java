@@ -164,7 +164,14 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         if (!beenCanceled) {
-                            mViewManager.detach();
+                            // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
+                            // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                            getViewHolder().getChild().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mViewManager.detach();
+                                }
+                            });
                         }
                     }
 
