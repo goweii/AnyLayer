@@ -7,6 +7,7 @@ import android.view.View;
 
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DragLayout;
+import per.goweii.anylayer.Layer;
 
 public class DragActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -66,6 +67,18 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .gravity(Gravity.BOTTOM)
                         .dragDismiss(DragLayout.DragStyle.Bottom)
                         .onClickToDismiss(R.id.fl_dialog_no)
+                        .bindData(new Layer.DataBinder() {
+                            @Override
+                            public void bindData(Layer layer) {
+                                layer.getView(R.id.tv_dialog_title).setOnLongClickListener(new View.OnLongClickListener() {
+                                    @Override
+                                    public boolean onLongClick(View v) {
+                                        findViewById(R.id.tv_show_top).performClick();
+                                        return false;
+                                    }
+                                });
+                            }
+                        })
                         .show();
                 break;
         }
