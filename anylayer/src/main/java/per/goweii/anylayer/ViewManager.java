@@ -57,12 +57,8 @@ public final class ViewManager {
     }
 
     public void attach() {
-        if (mParent == null) {
-            throw new RuntimeException("parent cannot be null on attach");
-        }
-        if (mChild == null) {
-            throw new RuntimeException("parent cannot be null on attach");
-        }
+        Utils.requireNonNull(mParent, "parent cannot be null on attach");
+        Utils.requireNonNull(mChild, "child cannot be null on attach");
         checkChildParent();
         if (!isAttached()) {
             onAttach();
@@ -71,7 +67,14 @@ public final class ViewManager {
 
     public void detach() {
         if (isAttached()) {
-            onDetach();
+            mChild.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (isAttached()) {
+                        onDetach();
+                    }
+                }
+            });
         }
     }
 
