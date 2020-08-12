@@ -598,3 +598,9 @@ AnyLayer.toast()
 
 > 待实现
 
+
+
+# 如果你觉得还不错，就请我喝杯咖啡吧~
+
+| ![wx_qrcode](https://gitee.com/goweii/WanAndroidServer/raw/master/about/wx_qrcode.png) |
+|---|
