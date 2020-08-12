@@ -451,26 +451,28 @@ public class DialogLayer extends DecorLayer {
                             .blur();
                     getViewHolder().getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
                     getViewHolder().getBackground().setImageBitmap(blurBitmap);
-                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                    if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
+                        getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                    }
                 }
             });
         } else {
             if (getConfig().mBackgroundBitmap != null) {
                 getViewHolder().getBackground().setImageBitmap(getConfig().mBackgroundBitmap);
-                if (getConfig().mBackgroundColor != -1) {
+                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
                     getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundDrawable != null) {
                 getViewHolder().getBackground().setImageDrawable(getConfig().mBackgroundDrawable);
-                if (getConfig().mBackgroundColor != -1) {
+                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
                     getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundResource != -1) {
                 getViewHolder().getBackground().setImageResource(getConfig().mBackgroundResource);
-                if (getConfig().mBackgroundColor != -1) {
+                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
                     getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
                 }
-            } else if (getConfig().mBackgroundColor != -1) {
+            } else if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
                 getViewHolder().getBackground().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
             } else if (getConfig().mBackgroundDimAmount != -1) {
                 int color = Color.argb((int) (255 * Utils.floatRange01(getConfig().mBackgroundDimAmount)), 0, 0, 0);
@@ -879,7 +881,7 @@ public class DialogLayer extends DecorLayer {
         protected int mBackgroundResource = -1;
         protected Drawable mBackgroundDrawable = null;
         protected float mBackgroundDimAmount = -1;
-        protected int mBackgroundColor = -1;
+        protected int mBackgroundColor = Color.TRANSPARENT;
 
         protected DragLayout.DragStyle mDragStyle = DragLayout.DragStyle.None;
         protected DragTransformer mDragTransformer = null;
