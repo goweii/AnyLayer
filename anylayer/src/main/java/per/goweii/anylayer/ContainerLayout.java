@@ -6,6 +6,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Create by cuizhen on {2019/12/3}
  */
@@ -13,15 +16,15 @@ public class ContainerLayout extends FrameLayout {
 
     private OnTouchedListener mOnTouchedListener = null;
 
-    public ContainerLayout(Context context) {
+    public ContainerLayout(@NonNull Context context) {
         this(context, null);
     }
 
-    public ContainerLayout(Context context, AttributeSet attrs) {
+    public ContainerLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ContainerLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ContainerLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -40,7 +43,7 @@ public class ContainerLayout extends FrameLayout {
         return super.onTouchEvent(ev);
     }
 
-    public void setOnTouchedListener(OnTouchedListener onTouchedListener) {
+    public void setOnTouchedListener(@Nullable OnTouchedListener onTouchedListener) {
         this.mOnTouchedListener = onTouchedListener;
     }
 

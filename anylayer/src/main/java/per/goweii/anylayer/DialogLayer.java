@@ -18,6 +18,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import per.goweii.burred.Blurred;
 
 /**
@@ -34,79 +38,96 @@ public class DialogLayer extends DecorLayer {
 
     private SoftInputHelper mSoftInputHelper = null;
 
-    public DialogLayer(Context context) {
-        this(Utils.getActivity(Utils.requireNonNull(context, "context == null")));
+    public DialogLayer(@NonNull Context context) {
+        this(Utils.requireNonNull(Utils.getActivity(context),
+                "无法从Context获取Activity，请确保传入的不是ApplicationContext或ServiceContext等"));
     }
 
-    public DialogLayer(Activity activity) {
+    public DialogLayer(@NonNull Activity activity) {
         super(activity);
         getViewHolder().setActivityContent(getViewHolder().getDecor().findViewById(android.R.id.content));
     }
 
+    @NonNull
     @Override
     protected Level getLevel() {
         return Level.DIALOG;
     }
 
+    @NonNull
     @Override
     protected ViewHolder onCreateViewHolder() {
         return new ViewHolder();
     }
 
+    @NonNull
     @Override
     public ViewHolder getViewHolder() {
         return (ViewHolder) super.getViewHolder();
     }
 
+    @NonNull
     @Override
     protected Config onCreateConfig() {
         return new Config();
     }
 
+    @NonNull
     @Override
     public Config getConfig() {
         return (Config) super.getConfig();
     }
 
+    @NonNull
     @Override
-    protected View onCreateChild(LayoutInflater inflater, ViewGroup parent) {
-        ContainerLayout container = (ContainerLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
-        getViewHolder().setChild(container);
-        getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getContentWrapper()));
-        getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
-        return container;
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (getViewHolder().getNullableChild() == null) {
+            ContainerLayout container = (ContainerLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
+            getViewHolder().setChild(container);
+            getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getContentWrapper()));
+            ViewGroup.LayoutParams layoutParams = getViewHolder().getContent().getLayoutParams();
+            FrameLayout.LayoutParams contentParams;
+            if (layoutParams == null) {
+                contentParams = generateContentDefaultLayoutParams();
+            } else if (layoutParams instanceof FrameLayout.LayoutParams) {
+                contentParams = (FrameLayout.LayoutParams) layoutParams;
+            } else {
+                contentParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
+            }
+            getViewHolder().getContent().setLayoutParams(contentParams);
+            getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
+        }
+        return getViewHolder().getChild();
     }
 
-    protected View onCreateContent(LayoutInflater inflater, ViewGroup parent) {
-        if (getViewHolder().getContent() != null) {
+    @NonNull
+    protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (getViewHolder().getNullableContent() == null) {
+            getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
+        } else {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
             if (contentParent != null) {
-                contentParent.removeView(getViewHolder().getContent());
+                contentParent.removeView(getConfig().mContentView);
             }
-            return getViewHolder().getContent();
         }
-        return inflater.inflate(getConfig().mContentViewId, parent, false);
+        return getViewHolder().getContent();
     }
 
+    @Nullable
     @Override
-    protected Animator onCreateInAnimator(View view) {
+    protected Animator onCreateInAnimator(@NonNull View view) {
         Animator backgroundAnimator = onCreateBackgroundInAnimator(getViewHolder().getBackground());
         Animator contentAnimator = onCreateContentInAnimator(getViewHolder().getContent());
-        if (backgroundAnimator == null && contentAnimator == null) {
-            return null;
-        }
-        if (backgroundAnimator == null) {
-            return contentAnimator;
-        }
-        if (contentAnimator == null) {
-            return backgroundAnimator;
-        }
+        if (backgroundAnimator == null && contentAnimator == null) return null;
+        if (backgroundAnimator == null) return contentAnimator;
+        if (contentAnimator == null) return backgroundAnimator;
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(backgroundAnimator, contentAnimator);
         return animatorSet;
     }
 
-    protected Animator onCreateBackgroundInAnimator(View view) {
+    @Nullable
+    protected Animator onCreateBackgroundInAnimator(@NonNull View view) {
         Animator backgroundAnimator;
         if (getConfig().mBackgroundAnimatorCreator != null) {
             backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createInAnimator(view);
@@ -116,11 +137,13 @@ public class DialogLayer extends DecorLayer {
         return backgroundAnimator;
     }
 
-    protected Animator onCreateDefBackgroundInAnimator(View view) {
+    @NonNull
+    protected Animator onCreateDefBackgroundInAnimator(@NonNull View view) {
         return AnimatorHelper.createAlphaInAnim(view);
     }
 
-    protected Animator onCreateContentInAnimator(View view) {
+    @Nullable
+    protected Animator onCreateContentInAnimator(@NonNull View view) {
         Animator contentAnimator;
         if (getConfig().mContentAnimatorCreator != null) {
             contentAnimator = getConfig().mContentAnimatorCreator.createInAnimator(view);
@@ -174,29 +197,26 @@ public class DialogLayer extends DecorLayer {
         return contentAnimator;
     }
 
-    protected Animator onCreateDefContentInAnimator(View view) {
+    @NonNull
+    protected Animator onCreateDefContentInAnimator(@NonNull View view) {
         return AnimatorHelper.createZoomAlphaInAnim(view);
     }
 
+    @Nullable
     @Override
-    protected Animator onCreateOutAnimator(View view) {
+    protected Animator onCreateOutAnimator(@NonNull View view) {
         Animator backgroundAnimator = onCreateBackgroundOutAnimator(getViewHolder().getBackground());
         Animator contentAnimator = onCreateContentOutAnimator(getViewHolder().getContent());
-        if (backgroundAnimator == null && contentAnimator == null) {
-            return null;
-        }
-        if (backgroundAnimator == null) {
-            return contentAnimator;
-        }
-        if (contentAnimator == null) {
-            return backgroundAnimator;
-        }
+        if (backgroundAnimator == null && contentAnimator == null) return null;
+        if (backgroundAnimator == null) return contentAnimator;
+        if (contentAnimator == null) return backgroundAnimator;
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(backgroundAnimator, contentAnimator);
         return animatorSet;
     }
 
-    protected Animator onCreateBackgroundOutAnimator(View view) {
+    @Nullable
+    protected Animator onCreateBackgroundOutAnimator(@NonNull View view) {
         Animator backgroundAnimator;
         if (getConfig().mBackgroundAnimatorCreator != null) {
             backgroundAnimator = getConfig().mBackgroundAnimatorCreator.createOutAnimator(view);
@@ -209,11 +229,13 @@ public class DialogLayer extends DecorLayer {
         return backgroundAnimator;
     }
 
-    protected Animator onCreateDefBackgroundOutAnimator(View view) {
+    @NonNull
+    protected Animator onCreateDefBackgroundOutAnimator(@NonNull View view) {
         return AnimatorHelper.createAlphaOutAnim(view);
     }
 
-    protected Animator onCreateContentOutAnimator(View view) {
+    @Nullable
+    protected Animator onCreateContentOutAnimator(@NonNull View view) {
         Animator contentAnimator;
         if (getConfig().mContentAnimatorCreator != null) {
             contentAnimator = getConfig().mContentAnimatorCreator.createOutAnimator(view);
@@ -267,8 +289,15 @@ public class DialogLayer extends DecorLayer {
         return contentAnimator;
     }
 
-    protected Animator onCreateDefContentOutAnimator(View view) {
+    @NonNull
+    protected Animator onCreateDefContentOutAnimator(@NonNull View view) {
         return AnimatorHelper.createZoomAlphaOutAnim(view);
+    }
+
+    @NonNull
+    protected FrameLayout.LayoutParams generateContentDefaultLayoutParams() {
+        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
     }
 
     @Override
@@ -301,7 +330,7 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
             @Override
             public void run() {
@@ -357,7 +386,7 @@ public class DialogLayer extends DecorLayer {
                 if (getConfig().mDragTransformer == null) {
                     getConfig().mDragTransformer = new DragTransformer() {
                         @Override
-                        public void onDragging(View content, View background, float f) {
+                        public void onDragging(@NonNull View content, @NonNull View background, float f) {
                             background.setAlpha(1F - f);
                         }
                     };
@@ -434,26 +463,28 @@ public class DialogLayer extends DecorLayer {
                             .blur();
                     getViewHolder().getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
                     getViewHolder().getBackground().setImageBitmap(blurBitmap);
-                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                    if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
+                        getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                    }
                 }
             });
         } else {
             if (getConfig().mBackgroundBitmap != null) {
                 getViewHolder().getBackground().setImageBitmap(getConfig().mBackgroundBitmap);
-                if (getConfig().mBackgroundColor != -1) {
+                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
                     getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundDrawable != null) {
                 getViewHolder().getBackground().setImageDrawable(getConfig().mBackgroundDrawable);
-                if (getConfig().mBackgroundColor != -1) {
+                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
                     getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundResource != -1) {
                 getViewHolder().getBackground().setImageResource(getConfig().mBackgroundResource);
-                if (getConfig().mBackgroundColor != -1) {
+                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
                     getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
                 }
-            } else if (getConfig().mBackgroundColor != -1) {
+            } else if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
                 getViewHolder().getBackground().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
             } else if (getConfig().mBackgroundDimAmount != -1) {
                 int color = Color.argb((int) (255 * Utils.floatRange01(getConfig().mBackgroundDimAmount)), 0, 0, 0);
@@ -466,15 +497,7 @@ public class DialogLayer extends DecorLayer {
 
     protected void initContent() {
         getViewHolder().getContent().setClickable(true);
-        ViewGroup.LayoutParams layoutParams = getViewHolder().getContent().getLayoutParams();
-        FrameLayout.LayoutParams contentParams;
-        if (layoutParams == null) {
-            contentParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        } else if (layoutParams instanceof FrameLayout.LayoutParams) {
-            contentParams = (FrameLayout.LayoutParams) layoutParams;
-        } else {
-            contentParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
-        }
+        FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
         if (getConfig().mGravity != -1) {
             contentParams.gravity = getConfig().mGravity;
         }
@@ -495,9 +518,9 @@ public class DialogLayer extends DecorLayer {
      *
      * @param contentView 自定以View
      */
-    public DialogLayer contentView(View contentView) {
-        Utils.requireNonNull(contentView, "contentView == null");
-        getViewHolder().setContent(contentView);
+    @NonNull
+    public DialogLayer contentView(@Nullable View contentView) {
+        getConfig().mContentView = contentView;
         return this;
     }
 
@@ -506,6 +529,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param contentViewId 自定义布局ID
      */
+    @NonNull
     public DialogLayer contentView(int contentViewId) {
         getConfig().mContentViewId = contentViewId;
         return this;
@@ -517,6 +541,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param statusBarId 状态栏的占位View
      */
+    @NonNull
     public DialogLayer asStatusBar(int statusBarId) {
         getConfig().mAsStatusBarViewId = statusBarId;
         return this;
@@ -527,6 +552,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param avoid 设置避开状态栏
      */
+    @NonNull
     public DialogLayer avoidStatusBar(boolean avoid) {
         getConfig().mAvoidStatusBar = avoid;
         return this;
@@ -538,6 +564,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param gravity {@link Gravity}
      */
+    @NonNull
     public DialogLayer gravity(int gravity) {
         getConfig().mGravity = gravity;
         return this;
@@ -548,7 +575,8 @@ public class DialogLayer extends DecorLayer {
      *
      * @param dragStyle DragLayout.DragStyle
      */
-    public DialogLayer dragDismiss(DragLayout.DragStyle dragStyle) {
+    @NonNull
+    public DialogLayer dragDismiss(@NonNull DragLayout.DragStyle dragStyle) {
         getConfig().mDragStyle = dragStyle;
         return this;
     }
@@ -558,7 +586,8 @@ public class DialogLayer extends DecorLayer {
      *
      * @param dragTransformer DragTransformer
      */
-    public DialogLayer dragTransformer(DragTransformer dragTransformer) {
+    @NonNull
+    public DialogLayer dragTransformer(@Nullable DragTransformer dragTransformer) {
         getConfig().mDragTransformer = dragTransformer;
         return this;
     }
@@ -568,7 +597,8 @@ public class DialogLayer extends DecorLayer {
      *
      * @param animStyle AnimStyle
      */
-    public DialogLayer animStyle(AnimStyle animStyle) {
+    @NonNull
+    public DialogLayer animStyle(@Nullable AnimStyle animStyle) {
         getConfig().mAnimStyle = animStyle;
         return this;
     }
@@ -579,7 +609,8 @@ public class DialogLayer extends DecorLayer {
      *
      * @param contentAnimatorCreator AnimatorCreator
      */
-    public DialogLayer contentAnimator(AnimatorCreator contentAnimatorCreator) {
+    @NonNull
+    public DialogLayer contentAnimator(@Nullable AnimatorCreator contentAnimatorCreator) {
         getConfig().mContentAnimatorCreator = contentAnimatorCreator;
         return this;
     }
@@ -590,7 +621,8 @@ public class DialogLayer extends DecorLayer {
      *
      * @param backgroundAnimatorCreator AnimatorCreator
      */
-    public DialogLayer backgroundAnimator(AnimatorCreator backgroundAnimatorCreator) {
+    @NonNull
+    public DialogLayer backgroundAnimator(@Nullable AnimatorCreator backgroundAnimatorCreator) {
         getConfig().mBackgroundAnimatorCreator = backgroundAnimatorCreator;
         return this;
     }
@@ -603,11 +635,13 @@ public class DialogLayer extends DecorLayer {
      *
      * @param radius 模糊半径
      */
+    @NonNull
     public DialogLayer backgroundBlurRadius(float radius) {
         getConfig().mBackgroundBlurRadius = radius;
         return this;
     }
 
+    @NonNull
     public DialogLayer backgroundBlurPercent(float percent) {
         getConfig().mBackgroundBlurPercent = percent;
         return this;
@@ -618,6 +652,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param scale 缩放比例
      */
+    @NonNull
     public DialogLayer backgroundBlurScale(float scale) {
         getConfig().mBackgroundBlurScale = scale;
         return this;
@@ -628,8 +663,8 @@ public class DialogLayer extends DecorLayer {
      *
      * @param bitmap 图片
      */
-    public DialogLayer backgroundBitmap(Bitmap bitmap) {
-        Utils.requireNonNull(bitmap, "bitmap == null");
+    @NonNull
+    public DialogLayer backgroundBitmap(@Nullable Bitmap bitmap) {
         getConfig().mBackgroundBitmap = bitmap;
         return this;
     }
@@ -639,6 +674,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param dimAmount 变暗程度 0~1
      */
+    @NonNull
     public DialogLayer backgroundDimAmount(float dimAmount) {
         getConfig().mBackgroundDimAmount = Utils.floatRange01(dimAmount);
         return this;
@@ -647,6 +683,7 @@ public class DialogLayer extends DecorLayer {
     /**
      * 设置背景变暗
      */
+    @NonNull
     public DialogLayer backgroundDimDefault() {
         return backgroundDimAmount(BG_DIM_AMOUNT_DEF);
     }
@@ -656,6 +693,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param resource 资源ID
      */
+    @NonNull
     public DialogLayer backgroundResource(int resource) {
         getConfig().mBackgroundResource = resource;
         return this;
@@ -666,8 +704,8 @@ public class DialogLayer extends DecorLayer {
      *
      * @param drawable Drawable
      */
-    public DialogLayer backgroundDrawable(Drawable drawable) {
-        Utils.requireNonNull(drawable, "drawable == null");
+    @NonNull
+    public DialogLayer backgroundDrawable(@Nullable Drawable drawable) {
         getConfig().mBackgroundDrawable = drawable;
         return this;
     }
@@ -680,6 +718,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param colorInt 颜色值
      */
+    @NonNull
     public DialogLayer backgroundColorInt(int colorInt) {
         getConfig().mBackgroundColor = colorInt;
         return this;
@@ -693,6 +732,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param colorRes 颜色资源ID
      */
+    @NonNull
     public DialogLayer backgroundColorRes(int colorRes) {
         getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
         return this;
@@ -703,6 +743,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param cancelable 是否可关闭
      */
+    @NonNull
     public DialogLayer cancelableOnTouchOutside(boolean cancelable) {
         getConfig().mCancelableOnTouchOutside = cancelable;
         return this;
@@ -713,6 +754,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param cancelable 是否可关闭
      */
+    @NonNull
     @Override
     public DialogLayer cancelableOnClickKeyBack(boolean cancelable) {
         return (DialogLayer) super.cancelableOnClickKeyBack(cancelable);
@@ -723,6 +765,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @return View
      */
+    @Nullable
     public View getContentView() {
         return getViewHolder().getContent();
     }
@@ -732,6 +775,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @return ImageView
      */
+    @NonNull
     public ImageView getBackground() {
         return getViewHolder().getBackground();
     }
@@ -744,6 +788,7 @@ public class DialogLayer extends DecorLayer {
      *
      * @param editTexts 焦点EditTexts
      */
+    @NonNull
     public DialogLayer compatSoftInput(boolean bottomToContentView, EditText... editTexts) {
         if (mSoftInputHelper == null) {
             mSoftInputHelper = SoftInputHelper.attach(getActivity())
@@ -760,6 +805,7 @@ public class DialogLayer extends DecorLayer {
         return this;
     }
 
+    @NonNull
     public DialogLayer compatSoftInput(EditText... editTexts) {
         return compatSoftInput(true, editTexts);
     }
@@ -781,16 +827,19 @@ public class DialogLayer extends DecorLayer {
      *
      * @param intercept 外部是否拦截触摸
      */
+    @NonNull
     public DialogLayer outsideInterceptTouchEvent(boolean intercept) {
         getConfig().mOutsideInterceptTouchEvent = intercept;
         return this;
     }
 
+    @NonNull
     public DialogLayer outsideTouched(OutsideTouchedListener listener) {
         getConfig().mOutsideTouchedListener = listener;
         return this;
     }
 
+    @NonNull
     public DialogLayer outsideTouchedToDismiss(boolean toDismiss) {
         getConfig().mOutsideTouchedToDismiss = toDismiss;
         return this;
@@ -809,70 +858,97 @@ public class DialogLayer extends DecorLayer {
             }
         }
 
-        public void setActivityContent(FrameLayout activityContent) {
+        public void setActivityContent(@NonNull FrameLayout activityContent) {
             mActivityContent = activityContent;
         }
 
+        @NonNull
         public FrameLayout getActivityContent() {
             return mActivityContent;
         }
 
         @Override
-        public void setChild(View child) {
+        public void setChild(@NonNull View child) {
             super.setChild(child);
             mContentWrapper = getChild().findViewById(R.id.fl_content_wrapper);
             mBackground = getChild().findViewById(R.id.iv_background);
         }
 
+        @NonNull
         @Override
         public ContainerLayout getChild() {
             return (ContainerLayout) super.getChild();
         }
 
-        void setContent(View content) {
+        @Nullable
+        @Override
+        protected ContainerLayout getNullableChild() {
+            return (ContainerLayout) super.getNullableChild();
+        }
+
+        void setContent(@NonNull View content) {
             mContent = content;
         }
 
-        public View getContent() {
+        @Nullable
+        protected View getNullableContent() {
             return mContent;
         }
 
+        @NonNull
+        public View getContent() {
+            Utils.requireNonNull(mContent, "必须在show方法后调用");
+            return mContent;
+        }
+
+        @NonNull
         public DragLayout getContentWrapper() {
             return mContentWrapper;
         }
 
+        @NonNull
         public BackgroundView getBackground() {
-            return (BackgroundView) mBackground;
+            return mBackground;
         }
     }
 
     protected static class Config extends DecorLayer.Config {
         protected boolean mOutsideInterceptTouchEvent = true;
+        @Nullable
         protected OutsideTouchedListener mOutsideTouchedListener = null;
         protected boolean mOutsideTouchedToDismiss = false;
 
+        @Nullable
         protected AnimatorCreator mBackgroundAnimatorCreator = null;
+        @Nullable
         protected AnimatorCreator mContentAnimatorCreator = null;
+        @Nullable
         protected AnimStyle mAnimStyle = null;
 
-        protected int mContentViewId = 0;
+        @Nullable
+        protected View mContentView = null;
+        protected int mContentViewId = -1;
 
         protected boolean mCancelableOnTouchOutside = true;
 
-        protected int mAsStatusBarViewId = 0;
+        protected int mAsStatusBarViewId = -1;
         protected boolean mAvoidStatusBar = false;
 
         protected int mGravity = Gravity.CENTER;
         protected float mBackgroundBlurPercent = 0F;
         protected float mBackgroundBlurRadius = 0F;
         protected float mBackgroundBlurScale = 2F;
+        @Nullable
         protected Bitmap mBackgroundBitmap = null;
         protected int mBackgroundResource = -1;
+        @Nullable
         protected Drawable mBackgroundDrawable = null;
         protected float mBackgroundDimAmount = -1;
-        protected int mBackgroundColor = -1;
+        protected int mBackgroundColor = Color.TRANSPARENT;
 
+        @NonNull
         protected DragLayout.DragStyle mDragStyle = DragLayout.DragStyle.None;
+        @Nullable
         protected DragTransformer mDragTransformer = null;
     }
 
@@ -884,7 +960,9 @@ public class DialogLayer extends DecorLayer {
     }
 
     public interface DragTransformer {
-        void onDragging(View content, View background, float f);
+        void onDragging(@NonNull View content,
+                        @NonNull View background,
+                        @FloatRange(from = 0F, to = 1F) float f);
     }
 
     public enum AnimStyle {

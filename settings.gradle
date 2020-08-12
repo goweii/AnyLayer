@@ -1,1 +1,1 @@
-include ':app', ':anylayer', ':anylayer-common'
+include ':app', ':anylayer'

@@ -14,6 +14,9 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * 描述：
  *
@@ -22,14 +25,16 @@ import android.widget.ImageView;
  */
 final class Utils {
 
-    static <T> T requireNonNull(T obj, String msg) {
+    @NonNull
+    static <T> T requireNonNull(@Nullable T obj, String msg) {
         if (obj == null) {
             throw new NullPointerException(msg);
         }
         return obj;
     }
 
-    static <T> T requireNonNull(T obj) {
+    @NonNull
+    static <T> T requireNonNull(@Nullable T obj) {
         if (obj == null) {
             throw new NullPointerException();
         }
@@ -52,7 +57,7 @@ final class Utils {
         return value;
     }
 
-    static int getStatusBarHeight(Context context) {
+    static int getStatusBarHeight(@NonNull Context context) {
         int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             return context.getResources().getDimensionPixelSize(resourceId);
@@ -63,7 +68,8 @@ final class Utils {
     /**
      * 从当前上下文获取Activity
      */
-    static Activity getActivity(Context context) {
+    @Nullable
+    static Activity getActivity(@Nullable Context context) {
         if (context == null) {
             return null;
         }
@@ -79,11 +85,12 @@ final class Utils {
         return null;
     }
 
-    static Bitmap snapshot(FrameLayout decor,
-                           ImageView iv,
+    @NonNull
+    static Bitmap snapshot(@NonNull FrameLayout decor,
+                           @NonNull ImageView iv,
                            float scale,
-                           DecorLayer.LevelLayout currLevelLayout,
-                           ContainerLayout currContainerLayout) {
+                           @NonNull DecorLayer.LevelLayout currLevelLayout,
+                           @NonNull ContainerLayout currContainerLayout) {
         int w = iv.getWidth();
         int h = iv.getHeight();
         int oW = (int) (w / scale);
@@ -134,11 +141,10 @@ final class Utils {
             }
         }
         canvas.restore();
-
         return bitmap;
     }
 
-    static void transparent(Activity activity) {
+    static void transparent(@NonNull Activity activity) {
         final Window window = activity.getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -150,8 +156,7 @@ final class Utils {
         }
     }
 
-    static void getViewSize(final View view, Runnable runnable) {
-        requireNonNull(view);
+    static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {

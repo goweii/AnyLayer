@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * @author CuiZhen
  * @date 2019/3/10
@@ -21,52 +24,59 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
 
     private final Activity mActivity;
 
-    public DecorLayer(Activity activity) {
+    public DecorLayer(@NonNull Activity activity) {
         super();
-        Utils.requireNonNull(activity, "activity == null");
         mActivity = activity;
         getViewHolder().setDecor((FrameLayout) activity.getWindow().getDecorView());
     }
 
+    @NonNull
     protected Level getLevel() {
         return Level.DIALOG;
     }
 
+    @NonNull
     public Activity getActivity() {
-        Utils.requireNonNull(mActivity, "activity == null");
         return mActivity;
     }
 
+    @NonNull
     @Override
     protected ViewHolder onCreateViewHolder() {
         return new ViewHolder();
     }
 
+    @NonNull
     @Override
     public ViewHolder getViewHolder() {
         return (ViewHolder) super.getViewHolder();
     }
 
+    @NonNull
     @Override
     protected Config onCreateConfig() {
         return new Config();
     }
 
+    @NonNull
     @Override
     public Config getConfig() {
         return (Config) super.getConfig();
     }
 
+    @NonNull
     @Override
     protected ListenerHolder onCreateListenerHolder() {
         return new ListenerHolder();
     }
 
+    @NonNull
     @Override
     public ListenerHolder getListenerHolder() {
         return (ListenerHolder) super.getListenerHolder();
     }
 
+    @NonNull
     @Override
     protected ViewGroup onGetParent() {
         LayerLayout group = findLayerLayoutFromDecor();
@@ -164,13 +174,14 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
     }
 
     @Override
     public void onLowMemory() {
     }
 
+    @Nullable
     private LayerLayout findLayerLayoutFromDecor() {
         final ViewGroup decor = getViewHolder().getDecor();
         LayerLayout layerLayout = null;
@@ -185,6 +196,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
         return layerLayout;
     }
 
+    @Nullable
     private LevelLayout findLevelLayoutFromGroup(LayerLayout group) {
         LevelLayout parent = null;
         final int count = group.getChildCount();
@@ -201,6 +213,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
         return parent;
     }
 
+    @NonNull
     private LayerLayout addNewLayerLayoutToDecor() {
         final ViewGroup decor = getViewHolder().mDecor;
         LayerLayout layerLayout = new LayerLayout(decor.getContext());
@@ -214,6 +227,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
         decor.removeView(layerLayout);
     }
 
+    @NonNull
     public DecorLayer cancelableOnClickKeyBack(boolean cancelable) {
         cancelableOnKeyBack(cancelable);
         return this;
@@ -222,14 +236,16 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
     public static class ViewHolder extends Layer.ViewHolder {
         private FrameLayout mDecor;
 
-        public void setDecor(FrameLayout decor) {
+        public void setDecor(@NonNull FrameLayout decor) {
             mDecor = decor;
         }
 
+        @NonNull
         public FrameLayout getDecor() {
             return mDecor;
         }
 
+        @NonNull
         @Override
         public LevelLayout getParent() {
             return (LevelLayout) super.getParent();
@@ -278,7 +294,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             return level;
         }
 
-        public boolean isTopThan(Level other) {
+        public boolean isTopThan(@NonNull Level other) {
             return level < other.level;
         }
     }
@@ -288,7 +304,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
      */
     @SuppressLint("ViewConstructor")
     public static class LayerLayout extends FrameLayout {
-        public LayerLayout(Context context) {
+        public LayerLayout(@NonNull Context context) {
             super(context);
         }
     }
@@ -300,11 +316,12 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
     public static class LevelLayout extends FrameLayout {
         private final Level mLevel;
 
-        public LevelLayout(Context context, Level level) {
+        public LevelLayout(@NonNull Context context, @NonNull Level level) {
             super(context);
             mLevel = level;
         }
 
+        @NonNull
         public Level getLevel() {
             return mLevel;
         }

@@ -5,14 +5,15 @@ import android.animation.AnimatorSet;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Random;
 
@@ -101,12 +102,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         )
                         .animator(new Layer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View target) {
+                            public Animator createInAnimator(@NonNull View target) {
                                 return AnimatorHelper.createZoomAlphaInAnim(target);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View target) {
+                            public Animator createOutAnimator(@NonNull View target) {
                                 return AnimatorHelper.createZoomAlphaOutAnim(target);
                             }
                         })
@@ -129,7 +130,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .dragDismiss(DragLayout.DragStyle.Bottom)
                         .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
                             @Override
-                            public void onShow(Layer layer) {
+                            public void onShow(@NonNull Layer layer) {
                                 DialogLayer dialogLayer = (DialogLayer) layer;
                                 dialogLayer.compatSoftInput(false,
                                         layer.getView(R.id.et_dialog_content),
@@ -142,7 +143,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
 
                             @Override
-                            public void onDismiss(Layer layer) {
+                            public void onDismiss(@NonNull Layer layer) {
                                 DialogLayer dialogLayer = (DialogLayer) layer;
                                 dialogLayer.removeSoftInput();
                             }
@@ -150,7 +151,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                                 EditText et = anyLayer.getView(R.id.et_dialog_content);
                                 Toast.makeText(NormalActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
@@ -250,12 +251,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .contentView(R.layout.popup_meun)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
-                                public Animator createInAnimator(View content) {
+                                public Animator createInAnimator(@NonNull View content) {
                                     return AnimatorHelper.createDelayedZoomInAnim(content, 0.5F, 0F);
                                 }
 
                                 @Override
-                                public Animator createOutAnimator(View content) {
+                                public Animator createOutAnimator(@NonNull View content) {
                                     return AnimatorHelper.createDelayedZoomOutAnim(content, 0.5F, 0F);
                                 }
                             });
@@ -290,21 +291,21 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                             .onInitialize(new Layer.OnInitialize() {
                                 @Override
-                                public void onInit(Layer layer) {
+                                public void onInit(@NonNull Layer layer) {
                                     TextView tv_dialog_content = layer.getView(R.id.tv_dialog_content);
                                     tv_dialog_content.setText("这是第一次初始化时绑定的数据" + Math.random());
                                 }
                             })
                             .bindData(new Layer.DataBinder() {
                                 @Override
-                                public void bindData(Layer layer) {
+                                public void bindData(@NonNull Layer layer) {
                                     TextView tv_dialog_title = layer.getView(R.id.tv_dialog_title);
                                     tv_dialog_title.setText("" + tv_dialog_title.toString());
                                 }
                             })
                             .onClick(new Layer.OnClickListener() {
                                 @Override
-                                public void onClick(Layer anyLayer, View v) {
+                                public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                     anyLayer.dismiss();
                                 }
                             }, R.id.fl_dialog_yes);
@@ -317,7 +318,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -331,7 +332,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -344,14 +345,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .dragDismiss(DragLayout.DragStyle.Bottom)
                         .dragTransformer(new DialogLayer.DragTransformer() {
                             @Override
-                            public void onDragging(View content, View background, float f) {
+                            public void onDragging(@NonNull View content, @NonNull View background, float f) {
                                 content.setAlpha(1 - f);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -363,7 +364,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 AnimatorSet set = new AnimatorSet();
                                 Animator a1 = AnimatorHelper.createBottomAlphaInAnim(content, 0.3F);
                                 a1.setInterpolator(new DecelerateInterpolator(1.5f));
@@ -374,7 +375,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 AnimatorSet set = new AnimatorSet();
                                 Animator a1 = AnimatorHelper.createBottomAlphaOutAnim(content, 0.3F);
                                 a1.setInterpolator(new DecelerateInterpolator(1.5f));
@@ -395,7 +396,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -407,19 +408,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -431,19 +432,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -455,19 +456,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -479,19 +480,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -503,19 +504,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -529,7 +530,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -541,19 +542,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -567,7 +568,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -579,19 +580,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -603,19 +604,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -627,19 +628,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -651,19 +652,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -675,19 +676,19 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightAlphaInAnim(content);
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftAlphaOutAnim(content);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)
@@ -699,7 +700,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
-                            public Animator createInAnimator(View content) {
+                            public Animator createInAnimator(@NonNull View content) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                     return AnimatorHelper.createCircularRevealInAnim(content, content.getMeasuredWidth() / 2, content.getMeasuredHeight() / 2);
                                 } else {
@@ -708,7 +709,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             }
 
                             @Override
-                            public Animator createOutAnimator(View content) {
+                            public Animator createOutAnimator(@NonNull View content) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                     return AnimatorHelper.createCircularRevealOutAnim(content, content.getMeasuredWidth() / 2, content.getMeasuredHeight() / 2);
                                 } else {
@@ -719,7 +720,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
-                            public void onClick(Layer anyLayer, View v) {
+                            public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                                 anyLayer.dismiss();
                             }
                         }, R.id.fl_dialog_yes)

@@ -8,6 +8,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.customview.widget.ViewDragHelper;
+
 import java.util.List;
 
 /**
@@ -30,17 +35,18 @@ public class DragLayout extends FrameLayout {
     private int mLeft;
     private int mTop;
 
+    @FloatRange(from = 0F, to = 1F)
     private float mDragFraction = 0F;
 
-    public DragLayout(Context context) {
+    public DragLayout(@NonNull Context context) {
         this(context, null);
     }
 
-    public DragLayout(Context context, AttributeSet attrs) {
+    public DragLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public DragLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DragLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mDragHelper = ViewDragHelper.create(this, new DragCallback());
     }
@@ -49,7 +55,7 @@ public class DragLayout extends FrameLayout {
         mOnDragListener = onDragListener;
     }
 
-    public void setDragStyle(DragStyle dragStyle) {
+    public void setDragStyle(@NonNull DragStyle dragStyle) {
         mDragStyle = dragStyle;
     }
 
@@ -58,10 +64,8 @@ public class DragLayout extends FrameLayout {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                break;
             case MotionEvent.ACTION_MOVE:
                 if (!mHandleDragEvent) {
                     float offX = ev.getRawX() - mDownX;
@@ -107,7 +111,7 @@ public class DragLayout extends FrameLayout {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull MotionEvent ev) {
         if (!isEnable()) {
             mHandleDragEvent = false;
             return super.onInterceptTouchEvent(ev);
@@ -126,7 +130,7 @@ public class DragLayout extends FrameLayout {
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull MotionEvent ev) {
         if (isEnable()) {
             mDragHelper.processTouchEvent(ev);
         }
@@ -163,12 +167,12 @@ public class DragLayout extends FrameLayout {
     private class DragCallback extends ViewDragHelper.Callback {
 
         @Override
-        public boolean tryCaptureView(View child, int pointerId) {
+        public boolean tryCaptureView(@NonNull View child, int pointerId) {
             return isEnable();
         }
 
         @Override
-        public int getViewHorizontalDragRange(View child) {
+        public int getViewHorizontalDragRange(@NonNull View child) {
             switch (mDragStyle) {
                 case Left:
                     return mLeft + child.getWidth();
@@ -183,7 +187,7 @@ public class DragLayout extends FrameLayout {
         }
 
         @Override
-        public int getViewVerticalDragRange(View child) {
+        public int getViewVerticalDragRange(@NonNull View child) {
             switch (mDragStyle) {
                 case Top:
                     return mTop + child.getHeight();
@@ -198,7 +202,7 @@ public class DragLayout extends FrameLayout {
         }
 
         @Override
-        public void onViewCaptured(View capturedChild, int activePointerId) {
+        public void onViewCaptured(@NonNull View capturedChild, int activePointerId) {
             super.onViewCaptured(capturedChild, activePointerId);
             mDragFraction = 0F;
             if (mOnDragListener != null) {
@@ -207,7 +211,7 @@ public class DragLayout extends FrameLayout {
         }
 
         @Override
-        public int clampViewPositionHorizontal(View child, int left, int dx) {
+        public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
             switch (mDragStyle) {
                 case Left:
                     if (DragCompat.canViewScrollRight(mInnerScrollViews, mDownX, mDownY, false)) {
@@ -241,7 +245,7 @@ public class DragLayout extends FrameLayout {
         }
 
         @Override
-        public int clampViewPositionVertical(View child, int top, int dy) {
+        public int clampViewPositionVertical(@NonNull View child, int top, int dy) {
             switch (mDragStyle) {
                 case Top:
                     if (DragCompat.canViewScrollDown(mInnerScrollViews, mDownX, mDownY, false)) {
@@ -275,7 +279,7 @@ public class DragLayout extends FrameLayout {
         }
 
         @Override
-        public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
+        public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
             switch (mDragStyle) {
                 case Left:
@@ -306,7 +310,7 @@ public class DragLayout extends FrameLayout {
         }
 
         @Override
-        public void onViewReleased(View releasedChild, float xvel, float yvel) {
+        public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
             float dismissFactor = 0.5f;
             boolean isDismiss = judgeDismissBySpeed(xvel, yvel) || mDragFraction >= dismissFactor;
@@ -361,7 +365,7 @@ public class DragLayout extends FrameLayout {
     public interface OnDragListener {
         void onDragStart();
 
-        void onDragging(float f);
+        void onDragging(@FloatRange(from = 0F, to = 1F) float f);
 
         void onDragEnd();
     }

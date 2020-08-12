@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * @author CuiZhen
  * @date 2019/7/21
@@ -16,45 +19,53 @@ import android.view.ViewGroup;
  */
 public class GuideLayer extends DecorLayer {
 
-    public GuideLayer(Context context) {
-        this(Utils.getActivity(Utils.requireNonNull(context, "context == null")));
+    public GuideLayer(@NonNull Context context) {
+        this(Utils.requireNonNull(Utils.getActivity(context),
+                "无法从Context获取Activity，请确保传入的不是ApplicationContext或ServiceContext等"));
     }
 
-    public GuideLayer(Activity activity) {
+    public GuideLayer(@NonNull Activity activity) {
         super(activity);
         cancelableOnKeyBack(false);
     }
 
+    @NonNull
     @Override
     protected Level getLevel() {
         return Level.GUIDE;
     }
 
+    @NonNull
     @Override
     protected ViewHolder onCreateViewHolder() {
         return new ViewHolder();
     }
 
+    @NonNull
     @Override
     public ViewHolder getViewHolder() {
         return (ViewHolder) super.getViewHolder();
     }
 
+    @NonNull
     @Override
     protected Config onCreateConfig() {
         return new Config();
     }
 
+    @NonNull
     @Override
     public Config getConfig() {
         return (Config) super.getConfig();
     }
 
+    @NonNull
     @Override
     protected ListenerHolder onCreateListenerHolder() {
         return new ListenerHolder();
     }
 
+    @NonNull
     @Override
     public ListenerHolder getListenerHolder() {
         return (ListenerHolder) super.getListenerHolder();
@@ -65,18 +76,21 @@ public class GuideLayer extends DecorLayer {
         super.show();
     }
 
+    @NonNull
     @Override
-    protected View onCreateChild(LayoutInflater inflater, ViewGroup parent) {
-        return null;
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        throw new UnsupportedOperationException("未实现");
     }
 
+    @Nullable
     @Override
-    protected Animator onCreateInAnimator(View view) {
+    protected Animator onCreateInAnimator(@NonNull View view) {
         return AnimatorHelper.createZoomAlphaInAnim(view);
     }
 
+    @Nullable
     @Override
-    protected Animator onCreateOutAnimator(View view) {
+    protected Animator onCreateOutAnimator(@NonNull View view) {
         return AnimatorHelper.createZoomAlphaOutAnim(view);
     }
 
