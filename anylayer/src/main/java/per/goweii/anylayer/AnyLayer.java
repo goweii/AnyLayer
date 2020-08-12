@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import per.goweii.burred.Blurred;
 
 /**
@@ -14,7 +16,7 @@ import per.goweii.burred.Blurred;
  */
 public final class AnyLayer {
 
-    public static void initBlurred(Context context) {
+    public static void initBlurred(@NonNull Context context) {
         Blurred.init(context);
     }
 
@@ -22,35 +24,48 @@ public final class AnyLayer {
         Blurred.recycle();
     }
 
-    public static void dialog(LayerActivity.OnLayerCreatedCallback callback) {
+    public static void dialog(@NonNull LayerActivity.OnLayerCreatedCallback callback) {
         LayerActivity.start(ActivityHolder.getApplication(), callback);
     }
 
+    @NonNull
     public static DialogLayer dialog() {
-        return new DialogLayer(ActivityHolder.getCurrentActivity());
+        Activity activity = ActivityHolder.getCurrentActivity();
+        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
+        return new DialogLayer(activity);
     }
 
-    public static DialogLayer dialog(Class<Activity> clazz) {
-        return new DialogLayer(ActivityHolder.getActivity(clazz));
+    @NonNull
+    public static DialogLayer dialog(@NonNull Class<Activity> clazz) {
+        Activity activity = ActivityHolder.getCurrentActivity();
+        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
+        return new DialogLayer(activity);
     }
 
-    public static DialogLayer dialog(Context context) {
+    @NonNull
+    public static DialogLayer dialog(@NonNull Context context) {
         return new DialogLayer(context);
     }
 
-    public static PopupLayer popup(Context context) {
+    @NonNull
+    public static PopupLayer popup(@NonNull Context context) {
         return new PopupLayer(context);
     }
 
-    public static PopupLayer popup(View targetView) {
+    @NonNull
+    public static PopupLayer popup(@NonNull View targetView) {
         return new PopupLayer(targetView);
     }
 
+    @NonNull
     public static ToastLayer toast() {
-        return new ToastLayer(ActivityHolder.getCurrentActivity());
+        Activity activity = ActivityHolder.getCurrentActivity();
+        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
+        return new ToastLayer(activity);
     }
 
-    public static ToastLayer toast(Context context) {
+    @NonNull
+    public static ToastLayer toast(@NonNull Context context) {
         return new ToastLayer(context);
     }
 }

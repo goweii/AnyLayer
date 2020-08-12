@@ -10,6 +10,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +30,10 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
     private final View rootView;
 
     private long duration = 300;
+    @Nullable
     private View moveView = null;
     private Map<View, View> focusBottomMap = new HashMap<>(1);
+    @Nullable
     private OnSoftInputListener onSoftInputListener = null;
 
     private boolean moveWithScroll = false;
@@ -44,13 +49,11 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
         }
     };
 
-    public static SoftInputHelper attach(Activity activity) {
-        Utils.requireNonNull(activity, "activity == null");
+    public static SoftInputHelper attach(@NonNull Activity activity) {
         return new SoftInputHelper(activity);
     }
 
-    private SoftInputHelper(Activity activity) {
-        Utils.requireNonNull(activity, "activity == null");
+    private SoftInputHelper(@NonNull Activity activity) {
         this.window = activity.getWindow();
         this.rootView = window.getDecorView().getRootView();
         ViewTreeObserver observer = rootView.getViewTreeObserver();
@@ -70,25 +73,27 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
         }
     }
 
-    public SoftInputHelper moveBy(View moveView) {
-        Utils.requireNonNull(moveView, "moveView == null");
+    @NonNull
+    public SoftInputHelper moveBy(@NonNull View moveView) {
         this.moveView = moveView;
         return this;
     }
 
-    public SoftInputHelper moveWith(View bottomView, View... focusViews) {
-        Utils.requireNonNull(bottomView, "bottomView == null");
+    @NonNull
+    public SoftInputHelper moveWith(@NonNull View bottomView, View... focusViews) {
         for (View focusView : focusViews) {
             focusBottomMap.put(focusView, bottomView);
         }
         return this;
     }
 
-    public SoftInputHelper listener(OnSoftInputListener onSoftInputListener) {
+    @NonNull
+    public SoftInputHelper listener(@Nullable OnSoftInputListener onSoftInputListener) {
         this.onSoftInputListener = onSoftInputListener;
         return this;
     }
 
+    @NonNull
     public SoftInputHelper duration(long duration) {
         this.duration = duration;
         return this;
@@ -99,6 +104,7 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
      *
      * @return SoftInputHelper
      */
+    @NonNull
     public SoftInputHelper moveWithScroll() {
         this.moveWithScroll = true;
         return this;
@@ -109,6 +115,7 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
      *
      * @return SoftInputHelper
      */
+    @NonNull
     public SoftInputHelper moveWithTranslation() {
         this.moveWithScroll = false;
         return this;
@@ -146,7 +153,7 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
     }
 
     private void calcToMove(){
-        View focusView = isViewFocus();
+        View focusView = currFocusView();
         if (focusView != null) {
             View bottomView = focusBottomMap.get(focusView);
             if (bottomView != null) {
@@ -184,12 +191,13 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
         }
     }
 
-    private int getBottomViewY(View bottomView) {
+    private int getBottomViewY(@NonNull View bottomView) {
         int[] bottomLocation = new int[2];
         bottomView.getLocationOnScreen(bottomLocation);
         return bottomLocation[1] + bottomView.getHeight();
     }
 
+    @NonNull
     private Rect getRootViewRect() {
         Rect rect = new Rect();
         rootView.getWindowVisibleDisplayFrame(rect);
@@ -237,14 +245,11 @@ final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, 
         int usableHeightNow = rect.bottom - rect.top;
         int usableHeightSansKeyboard = rootView.getHeight();
         int heightDifference = usableHeightSansKeyboard - usableHeightNow;
-        if (heightDifference > (usableHeightSansKeyboard / 4)) {
-            return true;
-        } else {
-            return false;
-        }
+        return heightDifference > (usableHeightSansKeyboard / 4);
     }
 
-    private View isViewFocus() {
+    @Nullable
+    private View currFocusView() {
         View focusView = window.getCurrentFocus();
         for (View view : focusBottomMap.keySet()) {
             if (focusView == view) {

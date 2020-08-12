@@ -5,10 +5,16 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,27 +33,31 @@ public class AnimatorHelper {
     private static final float INTERPOLATOR_FACTOR_1 = 1.5F;
     private static final float INTERPOLATOR_FACTOR_2 = 2.5F;
 
+    @NonNull
     private static TimeInterpolator createDefInterpolator(float factor) {
         return new DecelerateInterpolator(factor);
     }
 
+    @NonNull
     private static TimeInterpolator createDefInterpolator1() {
         return createDefInterpolator(INTERPOLATOR_FACTOR_1);
     }
 
+    @NonNull
     private static TimeInterpolator createDefInterpolator2() {
         return createDefInterpolator(INTERPOLATOR_FACTOR_2);
     }
 
     // AlphaIn
 
-    public static Animator createAlphaInAnim(final View target) {
+    @NonNull
+    public static Animator createAlphaInAnim(@NonNull final View target) {
         return createAlphaInAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createAlphaInAnim(final View target,
-                                             TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createAlphaInAnim(@NonNull final View target,
+                                             @Nullable TimeInterpolator alphaInterpolator) {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
         return alpha;
@@ -55,13 +65,14 @@ public class AnimatorHelper {
 
     // AlphaOut
 
-    public static Animator createAlphaOutAnim(final View target) {
+    @NonNull
+    public static Animator createAlphaOutAnim(@NonNull final View target) {
         return createAlphaOutAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createAlphaOutAnim(final View target,
-                                              TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createAlphaOutAnim(@NonNull final View target,
+                                              @Nullable TimeInterpolator alphaInterpolator) {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
         return alpha;
@@ -69,31 +80,33 @@ public class AnimatorHelper {
 
     // ZoomIn
 
-    public static Animator createZoomInAnim(final View target) {
+    @NonNull
+    public static Animator createZoomInAnim(@NonNull final View target) {
         return createZoomInAnim(target, 0.5F, 0.5F);
     }
 
-    public static Animator createZoomInAnim(final View target,
-                                            float centerPercentX,
-                                            float centerPercentY) {
+    @NonNull
+    public static Animator createZoomInAnim(@NonNull final View target,
+                                            @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                            @FloatRange(from = 0F, to = 1F) float centerPercentY) {
         return createZoomInAnim(target, centerPercentX, centerPercentY, createDefInterpolator1());
     }
 
-    public static Animator createZoomInAnim(final View target,
-                                            float centerPercentX,
-                                            float centerPercentY,
-                                            TimeInterpolator zoomInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createZoomInAnim(@NonNull final View target,
+                                            @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                            @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                            @Nullable TimeInterpolator zoomInterpolator) {
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
         return createZoomInAnim(target, centerX, centerY, zoomInterpolator);
     }
 
-    public static Animator createZoomInAnim(final View target,
+    @NonNull
+    public static Animator createZoomInAnim(@NonNull final View target,
                                             int centerX,
                                             int centerY,
-                                            TimeInterpolator zoomInterpolator) {
-        if (target == null) return null;
+                                            @Nullable TimeInterpolator zoomInterpolator) {
         target.setPivotX(centerX);
         target.setPivotY(centerY);
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", 0, 1);
@@ -109,31 +122,33 @@ public class AnimatorHelper {
 
     // ZoomOut
 
-    public static Animator createZoomOutAnim(final View target) {
+    @NonNull
+    public static Animator createZoomOutAnim(@NonNull final View target) {
         return createZoomOutAnim(target, 0.5F, 0.5F);
     }
 
-    public static Animator createZoomOutAnim(final View target,
-                                             float centerPercentX,
-                                             float centerPercentY) {
+    @NonNull
+    public static Animator createZoomOutAnim(@NonNull final View target,
+                                             @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                             @FloatRange(from = 0F, to = 1F) float centerPercentY) {
         return createZoomOutAnim(target, centerPercentX, centerPercentY, createDefInterpolator1());
     }
 
-    public static Animator createZoomOutAnim(final View target,
-                                             float centerPercentX,
-                                             float centerPercentY,
-                                             TimeInterpolator zoomInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createZoomOutAnim(@NonNull final View target,
+                                             @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                             @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                             @Nullable TimeInterpolator zoomInterpolator) {
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
         return createZoomOutAnim(target, centerX, centerY, zoomInterpolator);
     }
 
-    public static Animator createZoomOutAnim(final View target,
+    @NonNull
+    public static Animator createZoomOutAnim(@NonNull final View target,
                                              int centerX,
                                              int centerY,
-                                             TimeInterpolator zoomInterpolator) {
-        if (target == null) return null;
+                                             @Nullable TimeInterpolator zoomInterpolator) {
         target.setPivotX(centerX);
         target.setPivotY(centerY);
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", target.getScaleX(), 0);
@@ -149,36 +164,42 @@ public class AnimatorHelper {
 
     // ZoomAlphaIn
 
-    public static Animator createZoomAlphaInAnim(final View target) {
+    @NonNull
+    public static Animator createZoomAlphaInAnim(@NonNull final View target) {
         return createZoomAlphaInAnim(target, ZOOM_PERCENT);
     }
 
-    public static Animator createZoomAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createZoomAlphaInAnim(@NonNull final View target,
                                                  float fromScale) {
         return createZoomAlphaInAnim(target, 0.5F, 0.5F, fromScale);
     }
 
-    public static Animator createZoomAlphaInAnim(final View target,
-                                                 float centerPercentX,
-                                                 float centerPercentY) {
+    @NonNull
+    public static Animator createZoomAlphaInAnim(@NonNull final View target,
+                                                 @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                 @FloatRange(from = 0F, to = 1F) float centerPercentY) {
         return createZoomAlphaInAnim(target, centerPercentX, centerPercentY, ZOOM_PERCENT);
     }
 
-    public static Animator createZoomAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createZoomAlphaInAnim(@NonNull final View target,
                                                  int centerX,
                                                  int centerY) {
         return createZoomAlphaInAnim(target, centerX, centerY, ZOOM_PERCENT);
     }
 
-    public static Animator createZoomAlphaInAnim(final View target,
-                                                 float centerPercentX,
-                                                 float centerPercentY,
+    @NonNull
+    public static Animator createZoomAlphaInAnim(@NonNull final View target,
+                                                 @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                 @FloatRange(from = 0F, to = 1F) float centerPercentY,
                                                  float fromScale) {
         return createZoomAlphaInAnim(target, centerPercentX, centerPercentY, fromScale,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createZoomAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createZoomAlphaInAnim(@NonNull final View target,
                                                  int centerX,
                                                  int centerY,
                                                  float fromScale) {
@@ -186,25 +207,25 @@ public class AnimatorHelper {
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createZoomAlphaInAnim(final View target,
-                                                 float centerPercentX,
-                                                 float centerPercentY,
+    @NonNull
+    public static Animator createZoomAlphaInAnim(@NonNull final View target,
+                                                 @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                 @FloatRange(from = 0F, to = 1F) float centerPercentY,
                                                  float fromScale,
-                                                 TimeInterpolator zoomInterpolator,
-                                                 TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                 @Nullable TimeInterpolator zoomInterpolator,
+                                                 @Nullable TimeInterpolator alphaInterpolator) {
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
         return createZoomAlphaInAnim(target, centerX, centerY, fromScale, zoomInterpolator, alphaInterpolator);
     }
 
-    public static Animator createZoomAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createZoomAlphaInAnim(@NonNull final View target,
                                                  int centerX,
                                                  int centerY,
                                                  float fromScale,
-                                                 TimeInterpolator zoomInterpolator,
-                                                 TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                 @Nullable TimeInterpolator zoomInterpolator,
+                                                 @Nullable TimeInterpolator alphaInterpolator) {
         target.setPivotX(centerX);
         target.setPivotY(centerY);
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
@@ -222,36 +243,42 @@ public class AnimatorHelper {
 
     // ZoomAlphaOut
 
-    public static Animator createZoomAlphaOutAnim(final View target) {
+    @NonNull
+    public static Animator createZoomAlphaOutAnim(@NonNull final View target) {
         return createZoomAlphaOutAnim(target, ZOOM_PERCENT);
     }
 
-    public static Animator createZoomAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createZoomAlphaOutAnim(@NonNull final View target,
                                                   float toScale) {
         return createZoomAlphaOutAnim(target, 0.5F, 0.5F, toScale);
     }
 
-    public static Animator createZoomAlphaOutAnim(final View target,
-                                                  float centerPercentX,
-                                                  float centerPercentY) {
+    @NonNull
+    public static Animator createZoomAlphaOutAnim(@NonNull final View target,
+                                                  @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                  @FloatRange(from = 0F, to = 1F) float centerPercentY) {
         return createZoomAlphaOutAnim(target, centerPercentX, centerPercentY, ZOOM_PERCENT);
     }
 
-    public static Animator createZoomAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createZoomAlphaOutAnim(@NonNull final View target,
                                                   int centerX,
                                                   int centerY) {
         return createZoomAlphaOutAnim(target, centerX, centerY, ZOOM_PERCENT);
     }
 
-    public static Animator createZoomAlphaOutAnim(final View target,
-                                                  float centerPercentX,
-                                                  float centerPercentY,
+    @NonNull
+    public static Animator createZoomAlphaOutAnim(@NonNull final View target,
+                                                  @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                  @FloatRange(from = 0F, to = 1F) float centerPercentY,
                                                   float toScale) {
         return createZoomAlphaOutAnim(target, centerPercentX, centerPercentY, toScale,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createZoomAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createZoomAlphaOutAnim(@NonNull final View target,
                                                   int centerX,
                                                   int centerY,
                                                   float toScale) {
@@ -259,25 +286,25 @@ public class AnimatorHelper {
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createZoomAlphaOutAnim(final View target,
-                                                  float centerPercentX,
-                                                  float centerPercentY,
+    @NonNull
+    public static Animator createZoomAlphaOutAnim(@NonNull final View target,
+                                                  @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                  @FloatRange(from = 0F, to = 1F) float centerPercentY,
                                                   float toScale,
-                                                  TimeInterpolator zoomInterpolator,
-                                                  TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                  @Nullable TimeInterpolator zoomInterpolator,
+                                                  @Nullable TimeInterpolator alphaInterpolator) {
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
         return createZoomAlphaOutAnim(target, centerX, centerY, toScale, zoomInterpolator, alphaInterpolator);
     }
 
-    public static Animator createZoomAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createZoomAlphaOutAnim(@NonNull final View target,
                                                   int centerX,
                                                   int centerY,
                                                   float toScale,
-                                                  TimeInterpolator zoomInterpolator,
-                                                  TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                  @Nullable TimeInterpolator zoomInterpolator,
+                                                  @Nullable TimeInterpolator alphaInterpolator) {
         target.setPivotX(centerX);
         target.setPivotY(centerY);
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
@@ -295,13 +322,14 @@ public class AnimatorHelper {
 
     // TopIn
 
-    public static Animator createTopInAnim(final View target) {
+    @NonNull
+    public static Animator createTopInAnim(@NonNull final View target) {
         return createTopInAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createTopInAnim(final View target,
-                                           TimeInterpolator topInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createTopInAnim(@NonNull final View target,
+                                           @Nullable TimeInterpolator topInterpolator) {
         ObjectAnimator top = ObjectAnimator.ofFloat(target, "translationY", -target.getBottom(), 0);
         if (topInterpolator != null) top.setInterpolator(topInterpolator);
         return top;
@@ -309,12 +337,13 @@ public class AnimatorHelper {
 
     // TopOut
 
-    public static Animator createTopOutAnim(final View target) {
+    @NonNull
+    public static Animator createTopOutAnim(@NonNull final View target) {
         return createTopOutAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createTopOutAnim(final View target, TimeInterpolator topInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createTopOutAnim(@NonNull final View target, TimeInterpolator topInterpolator) {
         ObjectAnimator top = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), -target.getBottom());
         if (topInterpolator != null) top.setInterpolator(topInterpolator);
         return top;
@@ -322,21 +351,23 @@ public class AnimatorHelper {
 
     // TopAlphaIn
 
-    public static Animator createTopAlphaInAnim(final View target) {
+    @NonNull
+    public static Animator createTopAlphaInAnim(@NonNull final View target) {
         return createTopAlphaInAnim(target, 1 - MOVE_PERCENT);
     }
 
-    public static Animator createTopAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createTopAlphaInAnim(@NonNull final View target,
                                                 float percentTargetHeight) {
         return createTopAlphaInAnim(target, percentTargetHeight,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createTopAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createTopAlphaInAnim(@NonNull final View target,
                                                 float percentTargetHeight,
-                                                TimeInterpolator yInterpolator,
-                                                TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                @Nullable TimeInterpolator yInterpolator,
+                                                @Nullable TimeInterpolator alphaInterpolator) {
         float y = percentTargetHeight * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
@@ -349,21 +380,23 @@ public class AnimatorHelper {
 
     // TopAlphaOut
 
-    public static Animator createTopAlphaOutAnim(final View target) {
+    @NonNull
+    public static Animator createTopAlphaOutAnim(@NonNull final View target) {
         return createTopAlphaOutAnim(target, 1 - MOVE_PERCENT);
     }
 
-    public static Animator createTopAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createTopAlphaOutAnim(@NonNull final View target,
                                                  float percentTargetHeight) {
         return createTopAlphaOutAnim(target, percentTargetHeight,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createTopAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createTopAlphaOutAnim(@NonNull final View target,
                                                  float percentTargetHeight,
-                                                 TimeInterpolator yInterpolator,
-                                                 TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                 @Nullable TimeInterpolator yInterpolator,
+                                                 @Nullable TimeInterpolator alphaInterpolator) {
         float y = percentTargetHeight * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
@@ -376,13 +409,14 @@ public class AnimatorHelper {
 
     // BottomIn
 
-    public static Animator createBottomInAnim(final View target) {
+    @NonNull
+    public static Animator createBottomInAnim(@NonNull final View target) {
         return createBottomInAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createBottomInAnim(final View target,
-                                              TimeInterpolator yInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createBottomInAnim(@NonNull final View target,
+                                              @Nullable TimeInterpolator yInterpolator) {
         float y = ((ViewGroup) target.getParent()).getMeasuredHeight() - target.getTop();
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", y, 0);
         if (yInterpolator != null) translationY.setInterpolator(yInterpolator);
@@ -391,21 +425,23 @@ public class AnimatorHelper {
 
     // BottomAlphaIn
 
-    public static Animator createBottomAlphaInAnim(final View target) {
+    @NonNull
+    public static Animator createBottomAlphaInAnim(@NonNull final View target) {
         return createBottomAlphaInAnim(target, 1 - MOVE_PERCENT);
     }
 
-    public static Animator createBottomAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createBottomAlphaInAnim(@NonNull final View target,
                                                    float percentTargetHeight) {
         return createBottomAlphaInAnim(target, percentTargetHeight,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createBottomAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createBottomAlphaInAnim(@NonNull final View target,
                                                    float percentTargetHeight,
-                                                   TimeInterpolator yInterpolator,
-                                                   TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                   @Nullable TimeInterpolator yInterpolator,
+                                                   @Nullable TimeInterpolator alphaInterpolator) {
         float y = percentTargetHeight * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
@@ -418,13 +454,14 @@ public class AnimatorHelper {
 
     // BottomOut
 
-    public static Animator createBottomOutAnim(final View target) {
+    @NonNull
+    public static Animator createBottomOutAnim(@NonNull final View target) {
         return createBottomOutAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createBottomOutAnim(final View target,
-                                               TimeInterpolator yInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createBottomOutAnim(@NonNull final View target,
+                                               @Nullable TimeInterpolator yInterpolator) {
         float y = ((ViewGroup) target.getParent()).getMeasuredHeight() - target.getTop();
         ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), y);
         if (yInterpolator != null) translationY.setInterpolator(yInterpolator);
@@ -433,21 +470,23 @@ public class AnimatorHelper {
 
     // BottomAlphaOut
 
-    public static Animator createBottomAlphaOutAnim(final View target) {
+    @NonNull
+    public static Animator createBottomAlphaOutAnim(@NonNull final View target) {
         return createBottomAlphaOutAnim(target, 1 - MOVE_PERCENT);
     }
 
-    public static Animator createBottomAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createBottomAlphaOutAnim(@NonNull final View target,
                                                     float percentTargetHeight) {
         return createBottomAlphaOutAnim(target, percentTargetHeight,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createBottomAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createBottomAlphaOutAnim(@NonNull final View target,
                                                     float percentTargetHeight,
-                                                    TimeInterpolator yInterpolator,
-                                                    TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                    @Nullable TimeInterpolator yInterpolator,
+                                                    @Nullable TimeInterpolator alphaInterpolator) {
         float y = percentTargetHeight * target.getMeasuredHeight();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
@@ -460,13 +499,14 @@ public class AnimatorHelper {
 
     // LeftIn
 
-    public static Animator createLeftInAnim(final View target) {
+    @NonNull
+    public static Animator createLeftInAnim(@NonNull final View target) {
         return createLeftInAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createLeftInAnim(final View target,
-                                            TimeInterpolator xInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createLeftInAnim(@NonNull final View target,
+                                            @Nullable TimeInterpolator xInterpolator) {
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", -target.getRight(), 0);
         if (xInterpolator != null) translationX.setInterpolator(xInterpolator);
         return translationX;
@@ -474,13 +514,14 @@ public class AnimatorHelper {
 
     // LeftOut
 
-    public static Animator createLeftOutAnim(final View target) {
+    @NonNull
+    public static Animator createLeftOutAnim(@NonNull final View target) {
         return createLeftOutAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createLeftOutAnim(final View target,
-                                             TimeInterpolator xInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createLeftOutAnim(@NonNull final View target,
+                                             @Nullable TimeInterpolator xInterpolator) {
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), -target.getRight());
         if (xInterpolator != null) translationX.setInterpolator(xInterpolator);
         return translationX;
@@ -488,21 +529,23 @@ public class AnimatorHelper {
 
     // LeftAlphaIn
 
-    public static Animator createLeftAlphaInAnim(final View target) {
+    @NonNull
+    public static Animator createLeftAlphaInAnim(@NonNull final View target) {
         return createLeftAlphaInAnim(target, 1 - MOVE_PERCENT);
     }
 
-    public static Animator createLeftAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createLeftAlphaInAnim(@NonNull final View target,
                                                  float percentTargetWidth) {
         return createLeftAlphaInAnim(target, percentTargetWidth,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createLeftAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createLeftAlphaInAnim(@NonNull final View target,
                                                  float percentTargetWidth,
-                                                 TimeInterpolator xInterpolator,
-                                                 TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                 @Nullable TimeInterpolator xInterpolator,
+                                                 @Nullable TimeInterpolator alphaInterpolator) {
         float x = percentTargetWidth * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
@@ -515,21 +558,23 @@ public class AnimatorHelper {
 
     // LeftAlphaOut
 
-    public static Animator createLeftAlphaOutAnim(final View target) {
+    @NonNull
+    public static Animator createLeftAlphaOutAnim(@NonNull final View target) {
         return createLeftAlphaOutAnim(target, 1 - MOVE_PERCENT);
     }
 
-    public static Animator createLeftAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createLeftAlphaOutAnim(@NonNull final View target,
                                                   float percentTargetWidth) {
         return createLeftAlphaOutAnim(target, percentTargetWidth,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createLeftAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createLeftAlphaOutAnim(@NonNull final View target,
                                                   float percentTargetWidth,
-                                                  TimeInterpolator xInterpolator,
-                                                  TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                  @Nullable TimeInterpolator xInterpolator,
+                                                  @Nullable TimeInterpolator alphaInterpolator) {
         float x = percentTargetWidth * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
@@ -542,13 +587,14 @@ public class AnimatorHelper {
 
     // RightIn
 
-    public static Animator createRightInAnim(final View target) {
+    @NonNull
+    public static Animator createRightInAnim(@NonNull final View target) {
         return createRightInAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createRightInAnim(final View target,
-                                             TimeInterpolator xInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createRightInAnim(@NonNull final View target,
+                                             @Nullable TimeInterpolator xInterpolator) {
         float x = ((ViewGroup) target.getParent()).getMeasuredWidth() - target.getLeft();
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", x, 0);
         if (xInterpolator != null) translationX.setInterpolator(xInterpolator);
@@ -557,13 +603,14 @@ public class AnimatorHelper {
 
     // RightOut
 
-    public static Animator createRightOutAnim(final View target) {
+    @NonNull
+    public static Animator createRightOutAnim(@NonNull final View target) {
         return createRightOutAnim(target, createDefInterpolator1());
     }
 
-    public static Animator createRightOutAnim(final View target,
-                                              TimeInterpolator xInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createRightOutAnim(@NonNull final View target,
+                                              @Nullable TimeInterpolator xInterpolator) {
         float x = ((ViewGroup) target.getParent()).getMeasuredWidth() - target.getLeft();
         ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), x);
         if (xInterpolator != null) translationX.setInterpolator(xInterpolator);
@@ -572,21 +619,23 @@ public class AnimatorHelper {
 
     // RightAlphaIn
 
-    public static Animator createRightAlphaInAnim(final View target) {
+    @NonNull
+    public static Animator createRightAlphaInAnim(@NonNull final View target) {
         return createRightAlphaInAnim(target, 1 - MOVE_PERCENT);
     }
 
-    public static Animator createRightAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createRightAlphaInAnim(@NonNull final View target,
                                                   float percentTargetWidth) {
         return createRightAlphaInAnim(target, percentTargetWidth,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createRightAlphaInAnim(final View target,
+    @NonNull
+    public static Animator createRightAlphaInAnim(@NonNull final View target,
                                                   float percentTargetWidth,
-                                                  TimeInterpolator xInterpolator,
-                                                  TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                  @Nullable TimeInterpolator xInterpolator,
+                                                  @Nullable TimeInterpolator alphaInterpolator) {
         float x = percentTargetWidth * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", 0, 1);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
@@ -599,21 +648,23 @@ public class AnimatorHelper {
 
     // RightAlphaOut
 
-    public static Animator createRightAlphaOutAnim(final View target) {
+    @NonNull
+    public static Animator createRightAlphaOutAnim(@NonNull final View target) {
         return createRightAlphaOutAnim(target, 1 - MOVE_PERCENT);
     }
 
-    public static Animator createRightAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createRightAlphaOutAnim(@NonNull final View target,
                                                    float percentTargetWidth) {
         return createRightAlphaOutAnim(target, percentTargetWidth,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createRightAlphaOutAnim(final View target,
+    @NonNull
+    public static Animator createRightAlphaOutAnim(@NonNull final View target,
                                                    float percentTargetWidth,
-                                                   TimeInterpolator xInterpolator,
-                                                   TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                   @Nullable TimeInterpolator xInterpolator,
+                                                   @Nullable TimeInterpolator alphaInterpolator) {
         float x = percentTargetWidth * target.getMeasuredWidth();
         ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", target.getAlpha(), 0);
         if (alphaInterpolator != null) alpha.setInterpolator(alphaInterpolator);
@@ -626,38 +677,45 @@ public class AnimatorHelper {
 
     // CircularRevealIn
 
-    public static Animator createCircularRevealInAnim(final View target) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealInAnim(@NonNull final View target) {
         return createCircularRevealInAnim(target, 0.5F, 0.5F);
     }
 
-    public static Animator createCircularRevealInAnim(final View target,
-                                                      float centerPercentX,
-                                                      float centerPercentY) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealInAnim(@NonNull final View target,
+                                                      @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                      @FloatRange(from = 0F, to = 1F) float centerPercentY) {
         return createCircularRevealInAnim(target, centerPercentX, centerPercentY, createDefInterpolator1());
     }
 
-    public static Animator createCircularRevealInAnim(final View target,
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealInAnim(@NonNull final View target,
                                                       int centerX,
                                                       int centerY) {
         return createCircularRevealInAnim(target, centerX, centerY, createDefInterpolator1());
     }
 
-    public static Animator createCircularRevealInAnim(final View target,
-                                                      float centerPercentX,
-                                                      float centerPercentY,
-                                                      TimeInterpolator timeInterpolator) {
-        if (target == null) return null;
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealInAnim(@NonNull final View target,
+                                                      @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                      @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                      @Nullable TimeInterpolator timeInterpolator) {
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
         return createCircularRevealInAnim(target, centerX, centerY, timeInterpolator);
     }
 
-    public static Animator createCircularRevealInAnim(final View target,
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealInAnim(@NonNull final View target,
                                                       int centerX,
                                                       int centerY,
-                                                      TimeInterpolator timeInterpolator) {
-        if (target == null) return null;
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) return null;
+                                                      @Nullable TimeInterpolator timeInterpolator) {
         int x = target.getMeasuredWidth();
         int y = target.getMeasuredHeight();
         int r = (int) Math.sqrt(Math.pow(Math.max(centerX, x - centerX), 2) + Math.pow(Math.max(centerY, y - centerY), 2));
@@ -668,38 +726,45 @@ public class AnimatorHelper {
 
     // CircularRevealOut
 
-    public static Animator createCircularRevealOutAnim(final View target) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealOutAnim(@NonNull final View target) {
         return createCircularRevealOutAnim(target, 0.5F, 0.5F);
     }
 
-    public static Animator createCircularRevealOutAnim(final View target,
-                                                       float centerPercentX,
-                                                       float centerPercentY) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealOutAnim(@NonNull final View target,
+                                                       @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                       @FloatRange(from = 0F, to = 1F) float centerPercentY) {
         return createCircularRevealOutAnim(target, centerPercentX, centerPercentY, createDefInterpolator1());
     }
 
-    public static Animator createCircularRevealOutAnim(final View target,
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealOutAnim(@NonNull final View target,
                                                        int centerX,
                                                        int centerY) {
         return createCircularRevealOutAnim(target, centerX, centerY, createDefInterpolator1());
     }
 
-    public static Animator createCircularRevealOutAnim(final View target,
-                                                       float centerPercentX,
-                                                       float centerPercentY,
-                                                       TimeInterpolator timeInterpolator) {
-        if (target == null) return null;
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealOutAnim(@NonNull final View target,
+                                                       @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                       @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                       @Nullable TimeInterpolator timeInterpolator) {
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
         return createCircularRevealOutAnim(target, centerX, centerY, timeInterpolator);
     }
 
-    public static Animator createCircularRevealOutAnim(final View target,
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @NonNull
+    public static Animator createCircularRevealOutAnim(@NonNull final View target,
                                                        int centerX,
                                                        int centerY,
-                                                       TimeInterpolator timeInterpolator) {
-        if (target == null) return null;
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) return null;
+                                                       @Nullable TimeInterpolator timeInterpolator) {
         int x = target.getMeasuredWidth();
         int y = target.getMeasuredHeight();
         int r = (int) Math.sqrt(Math.pow(Math.max(centerX, x - centerX), 2) + Math.pow(Math.max(centerY, y - centerY), 2));
@@ -710,41 +775,44 @@ public class AnimatorHelper {
 
     // DelayedZoomIn
 
-    public static Animator createDelayedZoomInAnim(final View target) {
+    @NonNull
+    public static Animator createDelayedZoomInAnim(@NonNull final View target) {
         return createDelayedZoomInAnim(target, 0.5F, 0.5F);
     }
 
-    public static Animator createDelayedZoomInAnim(final View target,
+    @NonNull
+    public static Animator createDelayedZoomInAnim(@NonNull final View target,
                                                    int centerX,
                                                    int centerY) {
         return createDelayedZoomInAnim(target, centerX, centerY,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createDelayedZoomInAnim(final View target,
-                                                   float centerPercentX,
-                                                   float centerPercentY) {
+    @NonNull
+    public static Animator createDelayedZoomInAnim(@NonNull final View target,
+                                                   @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                   @FloatRange(from = 0F, to = 1F) float centerPercentY) {
         return createDelayedZoomInAnim(target, centerPercentX, centerPercentY,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createDelayedZoomInAnim(final View target,
-                                                   float centerPercentX,
-                                                   float centerPercentY,
-                                                   TimeInterpolator zoomInterpolator,
-                                                   TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createDelayedZoomInAnim(@NonNull final View target,
+                                                   @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                   @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                   @Nullable TimeInterpolator zoomInterpolator,
+                                                   @Nullable TimeInterpolator alphaInterpolator) {
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
         return createDelayedZoomInAnim(target, centerX, centerY, zoomInterpolator, alphaInterpolator);
     }
 
-    public static Animator createDelayedZoomInAnim(final View target,
+    @NonNull
+    public static Animator createDelayedZoomInAnim(@NonNull final View target,
                                                    int centerX,
                                                    int centerY,
-                                                   TimeInterpolator zoomInterpolator,
-                                                   TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                   @Nullable TimeInterpolator zoomInterpolator,
+                                                   @Nullable TimeInterpolator alphaInterpolator) {
         if (!(target instanceof ViewGroup)) {
             return createZoomInAnim(target, centerX, centerY);
         }
@@ -792,41 +860,44 @@ public class AnimatorHelper {
 
     // DelayedZoomOut
 
-    public static Animator createDelayedZoomOutAnim(final View target) {
+    @NonNull
+    public static Animator createDelayedZoomOutAnim(@NonNull final View target) {
         return createDelayedZoomOutAnim(target, 0.5F, 0.5F);
     }
 
-    public static Animator createDelayedZoomOutAnim(final View target,
+    @NonNull
+    public static Animator createDelayedZoomOutAnim(@NonNull final View target,
                                                     int centerX,
                                                     int centerY) {
         return createDelayedZoomOutAnim(target, centerX, centerY,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createDelayedZoomOutAnim(final View target,
-                                                    float centerPercentX,
-                                                    float centerPercentY) {
+    @NonNull
+    public static Animator createDelayedZoomOutAnim(@NonNull final View target,
+                                                    @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                    @FloatRange(from = 0F, to = 1F) float centerPercentY) {
         return createDelayedZoomOutAnim(target, centerPercentX, centerPercentY,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
-    public static Animator createDelayedZoomOutAnim(final View target,
-                                                    float centerPercentX,
-                                                    float centerPercentY,
-                                                    TimeInterpolator zoomInterpolator,
-                                                    TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+    @NonNull
+    public static Animator createDelayedZoomOutAnim(@NonNull final View target,
+                                                    @FloatRange(from = 0F, to = 1F) float centerPercentX,
+                                                    @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                    @Nullable TimeInterpolator zoomInterpolator,
+                                                    @Nullable TimeInterpolator alphaInterpolator) {
         int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
         int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
         return createDelayedZoomOutAnim(target, centerX, centerY, zoomInterpolator, alphaInterpolator);
     }
 
-    public static Animator createDelayedZoomOutAnim(final View target,
+    @NonNull
+    public static Animator createDelayedZoomOutAnim(@NonNull final View target,
                                                     int centerX,
                                                     int centerY,
-                                                    TimeInterpolator zoomInterpolator,
-                                                    TimeInterpolator alphaInterpolator) {
-        if (target == null) return null;
+                                                    @Nullable TimeInterpolator zoomInterpolator,
+                                                    @Nullable TimeInterpolator alphaInterpolator) {
         if (!(target instanceof ViewGroup)) {
             return createZoomInAnim(target, centerX, centerY);
         }

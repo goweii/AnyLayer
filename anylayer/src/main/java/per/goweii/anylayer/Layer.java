@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,66 +38,71 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     private boolean mInitialized = false;
 
     public Layer() {
-        mConfig = Utils.requireNonNull(onCreateConfig(), "onCreateConfig() == null");
-        mViewHolder = Utils.requireNonNull(onCreateViewHolder(), "onCreateViewHolder() == null");
-        mListenerHolder = Utils.requireNonNull(onCreateListenerHolder(), "onCreateListenerHolder() == null");
+        mConfig = onCreateConfig();
+        mViewHolder = onCreateViewHolder();
+        mListenerHolder = onCreateListenerHolder();
         mViewManager = new ViewManager();
         mViewManager.setOnLifeListener(this);
         mViewManager.setOnPreDrawListener(this);
     }
 
+    @NonNull
     public ViewHolder getViewHolder() {
-        Utils.requireNonNull(mViewHolder, "mViewHolder == null");
         return mViewHolder;
     }
 
+    @NonNull
     public Config getConfig() {
-        Utils.requireNonNull(mConfig, "mConfig == null");
         return mConfig;
     }
 
+    @NonNull
     public ListenerHolder getListenerHolder() {
-        Utils.requireNonNull(mListenerHolder, "mListenerHolder == null");
         return mListenerHolder;
     }
 
+    @NonNull
     protected Config onCreateConfig() {
         return new Config();
     }
 
+    @NonNull
     protected ViewHolder onCreateViewHolder() {
         return new ViewHolder();
     }
 
+    @NonNull
     protected ListenerHolder onCreateListenerHolder() {
         return new ListenerHolder();
     }
 
+    @NonNull
     protected ViewGroup onGetParent() {
         return mViewHolder.getParent();
     }
 
-    protected View onCreateChild(LayoutInflater inflater, ViewGroup parent) {
-        if (mViewHolder.getChild() == null) {
+    @NonNull
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (mViewHolder.getNullableChild() == null) {
             mViewHolder.setChild(inflater.inflate(mConfig.mChildId, parent, false));
         }
         return mViewHolder.getChild();
     }
 
-    protected Animator onCreateInAnimator(View view) {
-        Utils.requireNonNull(view, "view == null");
-        if (mConfig.mAnimatorCreator == null) {
-            return null;
+    @Nullable
+    protected Animator onCreateInAnimator(@NonNull View view) {
+        if (mConfig.mAnimatorCreator != null) {
+            return mConfig.mAnimatorCreator.createInAnimator(view);
         }
-        return mConfig.mAnimatorCreator.createInAnimator(view);
+        return null;
     }
 
-    protected Animator onCreateOutAnimator(View view) {
-        Utils.requireNonNull(view, "view == null");
-        if (mConfig.mAnimatorCreator == null) {
-            return null;
+    @Nullable
+    protected Animator onCreateOutAnimator(@NonNull View view) {
+        if (mConfig.mAnimatorCreator != null) {
+            return mConfig.mAnimatorCreator.createOutAnimator(view);
         }
-        return mConfig.mAnimatorCreator.createOutAnimator(view);
+        return null;
     }
 
     @Override
@@ -222,7 +230,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     @Override
-    public boolean onKey(int keyCode, KeyEvent event) {
+    public boolean onKey(int keyCode, @NonNull KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 if (mConfig.mCancelableOnKeyBack) {
@@ -239,13 +247,10 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public void show(boolean withAnim) {
-        if (isShow()) {
-            return;
-        }
+        if (isShow()) return;
         mShowWithAnim = withAnim;
         mViewHolder.setParent(onGetParent());
-        final View view = onCreateChild(LayoutInflater.from(mViewHolder.getParent().getContext()), mViewHolder.getParent());
-        mViewHolder.setChild(Utils.requireNonNull(view, "onCreateChild() == null"));
+        mViewHolder.setChild(onCreateChild(LayoutInflater.from(mViewHolder.getParent().getContext()), mViewHolder.getParent()));
         mViewManager.setParent(mViewHolder.getParent());
         mViewManager.setChild(mViewHolder.getChild());
         mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? this : null);
@@ -257,9 +262,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public void dismiss(boolean withAnim) {
-        if (!isShow()) {
-            return;
-        }
+        if (!isShow()) return;
         mDismissWithAnim = withAnim;
         onPreRemove();
     }
@@ -268,18 +271,23 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return mViewManager.isAttached();
     }
 
+    @NonNull
     public ViewManager getViewManager() {
         return mViewManager;
     }
 
+    @NonNull
     public ViewGroup getParent() {
         return mViewHolder.getParent();
     }
 
+    @NonNull
     public View getChild() {
         return mViewHolder.getChild();
     }
 
+    @SuppressWarnings("unchecked")
+    @Nullable
     public <V extends View> V getView(int id) {
         if (mViewCaches == null) {
             mViewCaches = new SparseArray<>();
@@ -292,33 +300,37 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return (V) mViewCaches.get(id);
     }
 
-    public Layer parent(ViewGroup parent) {
-        Utils.requireNonNull(parent, "parent == null");
+    @NonNull
+    public Layer parent(@NonNull ViewGroup parent) {
         mViewHolder.setParent(parent);
         return this;
     }
 
-    public Layer child(View child) {
-        Utils.requireNonNull(child, "child == null");
+    @NonNull
+    public Layer child(@NonNull View child) {
         mViewHolder.setChild(child);
         return this;
     }
 
+    @NonNull
     public Layer child(int child) {
         mConfig.mChildId = child;
         return this;
     }
 
-    public Layer animator(AnimatorCreator creator) {
+    @NonNull
+    public Layer animator(@Nullable AnimatorCreator creator) {
         mConfig.mAnimatorCreator = creator;
         return this;
     }
 
+    @NonNull
     public Layer interceptKeyEvent(boolean intercept) {
         mConfig.mInterceptKeyEvent = intercept;
         return this;
     }
 
+    @NonNull
     public Layer cancelableOnKeyBack(boolean cancelable) {
         if (cancelable) interceptKeyEvent(true);
         mConfig.mCancelableOnKeyBack = cancelable;
@@ -331,7 +343,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      *
      * @param dataBinder 实现该接口进行数据绑定
      */
-    public Layer bindData(DataBinder dataBinder) {
+    @NonNull
+    public Layer bindData(@NonNull DataBinder dataBinder) {
         mListenerHolder.addDataBinder(dataBinder);
         return this;
     }
@@ -342,7 +355,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      *
      * @param onInitialize 该接口仅在第一次加载时调用，可加载初始化数据
      */
-    public Layer onInitialize(OnInitialize onInitialize) {
+    @NonNull
+    public Layer onInitialize(@NonNull OnInitialize onInitialize) {
         mListenerHolder.addOnInitialize(onInitialize);
         return this;
     }
@@ -352,7 +366,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      *
      * @param onVisibleChangeListener OnVisibleChangeListener
      */
-    public Layer onVisibleChangeListener(OnVisibleChangeListener onVisibleChangeListener) {
+    @NonNull
+    public Layer onVisibleChangeListener(@NonNull OnVisibleChangeListener onVisibleChangeListener) {
         mListenerHolder.addOnVisibleChangeListener(onVisibleChangeListener);
         return this;
     }
@@ -362,7 +377,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      *
      * @param onShowListener OnShowListener
      */
-    public Layer onShowListener(OnShowListener onShowListener) {
+    @NonNull
+    public Layer onShowListener(@NonNull OnShowListener onShowListener) {
         mListenerHolder.addOnLayerShowListener(onShowListener);
         return this;
     }
@@ -372,7 +388,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      *
      * @param onDismissListener OnDismissListener
      */
-    public Layer onDismissListener(OnDismissListener onDismissListener) {
+    @NonNull
+    public Layer onDismissListener(@NonNull OnDismissListener onDismissListener) {
         mListenerHolder.addOnLayerDismissListener(onDismissListener);
         return this;
     }
@@ -384,10 +401,11 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      * @param listener 监听器
      * @param viewIds  控件ID
      */
-    public Layer onClickToDismiss(OnClickListener listener, int... viewIds) {
+    @NonNull
+    public Layer onClickToDismiss(@Nullable OnClickListener listener, int... viewIds) {
         onClick(new OnClickListener() {
             @Override
-            public void onClick(Layer decorLayer, View v) {
+            public void onClick(@NonNull Layer decorLayer, @NonNull View v) {
                 if (listener != null) {
                     listener.onClick(decorLayer, v);
                 }
@@ -403,10 +421,11 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      *
      * @param viewIds 控件ID
      */
+    @NonNull
     public Layer onClickToDismiss(int... viewIds) {
         onClick(new OnClickListener() {
             @Override
-            public void onClick(Layer decorLayer, View v) {
+            public void onClick(@NonNull Layer decorLayer, @NonNull View v) {
                 dismiss();
             }
         }, viewIds);
@@ -419,7 +438,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      * @param listener 回调
      * @param viewIds  控件ID
      */
-    public Layer onClick(OnClickListener listener, int... viewIds) {
+    @NonNull
+    public Layer onClick(@NonNull OnClickListener listener, int... viewIds) {
         mListenerHolder.addOnClickListener(listener, viewIds);
         return this;
     }
@@ -437,20 +457,32 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         private ViewGroup mParent;
         private View mChild;
 
-        public void setParent(ViewGroup parent) {
-            mParent = Utils.requireNonNull(parent, "parent == null");
+        public void setParent(@NonNull ViewGroup parent) {
+            mParent = parent;
         }
 
+        @NonNull
         public ViewGroup getParent() {
-            return Utils.requireNonNull(mParent, "parent == null, You have to call it after the show method");
+            return Utils.requireNonNull(mParent, "parent未创建");
         }
 
-        public void setChild(View child) {
-            mChild = Utils.requireNonNull(child, "child == null");
+        @Nullable
+        protected ViewGroup getNullableParent() {
+            return mParent;
         }
 
+        public void setChild(@NonNull View child) {
+            mChild = child;
+        }
+
+        @NonNull
         public View getChild() {
-            return Utils.requireNonNull(mChild, "child == null, You have to call it after the show method");
+            return Utils.requireNonNull(mChild, "child未创建");
+        }
+
+        @Nullable
+        protected View getNullableChild() {
+            return mChild;
         }
     }
 
@@ -462,24 +494,23 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         private List<OnShowListener> mOnShowListeners = null;
         private List<OnDismissListener> mOnDismissListeners = null;
 
-        private void bindClickListeners(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
-            if (mOnClickListeners == null) {
-                return;
-            }
+        private void bindClickListeners(@NonNull Layer layer) {
+            if (mOnClickListeners == null) return;
             for (int i = 0; i < mOnClickListeners.size(); i++) {
                 int viewId = mOnClickListeners.keyAt(i);
                 final OnClickListener listener = mOnClickListeners.valueAt(i);
-                layer.getView(viewId).setOnClickListener(new View.OnClickListener() {
+                View view = layer.getView(viewId);
+                Utils.requireNonNull(view, "绑定点击事件的View不存在");
+                view.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(@NonNull View v) {
                         listener.onClick(layer, v);
                     }
                 });
             }
         }
 
-        public void addOnClickListener(OnClickListener listener, int... viewIds) {
+        public void addOnClickListener(@NonNull OnClickListener listener, int... viewIds) {
             if (mOnClickListeners == null) {
                 mOnClickListeners = new SparseArray<>();
             }
@@ -492,43 +523,42 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void addDataBinder(DataBinder dataBinder) {
+        private void addDataBinder(@NonNull DataBinder dataBinder) {
             if (mDataBinders == null) {
                 mDataBinders = new ArrayList<>(1);
             }
             mDataBinders.add(dataBinder);
         }
 
-        private void addOnInitialize(OnInitialize onInitialize) {
+        private void addOnInitialize(@NonNull OnInitialize onInitialize) {
             if (mOnInitializes == null) {
                 mOnInitializes = new ArrayList<>(1);
             }
             mOnInitializes.add(onInitialize);
         }
 
-        private void addOnVisibleChangeListener(OnVisibleChangeListener onVisibleChangeListener) {
+        private void addOnVisibleChangeListener(@NonNull OnVisibleChangeListener onVisibleChangeListener) {
             if (mOnVisibleChangeListeners == null) {
                 mOnVisibleChangeListeners = new ArrayList<>(1);
             }
             mOnVisibleChangeListeners.add(onVisibleChangeListener);
         }
 
-        private void addOnLayerShowListener(OnShowListener onShowListener) {
+        private void addOnLayerShowListener(@NonNull OnShowListener onShowListener) {
             if (mOnShowListeners == null) {
                 mOnShowListeners = new ArrayList<>(1);
             }
             mOnShowListeners.add(onShowListener);
         }
 
-        private void addOnLayerDismissListener(OnDismissListener onDismissListener) {
+        private void addOnLayerDismissListener(@NonNull OnDismissListener onDismissListener) {
             if (mOnDismissListeners == null) {
                 mOnDismissListeners = new ArrayList<>(1);
             }
             mOnDismissListeners.add(onDismissListener);
         }
 
-        private void notifyDataBinder(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
+        private void notifyDataBinder(@NonNull Layer layer) {
             if (mDataBinders != null) {
                 for (DataBinder dataBinder : mDataBinders) {
                     dataBinder.bindData(layer);
@@ -536,8 +566,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyOnInitialize(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
+        private void notifyOnInitialize(@NonNull Layer layer) {
             if (mOnInitializes != null) {
                 for (OnInitialize onInitialize : mOnInitializes) {
                     onInitialize.onInit(layer);
@@ -545,8 +574,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyVisibleChangeOnShow(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
+        private void notifyVisibleChangeOnShow(@NonNull Layer layer) {
             if (mOnVisibleChangeListeners != null) {
                 for (OnVisibleChangeListener onVisibleChangeListener : mOnVisibleChangeListeners) {
                     onVisibleChangeListener.onShow(layer);
@@ -554,8 +582,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyVisibleChangeOnDismiss(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
+        private void notifyVisibleChangeOnDismiss(@NonNull Layer layer) {
             if (mOnVisibleChangeListeners != null) {
                 for (OnVisibleChangeListener onVisibleChangeListener : mOnVisibleChangeListeners) {
                     onVisibleChangeListener.onDismiss(layer);
@@ -563,8 +590,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyLayerOnShowing(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
+        private void notifyLayerOnShowing(@NonNull Layer layer) {
             if (mOnShowListeners != null) {
                 for (OnShowListener onShowListener : mOnShowListeners) {
                     onShowListener.onShowing(layer);
@@ -572,8 +598,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyLayerOnShown(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
+        private void notifyLayerOnShown(@NonNull Layer layer) {
             if (mOnShowListeners != null) {
                 for (OnShowListener onShowListener : mOnShowListeners) {
                     onShowListener.onShown(layer);
@@ -581,8 +606,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyLayerOnDismissing(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
+        private void notifyLayerOnDismissing(@NonNull Layer layer) {
             if (mOnDismissListeners != null) {
                 for (OnDismissListener onDismissListener : mOnDismissListeners) {
                     onDismissListener.onDismissing(layer);
@@ -590,8 +614,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
         }
 
-        private void notifyLayerOnDismissed(Layer layer) {
-            Utils.requireNonNull(layer, "layer == null");
+        private void notifyLayerOnDismissed(@NonNull Layer layer) {
             if (mOnDismissListeners != null) {
                 for (OnDismissListener onDismissListener : mOnDismissListeners) {
                     onDismissListener.onDismissed(layer);
@@ -606,70 +629,72 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
          *
          * @param target 内容
          */
-        Animator createInAnimator(View target);
+        @Nullable
+        Animator createInAnimator(@NonNull View target);
 
         /**
          * 内容消失动画
          *
          * @param target 内容
          */
-        Animator createOutAnimator(View target);
+        @Nullable
+        Animator createOutAnimator(@NonNull View target);
     }
 
     public interface DataBinder {
         /**
          * 绑定数据
          */
-        void bindData(Layer layer);
+        void bindData(@NonNull Layer layer);
     }
 
     public interface OnInitialize {
         /**
          * 首次加载
          */
-        void onInit(Layer layer);
+        void onInit(@NonNull Layer layer);
     }
 
     public interface OnClickListener {
         /**
          * 点击事件回调
          */
-        void onClick(Layer layer, View v);
+        void onClick(@NonNull Layer layer, @NonNull View v);
     }
 
     public interface OnDismissListener {
         /**
          * 开始隐藏，动画刚开始执行
          */
-        void onDismissing(Layer layer);
+        void onDismissing(@NonNull Layer layer);
 
         /**
          * 已隐藏，浮层已被移除
          */
-        void onDismissed(Layer layer);
+        void onDismissed(@NonNull Layer layer);
     }
 
     public interface OnShowListener {
         /**
          * 开始显示，动画刚开始执行
          */
-        void onShowing(Layer layer);
+        void onShowing(@NonNull Layer layer);
 
         /**
          * 已显示，浮层已显示且动画结束
          */
-        void onShown(Layer layer);
+        void onShown(@NonNull Layer layer);
     }
 
     public interface OnVisibleChangeListener {
         /**
          * 浮层显示，刚被添加到父布局，进入动画未开始
          */
-        void onShow(Layer layer);
+        void onShow(@NonNull Layer layer);
 
         /**
          * 浮层隐藏，已被从父布局移除，隐藏动画已结束
          */
-        void onDismiss(Layer layer);
+        void onDismiss(@NonNull Layer layer);
     }
 }

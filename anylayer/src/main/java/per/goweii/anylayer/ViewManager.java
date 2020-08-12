@@ -5,6 +5,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * 描述：管理view的动态添加和移除
  * 这里有几个生命周期的回调：
@@ -31,20 +34,20 @@ public final class ViewManager {
     public ViewManager() {
     }
 
-    public void setParent(ViewGroup parent) {
-        Utils.requireNonNull(parent, "parent == null");
+    public void setParent(@NonNull ViewGroup parent) {
         mParent = parent;
     }
 
-    public void setChild(View child) {
-        Utils.requireNonNull(child, "child == null");
+    public void setChild(@NonNull View child) {
         mChild = child;
     }
 
+    @Nullable
     public ViewGroup getParent() {
         return mParent;
     }
 
+    @Nullable
     public View getChild() {
         return mChild;
     }
@@ -57,8 +60,8 @@ public final class ViewManager {
     }
 
     public void attach() {
-        Utils.requireNonNull(mParent, "parent cannot be null on attach");
-        Utils.requireNonNull(mChild, "child cannot be null on attach");
+        Utils.requireNonNull(mParent, "必须设置parent");
+        Utils.requireNonNull(mChild, "必须设置child");
         checkChildParent();
         if (!isAttached()) {
             onAttach();
@@ -75,15 +78,15 @@ public final class ViewManager {
         return mChild != null && mChild.getParent() != null;
     }
 
-    public void setOnLifeListener(OnLifeListener onLifeListener) {
+    public void setOnLifeListener(@Nullable OnLifeListener onLifeListener) {
         mOnLifeListener = onLifeListener;
     }
 
-    public void setOnPreDrawListener(OnPreDrawListener onPreDrawListener) {
+    public void setOnPreDrawListener(@Nullable OnPreDrawListener onPreDrawListener) {
         mOnPreDrawListener = onPreDrawListener;
     }
 
-    public void setOnKeyListener(OnKeyListener onKeyListener) {
+    public void setOnKeyListener(@Nullable OnKeyListener onKeyListener) {
         mOnKeyListener = onKeyListener;
     }
 
@@ -139,7 +142,7 @@ public final class ViewManager {
 
     private final class LayerGlobalFocusChangeListener implements ViewTreeObserver.OnGlobalFocusChangeListener {
         @Override
-        public void onGlobalFocusChanged(android.view.View oldFocus, android.view.View newFocus) {
+        public void onGlobalFocusChanged(View oldFocus, View newFocus) {
             if (currentKeyView != null) {
                 currentKeyView.setOnKeyListener(null);
             }

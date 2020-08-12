@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.ScrollingView;
 
 /**
@@ -13,7 +14,7 @@ import androidx.core.view.ScrollingView;
  */
 public class ScrollCompat {
 
-    public static boolean canScrollHorizontally(View v, int direction) {
+    public static boolean canScrollHorizontally(@NonNull View v, int direction) {
         if (v instanceof ScrollingView) {
             return canScrollingViewScrollHorizontally((ScrollingView) v, direction);
         } else {
@@ -21,7 +22,7 @@ public class ScrollCompat {
         }
     }
 
-    public static boolean canScrollVertically(View v, int direction) {
+    public static boolean canScrollVertically(@NonNull View v, int direction) {
         if (v instanceof ScrollingView) {
             return canScrollingViewScrollVertically((ScrollingView) v, direction);
         } else {
@@ -29,7 +30,7 @@ public class ScrollCompat {
         }
     }
 
-    private static boolean canScrollingViewScrollHorizontally(ScrollingView view, int direction) {
+    private static boolean canScrollingViewScrollHorizontally(@NonNull ScrollingView view, int direction) {
         final int offset = view.computeHorizontalScrollOffset();
         final int range = view.computeHorizontalScrollRange() - view.computeHorizontalScrollExtent();
         if (range == 0) return false;
@@ -40,7 +41,7 @@ public class ScrollCompat {
         }
     }
 
-    private static boolean canScrollingViewScrollVertically(ScrollingView view, int direction) {
+    private static boolean canScrollingViewScrollVertically(@NonNull ScrollingView view, int direction) {
         final int offset = view.computeVerticalScrollOffset();
         final int range = view.computeVerticalScrollRange() - view.computeVerticalScrollExtent();
         if (range == 0) return false;

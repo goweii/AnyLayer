@@ -8,6 +8,8 @@ import android.widget.AbsListView;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.ScrollingView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -17,14 +19,14 @@ import java.util.List;
 public class DragCompat {
 
     @Deprecated
-    public static boolean canViewScrollUp(View view, float x, float y, boolean defaultValueForNull) {
+    public static boolean canViewScrollUp(@Nullable View view, float x, float y, boolean defaultValueForNull) {
         if (view == null || !contains(view, x, y)) {
             return defaultValueForNull;
         }
         return view.canScrollVertically(-1);
     }
 
-    public static boolean canViewScrollUp(List<View> views, float x, float y, boolean defaultValueForNull) {
+    public static boolean canViewScrollUp(@Nullable List<View> views, float x, float y, boolean defaultValueForNull) {
         if (views == null) {
             return defaultValueForNull;
         }
@@ -42,7 +44,8 @@ public class DragCompat {
         return canViewScroll;
     }
 
-    public static View canScrollUpView(List<View> views, float x, float y) {
+    @Nullable
+    public static View canScrollUpView(@Nullable List<View> views, float x, float y) {
         if (views == null) {
             return null;
         }
@@ -60,14 +63,14 @@ public class DragCompat {
     }
 
     @Deprecated
-    public static boolean canViewScrollDown(View view, float x, float y, boolean defaultValueForNull) {
+    public static boolean canViewScrollDown(@Nullable View view, float x, float y, boolean defaultValueForNull) {
         if (view == null || !contains(view, x, y)) {
             return defaultValueForNull;
         }
         return view.canScrollVertically(1);
     }
 
-    public static boolean canViewScrollDown(List<View> views, float x, float y, boolean defaultValueForNull) {
+    public static boolean canViewScrollDown(@Nullable List<View> views, float x, float y, boolean defaultValueForNull) {
         if (views == null) {
             return defaultValueForNull;
         }
@@ -85,7 +88,8 @@ public class DragCompat {
         return canViewScroll;
     }
 
-    public static View canScrollDownView(List<View> views, float x, float y) {
+    @Nullable
+    public static View canScrollDownView(@Nullable List<View> views, float x, float y) {
         if (views == null) {
             return null;
         }
@@ -103,14 +107,14 @@ public class DragCompat {
     }
 
     @Deprecated
-    public static boolean canViewScrollRight(View view, float x, float y, boolean defaultValueForNull) {
+    public static boolean canViewScrollRight(@Nullable View view, float x, float y, boolean defaultValueForNull) {
         if (view == null || !contains(view, x, y)) {
             return defaultValueForNull;
         }
         return view.canScrollHorizontally(-1);
     }
 
-    public static boolean canViewScrollRight(List<View> views, float x, float y, boolean defaultValueForNull) {
+    public static boolean canViewScrollRight(@Nullable List<View> views, float x, float y, boolean defaultValueForNull) {
         if (views == null) {
             return defaultValueForNull;
         }
@@ -128,7 +132,8 @@ public class DragCompat {
         return canViewScroll;
     }
 
-    public static View canScrollRightView(List<View> views, float x, float y) {
+    @Nullable
+    public static View canScrollRightView(@Nullable List<View> views, float x, float y) {
         if (views == null) {
             return null;
         }
@@ -146,14 +151,14 @@ public class DragCompat {
     }
 
     @Deprecated
-    public static boolean canViewScrollLeft(View view, float x, float y, boolean defaultValueForNull) {
+    public static boolean canViewScrollLeft(@Nullable View view, float x, float y, boolean defaultValueForNull) {
         if (view == null || !contains(view, x, y)) {
             return defaultValueForNull;
         }
         return view.canScrollHorizontally(1);
     }
 
-    public static boolean canViewScrollLeft(List<View> views, float x, float y, boolean defaultValueForNull) {
+    public static boolean canViewScrollLeft(@Nullable List<View> views, float x, float y, boolean defaultValueForNull) {
         if (views == null) {
             return defaultValueForNull;
         }
@@ -171,7 +176,8 @@ public class DragCompat {
         return canViewScroll;
     }
 
-    public static View canScrollLeftView(List<View> views, float x, float y) {
+    @Nullable
+    public static View canScrollLeftView(@Nullable List<View> views, float x, float y) {
         if (views == null) {
             return null;
         }
@@ -188,7 +194,7 @@ public class DragCompat {
         return null;
     }
 
-    public static List<View> findAllScrollViews(ViewGroup viewGroup) {
+    public static List<View> findAllScrollViews(@NonNull ViewGroup viewGroup) {
         List<View> views = new ArrayList<>();
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View view = viewGroup.getChildAt(i);
@@ -205,7 +211,7 @@ public class DragCompat {
         return views;
     }
 
-    public static boolean isScrollableView(View view) {
+    public static boolean isScrollableView(@NonNull View view) {
         return view instanceof ScrollView
                 || view instanceof HorizontalScrollView
                 || view instanceof AbsListView
@@ -215,13 +221,14 @@ public class DragCompat {
                 ;
     }
 
-    public static boolean contains(View view, float x, float y) {
+    public static boolean contains(@NonNull View view, float x, float y) {
         Rect localRect = new Rect();
         view.getGlobalVisibleRect(localRect);
         return localRect.contains((int) x, (int) y);
     }
 
-    public static List<View> contains(List<View> views, float x, float y) {
+    @Nullable
+    public static List<View> contains(@Nullable List<View> views, float x, float y) {
         if (views == null) {
             return null;
         }

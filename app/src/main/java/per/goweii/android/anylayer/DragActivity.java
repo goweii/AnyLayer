@@ -1,9 +1,11 @@
 package per.goweii.android.anylayer;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DragLayout;
@@ -69,7 +71,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .bindData(new Layer.DataBinder() {
                             @Override
-                            public void bindData(Layer layer) {
+                            public void bindData(@NonNull Layer layer) {
                                 layer.getView(R.id.tv_dialog_title).setOnLongClickListener(new View.OnLongClickListener() {
                                     @Override
                                     public boolean onLongClick(View v) {

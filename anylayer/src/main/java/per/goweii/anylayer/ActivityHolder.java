@@ -5,6 +5,9 @@ import android.app.Application;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,17 +25,18 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
     private final Application mApplication;
     private final List<Activity> mActivityStack = new LinkedList<>();
 
-    private ActivityHolder(Application application) {
-        mApplication = Utils.requireNonNull(application, "application == null");
+    private ActivityHolder(@NonNull Application application) {
+        mApplication = application;
         application.registerActivityLifecycleCallbacks(this);
     }
 
-    static void init(Application application) {
+    static void init(@NonNull Application application) {
         if (INSTANCE == null) {
             INSTANCE = new ActivityHolder(application);
         }
     }
 
+    @Nullable
     static Application getApplication() {
         if (INSTANCE == null) {
             return null;
@@ -40,8 +44,8 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         return INSTANCE.mApplication;
     }
 
-    static Activity getActivity(Class<Activity> clazz) {
-        Utils.requireNonNull(clazz, "clazz == null");
+    @Nullable
+    static Activity getActivity(@NonNull Class<Activity> clazz) {
         if (INSTANCE == null) {
             return null;
         }
@@ -58,6 +62,7 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         return null;
     }
 
+    @Nullable
     static Activity getCurrentActivity() {
         if (INSTANCE == null) {
             return null;
@@ -69,32 +74,32 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
     }
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
         mActivityStack.add(activity);
     }
 
     @Override
-    public void onActivityStarted(Activity activity) {
+    public void onActivityStarted(@NonNull Activity activity) {
     }
 
     @Override
-    public void onActivityResumed(Activity activity) {
+    public void onActivityResumed(@NonNull Activity activity) {
     }
 
     @Override
-    public void onActivityPaused(Activity activity) {
+    public void onActivityPaused(@NonNull Activity activity) {
     }
 
     @Override
-    public void onActivityStopped(Activity activity) {
+    public void onActivityStopped(@NonNull Activity activity) {
     }
 
     @Override
-    public void onActivityDestroyed(Activity activity) {
+    public void onActivityDestroyed(@NonNull Activity activity) {
         mActivityStack.remove(activity);
     }
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
     }
 }

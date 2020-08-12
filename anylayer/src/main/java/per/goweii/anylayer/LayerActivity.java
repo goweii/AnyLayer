@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * @author CuiZhen
  * @date 2019/6/2
@@ -14,9 +17,10 @@ import android.os.Bundle;
  */
 public class LayerActivity extends Activity implements Layer.OnVisibleChangeListener {
 
+    @Nullable
     private static OnLayerCreatedCallback sOnLayerCreatedCallback = null;
 
-    static void start(Context context, OnLayerCreatedCallback callback) {
+    static void start(@NonNull Context context, OnLayerCreatedCallback callback) {
         sOnLayerCreatedCallback = callback;
         Intent intent = new Intent(context, LayerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -24,7 +28,7 @@ public class LayerActivity extends Activity implements Layer.OnVisibleChangeList
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         overridePendingTransition(0, 0);
         super.onCreate(savedInstanceState);
         Utils.transparent(this);
@@ -36,11 +40,11 @@ public class LayerActivity extends Activity implements Layer.OnVisibleChangeList
     }
 
     @Override
-    public void onShow(Layer layer) {
+    public void onShow(@NonNull Layer layer) {
     }
 
     @Override
-    public void onDismiss(Layer layer) {
+    public void onDismiss(@NonNull Layer layer) {
         finish();
         overridePendingTransition(0, 0);
     }
@@ -49,7 +53,7 @@ public class LayerActivity extends Activity implements Layer.OnVisibleChangeList
         /**
          * 浮层已创建，可在这里进行浮层的初始化和数据绑定
          */
-        void onLayerCreated(DialogLayer dialogLayer);
+        void onLayerCreated(@NonNull DialogLayer dialogLayer);
     }
 
 }
