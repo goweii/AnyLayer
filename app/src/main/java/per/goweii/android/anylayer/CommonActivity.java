@@ -2,10 +2,9 @@ package per.goweii.android.anylayer;
 
 import android.os.Bundle;
 import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 
 import per.goweii.statusbarcompat.StatusBarCompat;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class CommonActivity extends AppCompatActivity implements View.OnClickListener {
 

@@ -1,6 +1,8 @@
 package per.goweii.anylayer;
 
 import android.graphics.Rect;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ScrollingView;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -9,11 +11,6 @@ import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.ScrollingView;
-import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,9 +214,6 @@ public class DragCompat {
         return view instanceof ScrollView
                 || view instanceof HorizontalScrollView
                 || view instanceof AbsListView
-                || view instanceof ViewPager
-                || view instanceof WebView
-                || view instanceof ScrollingView;
                 || view instanceof ViewPager
                 || view instanceof WebView
                 || view instanceof ScrollingView

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="400dp"
@@ -28,7 +28,7 @@
             android:layout_height="1dp"
             android:background="#f5f5f5" />
 
-        <androidx.core.widget.NestedScrollView
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -140,7 +140,7 @@
 
             </LinearLayout>
 
-        </androidx.core.widget.NestedScrollView>
+        </android.support.v4.widget.NestedScrollView>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -169,4 +169,4 @@
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</android.support.v7.widget.CardView>
