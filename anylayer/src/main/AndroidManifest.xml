@@ -4,7 +4,7 @@
     <application>
         <activity
             android:name=".LayerActivity"
-            android:theme="@style/LayerActivityTheme" />
+            android:theme="@animatorStyle/LayerActivityTheme" />
         <provider
             android:name=".ActivityProvider"
             android:authorities="${applicationId}.activityprovider"

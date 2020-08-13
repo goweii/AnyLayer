@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@animatorStyle/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -21,7 +21,7 @@
         <activity
             android:name=".CommonActivity"
             android:configChanges="orientation"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@animatorStyle/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".NormalActivity"
             android:configChanges="orientation|screenSize|keyboard" />
@@ -31,7 +31,7 @@
         <activity
             android:name=".FullScreenActivity"
             android:configChanges="orientation|screenSize|keyboard"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@animatorStyle/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
 </manifest>

@@ -122,7 +122,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         mListenerHolder.notifyLayerOnShowing(this);
         cancelAnimator();
         if (mShowWithAnim) {
-            mAnimatorIn = onCreateInAnimator(mViewManager.getChild());
+            mAnimatorIn = onCreateInAnimator(mViewManager.requireChild());
             if (mAnimatorIn != null) {
                 mAnimatorIn.addListener(new Animator.AnimatorListener() {
                     private boolean beenCanceled = false;
@@ -167,7 +167,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         mListenerHolder.notifyLayerOnDismissing(this);
         cancelAnimator();
         if (mDismissWithAnim) {
-            mAnimatorOut = onCreateOutAnimator(mViewManager.getChild());
+            mAnimatorOut = onCreateOutAnimator(mViewManager.requireChild());
             if (mAnimatorOut != null) {
                 mAnimatorOut.addListener(new Animator.AnimatorListener() {
                     private boolean beenCanceled = false;

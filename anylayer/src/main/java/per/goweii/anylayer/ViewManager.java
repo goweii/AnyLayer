@@ -52,6 +52,16 @@ public final class ViewManager {
         return mChild;
     }
 
+    @NonNull
+    public ViewGroup requireParent() {
+        return Utils.requireNonNull(mParent, "还未设置parent");
+    }
+
+    @NonNull
+    public View requireChild() {
+        return Utils.requireNonNull(mChild, "还未设置child");
+    }
+
     private void checkChildParent() {
         ViewGroup parent = (ViewGroup) mChild.getParent();
         if (parent != null && parent != mParent) {
@@ -61,7 +71,6 @@ public final class ViewManager {
 
     public void attach() {
         Utils.requireNonNull(mParent, "必须设置parent");
-        Utils.requireNonNull(mChild, "必须设置child");
         checkChildParent();
         if (!isAttached()) {
             onAttach();

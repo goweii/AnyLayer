@@ -107,7 +107,7 @@ public class DialogLayer extends DecorLayer {
         } else {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
             if (contentParent != null) {
-                contentParent.removeView(getConfig().mContentView);
+                contentParent.removeView(getViewHolder().getContent());
             }
         }
         return getViewHolder().getContent();
@@ -519,8 +519,8 @@ public class DialogLayer extends DecorLayer {
      * @param contentView 自定以View
      */
     @NonNull
-    public DialogLayer contentView(@Nullable View contentView) {
-        getConfig().mContentView = contentView;
+    public DialogLayer contentView(@NonNull View contentView) {
+        getViewHolder().setContent(contentView);
         return this;
     }
 
@@ -925,8 +925,6 @@ public class DialogLayer extends DecorLayer {
         @Nullable
         protected AnimStyle mAnimStyle = null;
 
-        @Nullable
-        protected View mContentView = null;
         protected int mContentViewId = -1;
 
         protected boolean mCancelableOnTouchOutside = true;
