@@ -11,7 +11,6 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
-import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -28,10 +27,10 @@ import java.util.List;
  */
 public class AnimatorHelper {
 
-    private static final float ZOOM_PERCENT = 0.9F;
-    private static final float MOVE_PERCENT = 0.9F;
-    private static final float INTERPOLATOR_FACTOR_1 = 1.5F;
-    private static final float INTERPOLATOR_FACTOR_2 = 2.5F;
+    public static final float ZOOM_PERCENT = 0.9F;
+    public static final float MOVE_PERCENT = 0.9F;
+    public static final float INTERPOLATOR_FACTOR_1 = 1.5F;
+    public static final float INTERPOLATOR_FACTOR_2 = 2.5F;
 
     @NonNull
     private static TimeInterpolator createDefInterpolator(float factor) {
@@ -82,24 +81,37 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createZoomInAnim(@NonNull final View target) {
-        return createZoomInAnim(target, 0.5F, 0.5F);
+        return createZoomInAnim(target, null);
     }
 
     @NonNull
     public static Animator createZoomInAnim(@NonNull final View target,
-                                            @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                            @FloatRange(from = 0F, to = 1F) float centerPercentY) {
+                                            @Nullable TimeInterpolator zoomInterpolator) {
+        return createZoomInAnim(target, 0.5F, 0.5F, zoomInterpolator);
+    }
+
+    @NonNull
+    public static Animator createZoomInAnim(@NonNull final View target,
+                                            float centerPercentX,
+                                            float centerPercentY) {
         return createZoomInAnim(target, centerPercentX, centerPercentY, createDefInterpolator1());
     }
 
     @NonNull
     public static Animator createZoomInAnim(@NonNull final View target,
-                                            @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                            @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                            float centerPercentX,
+                                            float centerPercentY,
                                             @Nullable TimeInterpolator zoomInterpolator) {
-        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
-        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        int centerX = (int) (target.getMeasuredWidth() * centerPercentX);
+        int centerY = (int) (target.getMeasuredHeight() * centerPercentY);
         return createZoomInAnim(target, centerX, centerY, zoomInterpolator);
+    }
+
+    @NonNull
+    public static Animator createZoomInAnim(@NonNull final View target,
+                                            int centerX,
+                                            int centerY) {
+        return createZoomInAnim(target, centerX, centerY, null);
     }
 
     @NonNull
@@ -124,23 +136,29 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createZoomOutAnim(@NonNull final View target) {
-        return createZoomOutAnim(target, 0.5F, 0.5F);
+        return createZoomOutAnim(target, null);
     }
 
     @NonNull
     public static Animator createZoomOutAnim(@NonNull final View target,
-                                             @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                             @FloatRange(from = 0F, to = 1F) float centerPercentY) {
+                                             @Nullable TimeInterpolator zoomInterpolator) {
+        return createZoomOutAnim(target, 0.5F, 0.5F, zoomInterpolator);
+    }
+
+    @NonNull
+    public static Animator createZoomOutAnim(@NonNull final View target,
+                                             float centerPercentX,
+                                             float centerPercentY) {
         return createZoomOutAnim(target, centerPercentX, centerPercentY, createDefInterpolator1());
     }
 
     @NonNull
     public static Animator createZoomOutAnim(@NonNull final View target,
-                                             @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                             @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                             float centerPercentX,
+                                             float centerPercentY,
                                              @Nullable TimeInterpolator zoomInterpolator) {
-        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
-        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        int centerX = (int) (target.getMeasuredWidth() * centerPercentX);
+        int centerY = (int) (target.getMeasuredHeight() * centerPercentY);
         return createZoomOutAnim(target, centerX, centerY, zoomInterpolator);
     }
 
@@ -162,6 +180,13 @@ public class AnimatorHelper {
         return set;
     }
 
+    @NonNull
+    public static Animator createZoomOutAnim(@NonNull final View target,
+                                             int centerX,
+                                             int centerY) {
+        return createZoomOutAnim(target, centerX, centerY, null);
+    }
+
     // ZoomAlphaIn
 
     @NonNull
@@ -177,8 +202,8 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createZoomAlphaInAnim(@NonNull final View target,
-                                                 @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                 @FloatRange(from = 0F, to = 1F) float centerPercentY) {
+                                                 float centerPercentX,
+                                                 float centerPercentY) {
         return createZoomAlphaInAnim(target, centerPercentX, centerPercentY, ZOOM_PERCENT);
     }
 
@@ -191,8 +216,8 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createZoomAlphaInAnim(@NonNull final View target,
-                                                 @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                 @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                 float centerPercentX,
+                                                 float centerPercentY,
                                                  float fromScale) {
         return createZoomAlphaInAnim(target, centerPercentX, centerPercentY, fromScale,
                 createDefInterpolator1(), createDefInterpolator2());
@@ -209,13 +234,13 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createZoomAlphaInAnim(@NonNull final View target,
-                                                 @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                 @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                 float centerPercentX,
+                                                 float centerPercentY,
                                                  float fromScale,
                                                  @Nullable TimeInterpolator zoomInterpolator,
                                                  @Nullable TimeInterpolator alphaInterpolator) {
-        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
-        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        int centerX = (int) (target.getMeasuredWidth() * centerPercentX);
+        int centerY = (int) (target.getMeasuredHeight() * centerPercentY);
         return createZoomAlphaInAnim(target, centerX, centerY, fromScale, zoomInterpolator, alphaInterpolator);
     }
 
@@ -256,8 +281,8 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createZoomAlphaOutAnim(@NonNull final View target,
-                                                  @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                  @FloatRange(from = 0F, to = 1F) float centerPercentY) {
+                                                  float centerPercentX,
+                                                  float centerPercentY) {
         return createZoomAlphaOutAnim(target, centerPercentX, centerPercentY, ZOOM_PERCENT);
     }
 
@@ -270,8 +295,8 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createZoomAlphaOutAnim(@NonNull final View target,
-                                                  @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                  @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                  float centerPercentX,
+                                                  float centerPercentY,
                                                   float toScale) {
         return createZoomAlphaOutAnim(target, centerPercentX, centerPercentY, toScale,
                 createDefInterpolator1(), createDefInterpolator2());
@@ -288,13 +313,13 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createZoomAlphaOutAnim(@NonNull final View target,
-                                                  @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                  @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                  float centerPercentX,
+                                                  float centerPercentY,
                                                   float toScale,
                                                   @Nullable TimeInterpolator zoomInterpolator,
                                                   @Nullable TimeInterpolator alphaInterpolator) {
-        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
-        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        int centerX = (int) (target.getMeasuredWidth() * centerPercentX);
+        int centerY = (int) (target.getMeasuredHeight() * centerPercentY);
         return createZoomAlphaOutAnim(target, centerX, centerY, toScale, zoomInterpolator, alphaInterpolator);
     }
 
@@ -686,8 +711,8 @@ public class AnimatorHelper {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @NonNull
     public static Animator createCircularRevealInAnim(@NonNull final View target,
-                                                      @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                      @FloatRange(from = 0F, to = 1F) float centerPercentY) {
+                                                      float centerPercentX,
+                                                      float centerPercentY) {
         return createCircularRevealInAnim(target, centerPercentX, centerPercentY, createDefInterpolator1());
     }
 
@@ -702,11 +727,11 @@ public class AnimatorHelper {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @NonNull
     public static Animator createCircularRevealInAnim(@NonNull final View target,
-                                                      @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                      @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                      float centerPercentX,
+                                                      float centerPercentY,
                                                       @Nullable TimeInterpolator timeInterpolator) {
-        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
-        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        int centerX = (int) (target.getMeasuredWidth() * centerPercentX);
+        int centerY = (int) (target.getMeasuredHeight() * centerPercentY);
         return createCircularRevealInAnim(target, centerX, centerY, timeInterpolator);
     }
 
@@ -735,8 +760,8 @@ public class AnimatorHelper {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @NonNull
     public static Animator createCircularRevealOutAnim(@NonNull final View target,
-                                                       @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                       @FloatRange(from = 0F, to = 1F) float centerPercentY) {
+                                                       float centerPercentX,
+                                                       float centerPercentY) {
         return createCircularRevealOutAnim(target, centerPercentX, centerPercentY, createDefInterpolator1());
     }
 
@@ -751,11 +776,11 @@ public class AnimatorHelper {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @NonNull
     public static Animator createCircularRevealOutAnim(@NonNull final View target,
-                                                       @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                       @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                       float centerPercentX,
+                                                       float centerPercentY,
                                                        @Nullable TimeInterpolator timeInterpolator) {
-        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
-        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        int centerX = (int) (target.getMeasuredWidth() * centerPercentX);
+        int centerY = (int) (target.getMeasuredHeight() * centerPercentY);
         return createCircularRevealOutAnim(target, centerX, centerY, timeInterpolator);
     }
 
@@ -790,20 +815,20 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createDelayedZoomInAnim(@NonNull final View target,
-                                                   @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                   @FloatRange(from = 0F, to = 1F) float centerPercentY) {
+                                                   float centerPercentX,
+                                                   float centerPercentY) {
         return createDelayedZoomInAnim(target, centerPercentX, centerPercentY,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
     @NonNull
     public static Animator createDelayedZoomInAnim(@NonNull final View target,
-                                                   @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                   @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                   float centerPercentX,
+                                                   float centerPercentY,
                                                    @Nullable TimeInterpolator zoomInterpolator,
                                                    @Nullable TimeInterpolator alphaInterpolator) {
-        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
-        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        int centerX = (int) (target.getMeasuredWidth() * centerPercentX);
+        int centerY = (int) (target.getMeasuredHeight() * centerPercentY);
         return createDelayedZoomInAnim(target, centerX, centerY, zoomInterpolator, alphaInterpolator);
     }
 
@@ -875,20 +900,20 @@ public class AnimatorHelper {
 
     @NonNull
     public static Animator createDelayedZoomOutAnim(@NonNull final View target,
-                                                    @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                    @FloatRange(from = 0F, to = 1F) float centerPercentY) {
+                                                    float centerPercentX,
+                                                    float centerPercentY) {
         return createDelayedZoomOutAnim(target, centerPercentX, centerPercentY,
                 createDefInterpolator1(), createDefInterpolator2());
     }
 
     @NonNull
     public static Animator createDelayedZoomOutAnim(@NonNull final View target,
-                                                    @FloatRange(from = 0F, to = 1F) float centerPercentX,
-                                                    @FloatRange(from = 0F, to = 1F) float centerPercentY,
+                                                    float centerPercentX,
+                                                    float centerPercentY,
                                                     @Nullable TimeInterpolator zoomInterpolator,
                                                     @Nullable TimeInterpolator alphaInterpolator) {
-        int centerX = (int) (target.getMeasuredWidth() * Utils.floatRange01(centerPercentX));
-        int centerY = (int) (target.getMeasuredHeight() * Utils.floatRange01(centerPercentY));
+        int centerX = (int) (target.getMeasuredWidth() * centerPercentX);
+        int centerY = (int) (target.getMeasuredHeight() * centerPercentY);
         return createDelayedZoomOutAnim(target, centerX, centerY, zoomInterpolator, alphaInterpolator);
     }
 
