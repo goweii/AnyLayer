@@ -1,9 +1,6 @@
 package per.goweii.anylayer.ext;
 
 import android.animation.Animator;
-import android.animation.TimeInterpolator;
-import android.graphics.Point;
-import android.graphics.PointF;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -11,6 +8,9 @@ import androidx.annotation.Nullable;
 
 import per.goweii.anylayer.Layer;
 
+/**
+ * @author CuiZhen
+ */
 public class SimpleAnimatorCreator implements Layer.AnimatorCreator {
     private final AnimatorStyle animatorStyle;
 

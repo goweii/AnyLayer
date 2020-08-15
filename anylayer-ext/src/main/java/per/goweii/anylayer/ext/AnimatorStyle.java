@@ -8,6 +8,10 @@ import androidx.annotation.Nullable;
 
 import per.goweii.anylayer.AnimatorHelper;
 
+/**
+ * @author CuiZhen
+ */
+
 public enum AnimatorStyle {
     NONE,
     ALPHA,
@@ -26,6 +30,7 @@ public enum AnimatorStyle {
     @Nullable
     public Animator createInAnimator(@NonNull View target) {
         switch (this) {
+            default:
             case NONE:
                 return null;
             case ALPHA:
@@ -51,12 +56,12 @@ public enum AnimatorStyle {
             case RIGHT_ALPHA:
                 return AnimatorHelper.createRightAlphaInAnim(target);
         }
-        return null;
     }
 
     @Nullable
     public Animator createOutAnimator(@NonNull View target) {
         switch (this) {
+            default:
             case NONE:
                 return null;
             case ALPHA:
@@ -82,6 +87,5 @@ public enum AnimatorStyle {
             case RIGHT_ALPHA:
                 return AnimatorHelper.createRightAlphaOutAnim(target);
         }
-        return null;
     }
 }
