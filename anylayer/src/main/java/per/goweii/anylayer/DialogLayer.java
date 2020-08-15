@@ -18,7 +18,11 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -76,6 +80,18 @@ public class DialogLayer extends DecorLayer {
     @Override
     public Config getConfig() {
         return (Config) super.getConfig();
+    }
+
+    @NonNull
+    @Override
+    protected ListenerHolder onCreateListenerHolder() {
+        return new ListenerHolder();
+    }
+
+    @NonNull
+    @Override
+    public ListenerHolder getListenerHolder() {
+        return (ListenerHolder) super.getListenerHolder();
     }
 
     @NonNull
@@ -530,7 +546,7 @@ public class DialogLayer extends DecorLayer {
      * @param contentViewId 自定义布局ID
      */
     @NonNull
-    public DialogLayer contentView(int contentViewId) {
+    public DialogLayer contentView(@IdRes int contentViewId) {
         getConfig().mContentViewId = contentViewId;
         return this;
     }
@@ -542,7 +558,7 @@ public class DialogLayer extends DecorLayer {
      * @param statusBarId 状态栏的占位View
      */
     @NonNull
-    public DialogLayer asStatusBar(int statusBarId) {
+    public DialogLayer asStatusBar(@IdRes int statusBarId) {
         getConfig().mAsStatusBarViewId = statusBarId;
         return this;
     }
@@ -636,13 +652,13 @@ public class DialogLayer extends DecorLayer {
      * @param radius 模糊半径
      */
     @NonNull
-    public DialogLayer backgroundBlurRadius(float radius) {
+    public DialogLayer backgroundBlurRadius(@FloatRange(from = 0F) float radius) {
         getConfig().mBackgroundBlurRadius = radius;
         return this;
     }
 
     @NonNull
-    public DialogLayer backgroundBlurPercent(float percent) {
+    public DialogLayer backgroundBlurPercent(@FloatRange(from = 0F) float percent) {
         getConfig().mBackgroundBlurPercent = percent;
         return this;
     }
@@ -653,7 +669,7 @@ public class DialogLayer extends DecorLayer {
      * @param scale 缩放比例
      */
     @NonNull
-    public DialogLayer backgroundBlurScale(float scale) {
+    public DialogLayer backgroundBlurScale(@FloatRange(from = 1F) float scale) {
         getConfig().mBackgroundBlurScale = scale;
         return this;
     }
@@ -675,7 +691,7 @@ public class DialogLayer extends DecorLayer {
      * @param dimAmount 变暗程度 0~1
      */
     @NonNull
-    public DialogLayer backgroundDimAmount(float dimAmount) {
+    public DialogLayer backgroundDimAmount(@FloatRange(from = 0F, to = 1F) float dimAmount) {
         getConfig().mBackgroundDimAmount = Utils.floatRange01(dimAmount);
         return this;
     }
@@ -694,7 +710,7 @@ public class DialogLayer extends DecorLayer {
      * @param resource 资源ID
      */
     @NonNull
-    public DialogLayer backgroundResource(int resource) {
+    public DialogLayer backgroundResource(@DrawableRes int resource) {
         getConfig().mBackgroundResource = resource;
         return this;
     }
@@ -719,7 +735,7 @@ public class DialogLayer extends DecorLayer {
      * @param colorInt 颜色值
      */
     @NonNull
-    public DialogLayer backgroundColorInt(int colorInt) {
+    public DialogLayer backgroundColorInt(@ColorInt int colorInt) {
         getConfig().mBackgroundColor = colorInt;
         return this;
     }
@@ -733,7 +749,7 @@ public class DialogLayer extends DecorLayer {
      * @param colorRes 颜色资源ID
      */
     @NonNull
-    public DialogLayer backgroundColorRes(int colorRes) {
+    public DialogLayer backgroundColorRes(@ColorRes int colorRes) {
         getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
         return this;
     }

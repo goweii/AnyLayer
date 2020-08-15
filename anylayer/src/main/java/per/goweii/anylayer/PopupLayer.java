@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +67,18 @@ public class PopupLayer extends DialogLayer {
     @Override
     public Config getConfig() {
         return (Config) super.getConfig();
+    }
+
+    @NonNull
+    @Override
+    protected ListenerHolder onCreateListenerHolder() {
+        return new ListenerHolder();
+    }
+
+    @NonNull
+    @Override
+    public ListenerHolder getListenerHolder() {
+        return (ListenerHolder) super.getListenerHolder();
     }
 
     @NonNull
@@ -635,7 +646,6 @@ public class PopupLayer extends DialogLayer {
      */
     @NonNull
     public PopupLayer offsetXdp(float dp) {
-        getConfig().mOffsetX = dp;
         return offsetX(dp, TypedValue.COMPLEX_UNIT_DIP);
     }
 
@@ -646,7 +656,6 @@ public class PopupLayer extends DialogLayer {
      */
     @NonNull
     public PopupLayer offsetXpx(float px) {
-        getConfig().mOffsetX = px;
         return offsetX(px, TypedValue.COMPLEX_UNIT_PX);
     }
 
@@ -668,7 +677,6 @@ public class PopupLayer extends DialogLayer {
      */
     @NonNull
     public PopupLayer offsetYdp(float dp) {
-        getConfig().mOffsetY = dp;
         return offsetY(dp, TypedValue.COMPLEX_UNIT_DIP);
     }
 
@@ -678,8 +686,7 @@ public class PopupLayer extends DialogLayer {
      * @param px Y轴偏移
      */
     @NonNull
-    public PopupLayer offsetYpY(float px) {
-        getConfig().mOffsetY = px;
+    public PopupLayer offsetYpx(float px) {
         return offsetY(px, TypedValue.COMPLEX_UNIT_PX);
     }
 
