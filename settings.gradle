@@ -1,2 +1,3 @@
+include ':app'
+include ':anylayer'
 include ':anylayer-ext'
-include ':app', ':anylayer'

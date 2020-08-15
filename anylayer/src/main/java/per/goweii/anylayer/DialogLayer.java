@@ -81,7 +81,7 @@ public class DialogLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getNullableChild() == null) {
+        if (getViewHolder().getChildOrNull() == null) {
             ContainerLayout container = (ContainerLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
             getViewHolder().setChild(container);
             getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getContentWrapper()));
@@ -102,7 +102,7 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getNullableContent() == null) {
+        if (getViewHolder().getContentOrNull() == null) {
             getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
         } else {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
@@ -882,8 +882,8 @@ public class DialogLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected ContainerLayout getNullableChild() {
-            return (ContainerLayout) super.getNullableChild();
+        protected ContainerLayout getChildOrNull() {
+            return (ContainerLayout) super.getChildOrNull();
         }
 
         void setContent(@NonNull View content) {
@@ -891,7 +891,7 @@ public class DialogLayer extends DecorLayer {
         }
 
         @Nullable
-        protected View getNullableContent() {
+        protected View getContentOrNull() {
             return mContent;
         }
 

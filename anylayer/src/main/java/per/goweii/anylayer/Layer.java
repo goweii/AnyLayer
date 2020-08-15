@@ -83,7 +83,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     @NonNull
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (mViewHolder.getNullableChild() == null) {
+        if (mViewHolder.getChildOrNull() == null) {
             mViewHolder.setChild(inflater.inflate(mConfig.mChildId, parent, false));
         }
         return mViewHolder.getChild();
@@ -467,7 +467,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
 
         @Nullable
-        protected ViewGroup getNullableParent() {
+        protected ViewGroup getParentOrNull() {
             return mParent;
         }
 
@@ -481,7 +481,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
 
         @Nullable
-        protected View getNullableChild() {
+        protected View getChildOrNull() {
             return mChild;
         }
     }
