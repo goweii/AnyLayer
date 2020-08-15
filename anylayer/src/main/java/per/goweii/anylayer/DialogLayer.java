@@ -155,7 +155,9 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected Animator onCreateDefBackgroundInAnimator(@NonNull View view) {
-        return AnimatorHelper.createAlphaInAnim(view);
+        Animator animator = AnimatorHelper.createAlphaInAnim(view);
+        animator.setDuration(ANIM_DUR_DEF);
+        return animator;
     }
 
     @Nullable
@@ -215,7 +217,9 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected Animator onCreateDefContentInAnimator(@NonNull View view) {
-        return AnimatorHelper.createZoomAlphaInAnim(view);
+        Animator animator = AnimatorHelper.createZoomAlphaInAnim(view);
+        animator.setDuration(ANIM_DUR_DEF);
+        return animator;
     }
 
     @Nullable
@@ -239,15 +243,14 @@ public class DialogLayer extends DecorLayer {
         } else {
             backgroundAnimator = onCreateDefBackgroundOutAnimator(view);
         }
-        if (getConfig().mContentAnimatorCreator == null) {
-            backgroundAnimator.setDuration(ANIM_DUR_DEF);
-        }
         return backgroundAnimator;
     }
 
     @NonNull
     protected Animator onCreateDefBackgroundOutAnimator(@NonNull View view) {
-        return AnimatorHelper.createAlphaOutAnim(view);
+        Animator animator = AnimatorHelper.createAlphaOutAnim(view);
+        animator.setDuration(ANIM_DUR_DEF);
+        return animator;
     }
 
     @Nullable
@@ -307,7 +310,9 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected Animator onCreateDefContentOutAnimator(@NonNull View view) {
-        return AnimatorHelper.createZoomAlphaOutAnim(view);
+        Animator animator = AnimatorHelper.createZoomAlphaOutAnim(view);
+        animator.setDuration(ANIM_DUR_DEF);
+        return animator;
     }
 
     @NonNull
