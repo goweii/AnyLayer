@@ -65,6 +65,10 @@ fun <T : DialogLayer, R : Animator?> T.createContentAnimator(
     })
 }
 
+fun <T : DialogLayer> T.setContentAnimator(creator: Layer.AnimatorCreator) = this.apply {
+    this.contentAnimator(creator)
+}
+
 fun <T : DialogLayer, R : Animator?> T.createBackgroundAnimator(
         onIn: T.(target: View) -> R,
         onOut: T.(target: View) -> R
@@ -78,6 +82,10 @@ fun <T : DialogLayer, R : Animator?> T.createBackgroundAnimator(
             return onOut.invoke(this@apply, target)
         }
     })
+}
+
+fun <T : DialogLayer> T.setBackgroundAnimator(creator: Layer.AnimatorCreator) = this.apply {
+    this.backgroundAnimator(creator)
 }
 
 fun <T : DialogLayer> T.setBackgroundBlurRadius(@FloatRange(from = 0.0) radius: Float) = this.apply {

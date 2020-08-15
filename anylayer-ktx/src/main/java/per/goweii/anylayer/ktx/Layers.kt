@@ -78,6 +78,10 @@ fun <T : Layer, R : Animator?> T.createAnimator(
     })
 }
 
+fun <T : Layer> T.setAnimator(creator: Layer.AnimatorCreator) = this.apply {
+    this.animator(creator)
+}
+
 fun <T : Layer> T.setInterceptKeyEvent(enable: Boolean) = this.apply {
     this.interceptKeyEvent(enable)
 }
