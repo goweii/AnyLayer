@@ -1,15 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="per.goweii.anylayer">
-
     <application>
         <activity
             android:name=".LayerActivity"
-            android:theme="@animatorStyle/LayerActivityTheme" />
+            android:theme="@style/AnyLayerActivityTheme" />
         <provider
             android:name=".ActivityProvider"
-            android:authorities="${applicationId}.activityprovider"
+            android:authorities="${applicationId}.anylayer.activityprovider"
             android:exported="false"
             android:multiprocess="true" />
     </application>
-
 </manifest>
