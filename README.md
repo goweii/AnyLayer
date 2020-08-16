@@ -1,4 +1,4 @@
-# AnyLayer
+AnyLayer
 
 Android稳定高效的浮层创建管理框架。
 
@@ -97,12 +97,11 @@ Android稳定高效的浮层创建管理框架。
 
 - ### 添加jitpack库
 
-```java
+```groovy
 // build.gradle(Project:)
 allprojects {
     repositories {
-        ...
-            maven { url 'https://www.jitpack.io' }
+        maven { url 'https://www.jitpack.io' }
     }
 }
 ```
@@ -110,31 +109,61 @@ allprojects {
 - ### 添加依赖
 
   [点击查看最新版本号](https://github.com/goweii/AnyLayer/releases)
-  
-  > 引用时需注意版本号，从2.3.1版本开始，版本号前不加v。
-  >
-  > 通用库为在2.4.0版本新增，有效引用为2.4.0~2.5.0之间版本。
-  >
-  > 从3.0.0版本开始，框架重构，删除通用库。因重构代码变化较大，不建议使用较多的老项目升级，保持2.5.0版即可，在实现Dialog/Popup等效果上无本质差别。
-  >
-  > 从3.1.0版本开始移除对support-v7的依赖，可同时兼容support和androidx
-  >
-  > 从3.3.0版本开始分为support和androidx两个分支，主要是适配滚动控件的拖拽关闭
 ```groovy
 // build.gradle(Module:)
 dependencies {
     // 完整引入，二选一
-    implementation 'com.github.goweii:AnyLayer:3.3.0-androidx'
-    implementation 'com.github.goweii:AnyLayer:3.3.0-support'
+    implementation 'com.github.goweii:AnyLayer:3.6.0-androidx'
+    implementation 'com.github.goweii:AnyLayer:3.6.0-support'
     
     // 基础库
-    // implementation 'com.github.goweii.AnyLayer:anylayer:2.5.0'
-    
+    // implementation 'com.github.goweii.AnyLayer:anylayer:3.6.0-androidx'
+    // 扩展库（依赖基础库）
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:3.6.0-androidx'
+    // kotlin扩展库（依赖基础库和扩展库）
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:3.6.0-androidx'
     // 通用弹窗（依赖基础库）
-    // 从3.0.0版本暂时删除
     // implementation 'com.github.goweii.AnyLayer:anylayer-common:2.5.0'
 }
 ```
+
+
+
+## 更新说明
+
+[点击查看详细更新说明](https://github.com/goweii/AnyLayer/releases)
+
+### 3.6.0
+
+- 新增ext库，添加常用动画创建器
+- 新增ktx库，方便kotlin调用
+
+### 3.5.0
+
+- 添加注解，避免kotlin调用变为可选型
+
+### 3.3.0
+
+- 拆分为support和androidx两个分支
+
+### 3.1.0
+
+- 移除对support-v7的依赖，可同时兼容support和androidx
+
+### 3.0.0
+
+- 大型重构，修改层级和继承结构，API改变很大
+- 删除common库
+
+### 2.5.0
+
+- 新增popupWindow效果时可跟随targetView移动
+- 可以从ApplicationContext中弹出
+- 监听器支持添加多个
+
+### 2.4.0
+
+- 新增通用库
 
 
 
