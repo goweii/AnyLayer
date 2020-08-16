@@ -18,7 +18,15 @@ import per.goweii.anylayer.Layer;
  */
 public class CommonAnimatorCreator implements Layer.AnimatorCreator {
 
-    public static class AlphaAttr {
+    public interface Attr {
+        @NonNull
+        Animator createIn(@NonNull View target);
+
+        @NonNull
+        Animator createOut(@NonNull View target);
+    }
+
+    public static class AlphaAttr implements Attr {
         private float from = 0F;
         private float to = 1F;
 
@@ -50,9 +58,25 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
             this.outTimeInterpolator = outTimeInterpolator;
             return this;
         }
+
+        @NonNull
+        @Override
+        public Animator createIn(@NonNull View target) {
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", from, to);
+            alpha.setInterpolator(inTimeInterpolator);
+            return alpha;
+        }
+
+        @NonNull
+        @Override
+        public Animator createOut(@NonNull View target) {
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha", from, to);
+            alpha.setInterpolator(outTimeInterpolator);
+            return alpha;
+        }
     }
 
-    public static class ScaleAttr {
+    public static class ScaleAttr implements Attr {
         private float fromX = 0F;
         private float fromY = 0F;
         private float toX = 1F;
@@ -183,9 +207,37 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
             this.yOutTimeInterpolator = timeInterpolator;
             return this;
         }
+
+        @NonNull
+        @Override
+        public Animator createIn(@NonNull View target) {
+            AnimatorSet set = new AnimatorSet();
+            ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", fromX, toX);
+            ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY", fromY, toY);
+            target.setPivotX(getPivotX(target));
+            target.setPivotY(getPivotY(target));
+            scaleX.setInterpolator(xInTimeInterpolator);
+            scaleY.setInterpolator(yInTimeInterpolator);
+            set.playTogether(scaleX, scaleY);
+            return set;
+        }
+
+        @NonNull
+        @Override
+        public Animator createOut(@NonNull View target) {
+            AnimatorSet set = new AnimatorSet();
+            ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX", target.getScaleX(), fromX);
+            ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY", target.getScaleY(), fromY);
+            target.setPivotX(getPivotX(target));
+            target.setPivotY(getPivotY(target));
+            scaleX.setInterpolator(xOutTimeInterpolator);
+            scaleY.setInterpolator(yOutTimeInterpolator);
+            set.playTogether(scaleX, scaleY);
+            return set;
+        }
     }
 
-    public static class TranslationAttr {
+    public static class TranslationAttr implements Attr {
         private float fromX = 0F;
         private float fromY = 0F;
         private float toX = 0F;
@@ -338,26 +390,38 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
             this.yOutTimeInterpolator = timeInterpolator;
             return this;
         }
+
+        @NonNull
+        @Override
+        public Animator createIn(@NonNull View target) {
+            AnimatorSet set = new AnimatorSet();
+            ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", getFromX(target), getToX(target));
+            ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", getFromY(target), getToY(target));
+            translationX.setInterpolator(xInTimeInterpolator);
+            translationY.setInterpolator(yInTimeInterpolator);
+            set.playTogether(translationX, translationY);
+            return set;
+        }
+
+        @NonNull
+        @Override
+        public Animator createOut(@NonNull View target) {
+            AnimatorSet set = new AnimatorSet();
+            ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX", target.getTranslationX(), getFromX(target));
+            ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY", target.getTranslationY(), getFromY(target));
+            translationX.setInterpolator(xOutTimeInterpolator);
+            translationY.setInterpolator(yOutTimeInterpolator);
+            set.playTogether(translationX, translationY);
+            return set;
+        }
     }
 
-    private AlphaAttr alphaAttr = null;
-    private ScaleAttr scaleAttr = null;
-    private TranslationAttr translationAttr = null;
+    private List<Attr> attrs = new ArrayList<>();
     private TimeInterpolator inTimeInterpolator = null;
     private TimeInterpolator outTimeInterpolator = null;
 
-    public CommonAnimatorCreator alphaAttr(AlphaAttr alphaAttr) {
-        this.alphaAttr = alphaAttr;
-        return this;
-    }
-
-    public CommonAnimatorCreator scaleAttr(ScaleAttr scaleAttr) {
-        this.scaleAttr = scaleAttr;
-        return this;
-    }
-
-    public CommonAnimatorCreator translationAttr(TranslationAttr translationAttr) {
-        this.translationAttr = translationAttr;
+    public CommonAnimatorCreator addAttr(Attr attr) {
+        this.attrs.add(attr);
         return this;
     }
 
@@ -380,34 +444,9 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
     @NonNull
     @Override
     public Animator createInAnimator(@NonNull View target) {
-        List<Animator> animators = new ArrayList<>(5);
-        if (alphaAttr != null) {
-            ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha",
-                    alphaAttr.from, alphaAttr.to);
-            alpha.setInterpolator(alphaAttr.inTimeInterpolator);
-            animators.add(alpha);
-        }
-        if (scaleAttr != null) {
-            ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX",
-                    scaleAttr.fromX, scaleAttr.toX);
-            ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY",
-                    scaleAttr.fromY, scaleAttr.toY);
-            target.setPivotX(scaleAttr.getPivotX(target));
-            target.setPivotY(scaleAttr.getPivotY(target));
-            scaleX.setInterpolator(scaleAttr.xInTimeInterpolator);
-            scaleY.setInterpolator(scaleAttr.yInTimeInterpolator);
-            animators.add(scaleX);
-            animators.add(scaleY);
-        }
-        if (translationAttr != null) {
-            ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX",
-                    translationAttr.getFromX(target), translationAttr.getToX(target));
-            ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY",
-                    translationAttr.getFromY(target), translationAttr.getToY(target));
-            translationX.setInterpolator(translationAttr.xInTimeInterpolator);
-            translationY.setInterpolator(translationAttr.yInTimeInterpolator);
-            animators.add(translationX);
-            animators.add(translationY);
+        List<Animator> animators = new ArrayList<>(attrs.size());
+        for (Attr attr : attrs) {
+            animators.add(attr.createIn(target));
         }
         AnimatorSet set = new AnimatorSet();
         set.playTogether(animators);
@@ -418,34 +457,9 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
     @NonNull
     @Override
     public Animator createOutAnimator(@NonNull View target) {
-        List<Animator> animators = new ArrayList<>(5);
-        if (alphaAttr != null) {
-            ObjectAnimator alpha = ObjectAnimator.ofFloat(target, "alpha",
-                    target.getAlpha(), alphaAttr.from);
-            alpha.setInterpolator(alphaAttr.inTimeInterpolator);
-            animators.add(alpha);
-        }
-        if (scaleAttr != null) {
-            ObjectAnimator scaleX = ObjectAnimator.ofFloat(target, "scaleX",
-                    target.getScaleX(), scaleAttr.fromX);
-            ObjectAnimator scaleY = ObjectAnimator.ofFloat(target, "scaleY",
-                    target.getScaleY(), scaleAttr.fromY);
-            target.setPivotX(scaleAttr.getPivotX(target));
-            target.setPivotY(scaleAttr.getPivotY(target));
-            scaleX.setInterpolator(scaleAttr.xInTimeInterpolator);
-            scaleY.setInterpolator(scaleAttr.yInTimeInterpolator);
-            animators.add(scaleX);
-            animators.add(scaleY);
-        }
-        if (translationAttr != null) {
-            ObjectAnimator translationX = ObjectAnimator.ofFloat(target, "translationX",
-                    target.getTranslationX(), translationAttr.getFromX(target));
-            ObjectAnimator translationY = ObjectAnimator.ofFloat(target, "translationY",
-                    target.getTranslationY(), translationAttr.getFromY(target));
-            translationX.setInterpolator(translationAttr.xInTimeInterpolator);
-            translationY.setInterpolator(translationAttr.yInTimeInterpolator);
-            animators.add(translationX);
-            animators.add(translationY);
+        List<Animator> animators = new ArrayList<>(attrs.size());
+        for (Attr attr : attrs) {
+            animators.add(attr.createOut(target));
         }
         AnimatorSet set = new AnimatorSet();
         set.playTogether(animators);
