@@ -9,7 +9,7 @@
     android:layout_marginTop="50dp"
     android:layout_marginRight="50dp"
     android:layout_marginBottom="50dp"
-    android:background="?android:attr/toastFrameBackground"
+    android:background="@drawable/anylayer_toast_bg"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingLeft="24dp"
@@ -25,14 +25,14 @@
         android:scaleType="fitCenter"
         tools:layout_height="22dp"
         tools:layout_width="22dp"
-        tools:src="#333" />
+        tools:src="#FFF" />
 
     <TextView
         android:id="@+id/tv_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Toast"
-        android:textColor="?android:attr/textColorPrimary"
-        tools:text="TOAST LAYER TOAST LAYER TOAST LAYER TOAST LAYER" />
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        tools:text="TOAST LAYER" />
 
 </LinearLayout>
