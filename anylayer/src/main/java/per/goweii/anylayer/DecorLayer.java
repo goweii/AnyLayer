@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -133,7 +134,11 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
 
     @Override
     public void onDetach() {
-        getViewHolder().getDecor().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            getViewHolder().getDecor().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        } else {
+            getViewHolder().getDecor().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
         getActivity().unregisterComponentCallbacks(this);
         super.onDetach();
         final LayerLayout group = findLayerLayoutFromDecor();

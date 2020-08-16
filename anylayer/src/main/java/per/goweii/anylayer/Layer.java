@@ -83,7 +83,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     @NonNull
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (mViewHolder.getNullableChild() == null) {
+        if (mViewHolder.getChildOrNull() == null) {
             mViewHolder.setChild(inflater.inflate(mConfig.mChildId, parent, false));
         }
         return mViewHolder.getChild();
@@ -122,7 +122,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         mListenerHolder.notifyLayerOnShowing(this);
         cancelAnimator();
         if (mShowWithAnim) {
-            mAnimatorIn = onCreateInAnimator(mViewManager.getChild());
+            mAnimatorIn = onCreateInAnimator(mViewManager.requireChild());
             if (mAnimatorIn != null) {
                 mAnimatorIn.addListener(new Animator.AnimatorListener() {
                     private boolean beenCanceled = false;
@@ -167,7 +167,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         mListenerHolder.notifyLayerOnDismissing(this);
         cancelAnimator();
         if (mDismissWithAnim) {
-            mAnimatorOut = onCreateOutAnimator(mViewManager.getChild());
+            mAnimatorOut = onCreateOutAnimator(mViewManager.requireChild());
             if (mAnimatorOut != null) {
                 mAnimatorOut.addListener(new Animator.AnimatorListener() {
                     private boolean beenCanceled = false;
@@ -467,7 +467,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
 
         @Nullable
-        protected ViewGroup getNullableParent() {
+        protected ViewGroup getParentOrNull() {
             return mParent;
         }
 
@@ -481,7 +481,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
 
         @Nullable
-        protected View getNullableChild() {
+        protected View getChildOrNull() {
             return mChild;
         }
     }

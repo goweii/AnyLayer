@@ -20,8 +20,7 @@ import android.support.annotation.Nullable;
 public class FloatLayer extends DecorLayer {
 
     public FloatLayer(@NonNull Context context) {
-        this(Utils.requireNonNull(Utils.getActivity(context),
-                "无法从Context获取Activity，请确保传入的不是ApplicationContext或ServiceContext等"));
+        this(Utils.requireActivity(context));
     }
 
     public FloatLayer(@NonNull Activity activity) {

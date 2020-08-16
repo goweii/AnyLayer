@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="LayerActivityTheme" parent="android:Theme.Holo.NoActionBar">
+    <style name="AnyLayerActivityTheme" parent="android:Theme.Holo.NoActionBar">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

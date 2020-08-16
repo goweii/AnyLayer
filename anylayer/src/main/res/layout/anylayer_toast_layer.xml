@@ -12,28 +12,27 @@
     android:background="@drawable/anylayer_toast_bg"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingLeft="20dp"
-    android:paddingTop="5dp"
-    android:paddingRight="20dp"
-    android:paddingBottom="5dp">
+    android:paddingLeft="24dp"
+    android:paddingTop="15dp"
+    android:paddingRight="24dp"
+    android:paddingBottom="15dp">
 
     <ImageView
         android:id="@+id/iv_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginRight="10dp"
         android:scaleType="fitCenter"
         tools:layout_height="22dp"
         tools:layout_width="22dp"
-        tools:src="#fff" />
+        tools:src="#FFF" />
 
     <TextView
         android:id="@+id/tv_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:textColor="#fff"
         android:textSize="14sp"
-        tools:text="TOAST LAYER TOAST LAYER TOAST LAYER TOAST LAYER" />
+        android:textColor="#FFFFFF"
+        tools:text="TOAST LAYER" />
 
 </LinearLayout>

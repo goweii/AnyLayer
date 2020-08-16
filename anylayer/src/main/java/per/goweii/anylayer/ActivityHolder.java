@@ -22,6 +22,7 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
 
     private static ActivityHolder INSTANCE = null;
 
+    @NonNull
     private final Application mApplication;
     private final List<Activity> mActivityStack = new LinkedList<>();
 
@@ -36,25 +37,29 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         }
     }
 
-    @Nullable
+    @NonNull
+    static ActivityHolder getInstance() {
+        return Utils.requireNonNull(INSTANCE, "请先在Application中初始化");
+    }
+
+    @NonNull
     static Application getApplication() {
-        if (INSTANCE == null) {
-            return null;
-        }
-        return INSTANCE.mApplication;
+        return getInstance().mApplication;
+    }
+
+    @NonNull
+    static Activity requireActivity(@NonNull Class<Activity> clazz) {
+        Activity activity = ActivityHolder.getActivity(clazz);
+        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
+        return activity;
     }
 
     @Nullable
     static Activity getActivity(@NonNull Class<Activity> clazz) {
-        if (INSTANCE == null) {
-            return null;
-        }
-        if (INSTANCE.mActivityStack.isEmpty()) {
-            return null;
-        }
-        final int size = INSTANCE.mActivityStack.size();
+        if (getInstance().mActivityStack.isEmpty()) return null;
+        final int size = getInstance().mActivityStack.size();
         for (int i = size - 1; i >= 0; i--) {
-            Activity activity = INSTANCE.mActivityStack.get(i);
+            Activity activity = getInstance().mActivityStack.get(i);
             if (TextUtils.equals(clazz.getName(), activity.getClass().getName())) {
                 return activity;
             }
@@ -62,15 +67,17 @@ final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
         return null;
     }
 
+    @NonNull
+    static Activity requireCurrentActivity() {
+        Activity activity = ActivityHolder.getCurrentActivity();
+        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
+        return activity;
+    }
+
     @Nullable
     static Activity getCurrentActivity() {
-        if (INSTANCE == null) {
-            return null;
-        }
-        if (INSTANCE.mActivityStack.isEmpty()) {
-            return null;
-        }
-        return INSTANCE.mActivityStack.get(INSTANCE.mActivityStack.size() - 1);
+        if (getInstance().mActivityStack.isEmpty()) return null;
+        return getInstance().mActivityStack.get(getInstance().mActivityStack.size() - 1);
     }
 
     @Override

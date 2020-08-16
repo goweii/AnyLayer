@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -27,12 +29,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, FullScreenActivity.class));
-            }
-        });
-        findViewById(R.id.tv_activity_common).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, CommonActivity.class));
             }
         });
         findViewById(R.id.tv_activity_drag).setOnClickListener(new View.OnClickListener() {
