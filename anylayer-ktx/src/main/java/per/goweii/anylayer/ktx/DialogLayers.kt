@@ -4,7 +4,7 @@ import android.animation.Animator
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.annotation.*
+import android.support.annotation.*
 import per.goweii.anylayer.DialogLayer
 import per.goweii.anylayer.DragLayout
 import per.goweii.anylayer.Layer

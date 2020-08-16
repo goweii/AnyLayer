@@ -2,7 +2,7 @@ package per.goweii.anylayer.ktx
 
 import android.animation.Animator
 import android.view.View
-import androidx.annotation.IdRes
+import android.support.annotation.IdRes
 import per.goweii.anylayer.Layer
 import per.goweii.anylayer.ext.DefaultOnDismissListener
 import per.goweii.anylayer.ext.DefaultOnShowListener
