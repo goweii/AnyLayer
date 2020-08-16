@@ -25,6 +25,10 @@ import androidx.annotation.Nullable;
  */
 final class Utils {
 
+    static void checkInitialized() {
+        requireNonNull(ActivityHolder.getApplication(), "请先在Application中初始化");
+    }
+
     @NonNull
     static <T> T requireNonNull(@Nullable T obj, String msg) {
         if (obj == null) {
@@ -68,11 +72,18 @@ final class Utils {
     /**
      * 从当前上下文获取Activity
      */
+    @NonNull
+    static Activity requireActivity(@NonNull Context context) {
+        Activity activity = getActivity(context);
+        requireNonNull(activity, "无法从Context获取Activity，请确保传入的不是ApplicationContext或ServiceContext等");
+        return activity;
+    }
+
+    /**
+     * 从当前上下文获取Activity
+     */
     @Nullable
-    static Activity getActivity(@Nullable Context context) {
-        if (context == null) {
-            return null;
-        }
+    static Activity getActivity(@NonNull Context context) {
         if (context instanceof Activity) {
             return (Activity) context;
         }

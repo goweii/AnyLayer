@@ -1,6 +1,7 @@
 package per.goweii.anylayer;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.view.View;
 
@@ -16,6 +17,10 @@ import per.goweii.burred.Blurred;
  */
 public final class AnyLayer {
 
+    public static void init(@NonNull Application application) {
+        ActivityHolder.init(application);
+    }
+
     public static void initBlurred(@NonNull Context context) {
         Blurred.init(context);
     }
@@ -24,22 +29,23 @@ public final class AnyLayer {
         Blurred.recycle();
     }
 
+    @NonNull
+    public static GlobalConfig globalConfig() {
+        return GlobalConfig.get();
+    }
+
     public static void dialog(@NonNull LayerActivity.OnLayerCreatedCallback callback) {
         LayerActivity.start(ActivityHolder.getApplication(), callback);
     }
 
     @NonNull
     public static DialogLayer dialog() {
-        Activity activity = ActivityHolder.getCurrentActivity();
-        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
-        return new DialogLayer(activity);
+        return new DialogLayer(ActivityHolder.requireCurrentActivity());
     }
 
     @NonNull
     public static DialogLayer dialog(@NonNull Class<Activity> clazz) {
-        Activity activity = ActivityHolder.getCurrentActivity();
-        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
-        return new DialogLayer(activity);
+        return new DialogLayer(ActivityHolder.requireActivity(clazz));
     }
 
     @NonNull
@@ -59,9 +65,7 @@ public final class AnyLayer {
 
     @NonNull
     public static ToastLayer toast() {
-        Activity activity = ActivityHolder.getCurrentActivity();
-        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
-        return new ToastLayer(activity);
+        return new ToastLayer(ActivityHolder.requireCurrentActivity());
     }
 
     @NonNull

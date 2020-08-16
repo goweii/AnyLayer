@@ -20,8 +20,7 @@ import androidx.annotation.Nullable;
 public class GuideLayer extends DecorLayer {
 
     public GuideLayer(@NonNull Context context) {
-        this(Utils.requireNonNull(Utils.getActivity(context),
-                "无法从Context获取Activity，请确保传入的不是ApplicationContext或ServiceContext等"));
+        this(Utils.requireActivity(context));
     }
 
     public GuideLayer(@NonNull Activity activity) {

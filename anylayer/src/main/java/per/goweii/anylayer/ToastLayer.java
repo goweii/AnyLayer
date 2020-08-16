@@ -6,9 +6,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +27,7 @@ import androidx.annotation.Nullable;
 public class ToastLayer extends DecorLayer implements Runnable {
 
     public ToastLayer(@NonNull Context context) {
-        this(Utils.requireNonNull(Utils.getActivity(context),
-                "无法从Context获取Activity，请确保传入的不是ApplicationContext或ServiceContext等"));
+        this(Utils.requireActivity(context));
     }
 
     public ToastLayer(@NonNull Activity activity) {
@@ -187,7 +184,13 @@ public class ToastLayer extends DecorLayer implements Runnable {
     protected Animator onCreateInAnimator(@NonNull View view) {
         Animator animator = super.onCreateInAnimator(view);
         if (animator == null) {
+            if (GlobalConfig.get().toastAnimatorCreator != null) {
+                animator = GlobalConfig.get().toastAnimatorCreator.createInAnimator(view);
+            }
+        }
+        if (animator == null) {
             animator = AnimatorHelper.createZoomAlphaInAnim(view);
+            animator.setDuration(GlobalConfig.get().toastAnimDuration);
         }
         return animator;
     }
@@ -197,7 +200,13 @@ public class ToastLayer extends DecorLayer implements Runnable {
     protected Animator onCreateOutAnimator(@NonNull View view) {
         Animator animator = super.onCreateOutAnimator(view);
         if (animator == null) {
+            if (GlobalConfig.get().toastAnimatorCreator != null) {
+                animator = GlobalConfig.get().toastAnimatorCreator.createOutAnimator(view);
+            }
+        }
+        if (animator == null) {
             animator = AnimatorHelper.createZoomAlphaOutAnim(view);
+            animator.setDuration(GlobalConfig.get().toastAnimDuration);
         }
         return animator;
     }
@@ -220,12 +229,8 @@ public class ToastLayer extends DecorLayer implements Runnable {
             getChild().setBackgroundDrawable(getConfig().mBackgroundDrawable);
         } else if (getConfig().mBackgroundDrawableRes > 0) {
             getChild().setBackgroundResource(getConfig().mBackgroundDrawableRes);
-        } else {
-            Drawable backgroundDrawable = getChild().getBackground();
-            if (backgroundDrawable instanceof GradientDrawable) {
-                backgroundDrawable.setColorFilter(getConfig().mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
-            }
         }
+        getChild().getBackground().setColorFilter(getConfig().mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
         getChild().setAlpha(getConfig().mAlpha);
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
         params.gravity = getConfig().mGravity;
@@ -321,20 +326,20 @@ public class ToastLayer extends DecorLayer implements Runnable {
 
     protected static class Config extends DecorLayer.Config {
         private boolean mRemoveOthers = true;
-        private long mDuration = 3000L;
+        private long mDuration = GlobalConfig.get().toastDuration;
         @NonNull
         private CharSequence mMessage = "";
         private int mIcon = 0;
-        private int mBackgroundDrawableRes = -1;
         @Nullable
         private Drawable mBackgroundDrawable = null;
-        private int mBackgroundColor = Color.BLACK;
-        private float mAlpha = 1F;
-        private int mGravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        private int mMarginLeft = Integer.MIN_VALUE;
-        private int mMarginTop = Integer.MIN_VALUE;
-        private int mMarginRight = Integer.MIN_VALUE;
-        private int mMarginBottom = Integer.MIN_VALUE;
+        private int mBackgroundDrawableRes = GlobalConfig.get().toastBackgroundRes;
+        private int mBackgroundColor = Color.TRANSPARENT;
+        private float mAlpha = GlobalConfig.get().toastAlpha;
+        private int mGravity = GlobalConfig.get().toastGravity;
+        private int mMarginLeft = GlobalConfig.get().marginLeft;
+        private int mMarginTop = GlobalConfig.get().marginTop;
+        private int mMarginRight = GlobalConfig.get().marginRight;
+        private int mMarginBottom = GlobalConfig.get().marginBottom;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
