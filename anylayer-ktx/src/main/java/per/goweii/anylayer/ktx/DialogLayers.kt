@@ -22,7 +22,7 @@ fun <T : DialogLayer> T.setContentView(contentView: View) = this.apply {
     this.contentView(contentView)
 }
 
-fun <T : DialogLayer> T.setContentView(@IdRes contentViewId: Int) = this.apply {
+fun <T : DialogLayer> T.setContentView(@LayoutRes contentViewId: Int) = this.apply {
     this.contentView(contentViewId)
 }
 
