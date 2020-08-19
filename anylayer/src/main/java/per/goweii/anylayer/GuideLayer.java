@@ -93,18 +93,24 @@ public class GuideLayer extends DecorLayer {
         return AnimatorHelper.createZoomAlphaOutAnim(view);
     }
 
-    private void bindData() {
-    }
-
     @Override
     public void onAttach() {
         super.onAttach();
-        bindData();
+    }
+
+    @Override
+    public void onPreDraw() {
+        super.onPreDraw();
     }
 
     @Override
     public void onShow() {
         super.onShow();
+    }
+
+    @Override
+    public void onPreRemove() {
+        super.onPreRemove();
     }
 
     @Override
