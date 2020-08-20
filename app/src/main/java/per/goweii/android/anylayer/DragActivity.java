@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import per.goweii.anylayer.AnyLayer;
-import per.goweii.anylayer.DragLayout;
 import per.goweii.anylayer.Layer;
+import per.goweii.anylayer.SwipeLayout;
 
 public class DragActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -38,7 +38,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .backgroundDimDefault()
                         .asStatusBar(R.id.dialog_drag_h_v)
                         .gravity(Gravity.LEFT)
-                        .dragDismiss(DragLayout.DragStyle.Left)
+                        .swipeDismiss(SwipeLayout.Direction.Left)
                         .onClickToDismiss(R.id.dialog_drag_h_tv_close)
                         .show();
                 break;
@@ -48,7 +48,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .backgroundDimDefault()
                         .asStatusBar(R.id.dialog_drag_h_v)
                         .gravity(Gravity.RIGHT)
-                        .dragDismiss(DragLayout.DragStyle.Right)
+                        .swipeDismiss(SwipeLayout.Direction.Right)
                         .onClickToDismiss(R.id.dialog_drag_h_tv_close)
                         .show();
                 break;
@@ -58,7 +58,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .backgroundDimDefault()
                         .avoidStatusBar(true)
                         .gravity(Gravity.TOP)
-                        .dragDismiss(DragLayout.DragStyle.Top)
+                        .swipeDismiss(SwipeLayout.Direction.Top)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
@@ -67,7 +67,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .contentView(R.layout.dialog_list)
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.Bottom)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .bindData(new Layer.DataBinder() {
                             @Override

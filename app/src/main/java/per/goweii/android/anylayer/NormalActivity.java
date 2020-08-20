@@ -21,9 +21,9 @@ import per.goweii.anylayer.Align;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
-import per.goweii.anylayer.DragLayout;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
+import per.goweii.anylayer.SwipeLayout;
 
 public class NormalActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -119,7 +119,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_notificationl)
                         .gravity(Gravity.TOP)
                         .outsideInterceptTouchEvent(false)
-                        .dragDismiss(DragLayout.DragStyle.Top)
+                        .swipeDismiss(SwipeLayout.Direction.Top | SwipeLayout.Direction.Left | SwipeLayout.Direction.Right)
+                        .animStyle(DialogLayer.AnimStyle.TOP)
                         .show();
                 break;
             case R.id.tv_show_edit:
@@ -127,7 +128,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_edit)
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.Bottom)
                         .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
                             @Override
                             public void onShow(@NonNull Layer layer) {
@@ -201,7 +202,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .avoidStatusBar(true)
                         .backgroundDimDefault()
                         .gravity(Gravity.TOP)
-                        .dragDismiss(DragLayout.DragStyle.Top)
+                        .swipeDismiss(SwipeLayout.Direction.Top)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
@@ -272,7 +273,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_list)
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.Bottom)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
@@ -328,7 +329,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.Bottom)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -342,7 +343,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.Bottom)
                         .dragTransformer(new DialogLayer.DragTransformer() {
                             @Override
                             public void onDragging(@NonNull View content, @NonNull View background, float f) {
@@ -392,7 +393,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Top)
+                        .swipeDismiss(SwipeLayout.Direction.Top)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -526,7 +527,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Left)
+                        .swipeDismiss(SwipeLayout.Direction.Left)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -564,7 +565,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Right)
+                        .swipeDismiss(SwipeLayout.Direction.Right)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override

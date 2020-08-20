@@ -6,8 +6,8 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.*
 import per.goweii.anylayer.DialogLayer
-import per.goweii.anylayer.DragLayout
 import per.goweii.anylayer.Layer
+import per.goweii.anylayer.SwipeLayout
 
 /**
  * @author CuiZhen
@@ -38,8 +38,8 @@ fun <T : DialogLayer> T.setGravity(gravity: Int) = this.apply {
     this.gravity(gravity)
 }
 
-fun <T : DialogLayer> T.setDragStyle(dragStyle: DragLayout.DragStyle) = this.apply {
-    this.dragDismiss(dragStyle)
+fun <T : DialogLayer> T.setSwipeDismiss(@SwipeLayout.Direction swipeDirection: Int) = this.apply {
+    this.swipeDismiss(swipeDirection)
 }
 
 fun <T : DialogLayer> T.setDragTransformer(dragTransformer: DialogLayer.DragTransformer) = this.apply {

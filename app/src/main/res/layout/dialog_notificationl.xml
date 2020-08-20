@@ -7,7 +7,7 @@
     app:cardBackgroundColor="#fff"
     app:cardCornerRadius="6dp"
     app:cardUseCompatPadding="false"
-    app:cardElevation="6dp">
+    app:cardElevation="1dp">
 
     <TextView
         android:id="@+id/tv_dialog_content"

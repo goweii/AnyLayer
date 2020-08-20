@@ -16,9 +16,9 @@ import per.goweii.anylayer.Align;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
-import per.goweii.anylayer.DragLayout;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
+import per.goweii.anylayer.SwipeLayout;
 import per.goweii.statusbarcompat.StatusBarCompat;
 
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
@@ -110,7 +110,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_edit)
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.Bottom)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
