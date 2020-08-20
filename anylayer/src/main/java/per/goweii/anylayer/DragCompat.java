@@ -23,7 +23,7 @@ public class DragCompat {
         if (!contains(view, x, y)) {
             return defaultValueForNull;
         }
-        return view.canScrollVertically(-1);
+        return ScrollCompat.canScrollUp(view);
     }
 
     public static boolean canViewScrollUp(@NonNull List<View> views, float x, float y, boolean defaultValueForNull) {
@@ -34,7 +34,7 @@ public class DragCompat {
     public static boolean canViewScrollUp(@NonNull List<View> views, boolean defaultValueForNull) {
         boolean canViewScroll = false;
         for (int i = views.size() - 1; i >= 0; i--) {
-            canViewScroll = ScrollCompat.canScrollVertically(views.get(i), -1);
+            canViewScroll = ScrollCompat.canScrollUp(views.get(i));
             if (canViewScroll) {
                 break;
             }
@@ -47,7 +47,7 @@ public class DragCompat {
         List<View> contains = contains(views, x, y);
         for (int i = contains.size() - 1; i >= 0; i--) {
             View view = contains.get(i);
-            if (ScrollCompat.canScrollVertically(view, -1)) {
+            if (ScrollCompat.canScrollUp(view)) {
                 return view;
             }
         }
@@ -59,7 +59,7 @@ public class DragCompat {
         if (!contains(view, x, y)) {
             return defaultValueForNull;
         }
-        return view.canScrollVertically(1);
+        return ScrollCompat.canScrollDown(view);
     }
 
     public static boolean canViewScrollDown(@NonNull List<View> views, float x, float y, boolean defaultValueForNull) {
@@ -70,7 +70,7 @@ public class DragCompat {
     public static boolean canViewScrollDown(@NonNull List<View> views, boolean defaultValueForNull) {
         boolean canViewScroll = false;
         for (int i = views.size() - 1; i >= 0; i--) {
-            canViewScroll = ScrollCompat.canScrollVertically(views.get(i), 1);
+            canViewScroll = ScrollCompat.canScrollDown(views.get(i));
             if (canViewScroll) {
                 break;
             }
@@ -83,7 +83,7 @@ public class DragCompat {
         List<View> contains = contains(views, x, y);
         for (int i = contains.size() - 1; i >= 0; i--) {
             View view = contains.get(i);
-            if (ScrollCompat.canScrollVertically(view, 1)) {
+            if (ScrollCompat.canScrollDown(view)) {
                 return view;
             }
         }
@@ -95,7 +95,7 @@ public class DragCompat {
         if (!contains(view, x, y)) {
             return defaultValueForNull;
         }
-        return view.canScrollHorizontally(-1);
+        return ScrollCompat.canScrollRight(view);
     }
 
     public static boolean canViewScrollRight(@NonNull List<View> views, float x, float y, boolean defaultValueForNull) {
@@ -106,7 +106,7 @@ public class DragCompat {
     public static boolean canViewScrollRight(@NonNull List<View> views, boolean defaultValueForNull) {
         boolean canViewScroll = false;
         for (int i = views.size() - 1; i >= 0; i--) {
-            canViewScroll = ScrollCompat.canScrollHorizontally(views.get(i), 1);
+            canViewScroll = ScrollCompat.canScrollRight(views.get(i));
             if (canViewScroll) {
                 break;
             }
@@ -119,7 +119,7 @@ public class DragCompat {
         List<View> contains = contains(views, x, y);
         for (int i = contains.size() - 1; i >= 0; i--) {
             View view = contains.get(i);
-            if (ScrollCompat.canScrollHorizontally(view, 1)) {
+            if (ScrollCompat.canScrollRight(view)) {
                 return view;
             }
         }
@@ -131,7 +131,7 @@ public class DragCompat {
         if (!contains(view, x, y)) {
             return defaultValueForNull;
         }
-        return view.canScrollHorizontally(1);
+        return ScrollCompat.canScrollLeft(view);
     }
 
     public static boolean canViewScrollLeft(@NonNull List<View> views, float x, float y, boolean defaultValueForNull) {
@@ -142,7 +142,7 @@ public class DragCompat {
     public static boolean canViewScrollLeft(@NonNull List<View> views, boolean defaultValueForNull) {
         boolean canViewScroll = false;
         for (int i = views.size() - 1; i >= 0; i--) {
-            canViewScroll = ScrollCompat.canScrollHorizontally(views.get(i), -1);
+            canViewScroll = ScrollCompat.canScrollLeft(views.get(i));
             if (canViewScroll) {
                 break;
             }
@@ -155,7 +155,7 @@ public class DragCompat {
         List<View> contains = contains(views, x, y);
         for (int i = contains.size() - 1; i >= 0; i--) {
             View view = contains.get(i);
-            if (ScrollCompat.canScrollHorizontally(view, -1)) {
+            if (ScrollCompat.canScrollLeft(view)) {
                 return view;
             }
         }
