@@ -240,9 +240,9 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
     }
 
     private void handleSwipeFractionChange() {
-        if (mSwipeFraction < 0) {
+        if (mSwipeFraction < 0F) {
             mSwipeFraction = 0F;
-        } else if (mSwipeFraction > 1) {
+        } else if (mSwipeFraction > 1F) {
             mSwipeFraction = 1F;
         }
         onSwiping();
