@@ -427,14 +427,14 @@ public class DialogLayer extends DecorLayer {
             }
 
             @Override
-            public void onSwiping(float f) {
+            public void onSwiping(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
                 if (getConfig().mDragTransformer != null) {
-                    getConfig().mDragTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), f);
+                    getConfig().mDragTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), fraction);
                 }
             }
 
             @Override
-            public void onEnd() {
+            public void onEnd(@SwipeLayout.Direction int direction) {
                 // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
                 // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
                 getViewHolder().getContentWrapper().setVisibility(View.INVISIBLE);
