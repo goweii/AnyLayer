@@ -617,7 +617,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
             int fromy = getSwipeY();
             int endx = 0;
             int endy = 0;
-            if (judgeDismiss(mVelocity)) {
+            if (judgeDismiss(-mVelocity)) {
                 switch (mCurrSwipeDirection) {
                     default:
                         break;
@@ -675,7 +675,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
             final float range = (float) Math.abs(delta) / motionRange;
             duration = (int) ((range + 1) * 256);
         }
-        return Math.min(duration, 600);
+        return Math.min(duration, 350);
     }
 
     private float distanceInfluenceForSnapDuration(float f) {
