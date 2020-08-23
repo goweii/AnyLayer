@@ -198,13 +198,13 @@ public class DialogLayer extends DecorLayer {
                 }
             } else {
                 int swipeDirection = getConfig().mSwipeDirection;
-                if ((swipeDirection & SwipeLayout.Direction.Left) != 0) {
+                if ((swipeDirection & SwipeLayout.Direction.LEFT) != 0) {
                     contentAnimator = AnimatorHelper.createLeftInAnim(view);
-                } else if ((swipeDirection & SwipeLayout.Direction.Top) != 0) {
+                } else if ((swipeDirection & SwipeLayout.Direction.TOP) != 0) {
                     contentAnimator = AnimatorHelper.createTopInAnim(view);
-                } else if ((swipeDirection & SwipeLayout.Direction.Right) != 0) {
+                } else if ((swipeDirection & SwipeLayout.Direction.RIGHT) != 0) {
                     contentAnimator = AnimatorHelper.createRightInAnim(view);
-                } else if ((swipeDirection & SwipeLayout.Direction.Bottom) != 0) {
+                } else if ((swipeDirection & SwipeLayout.Direction.BOTTOM) != 0) {
                     contentAnimator = AnimatorHelper.createBottomInAnim(view);
                 } else {
                     contentAnimator = onCreateDefContentInAnimator(view);
@@ -297,13 +297,13 @@ public class DialogLayer extends DecorLayer {
                 }
             } else {
                 int swipeDirection = getConfig().mSwipeDirection;
-                if ((swipeDirection & SwipeLayout.Direction.Left) != 0) {
+                if ((swipeDirection & SwipeLayout.Direction.LEFT) != 0) {
                     contentAnimator = AnimatorHelper.createLeftOutAnim(view);
-                } else if ((swipeDirection & SwipeLayout.Direction.Top) != 0) {
+                } else if ((swipeDirection & SwipeLayout.Direction.TOP) != 0) {
                     contentAnimator = AnimatorHelper.createTopOutAnim(view);
-                } else if ((swipeDirection & SwipeLayout.Direction.Right) != 0) {
+                } else if ((swipeDirection & SwipeLayout.Direction.RIGHT) != 0) {
                     contentAnimator = AnimatorHelper.createRightOutAnim(view);
-                } else if ((swipeDirection & SwipeLayout.Direction.Bottom) != 0) {
+                } else if ((swipeDirection & SwipeLayout.Direction.BOTTOM) != 0) {
                     contentAnimator = AnimatorHelper.createBottomOutAnim(view);
                 } else {
                     contentAnimator = onCreateDefContentOutAnimator(view);

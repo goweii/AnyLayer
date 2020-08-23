@@ -110,7 +110,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .contentView(R.layout.dialog_edit)
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
-                        .swipeDismiss(SwipeLayout.Direction.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
                         .contentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {

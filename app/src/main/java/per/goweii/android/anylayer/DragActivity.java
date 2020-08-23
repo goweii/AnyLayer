@@ -38,7 +38,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .backgroundDimDefault()
                         .asStatusBar(R.id.dialog_drag_h_v)
                         .gravity(Gravity.LEFT)
-                        .swipeDismiss(SwipeLayout.Direction.Left)
+                        .swipeDismiss(SwipeLayout.Direction.LEFT)
                         .onClickToDismiss(R.id.dialog_drag_h_tv_close)
                         .show();
                 break;
@@ -48,7 +48,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .backgroundDimDefault()
                         .asStatusBar(R.id.dialog_drag_h_v)
                         .gravity(Gravity.RIGHT)
-                        .swipeDismiss(SwipeLayout.Direction.Right)
+                        .swipeDismiss(SwipeLayout.Direction.RIGHT)
                         .onClickToDismiss(R.id.dialog_drag_h_tv_close)
                         .show();
                 break;
@@ -58,7 +58,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .backgroundDimDefault()
                         .avoidStatusBar(true)
                         .gravity(Gravity.TOP)
-                        .swipeDismiss(SwipeLayout.Direction.Top)
+                        .swipeDismiss(SwipeLayout.Direction.TOP)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
@@ -67,7 +67,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .contentView(R.layout.dialog_list)
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
-                        .swipeDismiss(SwipeLayout.Direction.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .bindData(new Layer.DataBinder() {
                             @Override
