@@ -6,6 +6,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -78,7 +79,11 @@ public class GuideLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        throw new UnsupportedOperationException("未实现");
+        if (getViewHolder().getChildOrNull() == null) {
+            ContainerLayout container = (ContainerLayout) inflater.inflate(R.layout.anylayer_guide_layer, parent, false);
+            getViewHolder().setChild(container);
+        }
+        return getViewHolder().getChild();
     }
 
     @Nullable
@@ -119,6 +124,37 @@ public class GuideLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
+        private HoleView mBackground;
+        private FrameLayout mContentWrapper;
+
+        @Override
+        public void setChild(@NonNull View child) {
+            super.setChild(child);
+            mContentWrapper = getChild().findViewById(R.id.fl_content_wrapper);
+            mBackground = getChild().findViewById(R.id.iv_background);
+        }
+
+        @NonNull
+        @Override
+        public ContainerLayout getChild() {
+            return (ContainerLayout) super.getChild();
+        }
+
+        @Nullable
+        @Override
+        protected ContainerLayout getChildOrNull() {
+            return (ContainerLayout) super.getChildOrNull();
+        }
+
+        @NonNull
+        public FrameLayout getContentWrapper() {
+            return mContentWrapper;
+        }
+
+        @NonNull
+        public HoleView getBackground() {
+            return mBackground;
+        }
     }
 
     protected static class Config extends DecorLayer.Config {
