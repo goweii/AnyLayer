@@ -3,6 +3,7 @@ package per.goweii.anylayer;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -22,6 +23,7 @@ import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
@@ -221,12 +223,16 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
             default:
                 break;
         }
-        mSwipeView.setLeft(mLeft + realx);
-        mSwipeView.setRight(mRight + realx);
-        mSwipeView.setTop(mTop + realy);
-        mSwipeView.setBottom(mBottom + realy);
-        onSwipeChanged();
+        updateSwipeViewLayout(realx, realy);
         invalidate();
+        onSwipeChanged();
+    }
+
+    private void updateSwipeViewLayout(int offx, int offy) {
+        mSwipeView.setLeft(mLeft + offx);
+        mSwipeView.setRight(mRight + offx);
+        mSwipeView.setTop(mTop + offy);
+        mSwipeView.setBottom(mBottom + offy);
     }
 
     private void onSwipeChanged() {
@@ -329,14 +335,13 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
 
     @Override
     public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int axes, int type) {
-        if (target instanceof NestedScrollingChild) {
-            NestedScrollingChild nestedScrollingChild = (NestedScrollingChild) target;
+        if((ViewCompat.SCROLL_AXIS_VERTICAL & axes) == ViewCompat.SCROLL_AXIS_VERTICAL) {
+            if (canSwipeDirection(Direction.TOP | Direction.BOTTOM)) {
+                mUsingNested = ScrollCompat.canScrollUp(target) || ScrollCompat.canScrollDown(target);
+            }
+        } else if((ViewCompat.SCROLL_AXIS_HORIZONTAL & axes) == ViewCompat.SCROLL_AXIS_HORIZONTAL) {
             if (canSwipeDirection(Direction.LEFT | Direction.RIGHT)) {
-                mUsingNested = target.canScrollHorizontally(-1) || target.canScrollHorizontally(1);
-            } else if (canSwipeDirection(Direction.TOP | Direction.BOTTOM)) {
-                mUsingNested = target.canScrollVertically(-1) || target.canScrollVertically(1);
-            } else {
-                mUsingNested = false;
+                mUsingNested = ScrollCompat.canScrollLeft(target) || ScrollCompat.canScrollRight(target);
             }
         } else {
             mUsingNested = false;
@@ -381,8 +386,6 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
             }
         }
         switch (mCurrSwipeDirection) {
-            default:
-                break;
             case Direction.LEFT:
                 if (dx < 0) {
                     if (scrollX > 0) {
@@ -398,7 +401,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
                     if (scrollX > 0) {
                         consumed[0] = dx;
                     } else {
-                        if (target.canScrollHorizontally(1)) {
+                        if (ScrollCompat.canScrollRight(target)) {
                             consumed[0] = 0;
                         } else {
                             if (type == ViewCompat.TYPE_NON_TOUCH) {
@@ -432,7 +435,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
                     if (scrollX < 0) {
                         consumed[0] = dx;
                     } else {
-                        if (target.canScrollHorizontally(-1)) {
+                        if (ScrollCompat.canScrollLeft(target)) {
                             consumed[0] = 0;
                         } else {
                             if (type == ViewCompat.TYPE_NON_TOUCH) {
@@ -467,7 +470,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
                     if (scrollY > 0) {
                         consumed[1] = dy;
                     } else {
-                        if (target.canScrollVertically(1)) {
+                        if (ScrollCompat.canScrollDown(target)) {
                             consumed[1] = 0;
                         } else {
                             if (type == ViewCompat.TYPE_NON_TOUCH) {
@@ -501,7 +504,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
                     if (scrollY < 0) {
                         consumed[1] = dy;
                     } else {
-                        if (target.canScrollVertically(-1)) {
+                        if (ScrollCompat.canScrollUp(target)) {
                             consumed[1] = 0;
                         } else {
                             if (type == ViewCompat.TYPE_NON_TOUCH) {
@@ -519,8 +522,14 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
                     consumed[1] = 0;
                 }
                 break;
+            default:
+                consumed[0] = 0;
+                consumed[1] = 0;
+                break;
         }
-        scrollBy(consumed[0], consumed[1]);
+        if (consumed[0] != 0 || consumed[1] != 0) {
+            scrollBy(consumed[0], consumed[1]);
+        }
     }
 
     @Override
@@ -532,8 +541,6 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         int scrollX = -getSwipeX();
         int scrollY = -getSwipeY();
         switch (mCurrSwipeDirection) {
-            default:
-                break;
             case Direction.LEFT:
                 if (scrollY + dxUnconsumed < 0) {
                     consumed[0] = -scrollX;
@@ -582,8 +589,14 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
                     }
                 }
                 break;
+            default:
+                consumed[0] = 0;
+                consumed[1] = 0;
+                break;
         }
-        scrollBy(consumed[0], consumed[1]);
+        if (consumed[0] != 0 || consumed[1] != 0) {
+            scrollBy(consumed[0], consumed[1]);
+        }
     }
 
     @Override
@@ -645,6 +658,11 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         }
     }
 
+    @Override
+    public int getNestedScrollAxes() {
+        return mNestedHelper.getNestedScrollAxes();
+    }
+
     private int computeSettleDuration(int d, int v) {
         v = clampMag(v, (int) mMinVelocity, (int) mMaxVelocity);
         int range = calcViewCurrRange(mSwipeView);
@@ -684,23 +702,22 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         return (float) Math.sin(f);
     }
 
-    @Override
-    public int getNestedScrollAxes() {
-        return mNestedHelper.getNestedScrollAxes();
-    }
-
     private boolean judgeDismiss(float vel) {
         boolean isDismiss = false;
         float velocityLimit = 2000F;
         float dismissFactor = 0.5F;
         switch (mCurrSwipeDirection) {
             case Direction.LEFT:
+                isDismiss = getSwipeX() < 0 && vel < -velocityLimit;
+                break;
             case Direction.TOP:
-                isDismiss = vel < -velocityLimit;
+                isDismiss = getSwipeX() > 0 && vel < -velocityLimit;
                 break;
             case Direction.RIGHT:
+                isDismiss = getSwipeY() < 0 && vel > velocityLimit;
+                break;
             case Direction.BOTTOM:
-                isDismiss = vel > velocityLimit;
+                isDismiss = getSwipeY() > 0 && vel > velocityLimit;
                 break;
             default:
                 break;
@@ -817,22 +834,6 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         @Override
         public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
-            switch (mCurrSwipeDirection) {
-                case Direction.LEFT:
-                case Direction.RIGHT:
-                    final float xoff = Math.abs(left - mLeft);
-                    final float xmax = getViewHorizontalDragRange(changedView);
-                    mSwipeFraction = xoff / xmax;
-                    break;
-                case Direction.TOP:
-                case Direction.BOTTOM:
-                    final float yoff = Math.abs(top - mTop);
-                    final float ymax = getViewVerticalDragRange(changedView);
-                    mSwipeFraction = yoff / ymax;
-                    break;
-                default:
-                    break;
-            }
             handleSwipeFractionChange();
         }
 
