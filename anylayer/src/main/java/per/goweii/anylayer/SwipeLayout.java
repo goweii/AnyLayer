@@ -3,7 +3,6 @@ package per.goweii.anylayer;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -15,7 +14,6 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.NestedScrollingChild;
 import androidx.core.view.NestedScrollingParent3;
 import androidx.core.view.NestedScrollingParentHelper;
 import androidx.core.view.ScrollingView;
@@ -23,7 +21,6 @@ import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
@@ -109,12 +106,12 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         }
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
-                mDragHelper.abort();
-                mScroller.abortAnimation();
-                mUsingNested = false;
                 mDownX = ev.getRawX();
                 mDownY = ev.getRawY();
                 if (mSwipeFraction == 0) {
+                    mDragHelper.abort();
+                    mScroller.abortAnimation();
+                    mUsingNested = false;
                     mCurrSwipeDirection = 0;
                 }
                 break;
@@ -710,11 +707,11 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
             case Direction.LEFT:
                 isDismiss = getSwipeX() < 0 && vel < -velocityLimit;
                 break;
-            case Direction.TOP:
-                isDismiss = getSwipeX() > 0 && vel < -velocityLimit;
-                break;
             case Direction.RIGHT:
-                isDismiss = getSwipeY() < 0 && vel > velocityLimit;
+                isDismiss = getSwipeX() > 0 && vel > velocityLimit;
+                break;
+            case Direction.TOP:
+                isDismiss = getSwipeY() < 0 && vel < -velocityLimit;
                 break;
             case Direction.BOTTOM:
                 isDismiss = getSwipeY() > 0 && vel > velocityLimit;
@@ -760,8 +757,6 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         @Override
         public void onViewCaptured(@NonNull View capturedChild, int activePointerId) {
             super.onViewCaptured(capturedChild, activePointerId);
-            mSwipeFraction = 0F;
-            mCurrSwipeDirection = 0;
             onSwipeStart();
         }
 
