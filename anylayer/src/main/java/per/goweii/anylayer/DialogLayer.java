@@ -419,7 +419,6 @@ public class DialogLayer extends DecorLayer {
         getViewHolder().getContentWrapper().setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
             @Override
             public void onStart() {
-                getListenerHolder().notifyOnSwipeStart(DialogLayer.this);
                 if (getConfig().mSwipeTransformer == null) {
                     getConfig().mSwipeTransformer = new SwipeTransformer() {
                         @Override
@@ -428,14 +427,15 @@ public class DialogLayer extends DecorLayer {
                         }
                     };
                 }
+                getListenerHolder().notifyOnSwipeStart(DialogLayer.this);
             }
 
             @Override
             public void onSwiping(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
-                getListenerHolder().notifyOnSwiping(DialogLayer.this, direction, fraction);
                 if (getConfig().mSwipeTransformer != null) {
                     getConfig().mSwipeTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), fraction);
                 }
+                getListenerHolder().notifyOnSwiping(DialogLayer.this, direction, fraction);
             }
 
             @Override
