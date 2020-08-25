@@ -8,6 +8,8 @@ import androidx.annotation.*
 import per.goweii.anylayer.DialogLayer
 import per.goweii.anylayer.Layer
 import per.goweii.anylayer.SwipeLayout
+import per.goweii.anylayer.ext.DefaultOnShowListener
+import per.goweii.anylayer.ext.DefaultOnSwipeListener
 
 /**
  * @author CuiZhen
@@ -42,8 +44,34 @@ fun <T : DialogLayer> T.setSwipeDismiss(@SwipeLayout.Direction swipeDirection: I
     this.swipeDismiss(swipeDirection)
 }
 
-fun <T : DialogLayer> T.setDragTransformer(dragTransformer: DialogLayer.DragTransformer) = this.apply {
-    this.dragTransformer(dragTransformer)
+fun <T : DialogLayer> T.setSwipeTransformer(swipeTransformer: DialogLayer.SwipeTransformer) = this.apply {
+    this.swipeTransformer(swipeTransformer)
+}
+
+fun <T : DialogLayer> T.doOnSwipeStart(onStart: T.() -> Unit) = this.apply {
+    this.onSwipeListener(object : DefaultOnSwipeListener() {
+        override fun onStart(layer: Layer) {
+            this@apply.onStart()
+        }
+    })
+}
+
+fun <T : DialogLayer> T.doOnSwiping(onSwiping: T.(direction: Int, fraction: Float) -> Unit) = this.apply {
+    this.onSwipeListener(object : DefaultOnSwipeListener() {
+        override fun onSwiping(layer: Layer,
+                               @SwipeLayout.Direction direction: Int,
+                               @FloatRange(from = 0.0, to = 1.0) fraction: Float) {
+            this@apply.onSwiping(direction, fraction)
+        }
+    })
+}
+
+fun <T : DialogLayer> T.doOnSwipeEnd(onEnd: T.(direction: Int) -> Unit) = this.apply {
+    this.onSwipeListener(object : DefaultOnSwipeListener() {
+        override fun onEnd(layer: Layer, @SwipeLayout.Direction direction: Int) {
+            this@apply.onEnd(direction)
+        }
+    })
 }
 
 fun <T : DialogLayer> T.setAnimStyle(animStyle: DialogLayer.AnimStyle?) = this.apply {

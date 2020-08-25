@@ -344,7 +344,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
                         .swipeDismiss(SwipeLayout.Direction.BOTTOM)
-                        .dragTransformer(new DialogLayer.DragTransformer() {
+                        .swipeTransformer(new DialogLayer.SwipeTransformer() {
                             @Override
                             public void onDragging(@NonNull View content, @NonNull View background, float f) {
                                 content.setAlpha(1 - f);

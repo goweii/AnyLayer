@@ -27,6 +27,9 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import per.goweii.burred.Blurred;
 
 /**
@@ -416,8 +419,9 @@ public class DialogLayer extends DecorLayer {
         getViewHolder().getContentWrapper().setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
             @Override
             public void onStart() {
-                if (getConfig().mDragTransformer == null) {
-                    getConfig().mDragTransformer = new DragTransformer() {
+                getListenerHolder().notifyOnSwipeStart(DialogLayer.this);
+                if (getConfig().mSwipeTransformer == null) {
+                    getConfig().mSwipeTransformer = new SwipeTransformer() {
                         @Override
                         public void onDragging(@NonNull View content, @NonNull View background, float f) {
                             background.setAlpha(1F - f);
@@ -428,13 +432,15 @@ public class DialogLayer extends DecorLayer {
 
             @Override
             public void onSwiping(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
-                if (getConfig().mDragTransformer != null) {
-                    getConfig().mDragTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), fraction);
+                getListenerHolder().notifyOnSwiping(DialogLayer.this, direction, fraction);
+                if (getConfig().mSwipeTransformer != null) {
+                    getConfig().mSwipeTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), fraction);
                 }
             }
 
             @Override
             public void onEnd(@SwipeLayout.Direction int direction) {
+                getListenerHolder().notifyOnSwipeEnd(DialogLayer.this, direction);
                 // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
                 // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
                 getViewHolder().getContentWrapper().setVisibility(View.INVISIBLE);
@@ -617,11 +623,22 @@ public class DialogLayer extends DecorLayer {
     /**
      * 自定义浮层的拖拽退出时的动画
      *
-     * @param dragTransformer DragTransformer
+     * @param swipeTransformer SwipeTransformer
      */
     @NonNull
-    public DialogLayer dragTransformer(@Nullable DragTransformer dragTransformer) {
-        getConfig().mDragTransformer = dragTransformer;
+    public DialogLayer swipeTransformer(@Nullable SwipeTransformer swipeTransformer) {
+        getConfig().mSwipeTransformer = swipeTransformer;
+        return this;
+    }
+
+    /**
+     * 浮层拖拽事件监听
+     *
+     * @param swipeListener OnSwipeListener
+     */
+    @NonNull
+    public DialogLayer onSwipeListener(@NonNull OnSwipeListener swipeListener) {
+        getListenerHolder().addOnSwipeListener(swipeListener);
         return this;
     }
 
@@ -980,20 +997,66 @@ public class DialogLayer extends DecorLayer {
         @SwipeLayout.Direction
         protected int mSwipeDirection = 0;
         @Nullable
-        protected DragTransformer mDragTransformer = null;
+        protected SwipeTransformer mSwipeTransformer = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
+        private List<OnSwipeListener> mOnSwipeListeners = null;
+
+        private void addOnSwipeListener(@NonNull OnSwipeListener onSwipeListener) {
+            if (mOnSwipeListeners == null) {
+                mOnSwipeListeners = new ArrayList<>(1);
+            }
+            mOnSwipeListeners.add(onSwipeListener);
+        }
+
+        private void notifyOnSwipeStart(@NonNull Layer layer) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onStart(layer);
+                }
+            }
+        }
+
+        private void notifyOnSwiping(@NonNull Layer layer,
+                                     @SwipeLayout.Direction int direction,
+                                     @FloatRange(from = 0F, to = 1F) float fraction) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onSwiping(layer, direction, fraction);
+                }
+            }
+        }
+
+        private void notifyOnSwipeEnd(@NonNull Layer layer,
+                                      @SwipeLayout.Direction int direction) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onEnd(layer, direction);
+                }
+            }
+        }
     }
 
     public interface OutsideTouchedListener {
         void outsideTouched();
     }
 
-    public interface DragTransformer {
+    public interface SwipeTransformer {
         void onDragging(@NonNull View content,
                         @NonNull View background,
                         @FloatRange(from = 0F, to = 1F) float f);
+    }
+
+    public interface OnSwipeListener {
+        void onStart(@NonNull Layer layer);
+
+        void onSwiping(@NonNull Layer layer,
+                       @SwipeLayout.Direction int direction,
+                       @FloatRange(from = 0F, to = 1F) float fraction);
+
+        void onEnd(@NonNull Layer layer,
+                   @SwipeLayout.Direction int direction);
     }
 
     public enum AnimStyle {
