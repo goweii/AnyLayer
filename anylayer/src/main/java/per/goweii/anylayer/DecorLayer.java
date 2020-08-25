@@ -32,7 +32,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
     }
 
     @NonNull
-    protected Level getLevel() {
+    protected int getLevel() {
         return Level.DIALOG;
     }
 
@@ -95,7 +95,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
                 if (getLevel() == levelLayout.getLevel()) {
                     parent = levelLayout;
                     break;
-                } else if (getLevel().level() > levelLayout.getLevel().level()) {
+                } else if (Level.isATopThanB(levelLayout.getLevel(), getLevel())) {
                     lastIndex--;
                     break;
                 }
@@ -265,42 +265,18 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
 
     /**
      * 浮层层级
-     * 数字越小层级越高，显示在越上层
+     * 数字越大层级越高，显示在越上层
      */
-    protected enum Level {
-        /**
-         * 悬浮窗
-         */
-        FLOAT(1),
-        /**
-         * 吐司
-         */
-        TOAST(2),
-        /**
-         * 弹窗
-         */
-        DIALOG(3),
-        /**
-         * PopupWindow
-         */
-        POPUP(4),
-        /**
-         * 引导层
-         */
-        GUIDE(5);
+    protected static class Level {
+        public static final int GUIDE = 1000;
+        public static final int POPUP = 2000;
+        public static final int DIALOG = 3000;
+        public static final int FLOAT = 4000;
+        public static final int TOAST = 5000;
+        public static final int NOTIFICATION = 6000;
 
-        private final int level;
-
-        Level(int level) {
-            this.level = level;
-        }
-
-        public int level() {
-            return level;
-        }
-
-        public boolean isTopThan(@NonNull Level other) {
-            return level < other.level;
+        public static boolean isATopThanB(int a, int b) {
+            return a > b;
         }
     }
 
@@ -319,16 +295,20 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
      */
     @SuppressLint("ViewConstructor")
     public static class LevelLayout extends FrameLayout {
-        private final Level mLevel;
+        private final int mLevel;
 
-        public LevelLayout(@NonNull Context context, @NonNull Level level) {
+        public LevelLayout(@NonNull Context context, int level) {
             super(context);
             mLevel = level;
         }
 
         @NonNull
-        public Level getLevel() {
+        public int getLevel() {
             return mLevel;
+        }
+
+        public boolean isTopThan(@NonNull LevelLayout other) {
+            return Level.isATopThanB(mLevel, other.mLevel);
         }
     }
 }
