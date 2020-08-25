@@ -38,7 +38,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
 
     @NonNull
     @Override
-    protected Level getLevel() {
+    protected int getLevel() {
         return Level.TOAST;
     }
 

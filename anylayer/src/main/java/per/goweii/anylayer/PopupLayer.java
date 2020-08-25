@@ -41,7 +41,7 @@ public class PopupLayer extends DialogLayer {
 
     @NonNull
     @Override
-    protected Level getLevel() {
+    protected int getLevel() {
         return Level.POPUP;
     }
 

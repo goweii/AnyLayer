@@ -54,7 +54,7 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     @Override
-    protected Level getLevel() {
+    protected int getLevel() {
         return Level.DIALOG;
     }
 
