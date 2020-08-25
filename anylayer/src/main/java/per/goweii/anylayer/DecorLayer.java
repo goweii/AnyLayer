@@ -302,7 +302,6 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             mLevel = level;
         }
 
-        @NonNull
         public int getLevel() {
             return mLevel;
         }
