@@ -79,7 +79,11 @@ public class FloatLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        throw new UnsupportedOperationException("未实现");
+        if (getViewHolder().getChildOrNull() == null) {
+            DragLayout container = (DragLayout) inflater.inflate(R.layout.anylayer_float_layer, parent, false);
+            getViewHolder().setChild(container);
+        }
+        return getViewHolder().getChild();
     }
 
     @Nullable
@@ -120,6 +124,22 @@ public class FloatLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
+        @Override
+        public void setChild(@NonNull View child) {
+            super.setChild(child);
+        }
+
+        @NonNull
+        @Override
+        public DragLayout getChild() {
+            return (DragLayout) super.getChild();
+        }
+
+        @Nullable
+        @Override
+        protected DragLayout getChildOrNull() {
+            return (DragLayout) super.getChildOrNull();
+        }
     }
 
     protected static class Config extends DecorLayer.Config {

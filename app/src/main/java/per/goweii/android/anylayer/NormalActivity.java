@@ -7,8 +7,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,8 @@ import per.goweii.anylayer.Align;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
+import per.goweii.anylayer.DragLayout;
+import per.goweii.anylayer.FloatLayer;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.SwipeLayout;
@@ -74,6 +78,25 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.tv_show_left_right_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_right_left_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_reveal).setOnClickListener(this);
+        new FloatLayer(this)
+                .bindData(new Layer.DataBinder() {
+                    @Override
+                    public void bindData(@NonNull Layer layer) {
+                        FloatLayer floatLayer = (FloatLayer) layer;
+                        DragLayout dragLayout = floatLayer.getViewHolder().getChild();
+                        ImageView iv = new ImageView(dragLayout.getContext());
+                        iv.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
+                        iv.setImageResource(R.mipmap.ic_launcher_round);
+                        iv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                findViewById(R.id.tv_show_toast).performClick();
+                            }
+                        });
+                        dragLayout.addView(iv);
+                    }
+                })
+                .show();
     }
 
     private Random mRandom = new Random();
