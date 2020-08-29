@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -29,7 +30,7 @@ public class GuideLayer extends DecorLayer {
         cancelableOnKeyBack(false);
     }
 
-    @NonNull
+    @IntRange(from = 0)
     @Override
     protected int getLevel() {
         return Level.GUIDE;

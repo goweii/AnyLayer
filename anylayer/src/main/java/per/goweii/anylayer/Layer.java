@@ -662,6 +662,13 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         void onClick(@NonNull Layer layer, @NonNull View v);
     }
 
+    public interface OnLongClickListener {
+        /**
+         * 长按事件回调
+         */
+        boolean onLongClick(@NonNull Layer layer, @NonNull View v);
+    }
+
     public interface OnDismissListener {
         /**
          * 开始隐藏，动画刚开始执行

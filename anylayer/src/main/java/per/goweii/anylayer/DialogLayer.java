@@ -23,6 +23,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,7 +56,7 @@ public class DialogLayer extends DecorLayer {
         getViewHolder().setActivityContent(getViewHolder().getDecor().findViewById(android.R.id.content));
     }
 
-    @NonNull
+    @IntRange(from = 0)
     @Override
     protected int getLevel() {
         return Level.DIALOG;

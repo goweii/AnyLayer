@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -31,9 +32,17 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
         getViewHolder().setDecor((FrameLayout) activity.getWindow().getDecorView());
     }
 
-    @NonNull
+    @IntRange(from = 0)
     protected int getLevel() {
-        return Level.DIALOG;
+        return 0;
+    }
+
+    @IntRange(from = 0)
+    protected int getRealLevel() {
+        if (getConfig().mLevel >= 0) {
+            return getConfig().mLevel;
+        }
+        return getLevel();
     }
 
     @NonNull
@@ -92,17 +101,17 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             View child = group.getChildAt(i);
             if (child instanceof LevelLayout) {
                 LevelLayout levelLayout = (LevelLayout) child;
-                if (getLevel() == levelLayout.getLevel()) {
+                if (getRealLevel() == levelLayout.getLevel()) {
                     parent = levelLayout;
                     break;
-                } else if (Level.isATopThanB(levelLayout.getLevel(), getLevel())) {
+                } else if (Level.isATopThanB(levelLayout.getLevel(), getRealLevel())) {
                     lastIndex--;
                     break;
                 }
             }
         }
         if (parent == null) {
-            parent = new LevelLayout(group.getContext(), getLevel());
+            parent = new LevelLayout(group.getContext(), getRealLevel());
             parent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             group.addView(parent, lastIndex + 1);
         }
@@ -209,7 +218,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
             View child = group.getChildAt(i);
             if (child instanceof LevelLayout) {
                 LevelLayout levelLayout = (LevelLayout) child;
-                if (getLevel() == levelLayout.getLevel()) {
+                if (getRealLevel() == levelLayout.getLevel()) {
                     parent = levelLayout;
                     break;
                 }
@@ -258,6 +267,7 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
     }
 
     protected static class Config extends Layer.Config {
+        protected int mLevel = -1;
     }
 
     protected static class ListenerHolder extends Layer.ListenerHolder {

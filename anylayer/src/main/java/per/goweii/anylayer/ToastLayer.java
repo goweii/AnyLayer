@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -36,7 +37,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
         cancelableOnKeyBack(false);
     }
 
-    @NonNull
+    @IntRange(from = 0)
     @Override
     protected int getLevel() {
         return Level.TOAST;

@@ -24,7 +24,11 @@ public class DragLayout extends FrameLayout {
     private boolean mHandleTouchEvent = false;
 
     private boolean mOutside = true;
-    private int mSnapEdge = Edge.LEFT | Edge.TOP | Edge.RIGHT | Edge.BOTTOM;
+    private int mSnapEdge = Edge.LEFT | Edge.RIGHT;
+
+    private OnDragListener mOnDragListener = null;
+
+    private View mSettlingView = null;
 
     public static class Edge {
         public static final int LEFT = 1;
@@ -54,6 +58,87 @@ public class DragLayout extends FrameLayout {
         mSnapEdge = snapEdge;
     }
 
+    public void setOnDragListener(OnDragListener listener) {
+        mOnDragListener = listener;
+    }
+
+    public void goEdge(@NonNull View view) {
+        int finalLeft = view.getLeft();
+        int finalTop = view.getTop();
+        int currEdge = calcCurrEdge(view);
+        if (currEdge == 0) {
+            int centerX = view.getLeft() + view.getWidth() / 2;
+            int centerY = view.getTop() + view.getHeight() / 2;
+            boolean snapEdgeLeft = (mSnapEdge & Edge.LEFT) != 0;
+            boolean snapEdgeRight = (mSnapEdge & Edge.RIGHT) != 0;
+            boolean snapEdgeTop = (mSnapEdge & Edge.TOP) != 0;
+            boolean snapEdgeBottom = (mSnapEdge & Edge.BOTTOM) != 0;
+            if (snapEdgeLeft && snapEdgeRight) {
+                if (centerX <= getWidth() / 2) {
+                    finalLeft = 0;
+                } else {
+                    finalLeft = getWidth() - view.getWidth();
+                }
+            } else if (snapEdgeLeft) {
+                finalLeft = 0;
+            } else if (snapEdgeRight) {
+                finalLeft = getWidth() - view.getWidth();
+            } else {
+                finalLeft = view.getLeft();
+            }
+            if (snapEdgeTop && snapEdgeBottom) {
+                if (centerY <= getHeight() / 2) {
+                    finalTop = 0;
+                } else {
+                    finalTop = getHeight() - view.getHeight();
+                }
+            } else if (snapEdgeTop) {
+                finalTop = 0;
+            } else if (snapEdgeBottom) {
+                finalTop = getHeight() - view.getHeight();
+            } else {
+                finalTop = view.getTop();
+            }
+            if (finalLeft != view.getLeft() && finalTop != view.getTop()) {
+                if (view.getLeft() < 0 || view.getRight() > getWidth()) {
+                    finalTop = view.getTop();
+                }
+                if (view.getTop() < 0 || view.getBottom() > getHeight()) {
+                    finalLeft = view.getLeft();
+                }
+                int moveLeft = Math.abs(finalLeft - view.getLeft());
+                int moveTop = Math.abs(finalTop - view.getTop());
+                if (moveLeft < moveTop) {
+                    finalTop = view.getTop();
+                } else {
+                    finalLeft = view.getLeft();
+                }
+            }
+            finalLeft = Utils.intRange(finalLeft, 0, getWidth() - view.getWidth());
+            finalTop = Utils.intRange(finalTop, 0, getHeight() - view.getHeight());
+        }
+        mSettlingView = view;
+        mDragHelper.smoothSlideViewTo(view, finalLeft, finalTop);
+        invalidate();
+    }
+
+    public int calcCurrEdge(@NonNull View view) {
+        boolean canLeft = (mSnapEdge & Edge.LEFT) != 0;
+        boolean canRight = (mSnapEdge & Edge.RIGHT) != 0;
+        boolean canTop = (mSnapEdge & Edge.TOP) != 0;
+        boolean canBottom = (mSnapEdge & Edge.BOTTOM) != 0;
+        boolean onLeft = view.getLeft() == 0;
+        boolean onRight = view.getRight() == getWidth();
+        boolean onTop = view.getTop() == 0;
+        boolean onBottom = view.getBottom() == getHeight();
+        int currEdge = 0;
+        if (canLeft && onLeft) currEdge |= Edge.LEFT;
+        if (canRight && onRight) currEdge |= Edge.RIGHT;
+        if (canTop && onTop) currEdge |= Edge.TOP;
+        if (canBottom && onBottom) currEdge |= Edge.BOTTOM;
+        return currEdge;
+    }
+
     @Override
     public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
         return super.dispatchTouchEvent(ev);
@@ -80,6 +165,11 @@ public class DragLayout extends FrameLayout {
     public void computeScroll() {
         if (mDragHelper.continueSettling(true)) {
             invalidate();
+        } else {
+            if (mSettlingView != null) {
+                onStop(mSettlingView);
+                mSettlingView = null;
+            }
         }
     }
 
@@ -91,6 +181,31 @@ public class DragLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+    }
+
+    private void onStart(@NonNull View view) {
+        if (mOnDragListener != null) {
+            mOnDragListener.onStart(view);
+        }
+    }
+
+    private void onDragging(@NonNull View view) {
+        if (mOnDragListener != null) {
+            mOnDragListener.onDragging(view);
+        }
+    }
+
+    private void onRelease(@NonNull View view) {
+        goEdge(view);
+        if (mOnDragListener != null) {
+            mOnDragListener.onRelease(view);
+        }
+    }
+
+    private void onStop(@NonNull View view) {
+        if (mOnDragListener != null) {
+            mOnDragListener.onStop(view);
+        }
     }
 
     private class DragCallback extends ViewDragHelper.Callback {
@@ -120,6 +235,8 @@ public class DragLayout extends FrameLayout {
         @Override
         public void onViewCaptured(@NonNull View capturedChild, int activePointerId) {
             super.onViewCaptured(capturedChild, activePointerId);
+            onStart(capturedChild);
+            mSettlingView = null;
         }
 
         @Override
@@ -151,64 +268,23 @@ public class DragLayout extends FrameLayout {
         @Override
         public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
+            onDragging(changedView);
         }
 
         @Override
         public void onViewReleased(@NonNull View child, float xvel, float yvel) {
             super.onViewReleased(child, xvel, yvel);
-            int centerX = child.getLeft() + child.getWidth() / 2;
-            int centerY = child.getTop() + child.getHeight() / 2;
-            int finalLeft;
-            int finalTop;
-            boolean snapEdgeLeft = (mSnapEdge & Edge.LEFT) != 0;
-            boolean snapEdgeRight = (mSnapEdge & Edge.RIGHT) != 0;
-            boolean snapEdgeTop = (mSnapEdge & Edge.TOP) != 0;
-            boolean snapEdgeBottom = (mSnapEdge & Edge.BOTTOM) != 0;
-            if (snapEdgeLeft && snapEdgeRight) {
-                if (centerX <= getWidth() / 2) {
-                    finalLeft = 0;
-                } else {
-                    finalLeft = getWidth() - child.getWidth();
-                }
-            } else if (snapEdgeLeft) {
-                finalLeft = 0;
-            } else if (snapEdgeRight) {
-                finalLeft = getWidth() - child.getWidth();
-            } else {
-                finalLeft = centerX;
-            }
-            if (snapEdgeTop && snapEdgeBottom) {
-                if (centerY <= getHeight() / 2) {
-                    finalTop = 0;
-                } else {
-                    finalTop = getHeight() - child.getHeight();
-                }
-            } else if (snapEdgeTop) {
-                finalTop = 0;
-            } else if (snapEdgeBottom) {
-                finalTop = getHeight() - child.getHeight();
-            } else {
-                finalTop = centerY;
-            }
-            if (finalLeft != child.getLeft() && finalTop != child.getTop()) {
-                if (child.getLeft() < 0 || child.getRight() > getWidth()) {
-                    finalTop = child.getTop();
-                }
-                if (child.getTop() < 0 || child.getBottom() > getHeight()) {
-                    finalLeft = child.getLeft();
-                }
-                int moveLeft = Math.abs(finalLeft - child.getLeft());
-                int moveTop = Math.abs(finalTop - child.getTop());
-                if (moveLeft < moveTop) {
-                    finalTop = child.getTop();
-                } else {
-                    finalLeft = child.getLeft();
-                }
-            }
-            finalLeft = Utils.intRange(finalLeft, 0, getWidth() - child.getWidth());
-            finalTop = Utils.intRange(finalTop, 0, getHeight() - child.getHeight());
-            mDragHelper.smoothSlideViewTo(child, finalLeft, finalTop);
-            invalidate();
+            onRelease(child);
         }
+    }
+
+    public interface OnDragListener {
+        void onStart(@NonNull View view);
+
+        void onDragging(@NonNull View view);
+
+        void onRelease(@NonNull View view);
+
+        void onStop(@NonNull View view);
     }
 }

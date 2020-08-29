@@ -23,7 +23,6 @@ import per.goweii.anylayer.Align;
 import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.DialogLayer;
-import per.goweii.anylayer.DragLayout;
 import per.goweii.anylayer.FloatLayer;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
@@ -78,22 +77,22 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.tv_show_left_right_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_right_left_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_reveal).setOnClickListener(this);
+        ImageView iv = new ImageView(this);
+        iv.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
+        iv.setImageResource(R.mipmap.ic_launcher_round);
         new FloatLayer(this)
-                .bindData(new Layer.DataBinder() {
+                .snapEdge(FloatLayer.Edge.ALL)
+                .floatView(iv)
+                .lowProfileAlpha(0.6F)
+                .lowProfileDelay(1000)
+                .lowProfileIndent(0.3F)
+                .normalAlpha(0.9F)
+                .gravity(Gravity.RIGHT | Gravity.BOTTOM)
+                .marginBottom(600)
+                .onFloatClick(new Layer.OnClickListener() {
                     @Override
-                    public void bindData(@NonNull Layer layer) {
-                        FloatLayer floatLayer = (FloatLayer) layer;
-                        DragLayout dragLayout = floatLayer.getViewHolder().getChild();
-                        ImageView iv = new ImageView(dragLayout.getContext());
-                        iv.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
-                        iv.setImageResource(R.mipmap.ic_launcher_round);
-                        iv.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                findViewById(R.id.tv_show_toast).performClick();
-                            }
-                        });
-                        dragLayout.addView(iv);
+                    public void onClick(@NonNull Layer layer, @NonNull View v) {
+                        AnyLayer.toast().message("点击了悬浮按钮").gravity(Gravity.CENTER).show();
                     }
                 })
                 .show();

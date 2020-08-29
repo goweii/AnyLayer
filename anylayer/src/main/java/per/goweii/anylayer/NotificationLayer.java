@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -28,7 +29,7 @@ public class NotificationLayer extends DecorLayer {
         cancelableOnKeyBack(false);
     }
 
-    @NonNull
+    @IntRange(from = 0)
     @Override
     protected int getLevel() {
         return Level.NOTIFICATION;
