@@ -242,6 +242,12 @@ public class DecorLayer extends Layer implements ComponentCallbacks, ViewTreeObs
     }
 
     @NonNull
+    public DecorLayer level(int level) {
+        getConfig().mLevel = level;
+        return this;
+    }
+
+    @NonNull
     public DecorLayer cancelableOnClickKeyBack(boolean cancelable) {
         cancelableOnKeyBack(cancelable);
         return this;
