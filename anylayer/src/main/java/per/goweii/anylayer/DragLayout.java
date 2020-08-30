@@ -47,6 +47,7 @@ public class DragLayout extends FrameLayout {
 
     public DragLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setClipToPadding(false);
         mDragHelper = ViewDragHelper.create(this, new DragCallback());
     }
 
@@ -63,59 +64,63 @@ public class DragLayout extends FrameLayout {
     }
 
     public void goEdge(@NonNull View view) {
-        int finalLeft = view.getLeft();
-        int finalTop = view.getTop();
+        final int currLeft = view.getLeft();
+        final int currTop = view.getTop();
+        int finalLeft = currLeft;
+        int finalTop = currTop;
         int currEdge = calcCurrEdge(view);
         if (currEdge == 0) {
-            int centerX = view.getLeft() + view.getWidth() / 2;
-            int centerY = view.getTop() + view.getHeight() / 2;
             boolean snapEdgeLeft = (mSnapEdge & Edge.LEFT) != 0;
             boolean snapEdgeRight = (mSnapEdge & Edge.RIGHT) != 0;
             boolean snapEdgeTop = (mSnapEdge & Edge.TOP) != 0;
             boolean snapEdgeBottom = (mSnapEdge & Edge.BOTTOM) != 0;
+            final int minLeft = getViewLeftMinInside(view);
+            final int maxLeft = getViewLeftMaxInside(view);
+            final int minTop = getViewTopMinInside(view);
+            final int maxTop = getViewTopMaxInside(view);
             if (snapEdgeLeft && snapEdgeRight) {
-                if (centerX <= getWidth() / 2) {
-                    finalLeft = 0;
+                if (currLeft < (maxLeft - minLeft) / 2) {
+                    finalLeft = minLeft;
                 } else {
-                    finalLeft = getWidth() - view.getWidth();
+                    finalLeft = maxLeft;
                 }
             } else if (snapEdgeLeft) {
-                finalLeft = 0;
+                finalLeft = minLeft;
             } else if (snapEdgeRight) {
-                finalLeft = getWidth() - view.getWidth();
+                finalLeft = maxLeft;
             } else {
-                finalLeft = view.getLeft();
+                finalLeft = currLeft;
             }
             if (snapEdgeTop && snapEdgeBottom) {
-                if (centerY <= getHeight() / 2) {
-                    finalTop = 0;
+                if (currTop < (maxTop - minTop) / 2) {
+                    finalTop = minTop;
                 } else {
-                    finalTop = getHeight() - view.getHeight();
+                    finalTop = maxTop;
                 }
             } else if (snapEdgeTop) {
-                finalTop = 0;
+                finalTop = minTop;
             } else if (snapEdgeBottom) {
-                finalTop = getHeight() - view.getHeight();
+                finalTop = maxTop;
             } else {
-                finalTop = view.getTop();
+                finalTop = currTop;
             }
-            if (finalLeft != view.getLeft() && finalTop != view.getTop()) {
-                if (view.getLeft() < 0 || view.getRight() > getWidth()) {
-                    finalTop = view.getTop();
+            if (finalLeft != currLeft && finalTop != currTop) {
+                if (currLeft < minLeft || currLeft > maxLeft) {
+                    finalTop = currTop;
                 }
-                if (view.getTop() < 0 || view.getBottom() > getHeight()) {
-                    finalLeft = view.getLeft();
+                if (currTop < minTop || currTop > maxTop) {
+                    finalLeft = currLeft;
                 }
-                int moveLeft = Math.abs(finalLeft - view.getLeft());
-                int moveTop = Math.abs(finalTop - view.getTop());
+                int moveLeft = Math.abs(finalLeft - currLeft);
+                int moveTop = Math.abs(finalTop - currTop);
                 if (moveLeft < moveTop) {
-                    finalTop = view.getTop();
+                    finalTop = currTop;
                 } else {
-                    finalLeft = view.getLeft();
+                    finalLeft = currLeft;
                 }
             }
-            finalLeft = Utils.intRange(finalLeft, 0, getWidth() - view.getWidth());
-            finalTop = Utils.intRange(finalTop, 0, getHeight() - view.getHeight());
+            finalLeft = Utils.intRange(finalLeft, minLeft, maxLeft);
+            finalTop = Utils.intRange(finalTop, minTop, maxTop);
         }
         mSettlingView = view;
         mDragHelper.smoothSlideViewTo(view, finalLeft, finalTop);
@@ -127,16 +132,64 @@ public class DragLayout extends FrameLayout {
         boolean canRight = (mSnapEdge & Edge.RIGHT) != 0;
         boolean canTop = (mSnapEdge & Edge.TOP) != 0;
         boolean canBottom = (mSnapEdge & Edge.BOTTOM) != 0;
-        boolean onLeft = view.getLeft() == 0;
-        boolean onRight = view.getRight() == getWidth();
-        boolean onTop = view.getTop() == 0;
-        boolean onBottom = view.getBottom() == getHeight();
+        boolean onLeft = view.getLeft() == getViewLeftMinInside(view);
+        boolean onRight = view.getLeft() == getViewLeftMaxInside(view);
+        boolean onTop = view.getTop() == getViewTopMinInside(view);
+        boolean onBottom = view.getTop() == getViewTopMaxInside(view);
         int currEdge = 0;
         if (canLeft && onLeft) currEdge |= Edge.LEFT;
         if (canRight && onRight) currEdge |= Edge.RIGHT;
         if (canTop && onTop) currEdge |= Edge.TOP;
         if (canBottom && onBottom) currEdge |= Edge.BOTTOM;
         return currEdge;
+    }
+
+    public int getViewLeftMinInside(@NonNull View view) {
+        return getPaddingLeft() + Utils.getViewMarginLeft(view);
+    }
+
+    public int getViewLeftMin(@NonNull View view) {
+        if (mOutside) {
+            return -(view.getWidth() + Utils.getViewMarginRight(view));
+        } else {
+            return getViewLeftMinInside(view);
+        }
+    }
+
+    public int getViewLeftMaxInside(@NonNull View view) {
+        return getWidth() - getPaddingRight() - Utils.getViewMarginRight(view) - view.getWidth();
+    }
+
+    public int getViewLeftMax(@NonNull View view) {
+        if (mOutside) {
+            return getWidth() + Utils.getViewMarginLeft(view);
+        } else {
+            return getViewLeftMaxInside(view);
+        }
+    }
+
+    public int getViewTopMinInside(@NonNull View view) {
+        return getPaddingTop() + Utils.getViewMarginTop(view);
+    }
+
+    public int getViewTopMin(@NonNull View view) {
+        if (mOutside) {
+            return -(view.getHeight() + Utils.getViewMarginBottom(view));
+        } else {
+            return getViewTopMinInside(view);
+        }
+    }
+
+    public int getViewTopMaxInside(@NonNull View view) {
+        return getHeight() - getPaddingBottom() - Utils.getViewMarginBottom(view) - view.getHeight();
+    }
+
+    public int getViewTopMax(@NonNull View view) {
+        if (mOutside) {
+            return getHeight() + Utils.getViewMarginTop(view);
+        } else {
+            return getViewTopMaxInside(view);
+        }
     }
 
     @Override
@@ -183,7 +236,7 @@ public class DragLayout extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
     }
 
-    private void onStart(@NonNull View view) {
+    public void onStart(@NonNull View view) {
         if (mOnDragListener != null) {
             mOnDragListener.onStart(view);
         }
@@ -216,20 +269,16 @@ public class DragLayout extends FrameLayout {
 
         @Override
         public int getViewHorizontalDragRange(@NonNull View child) {
-            if (mOutside) {
-                return getWidth() + child.getWidth();
-            } else {
-                return getWidth() - child.getWidth();
-            }
+            int min = getViewLeftMin(child);
+            int max = getViewLeftMax(child);
+            return max - min;
         }
 
         @Override
         public int getViewVerticalDragRange(@NonNull View child) {
-            if (mOutside) {
-                return getHeight() + child.getHeight();
-            } else {
-                return getHeight() - child.getHeight();
-            }
+            int min = getViewTopMin(child);
+            int max = getViewTopMax(child);
+            return max - min;
         }
 
         @Override
@@ -241,28 +290,16 @@ public class DragLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
-            if (mOutside) {
-                int min = -child.getWidth();
-                int max = getWidth();
-                return Utils.intRange(left, min, max);
-            } else {
-                int min = 0;
-                int max = getWidth() - child.getWidth();
-                return Utils.intRange(left, min, max);
-            }
+            int min = getViewLeftMin(child);
+            int max = getViewLeftMax(child);
+            return Utils.intRange(left, min, max);
         }
 
         @Override
         public int clampViewPositionVertical(@NonNull View child, int top, int dy) {
-            if (mOutside) {
-                int min = -child.getHeight();
-                int max = getHeight();
-                return Utils.intRange(top, min, max);
-            } else {
-                int min = 0;
-                int max = getHeight() - child.getHeight();
-                return Utils.intRange(top, min, max);
-            }
+            int min = getViewTopMin(child);
+            int max = getViewTopMax(child);
+            return Utils.intRange(top, min, max);
         }
 
         @Override

@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
@@ -181,5 +182,25 @@ final class Utils {
                 runnable.run();
             }
         });
+    }
+
+    static int getViewMarginLeft(@NonNull View view) {
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        return params.leftMargin;
+    }
+
+    static int getViewMarginRight(@NonNull View view) {
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        return params.rightMargin;
+    }
+
+    static int getViewMarginTop(@NonNull View view) {
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        return params.topMargin;
+    }
+
+    static int getViewMarginBottom(@NonNull View view) {
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        return params.bottomMargin;
     }
 }

@@ -81,14 +81,27 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         iv.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
         iv.setImageResource(R.mipmap.ic_launcher_round);
         new FloatLayer(this)
-                .snapEdge(FloatLayer.Edge.ALL)
                 .floatView(iv)
-                .lowProfileAlpha(0.6F)
-                .lowProfileDelay(1000)
-                .lowProfileIndent(0.3F)
+                .snapEdge(FloatLayer.Edge.ALL)
+                .outside(true)
+                .defPercentX(1)
+                .defPercentY(0.6F)
+                .defAlpha(0F)
+                .defScale(0F)
                 .normalAlpha(0.9F)
-                .gravity(Gravity.RIGHT | Gravity.BOTTOM)
-                .marginBottom(600)
+                .normalScale(1)
+                .lowProfileDelay(3000)
+                .lowProfileAlpha(0.6F)
+                .lowProfileScale(0.9F)
+                .lowProfileIndent(0.5F)
+                .paddingLeft(45)
+                .paddingTop(45)
+                .paddingRight(45)
+                .paddingBottom(45)
+                .marginLeft(0)
+                .marginTop(0)
+                .marginRight(0)
+                .marginBottom(0)
                 .onFloatClick(new Layer.OnClickListener() {
                     @Override
                     public void onClick(@NonNull Layer layer, @NonNull View v) {
