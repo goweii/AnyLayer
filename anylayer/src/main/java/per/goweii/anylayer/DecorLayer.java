@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.widget.FrameLayout;
 
@@ -15,8 +16,11 @@ import androidx.annotation.NonNull;
  * GitHub: https://github.com/goweii
  */
 public class DecorLayer extends FrameLayer implements ComponentCallbacks {
-
     private final Activity mActivity;
+
+    public DecorLayer(@NonNull Context context) {
+        this(Utils.requireActivity(context));
+    }
 
     public DecorLayer(@NonNull Activity activity) {
         super((FrameLayout) activity.getWindow().getDecorView());

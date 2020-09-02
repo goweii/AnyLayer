@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MaxSizeFrameLayout">
+        <attr name="android:maxWidth" format="dimension|reference" />
+        <attr name="android:maxHeight" format="dimension|reference" />
+    </declare-styleable>
+</resources>

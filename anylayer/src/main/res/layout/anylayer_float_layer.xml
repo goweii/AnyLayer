@@ -2,6 +2,4 @@
 <per.goweii.anylayer.DragLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dl_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="30dp"
-    android:paddingBottom="50dp" />
+    android:layout_height="match_parent" />

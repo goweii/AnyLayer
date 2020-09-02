@@ -124,7 +124,6 @@ public class NotificationLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
-
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
