@@ -38,28 +38,14 @@ public class MaxSizeFrameLayout extends FrameLayout {
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
         int newWidthSize = widthSize;
         int newHeightSize = heightSize;
-        int newWidthMode = widthMode;
-        int newHeightMode = heightMode;
         if (mMaxWidth >= 0) {
             newWidthSize = Math.min(mMaxWidth, widthSize);
         }
         if (mMaxHeight >= 0) {
             newHeightSize = Math.min(mMaxHeight, heightSize);
         }
-        int newWidthSpec = MeasureSpec.makeMeasureSpec(newWidthSize, newWidthMode);
-        int newHeightSpec = MeasureSpec.makeMeasureSpec(newHeightSize, newHeightMode);
-
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
-            LayoutParams lp = (LayoutParams) child.getLayoutParams();
-            final int childWidthSpec = getChildMeasureSpec(widthMeasureSpec,
-                    getPaddingLeft() + getPaddingRight() + lp.leftMargin + lp.rightMargin, lp.width);
-            final int childHeightSpec = getChildMeasureSpec(heightMeasureSpec,
-                    getPaddingTop() + getPaddingBottom() + lp.topMargin + lp.bottomMargin, lp.height);
-            child.measure(childWidthSpec, childHeightSpec);
-        }
-
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int newWidthSpec = MeasureSpec.makeMeasureSpec(newWidthSize, widthMode);
+        int newHeightSpec = MeasureSpec.makeMeasureSpec(newHeightSize, heightMode);
+        super.onMeasure(newWidthSpec, newHeightSpec);
     }
 }
