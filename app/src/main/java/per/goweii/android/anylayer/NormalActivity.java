@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 import per.goweii.anylayer.Align;
@@ -26,6 +28,7 @@ import per.goweii.anylayer.DialogLayer;
 import per.goweii.anylayer.FloatLayer;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
+import per.goweii.anylayer.NotificationLayer;
 import per.goweii.anylayer.SwipeLayout;
 
 public class NormalActivity extends AppCompatActivity implements View.OnClickListener {
@@ -149,13 +152,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_notification:
-                AnyLayer.dialog(NormalActivity.this)
-                        .avoidStatusBar(true)
-                        .contentView(R.layout.dialog_notificationl)
-                        .gravity(Gravity.TOP)
-                        .outsideInterceptTouchEvent(false)
-                        .swipeDismiss(SwipeLayout.Direction.TOP | SwipeLayout.Direction.LEFT | SwipeLayout.Direction.RIGHT)
-                        .animStyle(DialogLayer.AnimStyle.TOP)
+                new NotificationLayer(this)
+                        .icon(R.mipmap.ic_launcher_round)
+                        .label(R.string.app_name)
+                        .time(new SimpleDateFormat("hh:mm").format(new Date()))
+                        .title("这是一个通知")
+                        .desc(R.string.dialog_msg)
                         .show();
                 break;
             case R.id.tv_show_edit:

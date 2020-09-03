@@ -6,18 +6,81 @@
     android:layout_height="wrap_content"
     android:layout_gravity="top|center_horizontal"
     android:layout_margin="10dp"
-    android:maxHeight="200dp"
-    android:maxWidth="340dp">
+    android:maxWidth="400dp"
+    android:maxHeight="400dp"
+    tools:ignore="RtlHardcoded">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@drawable/anylayer_notification_bg"
+        android:orientation="vertical"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="15dp">
 
-        <ImageView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:src="@tools:sample/avatars" />
+            android:gravity="center_vertical"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="8dp"
+                android:visibility="gone"
+                tools:ignore="ContentDescription"
+                tools:src="@android:drawable/ic_delete"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:textSize="13sp"
+                android:visibility="gone"
+                tools:text="@tools:sample/full_names"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:visibility="gone"
+                tools:text="@tools:sample/date/hhmmss"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="@tools:sample/lorem/random"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textSize="15sp"
+            android:visibility="gone"
+            tools:text="@tools:sample/lorem/random"
+            tools:visibility="visible" />
 
     </LinearLayout>
 
