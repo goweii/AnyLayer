@@ -353,27 +353,27 @@ public class NotificationLayer extends DecorLayer {
         }
 
         public LinearLayout getTop() {
-            return mContent.findViewById(R.id.ll_top);
+            return mContent.findViewById(R.id.anylayler_ll_top);
         }
 
         public ImageView getIcon() {
-            return mContent.findViewById(R.id.iv_icon);
+            return mContent.findViewById(R.id.anylayler_iv_icon);
         }
 
         public TextView getLabel() {
-            return mContent.findViewById(R.id.tv_label);
+            return mContent.findViewById(R.id.anylayler_tv_label);
         }
 
         public TextView getTime() {
-            return mContent.findViewById(R.id.tv_time);
+            return mContent.findViewById(R.id.anylayler_tv_time);
         }
 
         public TextView getTitle() {
-            return mContent.findViewById(R.id.tv_title);
+            return mContent.findViewById(R.id.anylayler_tv_title);
         }
 
         public TextView getDesc() {
-            return mContent.findViewById(R.id.tv_desc);
+            return mContent.findViewById(R.id.anylayler_tv_desc);
         }
     }
 

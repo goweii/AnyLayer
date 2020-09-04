@@ -310,8 +310,8 @@ public class ToastLayer extends DecorLayer implements Runnable {
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mIcon = child.findViewById(R.id.iv_icon);
-            mMessage = child.findViewById(R.id.tv_msg);
+            mIcon = child.findViewById(R.id.anylayler_iv_icon);
+            mMessage = child.findViewById(R.id.anylayler_tv_msg);
         }
 
         @NonNull

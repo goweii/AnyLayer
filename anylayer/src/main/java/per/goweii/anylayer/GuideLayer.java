@@ -131,8 +131,8 @@ public class GuideLayer extends DecorLayer {
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mContentWrapper = getChild().findViewById(R.id.fl_content_wrapper);
-            mBackground = getChild().findViewById(R.id.iv_background);
+            mContentWrapper = getChild().findViewById(R.id.anylayler_fl_content_wrapper);
+            mBackground = getChild().findViewById(R.id.anylayler_iv_background);
         }
 
         @NonNull
