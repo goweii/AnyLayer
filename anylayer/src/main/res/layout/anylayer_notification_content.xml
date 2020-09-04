@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <per.goweii.anylayer.MaxSizeFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ll_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="top|center_horizontal"
@@ -21,16 +20,19 @@
         android:paddingBottom="15dp">
 
         <LinearLayout
+            android:id="@+id/ll_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
             android:layout_marginBottom="10dp"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/iv_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_marginRight="8dp"
                 android:visibility="gone"
                 tools:ignore="ContentDescription"
@@ -51,7 +53,7 @@
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:visibility="gone"
                 tools:text="@tools:sample/date/hhmmss"
                 tools:visibility="visible" />
@@ -77,7 +79,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="3"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:visibility="gone"
             tools:text="@tools:sample/lorem/random"
             tools:visibility="visible" />

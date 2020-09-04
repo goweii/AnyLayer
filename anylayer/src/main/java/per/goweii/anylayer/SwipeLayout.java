@@ -38,6 +38,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
     private final NestedScrollingParentHelper mNestedHelper;
     private final float mMaxVelocity;
     private final float mMinVelocity;
+    private final int mTouchSlop;
 
     private int mSwipeDirection = 0;
     private OnSwipeListener mOnSwipeListener = null;
@@ -73,6 +74,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         mScroller = new Scroller(context, new DecelerateInterpolator());
         mNestedHelper = new NestedScrollingParentHelper(this);
         final ViewConfiguration vc = ViewConfiguration.get(context);
+        mTouchSlop = vc.getScaledTouchSlop();
         mMaxVelocity = vc.getScaledMaximumFlingVelocity();
         mMinVelocity = vc.getScaledMinimumFlingVelocity();
     }
@@ -332,11 +334,11 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
 
     @Override
     public boolean onStartNestedScroll(@NonNull View child, @NonNull View target, int axes, int type) {
-        if((ViewCompat.SCROLL_AXIS_VERTICAL & axes) == ViewCompat.SCROLL_AXIS_VERTICAL) {
+        if ((ViewCompat.SCROLL_AXIS_VERTICAL & axes) == ViewCompat.SCROLL_AXIS_VERTICAL) {
             if (canSwipeDirection(Direction.TOP | Direction.BOTTOM)) {
                 mUsingNested = ScrollCompat.canScrollUp(target) || ScrollCompat.canScrollDown(target);
             }
-        } else if((ViewCompat.SCROLL_AXIS_HORIZONTAL & axes) == ViewCompat.SCROLL_AXIS_HORIZONTAL) {
+        } else if ((ViewCompat.SCROLL_AXIS_HORIZONTAL & axes) == ViewCompat.SCROLL_AXIS_HORIZONTAL) {
             if (canSwipeDirection(Direction.LEFT | Direction.RIGHT)) {
                 mUsingNested = ScrollCompat.canScrollLeft(target) || ScrollCompat.canScrollRight(target);
             }
@@ -727,6 +729,8 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
     }
 
     private class DragCallback extends ViewDragHelper.Callback {
+        private boolean mBeanDragged = false;
+
         @Override
         public boolean tryCaptureView(@NonNull View child, int pointerId) {
             return canSwipe();
@@ -757,16 +761,22 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         @Override
         public void onViewCaptured(@NonNull View capturedChild, int activePointerId) {
             super.onViewCaptured(capturedChild, activePointerId);
+            mBeanDragged = false;
             onSwipeStart();
         }
 
         @Override
         public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
             if (mCurrSwipeDirection == 0) {
-                if (canSwipeDirection(Direction.LEFT) && dx < 0)
+                boolean swipedLeft = mBeanDragged ? dx < 0 : dx < -mTouchSlop;
+                boolean swipedRight = mBeanDragged ? dx > 0 : dx > mTouchSlop;
+                if (canSwipeDirection(Direction.LEFT) && swipedLeft)
                     mCurrSwipeDirection = Direction.LEFT;
-                if (canSwipeDirection(Direction.RIGHT) && dx > 0)
+                if (canSwipeDirection(Direction.RIGHT) && swipedRight)
                     mCurrSwipeDirection = Direction.RIGHT;
+            }
+            if (mCurrSwipeDirection == 0) {
+                mBeanDragged = true;
             }
             switch (mCurrSwipeDirection) {
                 case Direction.LEFT:
@@ -796,10 +806,15 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         @Override
         public int clampViewPositionVertical(@NonNull View child, int top, int dy) {
             if (mCurrSwipeDirection == 0) {
-                if (canSwipeDirection(Direction.TOP) && dy < 0)
+                boolean swipedTop = mBeanDragged ? dy < 0 : dy < -mTouchSlop;
+                boolean swipedBottom = mBeanDragged ? dy > 0 : dy > mTouchSlop;
+                if (canSwipeDirection(Direction.TOP) && swipedTop)
                     mCurrSwipeDirection = Direction.TOP;
-                if (canSwipeDirection(Direction.BOTTOM) && dy > 0)
+                if (canSwipeDirection(Direction.BOTTOM) && swipedBottom)
                     mCurrSwipeDirection = Direction.BOTTOM;
+            }
+            if (mCurrSwipeDirection == 0) {
+                mBeanDragged = true;
             }
             switch (mCurrSwipeDirection) {
                 case Direction.TOP:
@@ -835,6 +850,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         @Override
         public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
+            mBeanDragged = false;
             float vel = 0F;
             switch (mCurrSwipeDirection) {
                 case Direction.LEFT:
@@ -883,7 +899,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
          * 滑动中
          *
          * @param direction 滑动关闭的方向
-         * @param fraction 滑动比例 0为开始，1为结束
+         * @param fraction  滑动比例 0为开始，1为结束
          */
         void onSwiping(@Direction int direction,
                        @FloatRange(from = 0F, to = 1F) float fraction);

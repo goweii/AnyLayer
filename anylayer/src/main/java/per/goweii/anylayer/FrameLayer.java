@@ -267,8 +267,8 @@ public class FrameLayer extends Layer implements ViewTreeObserver.OnGlobalLayout
         public static final int POPUP = 2000;
         public static final int DIALOG = 3000;
         public static final int FLOAT = 4000;
-        public static final int TOAST = 5000;
-        public static final int NOTIFICATION = 6000;
+        public static final int NOTIFICATION = 5000;
+        public static final int TOAST = 6000;
 
         public static boolean isATopThanB(int a, int b) {
             return a > b;
