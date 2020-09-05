@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.dialog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -41,7 +41,7 @@ public class BackgroundView extends ImageView {
             default:
                 break;
         }
-        return false;
+        return super.onTouchEvent(ev);
     }
 
     public void setOnTouchedListener(@Nullable OnTouchedListener onTouchedListener) {

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.Layer;
-import per.goweii.anylayer.SwipeLayout;
+import per.goweii.anylayer.widget.SwipeLayout;
 
 public class DragActivity extends AppCompatActivity implements View.OnClickListener {
 

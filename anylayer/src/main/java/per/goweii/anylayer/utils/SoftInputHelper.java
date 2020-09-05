@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.utils;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -24,7 +24,7 @@ import java.util.Map;
  * @version v1.0.0
  * @date 2018/3/30-上午9:06
  */
-final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnGlobalFocusChangeListener {
+public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnGlobalFocusChangeListener {
 
     private final Window window;
     private final View rootView;

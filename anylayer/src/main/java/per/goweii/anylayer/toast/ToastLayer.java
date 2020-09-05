@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.toast;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -17,6 +17,12 @@ import android.widget.TextView;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.GlobalConfig;
+import per.goweii.anylayer.R;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.utils.Utils;
 
 /**
  * @author CuiZhen

@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,20 +18,24 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import per.goweii.anylayer.ActivityHolder;
+import per.goweii.anylayer.FrameLayer;
+import per.goweii.anylayer.dialog.ContainerLayout;
+
 /**
  * 描述：
  *
  * @author Cuizhen
  * @date 2018/10/25
  */
-final class Utils {
+public final class Utils {
 
-    static void checkInitialized() {
+    public static void checkInitialized() {
         requireNonNull(ActivityHolder.getApplication(), "请先在Application中初始化");
     }
 
     @NonNull
-    static <T> T requireNonNull(@Nullable T obj, String msg) {
+    public static <T> T requireNonNull(@Nullable T obj, String msg) {
         if (obj == null) {
             throw new NullPointerException(msg);
         }
@@ -46,23 +50,23 @@ final class Utils {
         return obj;
     }
 
-    static float floatRange01(float value) {
+    public static float floatRange01(float value) {
         return floatRange(value, 0F, 1F);
     }
 
-    static float floatRange(float value, float min, float max) {
+    public static float floatRange(float value, float min, float max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
     }
 
-    static int intRange(int value, int min, int max) {
+    public static int intRange(int value, int min, int max) {
         if (value < min) return min;
         if (value > max) return max;
         return value;
     }
 
-    static int getStatusBarHeight(@NonNull Context context) {
+    public static int getStatusBarHeight(@NonNull Context context) {
         int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             return context.getResources().getDimensionPixelSize(resourceId);
@@ -74,7 +78,7 @@ final class Utils {
      * 从当前上下文获取Activity
      */
     @NonNull
-    static Activity requireActivity(@NonNull Context context) {
+    public static Activity requireActivity(@NonNull Context context) {
         Activity activity = getActivity(context);
         requireNonNull(activity, "无法从Context获取Activity，请确保传入的不是ApplicationContext或ServiceContext等");
         return activity;
@@ -84,7 +88,7 @@ final class Utils {
      * 从当前上下文获取Activity
      */
     @Nullable
-    static Activity getActivity(@NonNull Context context) {
+    public static Activity getActivity(@NonNull Context context) {
         if (context instanceof Activity) {
             return (Activity) context;
         }
@@ -98,11 +102,11 @@ final class Utils {
     }
 
     @NonNull
-    static Bitmap snapshot(@NonNull FrameLayout decor,
-                           @NonNull ImageView iv,
-                           float scale,
-                           @NonNull DecorLayer.LevelLayout currLevelLayout,
-                           @NonNull ContainerLayout currContainerLayout) {
+    public static Bitmap snapshot(@NonNull FrameLayout decor,
+                                  @NonNull ImageView iv,
+                                  float scale,
+                                  @NonNull FrameLayer.LevelLayout currLevelLayout,
+                                  @NonNull ContainerLayout currContainerLayout) {
         int w = iv.getWidth();
         int h = iv.getHeight();
         int oW = (int) (w / scale);
@@ -124,12 +128,12 @@ final class Utils {
         out:
         for (int i = 0; i < decor.getChildCount(); i++) {
             View decorChildAt = decor.getChildAt(i);
-            if (decorChildAt instanceof DecorLayer.LayerLayout) {
-                DecorLayer.LayerLayout layerLayout = (DecorLayer.LayerLayout) decorChildAt;
+            if (decorChildAt instanceof FrameLayer.LayerLayout) {
+                FrameLayer.LayerLayout layerLayout = (FrameLayer.LayerLayout) decorChildAt;
                 for (int j = 0; j < layerLayout.getChildCount(); j++) {
                     View layerChildAt = layerLayout.getChildAt(j);
-                    if (layerChildAt instanceof DecorLayer.LevelLayout) {
-                        DecorLayer.LevelLayout levelLayout = (DecorLayer.LevelLayout) layerChildAt;
+                    if (layerChildAt instanceof FrameLayer.LevelLayout) {
+                        FrameLayer.LevelLayout levelLayout = (FrameLayer.LevelLayout) layerChildAt;
                         if (levelLayout == currLevelLayout) {
                             for (int k = 0; k < levelLayout.getChildCount(); k++) {
                                 View containerLayout = levelLayout.getChildAt(k);
@@ -156,7 +160,7 @@ final class Utils {
         return bitmap;
     }
 
-    static void transparent(@NonNull Activity activity) {
+    public static void transparent(@NonNull Activity activity) {
         final Window window = activity.getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -168,7 +172,7 @@ final class Utils {
         }
     }
 
-    static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
+    public static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -184,22 +188,22 @@ final class Utils {
         });
     }
 
-    static int getViewMarginLeft(@NonNull View view) {
+    public static int getViewMarginLeft(@NonNull View view) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.leftMargin;
     }
 
-    static int getViewMarginRight(@NonNull View view) {
+    public static int getViewMarginRight(@NonNull View view) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.rightMargin;
     }
 
-    static int getViewMarginTop(@NonNull View view) {
+    public static int getViewMarginTop(@NonNull View view) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.topMargin;
     }
 
-    static int getViewMarginBottom(@NonNull View view) {
+    public static int getViewMarginBottom(@NonNull View view) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.bottomMargin;
     }

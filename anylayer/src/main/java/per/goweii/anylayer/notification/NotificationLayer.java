@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.notification;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
@@ -23,6 +23,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+
+import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.R;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.utils.Utils;
+import per.goweii.anylayer.widget.SwipeLayout;
 
 /**
  * @author CuiZhen
@@ -173,7 +179,15 @@ public class NotificationLayer extends DecorLayer {
 
             @Override
             public void onEnd(int direction) {
-                dismiss(false);
+                // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
+                // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                getViewHolder().getContent().setVisibility(View.INVISIBLE);
+                getViewHolder().getContent().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        dismiss(false);
+                    }
+                });
             }
         });
         if (getConfig().mIcon != null) {
@@ -199,6 +213,7 @@ public class NotificationLayer extends DecorLayer {
             getViewHolder().getDesc().setVisibility(View.VISIBLE);
             getViewHolder().getDesc().setText(getConfig().mDesc);
         }
+        getViewHolder().getContent().setVisibility(View.VISIBLE);
     }
 
     @Override

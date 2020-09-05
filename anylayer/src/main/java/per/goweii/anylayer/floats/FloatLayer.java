@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.floats;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -12,6 +12,13 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.Layer;
+import per.goweii.anylayer.R;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.utils.Utils;
+import per.goweii.anylayer.widget.DragLayout;
 
 /**
  * @author CuiZhen

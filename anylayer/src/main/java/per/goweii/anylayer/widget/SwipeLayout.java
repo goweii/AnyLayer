@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -22,6 +22,10 @@ import androidx.customview.widget.ViewDragHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import per.goweii.anylayer.utils.DragCompat;
+import per.goweii.anylayer.utils.ScrollCompat;
+import per.goweii.anylayer.utils.Utils;
 
 public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
 

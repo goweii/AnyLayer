@@ -1,6 +1,7 @@
 package per.goweii.android.anylayer;
 
 import android.animation.Animator;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -12,13 +13,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import per.goweii.anylayer.Align;
-import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
-import per.goweii.anylayer.DialogLayer;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
-import per.goweii.anylayer.SwipeLayout;
+import per.goweii.anylayer.dialog.DialogLayer;
+import per.goweii.anylayer.guide.GuideLayer;
+import per.goweii.anylayer.popup.Align;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.statusbarcompat.StatusBarCompat;
 
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
@@ -35,15 +37,81 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         StatusBarCompat.transparent(this);
         setContentView(R.layout.activity_full_screen);
         initView();
-        Layer dialog = AnyLayer.dialog(this)
-                .contentView(R.layout.dialog_normal)
-                .backgroundDimDefault()
-                .gravity(Gravity.CENTER)
-                .cancelableOnTouchOutside(true)
-                .cancelableOnClickKeyBack(true)
-                .onClickToDismiss(R.id.fl_dialog_no);
-        dialog.show();
-        dialog.dismiss();
+        showMenuGuide();
+    }
+
+    private void showMenuGuide() {
+        TextView textView1 = new TextView(FullScreenActivity.this);
+        textView1.setText("带动画的菜单效果");
+        textView1.setTextColor(Color.WHITE);
+        textView1.setTextSize(20F);
+        TextView textView3 = new TextView(FullScreenActivity.this);
+        textView3.setText("下一个");
+        textView3.setPadding(90, 30, 90, 30);
+        textView3.setBackgroundResource(R.drawable.shape_icon);
+        textView3.setTextColor(Color.WHITE);
+        textView3.setTextSize(16F);
+        new GuideLayer(FullScreenActivity.this)
+                .addMapping(new GuideLayer.Mapping()
+                        .targetView(findViewById(R.id.tv_show_menu))
+                        .cornerRadius(9999F)
+                        .paddingLeft(30)
+                        .paddingRight(30)
+                        .paddingTop(-10)
+                        .paddingBottom(-10)
+                        .guideView(textView1)
+                        .horizontalAlign(GuideLayer.Align.Horizontal.ALIGN_RIGHT)
+                        .verticalAlign(GuideLayer.Align.Vertical.BELOW)
+                        .marginTop(30)
+                        .marginRight(30))
+                .addMapping(new GuideLayer.Mapping()
+                        .guideView(textView3)
+                        .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
+                        .verticalAlign(GuideLayer.Align.Vertical.ALIGN_BOTTOM)
+                        .marginBottom(60)
+                        .onClick(new Layer.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull Layer layer, @NonNull View v) {
+                                layer.dismiss();
+                                showBlurGuide();
+                            }
+                        }))
+                .show();
+    }
+
+    private void showBlurGuide() {
+        TextView textView1 = new TextView(FullScreenActivity.this);
+        textView1.setText("高斯模糊背景的弹窗\n实现起来也很方便");
+        textView1.setGravity(Gravity.CENTER);
+        textView1.setTextColor(Color.WHITE);
+        textView1.setTextSize(20F);
+        TextView textView3 = new TextView(FullScreenActivity.this);
+        textView3.setText("我知道了");
+        textView3.setPadding(90, 30, 90, 30);
+        textView3.setBackgroundResource(R.drawable.shape_icon);
+        textView3.setTextColor(Color.WHITE);
+        textView3.setTextSize(16F);
+        new GuideLayer(FullScreenActivity.this)
+                .addMapping(new GuideLayer.Mapping()
+                        .targetView(findViewById(R.id.tv_show_blur_bg))
+                        .cornerRadius(8F)
+                        .padding(-30)
+                        .guideView(textView1)
+                        .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
+                        .verticalAlign(GuideLayer.Align.Vertical.ABOVE)
+                        .marginBottom(30))
+                .addMapping(new GuideLayer.Mapping()
+                        .guideView(textView3)
+                        .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
+                        .verticalAlign(GuideLayer.Align.Vertical.ALIGN_BOTTOM)
+                        .marginBottom(60)
+                        .onClick(new Layer.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull Layer layer, @NonNull View v) {
+                                layer.dismiss();
+                            }
+                        }))
+                .show();
     }
 
     private void initView() {

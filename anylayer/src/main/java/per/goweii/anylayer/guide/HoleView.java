@@ -1,10 +1,11 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.guide;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.os.Build;
@@ -49,7 +50,11 @@ public class HoleView extends View {
         addRect(new RectF(left, top, right, bottom), radii);
     }
 
-    public void addRect(RectF rectF, float radii) {
+    public void addRect(@NonNull Rect rect, float radii) {
+        addRect(new RectF(rect), radii);
+    }
+
+    public void addRect(@NonNull RectF rectF, float radii) {
         final Path path = new Path();
         path.addRoundRect(
                 rectF,

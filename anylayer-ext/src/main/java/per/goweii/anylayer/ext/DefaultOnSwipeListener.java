@@ -2,8 +2,8 @@ package per.goweii.anylayer.ext;
 
 import androidx.annotation.NonNull;
 
-import per.goweii.anylayer.DialogLayer;
 import per.goweii.anylayer.Layer;
+import per.goweii.anylayer.dialog.DialogLayer;
 
 public class DefaultOnSwipeListener implements DialogLayer.OnSwipeListener {
     @Override

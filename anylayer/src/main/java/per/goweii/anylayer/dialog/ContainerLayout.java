@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.dialog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

@@ -5,11 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.*
-import per.goweii.anylayer.DialogLayer
 import per.goweii.anylayer.Layer
-import per.goweii.anylayer.SwipeLayout
-import per.goweii.anylayer.ext.DefaultOnShowListener
+import per.goweii.anylayer.dialog.DialogLayer
 import per.goweii.anylayer.ext.DefaultOnSwipeListener
+import per.goweii.anylayer.widget.SwipeLayout
 
 /**
  * @author CuiZhen

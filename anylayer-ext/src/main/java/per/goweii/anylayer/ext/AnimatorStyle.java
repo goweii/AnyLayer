@@ -6,7 +6,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import per.goweii.anylayer.AnimatorHelper;
+import per.goweii.anylayer.utils.AnimatorHelper;
 
 /**
  * @author CuiZhen

@@ -12,11 +12,11 @@ import androidx.annotation.Nullable;
  * @author CuiZhen
  * @date 2020/8/16
  */
-class GlobalConfig {
+public class GlobalConfig {
     private static final GlobalConfig INSTANCE = new GlobalConfig();
 
     @NonNull
-    static GlobalConfig get() {
+    public static GlobalConfig get() {
         return INSTANCE;
     }
 

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<per.goweii.anylayer.ContainerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<per.goweii.anylayer.dialog.ContainerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/anylayler_fl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <per.goweii.anylayer.BackgroundView
+    <per.goweii.anylayer.dialog.BackgroundView
         android:id="@+id/anylayler_iv_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
-    <per.goweii.anylayer.SwipeLayout
+    <per.goweii.anylayer.widget.SwipeLayout
         android:id="@+id/anylayler_fl_content_wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</per.goweii.anylayer.ContainerLayout>
+</per.goweii.anylayer.dialog.ContainerLayout>

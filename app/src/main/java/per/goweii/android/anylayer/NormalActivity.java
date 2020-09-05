@@ -21,15 +21,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-import per.goweii.anylayer.Align;
-import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
-import per.goweii.anylayer.DialogLayer;
-import per.goweii.anylayer.FloatLayer;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
-import per.goweii.anylayer.NotificationLayer;
-import per.goweii.anylayer.SwipeLayout;
+import per.goweii.anylayer.dialog.DialogLayer;
+import per.goweii.anylayer.floats.FloatLayer;
+import per.goweii.anylayer.notification.NotificationLayer;
+import per.goweii.anylayer.popup.Align;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.widget.SwipeLayout;
 
 public class NormalActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -112,6 +112,15 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 })
                 .show();
+        Layer dialog = AnyLayer.dialog(this)
+                .contentView(R.layout.dialog_normal)
+                .backgroundDimDefault()
+                .gravity(Gravity.CENTER)
+                .cancelableOnTouchOutside(true)
+                .cancelableOnClickKeyBack(true)
+                .onClickToDismiss(R.id.fl_dialog_no);
+        dialog.show();
+        dialog.dismiss();
     }
 
     private Random mRandom = new Random();

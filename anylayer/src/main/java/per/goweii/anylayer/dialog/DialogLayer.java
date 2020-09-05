@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.dialog;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -31,6 +31,14 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.GlobalConfig;
+import per.goweii.anylayer.Layer;
+import per.goweii.anylayer.R;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.utils.SoftInputHelper;
+import per.goweii.anylayer.utils.Utils;
+import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.burred.Blurred;
 
 /**

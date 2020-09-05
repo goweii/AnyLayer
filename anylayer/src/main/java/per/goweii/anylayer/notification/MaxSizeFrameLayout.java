@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.notification;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -7,6 +7,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import per.goweii.anylayer.R;
 
 public class MaxSizeFrameLayout extends FrameLayout {
 

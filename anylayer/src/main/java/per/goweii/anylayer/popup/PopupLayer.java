@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.popup;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -15,6 +15,10 @@ import android.widget.FrameLayout;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import per.goweii.anylayer.dialog.DialogLayer;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.utils.Utils;
 
 /**
  * @author CuiZhen
