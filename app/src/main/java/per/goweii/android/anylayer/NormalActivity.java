@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +28,7 @@ import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.floats.FloatLayer;
 import per.goweii.anylayer.notification.NotificationLayer;
-import per.goweii.anylayer.popup.Align;
+import per.goweii.anylayer.popup.PopupLayer.Align;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.widget.SwipeLayout;
 
@@ -80,11 +81,17 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.tv_show_left_right_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_right_left_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_reveal).setOnClickListener(this);
-        ImageView iv = new ImageView(this);
-        iv.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
-        iv.setImageResource(R.mipmap.ic_launcher_round);
+        CardView floatCardView = new CardView(this);
+        ImageView floatIconView = new ImageView(this);
+        floatIconView.setImageResource(R.mipmap.ic_launcher_foreground);
+        floatIconView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        floatIconView.setBackgroundResource(R.color.colorPrimary);
+        floatCardView.addView(floatIconView);
+        floatCardView.setCardBackgroundColor(Color.TRANSPARENT);
+        floatCardView.setRadius(90);
+        floatCardView.setLayoutParams(new ViewGroup.LayoutParams(180, 180));
         new FloatLayer(this)
-                .floatView(iv)
+                .floatView(floatCardView)
                 .snapEdge(FloatLayer.Edge.ALL)
                 .outside(true)
                 .defPercentX(1)
@@ -347,7 +354,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 @Override
                                 public void bindData(@NonNull Layer layer) {
                                     TextView tv_dialog_title = layer.getView(R.id.tv_dialog_title);
-                                    tv_dialog_title.setText("" + tv_dialog_title.toString());
+                                    tv_dialog_title.setText("标题View$" + System.identityHashCode(tv_dialog_title));
                                 }
                             })
                             .onClick(new Layer.OnClickListener() {

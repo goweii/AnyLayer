@@ -18,7 +18,7 @@ import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.guide.GuideLayer;
-import per.goweii.anylayer.popup.Align;
+import per.goweii.anylayer.popup.PopupLayer.Align;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.statusbarcompat.StatusBarCompat;
