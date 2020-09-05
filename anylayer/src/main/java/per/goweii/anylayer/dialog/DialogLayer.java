@@ -62,6 +62,7 @@ public class DialogLayer extends DecorLayer {
     public DialogLayer(@NonNull Activity activity) {
         super(activity);
         getViewHolder().setActivityContent(getViewHolder().getDecor().findViewById(android.R.id.content));
+        cancelableOnKeyBack(true);
     }
 
     @IntRange(from = 0)

@@ -35,8 +35,6 @@ public class FloatLayer extends DecorLayer {
 
     public FloatLayer(@NonNull Activity activity) {
         super(activity);
-        interceptKeyEvent(false);
-        cancelableOnKeyBack(false);
     }
 
     @IntRange(from = 0)

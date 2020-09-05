@@ -47,8 +47,6 @@ public class NotificationLayer extends DecorLayer {
 
     public NotificationLayer(@NonNull Activity activity) {
         super(activity);
-        interceptKeyEvent(false);
-        cancelableOnKeyBack(false);
     }
 
     @IntRange(from = 0)

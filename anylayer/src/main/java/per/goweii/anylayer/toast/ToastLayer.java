@@ -39,8 +39,6 @@ public class ToastLayer extends DecorLayer implements Runnable {
 
     public ToastLayer(@NonNull Activity activity) {
         super(activity);
-        interceptKeyEvent(false);
-        cancelableOnKeyBack(false);
     }
 
     @IntRange(from = 0)

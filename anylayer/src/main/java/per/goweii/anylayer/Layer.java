@@ -449,8 +449,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     protected static class Config {
         private int mChildId;
 
-        private boolean mInterceptKeyEvent = true;
-        private boolean mCancelableOnKeyBack = true;
+        private boolean mInterceptKeyEvent = false;
+        private boolean mCancelableOnKeyBack = false;
 
         private AnimatorCreator mAnimatorCreator = null;
     }

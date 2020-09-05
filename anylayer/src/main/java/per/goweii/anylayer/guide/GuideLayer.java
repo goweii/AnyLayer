@@ -38,7 +38,7 @@ public class GuideLayer extends DecorLayer {
 
     public GuideLayer(@NonNull Activity activity) {
         super(activity);
-        cancelableOnKeyBack(false);
+        interceptKeyEvent(false);
     }
 
     @IntRange(from = 0)
