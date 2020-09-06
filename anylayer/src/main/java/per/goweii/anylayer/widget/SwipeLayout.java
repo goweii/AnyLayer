@@ -2,6 +2,7 @@ package per.goweii.anylayer.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v4.view.NestedScrollingParent2;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,15 +11,14 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
 
-import androidx.annotation.FloatRange;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.NestedScrollingParent3;
-import androidx.core.view.NestedScrollingParentHelper;
-import androidx.core.view.ScrollingView;
-import androidx.core.view.ViewCompat;
-import androidx.customview.widget.ViewDragHelper;
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.view.NestedScrollingParentHelper;
+import android.support.v4.view.ScrollingView;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.ViewDragHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import per.goweii.anylayer.utils.DragCompat;
 import per.goweii.anylayer.utils.ScrollCompat;
 import per.goweii.anylayer.utils.Utils;
 
-public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
+public class SwipeLayout extends FrameLayout implements NestedScrollingParent2 {
 
     @IntDef({Direction.LEFT, Direction.TOP, Direction.RIGHT, Direction.BOTTOM})
     public @interface Direction {
@@ -537,10 +537,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
 
     @Override
     public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
-    }
-
-    @Override
-    public void onNestedScroll(@NonNull View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type, @NonNull int[] consumed) {
+        int[] consumed = new int[2];
         int scrollX = -getSwipeX();
         int scrollY = -getSwipeY();
         switch (mCurrSwipeDirection) {

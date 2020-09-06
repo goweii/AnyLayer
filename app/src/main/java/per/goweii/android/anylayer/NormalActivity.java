@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.cardview.widget.CardView;
+import android.support.v7.widget.CardView;
 
 import java.util.Random;
 
