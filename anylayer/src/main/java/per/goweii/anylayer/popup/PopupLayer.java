@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.popup;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -12,8 +12,13 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import per.goweii.anylayer.dialog.DialogLayer;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.utils.Utils;
 
 /**
  * @author CuiZhen
@@ -39,9 +44,9 @@ public class PopupLayer extends DialogLayer {
         getViewHolder().setTarget(targetView);
     }
 
-    @NonNull
+    @IntRange(from = 0)
     @Override
-    protected Level getLevel() {
+    protected int getLevel() {
         return Level.POPUP;
     }
 
@@ -736,5 +741,41 @@ public class PopupLayer extends DialogLayer {
 
     public interface OnViewTreeScrollChangedListener {
         void onScrollChanged();
+    }
+
+    public static final class Align {
+        /**
+         * 主方向
+         */
+        public enum Direction {
+            HORIZONTAL,
+            VERTICAL
+        }
+
+        /**
+         * 水平对齐方式
+         */
+        public enum Horizontal {
+            CENTER,
+            TO_LEFT,
+            TO_RIGHT,
+            ALIGN_LEFT,
+            ALIGN_RIGHT,
+            ALIGN_PARENT_LEFT,
+            ALIGN_PARENT_RIGHT
+        }
+
+        /**
+         * 垂直对齐方式
+         */
+        public enum Vertical {
+            CENTER,
+            ABOVE,
+            BELOW,
+            ALIGN_TOP,
+            ALIGN_BOTTOM,
+            ALIGN_PARENT_TOP,
+            ALIGN_PARENT_BOTTOM
+        }
     }
 }

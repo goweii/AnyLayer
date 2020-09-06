@@ -1,10 +1,10 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.dialog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,20 +12,19 @@ import android.support.annotation.Nullable;
 /**
  * Create by cuizhen on {2019/12/3}
  */
-@SuppressLint("AppCompatCustomView")
-public class BackgroundView extends ImageView {
+public class ContainerLayout extends FrameLayout {
 
     private OnTouchedListener mOnTouchedListener = null;
 
-    public BackgroundView(@NonNull Context context) {
+    public ContainerLayout(@NonNull Context context) {
         this(context, null);
     }
 
-    public BackgroundView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public ContainerLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public BackgroundView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public ContainerLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -41,7 +40,7 @@ public class BackgroundView extends ImageView {
             default:
                 break;
         }
-        return false;
+        return super.onTouchEvent(ev);
     }
 
     public void setOnTouchedListener(@Nullable OnTouchedListener onTouchedListener) {

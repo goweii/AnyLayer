@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.toast;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -14,8 +14,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.GlobalConfig;
+import per.goweii.anylayer.R;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.utils.Utils;
 
 /**
  * @author CuiZhen
@@ -32,13 +39,11 @@ public class ToastLayer extends DecorLayer implements Runnable {
 
     public ToastLayer(@NonNull Activity activity) {
         super(activity);
-        interceptKeyEvent(false);
-        cancelableOnKeyBack(false);
     }
 
-    @NonNull
+    @IntRange(from = 0)
     @Override
-    protected Level getLevel() {
+    protected int getLevel() {
         return Level.TOAST;
     }
 
@@ -297,7 +302,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
 
     @Override
     public void run() {
-        if (isShow()) {
+        if (isShown()) {
             dismiss();
         }
     }
@@ -309,8 +314,8 @@ public class ToastLayer extends DecorLayer implements Runnable {
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mIcon = child.findViewById(R.id.iv_icon);
-            mMessage = child.findViewById(R.id.tv_msg);
+            mIcon = child.findViewById(R.id.anylayler_iv_icon);
+            mMessage = child.findViewById(R.id.anylayler_tv_msg);
         }
 
         @NonNull
@@ -336,10 +341,10 @@ public class ToastLayer extends DecorLayer implements Runnable {
         private int mBackgroundColor = Color.TRANSPARENT;
         private float mAlpha = GlobalConfig.get().toastAlpha;
         private int mGravity = GlobalConfig.get().toastGravity;
-        private int mMarginLeft = GlobalConfig.get().marginLeft;
-        private int mMarginTop = GlobalConfig.get().marginTop;
-        private int mMarginRight = GlobalConfig.get().marginRight;
-        private int mMarginBottom = GlobalConfig.get().marginBottom;
+        private int mMarginLeft = GlobalConfig.get().toastMarginLeft;
+        private int mMarginTop = GlobalConfig.get().toastMarginTop;
+        private int mMarginRight = GlobalConfig.get().toastMarginRight;
+        private int mMarginBottom = GlobalConfig.get().toastMarginBottom;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

@@ -1,24 +1,30 @@
 package per.goweii.anylayer;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.graphics.ColorUtils;
 
 /**
  * @author CuiZhen
  * @date 2020/8/16
  */
-class GlobalConfig {
+public class GlobalConfig {
     private static final GlobalConfig INSTANCE = new GlobalConfig();
 
     @NonNull
-    static GlobalConfig get() {
+    public static GlobalConfig get() {
         return INSTANCE;
     }
+
+    // DialogLayer
 
     @IntRange(from = 0)
     public long dialogAnimDuration = 220L;
@@ -28,6 +34,8 @@ class GlobalConfig {
     public Layer.AnimatorCreator dialogBackgroundAnimatorCreator = null;
     @Nullable
     public Layer.AnimatorCreator dialogContentAnimatorCreator = null;
+
+    // ToastLayer
 
     @Nullable
     public Layer.AnimatorCreator toastAnimatorCreator = null;
@@ -40,8 +48,20 @@ class GlobalConfig {
     @FloatRange(from = 0F, to = 1F)
     public float toastAlpha = 1;
     public int toastGravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-    public int marginLeft = Integer.MIN_VALUE;
-    public int marginTop = Integer.MIN_VALUE;
-    public int marginRight = Integer.MIN_VALUE;
-    public int marginBottom = Integer.MIN_VALUE;
+    public int toastMarginLeft = Integer.MIN_VALUE;
+    public int toastMarginTop = Integer.MIN_VALUE;
+    public int toastMarginRight = Integer.MIN_VALUE;
+    public int toastMarginBottom = Integer.MIN_VALUE;
+
+    // GuideLayer
+
+    @ColorInt
+    public int guideBackgroundInt = ColorUtils.setAlphaComponent(Color.BLACK, (int) (255 * 0.5));
+
+    // NotificationLayer
+
+    public long notificationDuration = 5000L;
+    public String notificationLabel = null;
+    public Drawable notificationIcon = null;
+    public String notificationTimePattern = null;
 }

@@ -20,7 +20,19 @@ fun <T : Layer> T.doOnClick(@IdRes viewId: Int, onClickListener: T.(view: View) 
 }
 
 fun <T : Layer> T.doOnClickToDismiss(@IdRes viewId: Int, onClickListener: (T.(view: View) -> Unit)? = null) = this.apply {
-    this.onClickToDismiss(Layer.OnClickListener { _, v -> onClickListener?.invoke(this, v) }, viewId)
+    onClickListener?.let {
+        this.onClickToDismiss(Layer.OnClickListener { _, v -> this.onClickListener(v) }, viewId)
+    } ?: onClickToDismiss(null, viewId)
+}
+
+fun <T : Layer> T.doOnLongClick(@IdRes viewId: Int, onLongClickListener: T.(view: View) -> Boolean) = this.apply {
+    this.onLongClick(Layer.OnLongClickListener { _, v -> this.onLongClickListener(v) }, viewId)
+}
+
+fun <T : Layer> T.doOnLongClickToDismiss(@IdRes viewId: Int, onLongClickListener: (T.(view: View) -> Boolean)? = null) = this.apply {
+    onLongClickListener?.let {
+        this.onLongClickToDismiss(Layer.OnLongClickListener { _, v -> this.onLongClickListener(v) }, viewId)
+    } ?: onLongClickToDismiss(null, viewId)
 }
 
 fun <T : Layer> T.doBindData(dataBinder: T.() -> Unit) = this.apply {

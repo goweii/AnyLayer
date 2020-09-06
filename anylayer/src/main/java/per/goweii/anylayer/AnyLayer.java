@@ -7,6 +7,12 @@ import android.view.View;
 
 import android.support.annotation.NonNull;
 
+import per.goweii.anylayer.dialog.DialogLayer;
+import per.goweii.anylayer.floats.FloatLayer;
+import per.goweii.anylayer.guide.GuideLayer;
+import per.goweii.anylayer.notification.NotificationLayer;
+import per.goweii.anylayer.popup.PopupLayer;
+import per.goweii.anylayer.toast.ToastLayer;
 import per.goweii.burred.Blurred;
 
 /**
@@ -72,4 +78,20 @@ public final class AnyLayer {
     public static ToastLayer toast(@NonNull Context context) {
         return new ToastLayer(context);
     }
+
+    @NonNull
+    public static FloatLayer floats(@NonNull Context context) {
+        return new FloatLayer(context);
+    }
+
+    @NonNull
+    public static GuideLayer guide(@NonNull Context context) {
+        return new GuideLayer(context);
+    }
+
+    @NonNull
+    public static NotificationLayer notification(@NonNull Context context) {
+        return new NotificationLayer(context);
+    }
+
 }

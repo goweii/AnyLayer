@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.dialog;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -23,10 +23,22 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IdRes;
+import android.support.annotation.IntRange;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.GlobalConfig;
+import per.goweii.anylayer.Layer;
+import per.goweii.anylayer.R;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.utils.SoftInputHelper;
+import per.goweii.anylayer.utils.Utils;
+import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.burred.Blurred;
 
 /**
@@ -49,12 +61,12 @@ public class DialogLayer extends DecorLayer {
 
     public DialogLayer(@NonNull Activity activity) {
         super(activity);
-        getViewHolder().setActivityContent(getViewHolder().getDecor().findViewById(android.R.id.content));
+        cancelableOnKeyBack(true);
     }
 
-    @NonNull
+    @IntRange(from = 0)
     @Override
-    protected Level getLevel() {
+    protected int getLevel() {
         return Level.DIALOG;
     }
 
@@ -97,7 +109,7 @@ public class DialogLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildOrNull() == null) {
+        if (getViewHolder().getChildNullable() == null) {
             ContainerLayout container = (ContainerLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
             getViewHolder().setChild(container);
             getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getContentWrapper()));
@@ -118,7 +130,7 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getContentOrNull() == null) {
+        if (getViewHolder().getContentNullable() == null) {
             getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
         } else {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
@@ -197,23 +209,17 @@ public class DialogLayer extends DecorLayer {
                         break;
                 }
             } else {
-                switch (getConfig().mDragStyle) {
-                    case Left:
-                        contentAnimator = AnimatorHelper.createLeftInAnim(view);
-                        break;
-                    case Top:
-                        contentAnimator = AnimatorHelper.createTopInAnim(view);
-                        break;
-                    case Right:
-                        contentAnimator = AnimatorHelper.createRightInAnim(view);
-                        break;
-                    case Bottom:
-                        contentAnimator = AnimatorHelper.createBottomInAnim(view);
-                        break;
-                    case None:
-                    default:
-                        contentAnimator = onCreateDefContentInAnimator(view);
-                        break;
+                int swipeDirection = getConfig().mSwipeDirection;
+                if ((swipeDirection & SwipeLayout.Direction.LEFT) != 0) {
+                    contentAnimator = AnimatorHelper.createLeftInAnim(view);
+                } else if ((swipeDirection & SwipeLayout.Direction.TOP) != 0) {
+                    contentAnimator = AnimatorHelper.createTopInAnim(view);
+                } else if ((swipeDirection & SwipeLayout.Direction.RIGHT) != 0) {
+                    contentAnimator = AnimatorHelper.createRightInAnim(view);
+                } else if ((swipeDirection & SwipeLayout.Direction.BOTTOM) != 0) {
+                    contentAnimator = AnimatorHelper.createBottomInAnim(view);
+                } else {
+                    contentAnimator = onCreateDefContentInAnimator(view);
                 }
             }
             contentAnimator.setDuration(mAnimDurDef);
@@ -302,23 +308,17 @@ public class DialogLayer extends DecorLayer {
                         break;
                 }
             } else {
-                switch (getConfig().mDragStyle) {
-                    case Left:
-                        contentAnimator = AnimatorHelper.createLeftOutAnim(view);
-                        break;
-                    case Top:
-                        contentAnimator = AnimatorHelper.createTopOutAnim(view);
-                        break;
-                    case Right:
-                        contentAnimator = AnimatorHelper.createRightOutAnim(view);
-                        break;
-                    case Bottom:
-                        contentAnimator = AnimatorHelper.createBottomOutAnim(view);
-                        break;
-                    case None:
-                    default:
-                        contentAnimator = onCreateDefContentOutAnimator(view);
-                        break;
+                int swipeDirection = getConfig().mSwipeDirection;
+                if ((swipeDirection & SwipeLayout.Direction.LEFT) != 0) {
+                    contentAnimator = AnimatorHelper.createLeftOutAnim(view);
+                } else if ((swipeDirection & SwipeLayout.Direction.TOP) != 0) {
+                    contentAnimator = AnimatorHelper.createTopOutAnim(view);
+                } else if ((swipeDirection & SwipeLayout.Direction.RIGHT) != 0) {
+                    contentAnimator = AnimatorHelper.createRightOutAnim(view);
+                } else if ((swipeDirection & SwipeLayout.Direction.BOTTOM) != 0) {
+                    contentAnimator = AnimatorHelper.createBottomOutAnim(view);
+                } else {
+                    contentAnimator = onCreateDefContentOutAnimator(view);
                 }
             }
             contentAnimator.setDuration(mAnimDurDef);
@@ -424,29 +424,32 @@ public class DialogLayer extends DecorLayer {
             getViewHolder().getContentWrapper().setPadding(0, 0, 0, 0);
             getViewHolder().getContentWrapper().setClipToPadding(true);
         }
-        getViewHolder().getContentWrapper().setDragStyle(getConfig().mDragStyle);
-        getViewHolder().getContentWrapper().setOnDragListener(new DragLayout.OnDragListener() {
+        getViewHolder().getContentWrapper().setSwipeDirection(getConfig().mSwipeDirection);
+        getViewHolder().getContentWrapper().setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
             @Override
-            public void onDragStart() {
-                if (getConfig().mDragTransformer == null) {
-                    getConfig().mDragTransformer = new DragTransformer() {
+            public void onStart() {
+                if (getConfig().mSwipeTransformer == null) {
+                    getConfig().mSwipeTransformer = new SwipeTransformer() {
                         @Override
                         public void onDragging(@NonNull View content, @NonNull View background, float f) {
                             background.setAlpha(1F - f);
                         }
                     };
                 }
+                getListenerHolder().notifyOnSwipeStart(DialogLayer.this);
             }
 
             @Override
-            public void onDragging(float f) {
-                if (getConfig().mDragTransformer != null) {
-                    getConfig().mDragTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), f);
+            public void onSwiping(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
+                if (getConfig().mSwipeTransformer != null) {
+                    getConfig().mSwipeTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), fraction);
                 }
+                getListenerHolder().notifyOnSwiping(DialogLayer.this, direction, fraction);
             }
 
             @Override
-            public void onDragEnd() {
+            public void onEnd(@SwipeLayout.Direction int direction) {
+                getListenerHolder().notifyOnSwipeEnd(DialogLayer.this, direction);
                 // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
                 // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
                 getViewHolder().getContentWrapper().setVisibility(View.INVISIBLE);
@@ -618,22 +621,33 @@ public class DialogLayer extends DecorLayer {
     /**
      * 自定义浮层的拖拽退出的方向
      *
-     * @param dragStyle DragLayout.DragStyle
+     * @param swipeDirection {@link SwipeLayout.Direction}
      */
     @NonNull
-    public DialogLayer dragDismiss(@NonNull DragLayout.DragStyle dragStyle) {
-        getConfig().mDragStyle = dragStyle;
+    public DialogLayer swipeDismiss(int swipeDirection) {
+        getConfig().mSwipeDirection = swipeDirection;
         return this;
     }
 
     /**
      * 自定义浮层的拖拽退出时的动画
      *
-     * @param dragTransformer DragTransformer
+     * @param swipeTransformer SwipeTransformer
      */
     @NonNull
-    public DialogLayer dragTransformer(@Nullable DragTransformer dragTransformer) {
-        getConfig().mDragTransformer = dragTransformer;
+    public DialogLayer swipeTransformer(@Nullable SwipeTransformer swipeTransformer) {
+        getConfig().mSwipeTransformer = swipeTransformer;
+        return this;
+    }
+
+    /**
+     * 浮层拖拽事件监听
+     *
+     * @param swipeListener OnSwipeListener
+     */
+    @NonNull
+    public DialogLayer onSwipeListener(@NonNull OnSwipeListener swipeListener) {
+        getListenerHolder().addOnSwipeListener(swipeListener);
         return this;
     }
 
@@ -893,7 +907,7 @@ public class DialogLayer extends DecorLayer {
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private FrameLayout mActivityContent;
         private BackgroundView mBackground;
-        private DragLayout mContentWrapper;
+        private SwipeLayout mContentWrapper;
         private View mContent;
 
         public void recycle() {
@@ -903,20 +917,11 @@ public class DialogLayer extends DecorLayer {
             }
         }
 
-        public void setActivityContent(@NonNull FrameLayout activityContent) {
-            mActivityContent = activityContent;
-        }
-
-        @NonNull
-        public FrameLayout getActivityContent() {
-            return mActivityContent;
-        }
-
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mContentWrapper = getChild().findViewById(R.id.fl_content_wrapper);
-            mBackground = getChild().findViewById(R.id.iv_background);
+            mContentWrapper = getChild().findViewById(R.id.anylayler_fl_content_wrapper);
+            mBackground = getChild().findViewById(R.id.anylayler_iv_background);
         }
 
         @NonNull
@@ -927,16 +932,16 @@ public class DialogLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected ContainerLayout getChildOrNull() {
-            return (ContainerLayout) super.getChildOrNull();
+        protected ContainerLayout getChildNullable() {
+            return (ContainerLayout) super.getChildNullable();
         }
 
-        void setContent(@NonNull View content) {
+        protected void setContent(@NonNull View content) {
             mContent = content;
         }
 
         @Nullable
-        protected View getContentOrNull() {
+        protected View getContentNullable() {
             return mContent;
         }
 
@@ -947,7 +952,7 @@ public class DialogLayer extends DecorLayer {
         }
 
         @NonNull
-        public DragLayout getContentWrapper() {
+        public SwipeLayout getContentWrapper() {
             return mContentWrapper;
         }
 
@@ -987,25 +992,72 @@ public class DialogLayer extends DecorLayer {
         @Nullable
         protected Drawable mBackgroundDrawable = null;
         protected float mBackgroundDimAmount = -1;
+        @ColorInt
         protected int mBackgroundColor = Color.TRANSPARENT;
 
-        @NonNull
-        protected DragLayout.DragStyle mDragStyle = DragLayout.DragStyle.None;
+        @SwipeLayout.Direction
+        protected int mSwipeDirection = 0;
         @Nullable
-        protected DragTransformer mDragTransformer = null;
+        protected SwipeTransformer mSwipeTransformer = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
+        private List<OnSwipeListener> mOnSwipeListeners = null;
+
+        private void addOnSwipeListener(@NonNull OnSwipeListener onSwipeListener) {
+            if (mOnSwipeListeners == null) {
+                mOnSwipeListeners = new ArrayList<>(1);
+            }
+            mOnSwipeListeners.add(onSwipeListener);
+        }
+
+        private void notifyOnSwipeStart(@NonNull Layer layer) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onStart(layer);
+                }
+            }
+        }
+
+        private void notifyOnSwiping(@NonNull Layer layer,
+                                     @SwipeLayout.Direction int direction,
+                                     @FloatRange(from = 0F, to = 1F) float fraction) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onSwiping(layer, direction, fraction);
+                }
+            }
+        }
+
+        private void notifyOnSwipeEnd(@NonNull Layer layer,
+                                      @SwipeLayout.Direction int direction) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onEnd(layer, direction);
+                }
+            }
+        }
     }
 
     public interface OutsideTouchedListener {
         void outsideTouched();
     }
 
-    public interface DragTransformer {
+    public interface SwipeTransformer {
         void onDragging(@NonNull View content,
                         @NonNull View background,
                         @FloatRange(from = 0F, to = 1F) float f);
+    }
+
+    public interface OnSwipeListener {
+        void onStart(@NonNull Layer layer);
+
+        void onSwiping(@NonNull Layer layer,
+                       @SwipeLayout.Direction int direction,
+                       @FloatRange(from = 0F, to = 1F) float fraction);
+
+        void onEnd(@NonNull Layer layer,
+                   @SwipeLayout.Direction int direction);
     }
 
     public enum AnimStyle {

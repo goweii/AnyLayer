@@ -1,8 +1,8 @@
 package per.goweii.anylayer.ktx
 
 import android.view.View
-import per.goweii.anylayer.Align
-import per.goweii.anylayer.PopupLayer
+import per.goweii.anylayer.popup.PopupLayer
+import per.goweii.anylayer.popup.PopupLayer.Align
 
 /**
  * @author CuiZhen

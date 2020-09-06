@@ -7,11 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import per.goweii.anylayer.utils.Utils;
 
 /**
  * @author CuiZhen
@@ -83,7 +86,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     @NonNull
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (mViewHolder.getChildOrNull() == null) {
+        if (mViewHolder.getChildNullable() == null) {
             mViewHolder.setChild(inflater.inflate(mConfig.mChildId, parent, false));
         }
         return mViewHolder.getChild();
@@ -109,6 +112,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     public void onAttach() {
         getViewHolder().getChild().setVisibility(View.VISIBLE);
         mListenerHolder.bindClickListeners(this);
+        mListenerHolder.bindLongClickListeners(this);
         mListenerHolder.notifyVisibleChangeOnShow(this);
         if (!mInitialized) {
             mInitialized = true;
@@ -247,10 +251,10 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public void show(boolean withAnim) {
-        if (isShow()) return;
+        if (isShown()) return;
         mShowWithAnim = withAnim;
         mViewHolder.setParent(onGetParent());
-        mViewHolder.setChild(onCreateChild(LayoutInflater.from(mViewHolder.getParent().getContext()), mViewHolder.getParent()));
+        mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
         mViewManager.setParent(mViewHolder.getParent());
         mViewManager.setChild(mViewHolder.getChild());
         mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? this : null);
@@ -262,13 +266,18 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
     }
 
     public void dismiss(boolean withAnim) {
-        if (!isShow()) return;
+        if (!isShown()) return;
         mDismissWithAnim = withAnim;
         onPreRemove();
     }
 
-    public boolean isShow() {
+    public boolean isShown() {
         return mViewManager.isAttached();
+    }
+
+    @NonNull
+    public LayoutInflater getLayoutInflater() {
+        return LayoutInflater.from(mViewHolder.getParent().getContext());
     }
 
     @NonNull
@@ -286,9 +295,8 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return mViewHolder.getChild();
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
-    public <V extends View> V getView(int id) {
+    public <V extends View> V getView(@IdRes int id) {
         if (mViewCaches == null) {
             mViewCaches = new SparseArray<>();
         }
@@ -398,6 +406,18 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
      * 对多个View绑定点击事件
      * 绑定该控件点击时直接隐藏浮层
      *
+     * @param viewIds 控件ID
+     */
+    @NonNull
+    public Layer onClickToDismiss(int... viewIds) {
+        onClickToDismiss(null, viewIds);
+        return this;
+    }
+
+    /**
+     * 对多个View绑定点击事件
+     * 绑定该控件点击时直接隐藏浮层
+     *
      * @param listener 监听器
      * @param viewIds  控件ID
      */
@@ -417,23 +437,6 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     /**
      * 对多个View绑定点击事件
-     * 绑定该控件点击时直接隐藏浮层
-     *
-     * @param viewIds 控件ID
-     */
-    @NonNull
-    public Layer onClickToDismiss(int... viewIds) {
-        onClick(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull Layer decorLayer, @NonNull View v) {
-                dismiss();
-            }
-        }, viewIds);
-        return this;
-    }
-
-    /**
-     * 对多个View绑定点击事件
      *
      * @param listener 回调
      * @param viewIds  控件ID
@@ -444,11 +447,60 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return this;
     }
 
+    /**
+     * 对多个View绑定长按事件
+     * 绑定该控件点击时直接隐藏浮层
+     *
+     * @param viewIds 控件ID
+     */
+    @NonNull
+    public Layer onLongClickToDismiss(int... viewIds) {
+        onLongClickToDismiss(null, viewIds);
+        return this;
+    }
+
+    /**
+     * 对多个View绑定长按事件
+     * 绑定该控件点击时直接隐藏浮层
+     *
+     * @param listener 监听器
+     * @param viewIds  控件ID
+     */
+    @NonNull
+    public Layer onLongClickToDismiss(@Nullable OnLongClickListener listener, int... viewIds) {
+        onLongClick(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(@NonNull Layer layer, @NonNull View v) {
+                if (listener == null) {
+                    dismiss();
+                    return true;
+                } else {
+                    boolean result = listener.onLongClick(layer, v);
+                    dismiss();
+                    return result;
+                }
+            }
+        }, viewIds);
+        return this;
+    }
+
+    /**
+     * 对多个View绑定长按事件
+     *
+     * @param listener 回调
+     * @param viewIds  控件ID
+     */
+    @NonNull
+    public Layer onLongClick(@NonNull OnLongClickListener listener, int... viewIds) {
+        mListenerHolder.addOnLongClickListener(listener, viewIds);
+        return this;
+    }
+
     protected static class Config {
         private int mChildId;
 
-        private boolean mInterceptKeyEvent = true;
-        private boolean mCancelableOnKeyBack = true;
+        private boolean mInterceptKeyEvent = false;
+        private boolean mCancelableOnKeyBack = false;
 
         private AnimatorCreator mAnimatorCreator = null;
     }
@@ -467,7 +519,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
 
         @Nullable
-        protected ViewGroup getParentOrNull() {
+        protected ViewGroup getParentNullable() {
             return mParent;
         }
 
@@ -481,13 +533,19 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
 
         @Nullable
-        protected View getChildOrNull() {
+        protected View getChildNullable() {
             return mChild;
+        }
+
+        @Nullable
+        protected View getNoIdClickView() {
+            return null;
         }
     }
 
     protected static class ListenerHolder {
         private SparseArray<OnClickListener> mOnClickListeners = null;
+        private SparseArray<OnLongClickListener> mOnLongClickListeners = null;
         private List<OnInitialize> mOnInitializes = null;
         private List<DataBinder> mDataBinders = null;
         private List<OnVisibleChangeListener> mOnVisibleChangeListeners = null;
@@ -497,16 +555,44 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         private void bindClickListeners(@NonNull Layer layer) {
             if (mOnClickListeners == null) return;
             for (int i = 0; i < mOnClickListeners.size(); i++) {
-                int viewId = mOnClickListeners.keyAt(i);
+                final int viewId = mOnClickListeners.keyAt(i);
                 final OnClickListener listener = mOnClickListeners.valueAt(i);
-                View view = layer.getView(viewId);
-                Utils.requireNonNull(view, "绑定点击事件的View不存在");
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull View v) {
-                        listener.onClick(layer, v);
-                    }
-                });
+                final View view;
+                if (viewId == View.NO_ID) {
+                    view = layer.getViewHolder().getNoIdClickView();
+                } else {
+                    view = layer.getView(viewId);
+                }
+                if (view != null) {
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(@NonNull View v) {
+                            listener.onClick(layer, v);
+                        }
+                    });
+                }
+            }
+        }
+
+        private void bindLongClickListeners(@NonNull Layer layer) {
+            if (mOnLongClickListeners == null) return;
+            for (int i = 0; i < mOnLongClickListeners.size(); i++) {
+                final int viewId = mOnLongClickListeners.keyAt(i);
+                final OnLongClickListener listener = mOnLongClickListeners.valueAt(i);
+                final View view;
+                if (viewId == View.NO_ID) {
+                    view = layer.getViewHolder().getNoIdClickView();
+                } else {
+                    view = layer.getView(viewId);
+                }
+                if (view != null) {
+                    view.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            return listener.onLongClick(layer, v);
+                        }
+                    });
+                }
             }
         }
 
@@ -516,10 +602,23 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             }
             if (viewIds != null && viewIds.length > 0) {
                 for (int id : viewIds) {
-                    if (mOnClickListeners.indexOfKey(id) < 0) {
-                        mOnClickListeners.put(id, listener);
-                    }
+                    mOnClickListeners.put(id, listener);
                 }
+            } else {
+                mOnClickListeners.put(View.NO_ID, listener);
+            }
+        }
+
+        public void addOnLongClickListener(@NonNull OnLongClickListener listener, int... viewIds) {
+            if (mOnLongClickListeners == null) {
+                mOnLongClickListeners = new SparseArray<>();
+            }
+            if (viewIds != null && viewIds.length > 0) {
+                for (int id : viewIds) {
+                    mOnLongClickListeners.put(id, listener);
+                }
+            } else {
+                mOnLongClickListeners.put(View.NO_ID, listener);
             }
         }
 
@@ -659,7 +758,14 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         /**
          * 点击事件回调
          */
-        void onClick(@NonNull Layer layer, @NonNull View v);
+        void onClick(@NonNull Layer layer, @NonNull View view);
+    }
+
+    public interface OnLongClickListener {
+        /**
+         * 长按事件回调
+         */
+        boolean onLongClick(@NonNull Layer layer, @NonNull View view);
     }
 
     public interface OnDismissListener {

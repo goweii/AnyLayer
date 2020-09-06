@@ -7,23 +7,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.cardview.widget.CardView;
 
 import java.util.Random;
 
-import per.goweii.anylayer.Align;
-import per.goweii.anylayer.AnimatorHelper;
 import per.goweii.anylayer.AnyLayer;
-import per.goweii.anylayer.DialogLayer;
-import per.goweii.anylayer.DragLayout;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
+import per.goweii.anylayer.dialog.DialogLayer;
+import per.goweii.anylayer.floats.FloatLayer;
+import per.goweii.anylayer.notification.NotificationLayer;
+import per.goweii.anylayer.popup.PopupLayer.Align;
+import per.goweii.anylayer.utils.AnimatorHelper;
+import per.goweii.anylayer.widget.SwipeLayout;
 
 public class NormalActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -74,6 +79,53 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.tv_show_left_right_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_right_left_alpha).setOnClickListener(this);
         findViewById(R.id.tv_show_reveal).setOnClickListener(this);
+        CardView floatCardView = new CardView(this);
+        ImageView floatIconView = new ImageView(this);
+        floatIconView.setImageResource(R.mipmap.ic_launcher_foreground);
+        floatIconView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        floatIconView.setBackgroundResource(R.color.colorPrimary);
+        floatCardView.addView(floatIconView);
+        floatCardView.setCardBackgroundColor(Color.TRANSPARENT);
+        floatCardView.setRadius(90);
+        floatCardView.setLayoutParams(new ViewGroup.LayoutParams(180, 180));
+        new FloatLayer(this)
+                .floatView(floatCardView)
+                .snapEdge(FloatLayer.Edge.ALL)
+                .outside(true)
+                .defPercentX(1)
+                .defPercentY(0.6F)
+                .defAlpha(0F)
+                .defScale(0F)
+                .normalAlpha(0.9F)
+                .normalScale(1)
+                .lowProfileDelay(3000)
+                .lowProfileAlpha(0.6F)
+                .lowProfileScale(0.9F)
+                .lowProfileIndent(0.5F)
+                .paddingLeft(45)
+                .paddingTop(45)
+                .paddingRight(45)
+                .paddingBottom(45)
+                .marginLeft(0)
+                .marginTop(0)
+                .marginRight(0)
+                .marginBottom(0)
+                .onFloatClick(new Layer.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull Layer layer, @NonNull View v) {
+                        AnyLayer.toast().message("点击了悬浮按钮").gravity(Gravity.CENTER).show();
+                    }
+                })
+                .show();
+        Layer dialog = AnyLayer.dialog(this)
+                .contentView(R.layout.dialog_normal)
+                .backgroundDimDefault()
+                .gravity(Gravity.CENTER)
+                .cancelableOnTouchOutside(true)
+                .cancelableOnClickKeyBack(true)
+                .onClickToDismiss(R.id.fl_dialog_no);
+        dialog.show();
+        dialog.dismiss();
     }
 
     private Random mRandom = new Random();
@@ -86,40 +138,26 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_toast:
                 boolean isSucc = mRandom.nextBoolean();
                 AnyLayer.toast()
-                        .duration(3000)
                         .icon(isSucc ? R.drawable.ic_success : R.drawable.ic_fail)
                         .message(isSucc ? "哈哈，成功了" : "哎呀，失败了")
-                        .alpha(mRandom.nextFloat())
-                        .backgroundColorInt(Color.argb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)))
-                        .gravity(
-                                mRandom.nextBoolean() ?
-                                        mRandom.nextBoolean() ?
-                                                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL :
-                                                Gravity.TOP | Gravity.CENTER_HORIZONTAL :
-                                        mRandom.nextBoolean() ?
-                                                Gravity.LEFT | Gravity.CENTER_VERTICAL :
-                                                Gravity.RIGHT | Gravity.CENTER_VERTICAL
-                        )
-                        .animator(new Layer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(@NonNull View target) {
-                                return AnimatorHelper.createZoomAlphaInAnim(target);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(@NonNull View target) {
-                                return AnimatorHelper.createZoomAlphaOutAnim(target);
-                            }
-                        })
+                        .backgroundColorRes(isSucc ? R.color.colorPrimary : R.color.colorAccent)
+                        .gravity(Gravity.CENTER)
                         .show();
                 break;
             case R.id.tv_show_notification:
-                AnyLayer.dialog(NormalActivity.this)
-                        .avoidStatusBar(true)
-                        .contentView(R.layout.dialog_notificationl)
-                        .gravity(Gravity.TOP)
-                        .outsideInterceptTouchEvent(false)
-                        .dragDismiss(DragLayout.DragStyle.Top)
+                AnyLayer.globalConfig().notificationTimePattern = "HH:mm";
+                AnyLayer.globalConfig().notificationIcon = getResources().getDrawable(R.mipmap.ic_launcher_round);
+                AnyLayer.globalConfig().notificationLabel = getString(R.string.app_name);
+                new NotificationLayer(this)
+                        .title("这是一个通知")
+                        .desc(R.string.dialog_msg)
+                        .onNotificationClick(new Layer.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull Layer layer, @NonNull View view) {
+                                findViewById(R.id.tv_show_toast).performLongClick();
+                                layer.dismiss();
+                            }
+                        })
                         .show();
                 break;
             case R.id.tv_show_edit:
@@ -127,7 +165,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_edit)
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
                         .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
                             @Override
                             public void onShow(@NonNull Layer layer) {
@@ -201,7 +239,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .avoidStatusBar(true)
                         .backgroundDimDefault()
                         .gravity(Gravity.TOP)
-                        .dragDismiss(DragLayout.DragStyle.Top)
+                        .swipeDismiss(SwipeLayout.Direction.TOP)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
@@ -219,7 +257,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .contentView(R.layout.popup_normal)
                             .animStyle(DialogLayer.AnimStyle.LEFT);
                 }
-                if (anyLayer_show_target_right.isShow()) {
+                if (anyLayer_show_target_right.isShown()) {
                     anyLayer_show_target_right.dismiss();
                 } else {
                     anyLayer_show_target_right.show();
@@ -261,7 +299,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 }
                             });
                 }
-                if (anyLayer_show_target_bottom.isShow()) {
+                if (anyLayer_show_target_bottom.isShown()) {
 //                    anyLayer_show_target_bottom.dismiss();
                 } else {
                     anyLayer_show_target_bottom.show();
@@ -272,7 +310,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .contentView(R.layout.dialog_list)
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .show();
                 break;
@@ -300,7 +338,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 @Override
                                 public void bindData(@NonNull Layer layer) {
                                     TextView tv_dialog_title = layer.getView(R.id.tv_dialog_title);
-                                    tv_dialog_title.setText("" + tv_dialog_title.toString());
+                                    tv_dialog_title.setText("标题View$" + System.identityHashCode(tv_dialog_title));
                                 }
                             })
                             .onClick(new Layer.OnClickListener() {
@@ -328,7 +366,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
+                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -342,8 +380,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Bottom)
-                        .dragTransformer(new DialogLayer.DragTransformer() {
+                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
+                        .swipeTransformer(new DialogLayer.SwipeTransformer() {
                             @Override
                             public void onDragging(@NonNull View content, @NonNull View background, float f) {
                                 content.setAlpha(1 - f);
@@ -392,7 +430,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Top)
+                        .swipeDismiss(SwipeLayout.Direction.TOP)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -526,7 +564,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Left)
+                        .swipeDismiss(SwipeLayout.Direction.LEFT)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -564,7 +602,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.dialog(NormalActivity.this)
                         .contentView(R.layout.dialog_normal)
                         .backgroundDimDefault()
-                        .dragDismiss(DragLayout.DragStyle.Right)
+                        .swipeDismiss(SwipeLayout.Direction.RIGHT)
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override

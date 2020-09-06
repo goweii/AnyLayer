@@ -1,4 +1,4 @@
-package per.goweii.anylayer;
+package per.goweii.anylayer.utils;
 
 import android.support.annotation.NonNull;
 import android.support.v4.view.ScrollingView;
@@ -12,6 +12,22 @@ import android.view.View;
  * GitHub: https://github.com/goweii
  */
 public class ScrollCompat {
+
+    public static boolean canScrollUp(@NonNull View view) {
+        return ScrollCompat.canScrollVertically(view, -1);
+    }
+
+    public static boolean canScrollDown(@NonNull View view) {
+        return ScrollCompat.canScrollVertically(view, 1);
+    }
+
+    public static boolean canScrollLeft(@NonNull View view) {
+        return ScrollCompat.canScrollHorizontally(view, -1);
+    }
+
+    public static boolean canScrollRight(@NonNull View view) {
+        return ScrollCompat.canScrollHorizontally(view, 1);
+    }
 
     public static boolean canScrollHorizontally(@NonNull View v, int direction) {
         if (v instanceof ScrollingView) {
