@@ -992,6 +992,7 @@ public class DialogLayer extends DecorLayer {
         @Nullable
         protected Drawable mBackgroundDrawable = null;
         protected float mBackgroundDimAmount = -1;
+        @ColorInt
         protected int mBackgroundColor = Color.TRANSPARENT;
 
         @SwipeLayout.Direction

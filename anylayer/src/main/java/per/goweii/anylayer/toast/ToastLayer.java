@@ -341,10 +341,10 @@ public class ToastLayer extends DecorLayer implements Runnable {
         private int mBackgroundColor = Color.TRANSPARENT;
         private float mAlpha = GlobalConfig.get().toastAlpha;
         private int mGravity = GlobalConfig.get().toastGravity;
-        private int mMarginLeft = GlobalConfig.get().marginLeft;
-        private int mMarginTop = GlobalConfig.get().marginTop;
-        private int mMarginRight = GlobalConfig.get().marginRight;
-        private int mMarginBottom = GlobalConfig.get().marginBottom;
+        private int mMarginLeft = GlobalConfig.get().toastMarginLeft;
+        private int mMarginTop = GlobalConfig.get().toastMarginTop;
+        private int mMarginRight = GlobalConfig.get().toastMarginRight;
+        private int mMarginBottom = GlobalConfig.get().toastMarginBottom;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

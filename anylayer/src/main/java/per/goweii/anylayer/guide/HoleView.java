@@ -12,6 +12,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -24,6 +25,7 @@ public class HoleView extends View {
     private final Paint mPaint;
     private final List<Path> mHoleList = new ArrayList<>();
     private Path mHolePath = new Path();
+    @ColorInt
     private int mOuterColor = ColorUtils.setAlphaComponent(Color.BLACK, (int) (255 * 0.5));
 
     public HoleView(Context context) {
@@ -38,6 +40,10 @@ public class HoleView extends View {
         super(context, attrs, defStyleAttr);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
+    }
+
+    public void setOuterColor(@ColorInt int colorInt) {
+        mOuterColor = colorInt;
     }
 
     public void addCircle(float centerX, float centerY, float radius) {

@@ -1,12 +1,16 @@
 package per.goweii.anylayer;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.ColorUtils;
 
 /**
  * @author CuiZhen
@@ -20,6 +24,8 @@ public class GlobalConfig {
         return INSTANCE;
     }
 
+    // DialogLayer
+
     @IntRange(from = 0)
     public long dialogAnimDuration = 220L;
     @FloatRange(from = 0F, to = 1F)
@@ -28,6 +34,8 @@ public class GlobalConfig {
     public Layer.AnimatorCreator dialogBackgroundAnimatorCreator = null;
     @Nullable
     public Layer.AnimatorCreator dialogContentAnimatorCreator = null;
+
+    // ToastLayer
 
     @Nullable
     public Layer.AnimatorCreator toastAnimatorCreator = null;
@@ -40,8 +48,20 @@ public class GlobalConfig {
     @FloatRange(from = 0F, to = 1F)
     public float toastAlpha = 1;
     public int toastGravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-    public int marginLeft = Integer.MIN_VALUE;
-    public int marginTop = Integer.MIN_VALUE;
-    public int marginRight = Integer.MIN_VALUE;
-    public int marginBottom = Integer.MIN_VALUE;
+    public int toastMarginLeft = Integer.MIN_VALUE;
+    public int toastMarginTop = Integer.MIN_VALUE;
+    public int toastMarginRight = Integer.MIN_VALUE;
+    public int toastMarginBottom = Integer.MIN_VALUE;
+
+    // GuideLayer
+
+    @ColorInt
+    public int guideBackgroundInt = ColorUtils.setAlphaComponent(Color.BLACK, (int) (255 * 0.5));
+
+    // NotificationLayer
+
+    public long notificationDuration = 5000L;
+    public String notificationLabel = null;
+    public Drawable notificationIcon = null;
+    public String notificationTimePattern = null;
 }

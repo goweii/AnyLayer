@@ -24,7 +24,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
@@ -181,28 +186,61 @@ public class NotificationLayer extends DecorLayer {
         });
         getViewHolder().getContent().setVisibility(View.VISIBLE);
         getListenerHolder().bindTouchListener(this);
-        if (getConfig().mIcon != null) {
-            getViewHolder().getTop().setVisibility(View.VISIBLE);
-            getViewHolder().getIcon().setVisibility(View.VISIBLE);
-            getViewHolder().getIcon().setImageDrawable(getConfig().mIcon);
+        if (getViewHolder().getTop() != null) {
+            if (getViewHolder().getIcon() != null) {
+                if (getConfig().mIcon != null) {
+                    getViewHolder().getIcon().setVisibility(View.VISIBLE);
+                    getViewHolder().getIcon().setImageDrawable(getConfig().mIcon);
+                } else {
+                    getViewHolder().getIcon().setVisibility(View.GONE);
+                }
+            }
+            if (getViewHolder().getLabel() != null) {
+                if (!TextUtils.isEmpty(getConfig().mLabel)) {
+                    getViewHolder().getLabel().setVisibility(View.VISIBLE);
+                    getViewHolder().getLabel().setText(getConfig().mLabel);
+                } else {
+                    getViewHolder().getLabel().setVisibility(View.GONE);
+                }
+            }
+            if (getViewHolder().getTime() != null) {
+                if (!TextUtils.isEmpty(getConfig().mTime)) {
+                    getViewHolder().getTime().setVisibility(View.VISIBLE);
+                    getViewHolder().getTime().setText(getConfig().mTime);
+                } else {
+                    if (!TextUtils.isEmpty(GlobalConfig.get().notificationTimePattern)) {
+                        getViewHolder().getTime().setVisibility(View.VISIBLE);
+                        String time = new SimpleDateFormat(GlobalConfig.get().notificationTimePattern, Locale.getDefault()).format(new Date());
+                        getViewHolder().getTime().setText(time);
+                    } else {
+                        getViewHolder().getTime().setVisibility(View.GONE);
+                    }
+                }
+            }
+            LinearLayout topView = getViewHolder().getTop();
+            topView.setVisibility(View.GONE);
+            for (int i = 0; i < topView.getChildCount(); i++) {
+                if (topView.getChildAt(i).getVisibility() == View.VISIBLE) {
+                    topView.setVisibility(View.VISIBLE);
+                    break;
+                }
+            }
         }
-        if (!TextUtils.isEmpty(getConfig().mLabel)) {
-            getViewHolder().getTop().setVisibility(View.VISIBLE);
-            getViewHolder().getLabel().setVisibility(View.VISIBLE);
-            getViewHolder().getLabel().setText(getConfig().mLabel);
+        if (getViewHolder().getTitle() != null) {
+            if (!TextUtils.isEmpty(getConfig().mTitle)) {
+                getViewHolder().getTitle().setVisibility(View.VISIBLE);
+                getViewHolder().getTitle().setText(getConfig().mTitle);
+            } else {
+                getViewHolder().getTitle().setVisibility(View.GONE);
+            }
         }
-        if (!TextUtils.isEmpty(getConfig().mTime)) {
-            getViewHolder().getTop().setVisibility(View.VISIBLE);
-            getViewHolder().getTime().setVisibility(View.VISIBLE);
-            getViewHolder().getTime().setText(getConfig().mTime);
-        }
-        if (!TextUtils.isEmpty(getConfig().mTitle)) {
-            getViewHolder().getTitle().setVisibility(View.VISIBLE);
-            getViewHolder().getTitle().setText(getConfig().mTitle);
-        }
-        if (!TextUtils.isEmpty(getConfig().mDesc)) {
-            getViewHolder().getDesc().setVisibility(View.VISIBLE);
-            getViewHolder().getDesc().setText(getConfig().mDesc);
+        if (getViewHolder().getDesc() != null) {
+            if (!TextUtils.isEmpty(getConfig().mDesc)) {
+                getViewHolder().getDesc().setVisibility(View.VISIBLE);
+                getViewHolder().getDesc().setText(getConfig().mDesc);
+            } else {
+                getViewHolder().getDesc().setVisibility(View.GONE);
+            }
         }
     }
 
@@ -307,7 +345,7 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @NonNull
-    public NotificationLayer duration(int duration) {
+    public NotificationLayer duration(long duration) {
         getConfig().mDuration = duration;
         return this;
     }
@@ -382,26 +420,32 @@ public class NotificationLayer extends DecorLayer {
             return mContent;
         }
 
+        @Nullable
         public LinearLayout getTop() {
             return mContent.findViewById(R.id.anylayler_ll_top);
         }
 
+        @Nullable
         public ImageView getIcon() {
             return mContent.findViewById(R.id.anylayler_iv_icon);
         }
 
+        @Nullable
         public TextView getLabel() {
             return mContent.findViewById(R.id.anylayler_tv_label);
         }
 
+        @Nullable
         public TextView getTime() {
             return mContent.findViewById(R.id.anylayler_tv_time);
         }
 
+        @Nullable
         public TextView getTitle() {
             return mContent.findViewById(R.id.anylayler_tv_title);
         }
 
+        @Nullable
         public TextView getDesc() {
             return mContent.findViewById(R.id.anylayler_tv_desc);
         }
@@ -410,13 +454,13 @@ public class NotificationLayer extends DecorLayer {
     protected static class Config extends DecorLayer.Config {
         protected int mContentViewId = R.layout.anylayer_notification_content;
 
-        protected int mDuration = 5000;
+        protected long mDuration = GlobalConfig.get().notificationDuration;
 
-        protected String mLabel;
-        protected Drawable mIcon;
-        protected String mTime;
-        protected String mTitle;
-        protected String mDesc;
+        protected String mLabel = GlobalConfig.get().notificationLabel;
+        protected Drawable mIcon = GlobalConfig.get().notificationIcon;
+        protected String mTime = null;
+        protected String mTitle = null;
+        protected String mDesc = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

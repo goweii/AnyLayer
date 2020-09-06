@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
@@ -114,6 +117,7 @@ public class GuideLayer extends DecorLayer {
     public void onAttach() {
         super.onAttach();
         getViewHolder().getChild().setClickable(true);
+        getViewHolder().getBackground().setOuterColor(getConfig().mBackgroundColor);
         for (Mapping mapping : getConfig().mMapping) {
             if (mapping.getGuideView() != null) {
                 if (mapping.getGuideViewRes() > 0) {
@@ -232,6 +236,18 @@ public class GuideLayer extends DecorLayer {
         return this;
     }
 
+    @NonNull
+    public GuideLayer backgroundColorInt(@ColorInt int colorInt) {
+        getConfig().mBackgroundColor = colorInt;
+        return this;
+    }
+
+    @NonNull
+    public GuideLayer backgroundColorRes(@ColorRes int colorRes) {
+        getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
+        return this;
+    }
+
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private HoleView mBackground;
         private FrameLayout mContentWrapper;
@@ -267,6 +283,8 @@ public class GuideLayer extends DecorLayer {
     }
 
     protected static class Config extends DecorLayer.Config {
+        @ColorInt
+        protected int mBackgroundColor = GlobalConfig.get().guideBackgroundInt;
         protected List<Mapping> mMapping = new ArrayList<>(1);
     }
 

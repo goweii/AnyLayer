@@ -18,8 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 
 import per.goweii.anylayer.AnyLayer;
@@ -147,10 +145,10 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_notification:
+                AnyLayer.globalConfig().notificationTimePattern = "HH:mm";
+                AnyLayer.globalConfig().notificationIcon = getResources().getDrawable(R.mipmap.ic_launcher_round);
+                AnyLayer.globalConfig().notificationLabel = getString(R.string.app_name);
                 new NotificationLayer(this)
-                        .icon(R.mipmap.ic_launcher_round)
-                        .label(R.string.app_name)
-                        .time(new SimpleDateFormat("HH:mm").format(new Date()))
                         .title("这是一个通知")
                         .desc(R.string.dialog_msg)
                         .onNotificationClick(new Layer.OnClickListener() {
