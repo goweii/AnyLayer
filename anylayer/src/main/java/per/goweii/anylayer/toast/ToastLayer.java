@@ -302,7 +302,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
 
     @Override
     public void run() {
-        if (isShow()) {
+        if (isShown()) {
             dismiss();
         }
     }

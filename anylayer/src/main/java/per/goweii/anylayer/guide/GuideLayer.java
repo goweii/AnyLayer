@@ -38,7 +38,6 @@ public class GuideLayer extends DecorLayer {
 
     public GuideLayer(@NonNull Activity activity) {
         super(activity);
-        interceptKeyEvent(false);
     }
 
     @IntRange(from = 0)
@@ -86,7 +85,7 @@ public class GuideLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildOrNull() == null) {
+        if (getViewHolder().getChildNullable() == null) {
             FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_guide_layer, parent, false);
             getViewHolder().setChild(container);
         }
@@ -228,7 +227,7 @@ public class GuideLayer extends DecorLayer {
     }
 
     @NonNull
-    public GuideLayer addMapping(@NonNull Mapping mapping) {
+    public GuideLayer mapping(@NonNull Mapping mapping) {
         getConfig().mMapping.add(mapping);
         return this;
     }
@@ -252,8 +251,8 @@ public class GuideLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected FrameLayout getChildOrNull() {
-            return (FrameLayout) super.getChildOrNull();
+        protected FrameLayout getChildNullable() {
+            return (FrameLayout) super.getChildNullable();
         }
 
         @NonNull

@@ -6,15 +6,16 @@
 
     <LinearLayout
         android:id="@+id/ll_action_bar"
-        android:paddingTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:orientation="vertical">
+        android:background="@color/colorPrimaryDark"
+        android:orientation="vertical"
+        android:paddingTop="20dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary">
 
             <TextView
                 android:id="@+id/tv_title"

@@ -140,40 +140,26 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_toast:
                 boolean isSucc = mRandom.nextBoolean();
                 AnyLayer.toast()
-                        .duration(3000)
                         .icon(isSucc ? R.drawable.ic_success : R.drawable.ic_fail)
                         .message(isSucc ? "哈哈，成功了" : "哎呀，失败了")
-                        .alpha(mRandom.nextFloat())
-                        .backgroundColorInt(Color.argb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)))
-                        .gravity(
-                                mRandom.nextBoolean() ?
-                                        mRandom.nextBoolean() ?
-                                                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL :
-                                                Gravity.TOP | Gravity.CENTER_HORIZONTAL :
-                                        mRandom.nextBoolean() ?
-                                                Gravity.LEFT | Gravity.CENTER_VERTICAL :
-                                                Gravity.RIGHT | Gravity.CENTER_VERTICAL
-                        )
-                        .animator(new Layer.AnimatorCreator() {
-                            @Override
-                            public Animator createInAnimator(@NonNull View target) {
-                                return AnimatorHelper.createZoomAlphaInAnim(target);
-                            }
-
-                            @Override
-                            public Animator createOutAnimator(@NonNull View target) {
-                                return AnimatorHelper.createZoomAlphaOutAnim(target);
-                            }
-                        })
+                        .backgroundColorRes(isSucc ? R.color.colorPrimary : R.color.colorAccent)
+                        .gravity(Gravity.CENTER)
                         .show();
                 break;
             case R.id.tv_show_notification:
                 new NotificationLayer(this)
                         .icon(R.mipmap.ic_launcher_round)
                         .label(R.string.app_name)
-                        .time(new SimpleDateFormat("hh:mm").format(new Date()))
+                        .time(new SimpleDateFormat("HH:mm").format(new Date()))
                         .title("这是一个通知")
                         .desc(R.string.dialog_msg)
+                        .onNotificationClick(new Layer.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull Layer layer, @NonNull View view) {
+                                findViewById(R.id.tv_show_toast).performLongClick();
+                                layer.dismiss();
+                            }
+                        })
                         .show();
                 break;
             case R.id.tv_show_edit:
@@ -273,7 +259,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .contentView(R.layout.popup_normal)
                             .animStyle(DialogLayer.AnimStyle.LEFT);
                 }
-                if (anyLayer_show_target_right.isShow()) {
+                if (anyLayer_show_target_right.isShown()) {
                     anyLayer_show_target_right.dismiss();
                 } else {
                     anyLayer_show_target_right.show();
@@ -315,7 +301,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                                 }
                             });
                 }
-                if (anyLayer_show_target_bottom.isShow()) {
+                if (anyLayer_show_target_bottom.isShown()) {
 //                    anyLayer_show_target_bottom.dismiss();
                 } else {
                     anyLayer_show_target_bottom.show();

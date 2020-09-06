@@ -99,7 +99,7 @@ public class NotificationLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildOrNull() == null) {
+        if (getViewHolder().getChildNullable() == null) {
             SwipeLayout container = (SwipeLayout) inflater.inflate(R.layout.anylayer_notification_layer, parent, false);
             getViewHolder().setChild(container);
             getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getChild()));
@@ -120,7 +120,7 @@ public class NotificationLayer extends DecorLayer {
 
     @NonNull
     protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getContentOrNull() == null) {
+        if (getViewHolder().getContentNullable() == null) {
             getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
         } else {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
@@ -152,15 +152,6 @@ public class NotificationLayer extends DecorLayer {
     @Override
     public void onAttach() {
         super.onAttach();
-        getListenerHolder().setOnTouchListener(new OnTouchListener() {
-            @Override
-            public void onDown() {
-                if (mDismissRunnable != null) {
-                    getChild().removeCallbacks(mDismissRunnable);
-                }
-            }
-        });
-        getListenerHolder().bindListeners(this);
         getViewHolder().getChild().setPadding(0, Utils.getStatusBarHeight(getActivity()), 0, 0);
         getViewHolder().getChild().setClipToPadding(false);
         getViewHolder().getChild().setSwipeDirection(
@@ -188,6 +179,8 @@ public class NotificationLayer extends DecorLayer {
                 });
             }
         });
+        getViewHolder().getContent().setVisibility(View.VISIBLE);
+        getListenerHolder().bindTouchListener(this);
         if (getConfig().mIcon != null) {
             getViewHolder().getTop().setVisibility(View.VISIBLE);
             getViewHolder().getIcon().setVisibility(View.VISIBLE);
@@ -211,7 +204,6 @@ public class NotificationLayer extends DecorLayer {
             getViewHolder().getDesc().setVisibility(View.VISIBLE);
             getViewHolder().getDesc().setText(getConfig().mDesc);
         }
-        getViewHolder().getContent().setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -320,14 +312,33 @@ public class NotificationLayer extends DecorLayer {
         return this;
     }
 
-    public NotificationLayer onNotificationClick(@Nullable OnClickListener listener) {
-        getListenerHolder().setOnClickListener(listener);
+    @NonNull
+    public NotificationLayer onNotificationClick(@NonNull OnClickListener listener) {
+        onClickToDismiss(listener);
         return this;
     }
 
-    public NotificationLayer onNotificationLongClick(@Nullable OnLongClickListener listener) {
-        getListenerHolder().setOnLongClickListener(listener);
+    @NonNull
+    public NotificationLayer onNotificationLongClick(@NonNull OnLongClickListener listener) {
+        onLongClickToDismiss(listener);
         return this;
+    }
+
+    public void autoDismiss(boolean enable) {
+        if (mDismissRunnable != null) {
+            getChild().removeCallbacks(mDismissRunnable);
+        }
+        if (enable && isShown() && getConfig().mDuration > 0) {
+            if (mDismissRunnable == null) {
+                mDismissRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        dismiss();
+                    }
+                };
+            }
+            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
+        }
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
@@ -346,22 +357,28 @@ public class NotificationLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected SwipeLayout getChildOrNull() {
-            return (SwipeLayout) super.getChildOrNull();
+        protected SwipeLayout getChildNullable() {
+            return (SwipeLayout) super.getChildNullable();
         }
 
-        void setContent(@NonNull View content) {
+        protected void setContent(@NonNull View content) {
             mContent = content;
         }
 
         @Nullable
-        protected View getContentOrNull() {
+        protected View getContentNullable() {
             return mContent;
         }
 
         @NonNull
         public View getContent() {
             Utils.requireNonNull(mContent, "必须在show方法后调用");
+            return mContent;
+        }
+
+        @Nullable
+        @Override
+        protected View getNoIdClickView() {
             return mContent;
         }
 
@@ -393,7 +410,7 @@ public class NotificationLayer extends DecorLayer {
     protected static class Config extends DecorLayer.Config {
         protected int mContentViewId = R.layout.anylayer_notification_content;
 
-        protected int mDuration = 10000;
+        protected int mDuration = 5000;
 
         protected String mLabel;
         protected Drawable mIcon;
@@ -405,53 +422,41 @@ public class NotificationLayer extends DecorLayer {
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
         private GestureDetector mGestureDetector = null;
 
-        private OnTouchListener mOnTouchListener = null;
-        private OnClickListener mOnClickListener = null;
-        private OnLongClickListener mOnLongClickListener = null;
+        public void bindTouchListener(@NonNull NotificationLayer layer) {
+            final View content = layer.getViewHolder().getContent();
+            mGestureDetector = new GestureDetector(content.getContext(), new GestureDetector.OnGestureListener() {
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    layer.autoDismiss(false);
+                    return true;
+                }
 
-        private void bindListeners(@NonNull NotificationLayer layer) {
-            final View contentView = layer.getViewHolder().getContent();
-            if (mGestureDetector == null) {
-                mGestureDetector = new GestureDetector(contentView.getContext(), new GestureDetector.OnGestureListener() {
-                    @Override
-                    public boolean onDown(MotionEvent e) {
-                        mOnTouchListener.onDown();
-                        return true;
-                    }
+                @Override
+                public void onShowPress(MotionEvent e) {
+                }
 
-                    @Override
-                    public void onShowPress(MotionEvent e) {
-                    }
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    content.performClick();
+                    return true;
+                }
 
-                    @Override
-                    public boolean onSingleTapUp(MotionEvent e) {
-                        if (mOnClickListener != null) {
-                            mOnClickListener.onClick(layer, contentView);
-                        }
-                        layer.dismiss();
-                        return true;
-                    }
+                @Override
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                    return false;
+                }
 
-                    @Override
-                    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                        return false;
-                    }
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    content.performLongClick();
+                }
 
-                    @Override
-                    public void onLongPress(MotionEvent e) {
-                        if (mOnLongClickListener != null) {
-                            mOnLongClickListener.onLongClick(layer, contentView);
-                        }
-                        layer.dismiss();
-                    }
-
-                    @Override
-                    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                        return false;
-                    }
-                });
-            }
-            layer.getViewHolder().getContent().setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    return false;
+                }
+            });
+            content.setOnTouchListener(new View.OnTouchListener() {
                 @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -459,21 +464,5 @@ public class NotificationLayer extends DecorLayer {
                 }
             });
         }
-
-        private void setOnTouchListener(@NonNull OnTouchListener listener) {
-            mOnTouchListener = listener;
-        }
-
-        private void setOnClickListener(@Nullable OnClickListener listener) {
-            mOnClickListener = listener;
-        }
-
-        private void setOnLongClickListener(@Nullable OnLongClickListener listener) {
-            mOnLongClickListener = listener;
-        }
-    }
-
-    private interface OnTouchListener {
-        void onDown();
     }
 }

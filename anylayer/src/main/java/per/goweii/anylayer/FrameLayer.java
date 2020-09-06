@@ -93,7 +93,7 @@ public class FrameLayer extends Layer implements ViewTreeObserver.OnGlobalLayout
                 if (getRealLevel() == levelLayout.getLevel()) {
                     parent = levelLayout;
                     break;
-                } else if (Level.isATopThanB(levelLayout.getLevel(), getRealLevel())) {
+                } else if (Level.isFirstTopThanSecond(levelLayout.getLevel(), getRealLevel())) {
                     lastIndex--;
                     break;
                 }
@@ -270,8 +270,8 @@ public class FrameLayer extends Layer implements ViewTreeObserver.OnGlobalLayout
         public static final int NOTIFICATION = 5000;
         public static final int TOAST = 6000;
 
-        public static boolean isATopThanB(int a, int b) {
-            return a > b;
+        public static boolean isFirstTopThanSecond(int first, int second) {
+            return first > second;
         }
     }
 
@@ -302,7 +302,7 @@ public class FrameLayer extends Layer implements ViewTreeObserver.OnGlobalLayout
         }
 
         public boolean isTopThan(@NonNull LevelLayout other) {
-            return Level.isATopThanB(mLevel, other.mLevel);
+            return Level.isFirstTopThanSecond(mLevel, other.mLevel);
         }
     }
 }

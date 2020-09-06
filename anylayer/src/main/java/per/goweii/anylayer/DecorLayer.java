@@ -106,9 +106,22 @@ public class DecorLayer extends FrameLayer implements ComponentCallbacks {
     }
 
     public static class ViewHolder extends FrameLayer.ViewHolder {
+        private FrameLayout mActivityContent;
+
+        @Override
+        public void setRoot(@NonNull FrameLayout root) {
+            super.setRoot(root);
+            mActivityContent = root.findViewById(android.R.id.content);
+        }
+
         @NonNull
         public FrameLayout getDecor() {
             return getRoot();
+        }
+
+        @NonNull
+        public FrameLayout getActivityContent() {
+            return mActivityContent;
         }
     }
 

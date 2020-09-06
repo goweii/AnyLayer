@@ -61,7 +61,6 @@ public class DialogLayer extends DecorLayer {
 
     public DialogLayer(@NonNull Activity activity) {
         super(activity);
-        getViewHolder().setActivityContent(getViewHolder().getDecor().findViewById(android.R.id.content));
         cancelableOnKeyBack(true);
     }
 
@@ -110,7 +109,7 @@ public class DialogLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildOrNull() == null) {
+        if (getViewHolder().getChildNullable() == null) {
             ContainerLayout container = (ContainerLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
             getViewHolder().setChild(container);
             getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getContentWrapper()));
@@ -131,7 +130,7 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getContentOrNull() == null) {
+        if (getViewHolder().getContentNullable() == null) {
             getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
         } else {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
@@ -918,15 +917,6 @@ public class DialogLayer extends DecorLayer {
             }
         }
 
-        public void setActivityContent(@NonNull FrameLayout activityContent) {
-            mActivityContent = activityContent;
-        }
-
-        @NonNull
-        public FrameLayout getActivityContent() {
-            return mActivityContent;
-        }
-
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
@@ -942,16 +932,16 @@ public class DialogLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected ContainerLayout getChildOrNull() {
-            return (ContainerLayout) super.getChildOrNull();
+        protected ContainerLayout getChildNullable() {
+            return (ContainerLayout) super.getChildNullable();
         }
 
-        void setContent(@NonNull View content) {
+        protected void setContent(@NonNull View content) {
             mContent = content;
         }
 
         @Nullable
-        protected View getContentOrNull() {
+        protected View getContentNullable() {
             return mContent;
         }
 

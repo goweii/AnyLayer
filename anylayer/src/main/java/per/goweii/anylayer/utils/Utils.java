@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import per.goweii.anylayer.ActivityHolder;
 import per.goweii.anylayer.FrameLayer;
 import per.goweii.anylayer.dialog.ContainerLayout;
 
@@ -30,10 +29,6 @@ import per.goweii.anylayer.dialog.ContainerLayout;
  */
 public final class Utils {
 
-    public static void checkInitialized() {
-        requireNonNull(ActivityHolder.getApplication(), "请先在Application中初始化");
-    }
-
     @NonNull
     public static <T> T requireNonNull(@Nullable T obj, String msg) {
         if (obj == null) {
@@ -43,7 +38,7 @@ public final class Utils {
     }
 
     @NonNull
-    static <T> T requireNonNull(@Nullable T obj) {
+    public static <T> T requireNonNull(@Nullable T obj) {
         if (obj == null) {
             throw new NullPointerException();
         }

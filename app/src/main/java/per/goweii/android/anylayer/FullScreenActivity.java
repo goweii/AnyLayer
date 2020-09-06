@@ -52,7 +52,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         textView3.setTextColor(Color.WHITE);
         textView3.setTextSize(16F);
         new GuideLayer(FullScreenActivity.this)
-                .addMapping(new GuideLayer.Mapping()
+                .mapping(new GuideLayer.Mapping()
                         .targetView(findViewById(R.id.tv_show_menu))
                         .cornerRadius(9999F)
                         .paddingLeft(30)
@@ -64,7 +64,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .verticalAlign(GuideLayer.Align.Vertical.BELOW)
                         .marginTop(30)
                         .marginRight(30))
-                .addMapping(new GuideLayer.Mapping()
+                .mapping(new GuideLayer.Mapping()
                         .guideView(textView3)
                         .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
                         .verticalAlign(GuideLayer.Align.Vertical.ALIGN_BOTTOM)
@@ -92,7 +92,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         textView3.setTextColor(Color.WHITE);
         textView3.setTextSize(16F);
         new GuideLayer(FullScreenActivity.this)
-                .addMapping(new GuideLayer.Mapping()
+                .mapping(new GuideLayer.Mapping()
                         .targetView(findViewById(R.id.tv_show_blur_bg))
                         .cornerRadius(8F)
                         .padding(-30)
@@ -100,7 +100,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
                         .verticalAlign(GuideLayer.Align.Vertical.ABOVE)
                         .marginBottom(30))
-                .addMapping(new GuideLayer.Mapping()
+                .mapping(new GuideLayer.Mapping()
                         .guideView(textView3)
                         .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
                         .verticalAlign(GuideLayer.Align.Vertical.ALIGN_BOTTOM)
@@ -262,7 +262,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 }
                             });
                 }
-                if (anyLayer_show_target_full.isShow()) {
+                if (anyLayer_show_target_full.isShown()) {
                     anyLayer_show_target_full.dismiss();
                 } else {
                     anyLayer_show_target_full.show();
@@ -289,7 +289,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 }
                             });
                 }
-                if (anyLayer_show_target_right.isShow()) {
+                if (anyLayer_show_target_right.isShown()) {
                     anyLayer_show_target_right.dismiss();
                 } else {
                     anyLayer_show_target_right.show();
@@ -350,7 +350,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 }
                             });
                 }
-                if (anyLayer_show_target_bottom.isShow()) {
+                if (anyLayer_show_target_bottom.isShown()) {
                     anyLayer_show_target_bottom.dismiss();
                 } else {
                     anyLayer_show_target_bottom.show();
@@ -727,7 +727,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 }
                             });
                 }
-                if (anyLayer_show_menu.isShow()) {
+                if (anyLayer_show_menu.isShown()) {
                     anyLayer_show_menu.dismiss();
                 } else {
                     anyLayer_show_menu.show();

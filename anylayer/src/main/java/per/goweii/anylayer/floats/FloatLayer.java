@@ -1,9 +1,12 @@
 package per.goweii.anylayer.floats;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
@@ -87,7 +89,7 @@ public class FloatLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildOrNull() == null) {
+        if (getViewHolder().getChildNullable() == null) {
             DragLayout container = (DragLayout) inflater.inflate(R.layout.anylayer_float_layer, parent, false);
             getViewHolder().setChild(container);
             getViewHolder().setFloat(onCreateFloat(inflater, getViewHolder().getChild()));
@@ -186,14 +188,7 @@ public class FloatLayer extends DecorLayer {
         if (config.mMarginBottom != Integer.MIN_VALUE) {
             params.bottomMargin = config.mMarginBottom;
         }
-        getListenerHolder().bindFloatClickListener(this, new OnClickListener() {
-            @Override
-            public void onClick(@NonNull Layer layer, @NonNull View v) {
-                toNormal();
-                toLowProfile();
-            }
-        });
-        getListenerHolder().bindFloatLongClickListener(this);
+        getListenerHolder().bindTouchListener(this);
     }
 
     private void initFloatViewDefConfig() {
@@ -356,12 +351,12 @@ public class FloatLayer extends DecorLayer {
     }
 
     public FloatLayer onFloatClick(@NonNull OnClickListener listener) {
-        getListenerHolder().setOnFloatClickListener(listener);
+        onClick(listener);
         return this;
     }
 
     public FloatLayer onFloatLongClick(@NonNull OnLongClickListener listener) {
-        getListenerHolder().setOnFloatLongClickListener(listener);
+        onLongClick(listener);
         return this;
     }
 
@@ -466,8 +461,8 @@ public class FloatLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected DragLayout getChildOrNull() {
-            return (DragLayout) super.getChildOrNull();
+        protected DragLayout getChildNullable() {
+            return (DragLayout) super.getChildNullable();
         }
 
         void setFloat(@NonNull View floatView) {
@@ -482,6 +477,12 @@ public class FloatLayer extends DecorLayer {
         @NonNull
         public View getFloat() {
             Utils.requireNonNull(mFloat, "必须在show方法后调用");
+            return mFloat;
+        }
+
+        @Nullable
+        @Override
+        protected View getNoIdClickView() {
             return mFloat;
         }
     }
@@ -526,38 +527,51 @@ public class FloatLayer extends DecorLayer {
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
-        private OnClickListener mOnFloatClickListener = null;
-        private OnLongClickListener mOnFloatLongClickListener = null;
+        private GestureDetector mGestureDetector = null;
 
-        private void bindFloatClickListener(@NonNull FloatLayer layer, @NonNull final OnClickListener listener) {
-            layer.getViewHolder().getFloat().setOnClickListener(new View.OnClickListener() {
+        public void bindTouchListener(@NonNull FloatLayer layer) {
+            final View floatView = layer.getViewHolder().getFloat();
+            mGestureDetector = new GestureDetector(floatView.getContext(), new GestureDetector.OnGestureListener() {
                 @Override
-                public void onClick(@NonNull View v) {
-                    listener.onClick(layer, v);
-                    if (mOnFloatClickListener != null) {
-                        mOnFloatClickListener.onClick(layer, v);
-                    }
+                public boolean onDown(MotionEvent e) {
+                    layer.toNormal();
+                    return true;
+                }
+
+                @Override
+                public void onShowPress(MotionEvent e) {
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    floatView.performClick();
+                    layer.toLowProfile();
+                    return true;
+                }
+
+                @Override
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                    return false;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    floatView.performLongClick();
+                    layer.toLowProfile();
+                }
+
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    return false;
                 }
             });
-        }
-
-        private void bindFloatLongClickListener(@NonNull FloatLayer layer) {
-            if (mOnFloatLongClickListener != null) {
-                layer.getViewHolder().getFloat().setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        return mOnFloatLongClickListener.onLongClick(layer, v);
-                    }
-                });
-            }
-        }
-
-        public void setOnFloatClickListener(@NonNull OnClickListener listener) {
-            mOnFloatClickListener = listener;
-        }
-
-        public void setOnFloatLongClickListener(@NonNull OnLongClickListener listener) {
-            mOnFloatLongClickListener = listener;
+            floatView.setOnTouchListener(new View.OnTouchListener() {
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return mGestureDetector.onTouchEvent(event);
+                }
+            });
         }
     }
 
