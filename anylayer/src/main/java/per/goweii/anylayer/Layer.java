@@ -252,6 +252,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     public void show(boolean withAnim) {
         if (isShown()) return;
+        if (isInAnimRunning()) return;
         mShowWithAnim = withAnim;
         mViewHolder.setParent(onGetParent());
         mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
@@ -267,12 +268,21 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
 
     public void dismiss(boolean withAnim) {
         if (!isShown()) return;
+        if (isOutAnimRunning()) return;
         mDismissWithAnim = withAnim;
         onPreRemove();
     }
 
     public boolean isShown() {
         return mViewManager.isAttached();
+    }
+
+    public boolean isInAnimRunning() {
+        return mAnimatorIn != null && mAnimatorIn.isStarted();
+    }
+
+    public boolean isOutAnimRunning() {
+        return mAnimatorOut != null && mAnimatorOut.isStarted();
     }
 
     @NonNull
@@ -295,6 +305,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return mViewHolder.getChild();
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     public <V extends View> V getView(@IdRes int id) {
         if (mViewCaches == null) {
