@@ -79,7 +79,7 @@ Android稳定高效的浮层创建管理框架。
 
 # 截图
 
-截图效果较差且版本较老，建议[下载Demo](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)体验最新功能
+截图效果较差且版本较老，建议[下载Demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)体验最新功能
 
 ![demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.gif)
 
@@ -180,8 +180,8 @@ dependencies {
 - **[ViewManager]()**（管理View的动态添加移除和KeyEvent事件注册）
 
 - **[Layer]()**（对ViewManager的包装，实现进出场动画逻辑和事件监听，规范接口形式，分离出ViewHolder/ListenerHolder/Config三大内部类）
-  - **[FrameLayer]()**（规范父布局为DecorView的特殊Layer，引入了Layer层级概念）
-    - **[DecorLayer]()**（规范父布局为DecorView的特殊Layer，引入了Layer层级概念）
+  - **[FrameLayer]()**（限定父布局为FrameLayout，引入了Layer层级概念）
+    - **[DecorLayer]()**（限定父布局为DecorView）
       - **[DialogLayer]()**（规范子布局层级，加入背景层，分离动画为背景动画和内容动画）
         - **[PopupLayer]()**（可依据锚点View定位）
       - **[ToastLayer]()**（吐司）
