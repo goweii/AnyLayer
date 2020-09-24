@@ -2,7 +2,7 @@ AnyLayer
 
 Android稳定高效的浮层创建管理框架。
 
-可取代系统自带Dialog/Popup/BottomSheet等弹窗，可实现单Activity架构的Toast提示，可定制任意样式的Guide引导层，可实现依附Activity的Float悬浮按钮。
+可实现Dialog/Popup/BottomSheet等弹窗，引导层，悬浮按钮，浮动通知，吐司等效果。
 
 [GitHub主页](https://github.com/goweii/AnyLayer)
 
