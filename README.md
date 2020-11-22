@@ -97,7 +97,7 @@ Android稳定高效的浮层创建管理框架。
 
 ## 集成
 
-![](https://img.shields.io/badge/Downloads%20Week-655-green) ![](https://img.shields.io/badge/Downloads%20Month-2.4K-blue)
+![](https://img.shields.io/badge/Downloads%20Week-1.1k-green) ![](https://img.shields.io/badge/Downloads%20Month-5.2K-blue)
 
 - ### 添加jitpack库
 
