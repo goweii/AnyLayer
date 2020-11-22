@@ -10,11 +10,6 @@ import per.goweii.anylayer.dialog.DialogLayer
 import per.goweii.anylayer.ext.DefaultOnSwipeListener
 import per.goweii.anylayer.widget.SwipeLayout
 
-/**
- * @author CuiZhen
- * @date 2020/8/15
- */
-
 fun <T : DialogLayer> T.setCancelableOnTouchOutside(enable: Boolean) = this.apply {
     this.cancelableOnTouchOutside(enable)
 }

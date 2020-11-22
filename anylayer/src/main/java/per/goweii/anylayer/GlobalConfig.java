@@ -61,7 +61,7 @@ public class GlobalConfig {
     // NotificationLayer
 
     public long notificationDuration = 5000L;
-    public String notificationLabel = null;
+    public CharSequence notificationLabel = null;
     public Drawable notificationIcon = null;
     public String notificationTimePattern = null;
 }

@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -240,12 +241,12 @@ public class FloatLayer extends DecorLayer {
         floatView.setScaleY(config.mDefScale);
     }
 
-    public FloatLayer floatView(int layoutId) {
+    public FloatLayer floatView(@LayoutRes int layoutId) {
         getConfig().mFloatViewId = layoutId;
         return this;
     }
 
-    public FloatLayer floatView(View floatView) {
+    public FloatLayer floatView(@NonNull View floatView) {
         getViewHolder().setFloat(floatView);
         return this;
     }

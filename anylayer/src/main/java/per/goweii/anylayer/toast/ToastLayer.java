@@ -14,6 +14,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -113,7 +116,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     @NonNull
-    public ToastLayer icon(int icon) {
+    public ToastLayer icon(@DrawableRes int icon) {
         getConfig().mIcon = icon;
         return this;
     }
@@ -155,25 +158,25 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     @NonNull
-    public ToastLayer backgroundDrawable(Drawable drawable) {
+    public ToastLayer backgroundResource(@NonNull Drawable drawable) {
         getConfig().mBackgroundDrawable = drawable;
         return this;
     }
 
     @NonNull
-    public ToastLayer backgroundDrawable(int drawableRes) {
-        getConfig().mBackgroundDrawableRes = drawableRes;
+    public ToastLayer backgroundResource(@DrawableRes int resource) {
+        getConfig().mBackgroundResource = resource;
         return this;
     }
 
     @NonNull
-    public ToastLayer backgroundColorInt(int colorInt) {
+    public ToastLayer backgroundColorInt(@ColorInt int colorInt) {
         getConfig().mBackgroundColor = colorInt;
         return this;
     }
 
     @NonNull
-    public ToastLayer backgroundColorRes(int colorRes) {
+    public ToastLayer backgroundColorRes(@ColorRes int colorRes) {
         getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
         return this;
     }
@@ -232,8 +235,8 @@ public class ToastLayer extends DecorLayer implements Runnable {
         }
         if (getConfig().mBackgroundDrawable != null) {
             getChild().setBackgroundDrawable(getConfig().mBackgroundDrawable);
-        } else if (getConfig().mBackgroundDrawableRes > 0) {
-            getChild().setBackgroundResource(getConfig().mBackgroundDrawableRes);
+        } else if (getConfig().mBackgroundResource > 0) {
+            getChild().setBackgroundResource(getConfig().mBackgroundResource);
         }
         getChild().getBackground().setColorFilter(getConfig().mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
         getChild().setAlpha(getConfig().mAlpha);
@@ -337,7 +340,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
         private int mIcon = 0;
         @Nullable
         private Drawable mBackgroundDrawable = null;
-        private int mBackgroundDrawableRes = GlobalConfig.get().toastBackgroundRes;
+        private int mBackgroundResource = GlobalConfig.get().toastBackgroundRes;
         private int mBackgroundColor = Color.TRANSPARENT;
         private float mAlpha = GlobalConfig.get().toastAlpha;
         private int mGravity = GlobalConfig.get().toastGravity;

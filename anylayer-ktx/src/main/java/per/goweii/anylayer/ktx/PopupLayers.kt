@@ -4,11 +4,6 @@ import android.view.View
 import per.goweii.anylayer.popup.PopupLayer
 import per.goweii.anylayer.popup.PopupLayer.Align
 
-/**
- * @author CuiZhen
- * @date 2020/8/15
- */
-
 fun <T : PopupLayer> T.setUpdateLocationInterceptor(interceptor: PopupLayer.UpdateLocationInterceptor) = this.apply {
     this.updateLocationInterceptor(interceptor)
 }
