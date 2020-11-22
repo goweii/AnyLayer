@@ -117,15 +117,15 @@ allprojects {
 // build.gradle(Module:)
 dependencies {
     // 完整引入，二选一
-    implementation 'com.github.goweii:AnyLayer:3.6.0-androidx'
-    implementation 'com.github.goweii:AnyLayer:3.6.0-support'
+    implementation 'com.github.goweii:AnyLayer:4.0.0-androidx'
+    implementation 'com.github.goweii:AnyLayer:4.0.0-support'
     
     // 基础库
-    // implementation 'com.github.goweii.AnyLayer:anylayer:3.6.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer:4.0.0-androidx'
     // 扩展库（依赖基础库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:3.6.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:4.0.0-androidx'
     // kotlin扩展库（依赖基础库和扩展库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:3.6.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:4.0.0-androidx'
     // 通用弹窗（依赖基础库）
     // implementation 'com.github.goweii.AnyLayer:anylayer-common:2.5.0'
 }
@@ -137,7 +137,7 @@ dependencies {
 
 [点击查看详细更新说明](https://github.com/goweii/AnyLayer/releases)
 
-### 4.0.0-beta1
+### 4.0.0
 
 - 重构包结构
 - 新增通知/悬浮按钮/引导浮层
