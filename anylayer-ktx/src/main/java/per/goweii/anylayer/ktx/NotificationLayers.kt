@@ -2,9 +2,9 @@ package per.goweii.anylayer.ktx
 
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
+import android.support.annotation.DrawableRes
+import android.support.annotation.LayoutRes
+import android.support.annotation.StringRes
 import per.goweii.anylayer.notification.NotificationLayer
 
 

@@ -1,10 +1,10 @@
 package per.goweii.anylayer.ktx
 
 import android.graphics.drawable.Drawable
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import android.support.annotation.ColorInt
+import android.support.annotation.ColorRes
+import android.support.annotation.DrawableRes
+import android.support.annotation.StringRes
 import per.goweii.anylayer.toast.ToastLayer
 
 fun <T : ToastLayer> T.setRemoveOthers(removeOthers: Boolean) = this.apply {
