@@ -124,7 +124,7 @@ fun <T : DialogLayer> T.setBackgroundBlurPercent(@FloatRange(from = 0.0) percent
 }
 
 fun <T : DialogLayer> T.setBackgroundBlurScale(@FloatRange(from = 1.0) scale: Float) = this.apply {
-    this.backgroundBlurScale(scale)
+    this.backgroundBlurSimple(scale)
 }
 
 fun <T : DialogLayer> T.setBackgroundBitmap(bitmap: Bitmap) = this.apply {
