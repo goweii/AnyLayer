@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -22,8 +23,6 @@ import per.goweii.anylayer.FrameLayer;
 import per.goweii.anylayer.dialog.ContainerLayout;
 
 /**
- * 描述：
- *
  * @author Cuizhen
  * @date 2018/10/25
  */
@@ -75,7 +74,7 @@ public final class Utils {
     @NonNull
     public static Activity requireActivity(@NonNull Context context) {
         Activity activity = getActivity(context);
-        requireNonNull(activity, "无法从Context获取Activity，请确保传入的不是ApplicationContext或ServiceContext等");
+        requireNonNull(activity, "无法从Context获取Activity，请确保传入的不是ApplicationContext或Service等");
         return activity;
     }
 
@@ -96,33 +95,46 @@ public final class Utils {
         return null;
     }
 
+    @Nullable
+    public static Bitmap snapshotSafely(@NonNull FrameLayout decorView,
+                                        @NonNull ImageView inImageView,
+                                        @FloatRange(from = 1F) float inSampleSize,
+                                        @NonNull FrameLayer.LevelLayout currLevelLayout,
+                                        @NonNull ContainerLayout currContainerLayout) {
+        try {
+            return snapshot(decorView, inImageView, inSampleSize, currLevelLayout, currContainerLayout);
+        } catch (Throwable ignore) {
+            return null;
+        }
+    }
+
     @NonNull
-    public static Bitmap snapshot(@NonNull FrameLayout decor,
-                                  @NonNull ImageView iv,
-                                  float scale,
+    public static Bitmap snapshot(@NonNull FrameLayout decorView,
+                                  @NonNull ImageView inImageView,
+                                  @FloatRange(from = 1F) float inSampleSize,
                                   @NonNull FrameLayer.LevelLayout currLevelLayout,
                                   @NonNull ContainerLayout currContainerLayout) {
-        int w = iv.getWidth();
-        int h = iv.getHeight();
-        int oW = (int) (w / scale);
-        int oH = (int) (h / scale);
+        int w = inImageView.getWidth();
+        int h = inImageView.getHeight();
+        int oW = (int) (w / inSampleSize);
+        int oH = (int) (h / inSampleSize);
         Bitmap bitmap = Bitmap.createBitmap(oW, oH, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.save();
         int[] locationRootView = new int[2];
-        decor.getLocationOnScreen(locationRootView);
+        decorView.getLocationOnScreen(locationRootView);
         int[] locationBackground = new int[2];
-        iv.getLocationOnScreen(locationBackground);
+        inImageView.getLocationOnScreen(locationBackground);
         int x = locationBackground[0] - locationRootView[0];
         int y = locationBackground[1] - locationRootView[1];
-        canvas.scale(1 / scale, 1 / scale);
-        canvas.translate(x / scale, y / scale);
-        if (decor.getBackground() != null) {
-            decor.getBackground().draw(canvas);
+        canvas.scale(1 / inSampleSize, 1 / inSampleSize);
+        canvas.translate(x / inSampleSize, y / inSampleSize);
+        if (decorView.getBackground() != null) {
+            decorView.getBackground().draw(canvas);
         }
         out:
-        for (int i = 0; i < decor.getChildCount(); i++) {
-            View decorChildAt = decor.getChildAt(i);
+        for (int i = 0; i < decorView.getChildCount(); i++) {
+            View decorChildAt = decorView.getChildAt(i);
             if (decorChildAt instanceof FrameLayer.LayerLayout) {
                 FrameLayer.LayerLayout layerLayout = (FrameLayer.LayerLayout) decorChildAt;
                 for (int j = 0; j < layerLayout.getChildCount(); j++) {
@@ -184,21 +196,25 @@ public final class Utils {
     }
 
     public static int getViewMarginLeft(@NonNull View view) {
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return 0;
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.leftMargin;
     }
 
     public static int getViewMarginRight(@NonNull View view) {
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return 0;
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.rightMargin;
     }
 
     public static int getViewMarginTop(@NonNull View view) {
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return 0;
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.topMargin;
     }
 
     public static int getViewMarginBottom(@NonNull View view) {
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return 0;
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.bottomMargin;
     }

@@ -303,7 +303,7 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @NonNull
-    public NotificationLayer label(@Nullable String label) {
+    public NotificationLayer label(@Nullable CharSequence label) {
         getConfig().mLabel = label;
         return this;
     }
@@ -315,13 +315,13 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @NonNull
-    public NotificationLayer time(@Nullable String time) {
+    public NotificationLayer time(@Nullable CharSequence time) {
         getConfig().mTime = time;
         return this;
     }
 
     @NonNull
-    public NotificationLayer title(@NonNull String title) {
+    public NotificationLayer title(@NonNull CharSequence title) {
         getConfig().mTitle = title;
         return this;
     }
@@ -333,7 +333,7 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @NonNull
-    public NotificationLayer desc(@NonNull String desc) {
+    public NotificationLayer desc(@NonNull CharSequence desc) {
         getConfig().mDesc = desc;
         return this;
     }
@@ -456,11 +456,11 @@ public class NotificationLayer extends DecorLayer {
 
         protected long mDuration = GlobalConfig.get().notificationDuration;
 
-        protected String mLabel = GlobalConfig.get().notificationLabel;
+        protected CharSequence mLabel = GlobalConfig.get().notificationLabel;
         protected Drawable mIcon = GlobalConfig.get().notificationIcon;
-        protected String mTime = null;
-        protected String mTitle = null;
-        protected String mDesc = null;
+        protected CharSequence mTime = null;
+        protected CharSequence mTitle = null;
+        protected CharSequence mDesc = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

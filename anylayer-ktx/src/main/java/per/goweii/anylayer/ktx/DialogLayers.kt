@@ -10,11 +10,6 @@ import per.goweii.anylayer.Layer
 import per.goweii.anylayer.ext.DefaultOnSwipeListener
 import per.goweii.anylayer.widget.SwipeLayout
 
-/**
- * @author CuiZhen
- * @date 2020/8/15
- */
-
 fun <T : DialogLayer> T.setCancelableOnTouchOutside(enable: Boolean) = this.apply {
     this.cancelableOnTouchOutside(enable)
 }
@@ -124,7 +119,7 @@ fun <T : DialogLayer> T.setBackgroundBlurPercent(@FloatRange(from = 0.0) percent
 }
 
 fun <T : DialogLayer> T.setBackgroundBlurScale(@FloatRange(from = 1.0) scale: Float) = this.apply {
-    this.backgroundBlurScale(scale)
+    this.backgroundBlurSimple(scale)
 }
 
 fun <T : DialogLayer> T.setBackgroundBitmap(bitmap: Bitmap) = this.apply {

@@ -493,27 +493,31 @@ public class DialogLayer extends DecorLayer {
                         int min = Math.min(w, h);
                         radius = min * getConfig().mBackgroundBlurPercent;
                     }
-                    float scale = getConfig().mBackgroundBlurScale;
+                    float simple = getConfig().mBackgroundBlurSimple;
                     if (radius > 25) {
-                        scale = scale * (radius / 25);
+                        simple = simple * (radius / 25);
                         radius = 25;
                     }
-                    Bitmap snapshot = Utils.snapshot(getViewHolder().getDecor(),
+                    Bitmap snapshot = Utils.snapshotSafely(getViewHolder().getDecor(),
                             getViewHolder().getBackground(),
-                            scale,
+                            simple,
                             getViewHolder().getParent(),
                             getViewHolder().getChild());
-                    Blurred.init(getActivity());
-                    Bitmap blurBitmap = Blurred.with(snapshot)
-                            .recycleOriginal(true)
-                            .keepSize(false)
-                            .radius(radius)
-                            .blur();
-                    getViewHolder().getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    getViewHolder().getBackground().setImageBitmap(blurBitmap);
-                    if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                        getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                    if (snapshot != null) {
+                        Blurred.init(getActivity());
+                        Bitmap blurBitmap = Blurred.with(snapshot)
+                                .recycleOriginal(true)
+                                .keepSize(false)
+                                .radius(radius)
+                                .blur();
+                        getViewHolder().getBackground().setImageBitmap(blurBitmap);
+                        if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
+                            getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                        }
+                    } else {
+                        getViewHolder().getBackground().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
                     }
+                    getViewHolder().getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
                 }
             });
         } else {
@@ -707,13 +711,13 @@ public class DialogLayer extends DecorLayer {
     }
 
     /**
-     * 设置背景高斯模糊的缩放比例
+     * 设置背景高斯模糊的采样比例
      *
-     * @param scale 缩放比例
+     * @param simple 采样比例
      */
     @NonNull
-    public DialogLayer backgroundBlurScale(@FloatRange(from = 1F) float scale) {
-        getConfig().mBackgroundBlurScale = scale;
+    public DialogLayer backgroundBlurSimple(@FloatRange(from = 1F) float simple) {
+        getConfig().mBackgroundBlurSimple = simple;
         return this;
     }
 
@@ -985,7 +989,7 @@ public class DialogLayer extends DecorLayer {
         protected int mGravity = Gravity.CENTER;
         protected float mBackgroundBlurPercent = 0F;
         protected float mBackgroundBlurRadius = 0F;
-        protected float mBackgroundBlurScale = 2F;
+        protected float mBackgroundBlurSimple = 2F;
         @Nullable
         protected Bitmap mBackgroundBitmap = null;
         protected int mBackgroundResource = -1;

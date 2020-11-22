@@ -2,11 +2,11 @@ AnyLayer
 
 Android稳定高效的浮层创建管理框架。
 
-可取代系统自带Dialog/Popup/BottomSheet等弹窗，可实现单Activity架构的Toast提示，可定制任意样式的Guide引导层，可实现依附Activity的Float悬浮按钮。
+可实现Dialog/Popup/BottomSheet等弹窗，引导层，悬浮按钮，浮动通知，吐司等效果。
 
 [GitHub主页](https://github.com/goweii/AnyLayer)
 
-[Demo下载](https://github.com/goweii/AnyLayer/raw/master/app/release/app-release.apk)
+[Demo下载](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)
 
 
 
@@ -39,9 +39,13 @@ Android稳定高效的浮层创建管理框架。
     - 支持自定义透明度
     - 支持自定义进出场动画
   - Guide效果
-    - 引导层效果待开发
+    - 详见demo
   - Float效果
-    - 悬浮按钮效果待开发
+    - 支持自定义吸附边
+    - 支持自定义正常和低姿态2中模式
+    - 支持自定义低姿态显示效果
+  - Notification效果
+    - 支持滑动关闭
 
 
 
@@ -79,9 +83,9 @@ Android稳定高效的浮层创建管理框架。
 
 # 截图
 
-截图效果较差且版本较老，建议[下载Demo](https://github.com/goweii/AnyDialog/raw/master/app/release/app-release.apk)体验最新功能
+截图效果较差且版本较老，建议[下载Demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)体验最新功能
 
-![anylayer.gif](https://github.com/goweii/AnyLayer/blob/master/picture/demo.gif?raw=true)
+![demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.gif)
 
 
 
@@ -133,6 +137,12 @@ dependencies {
 
 [点击查看详细更新说明](https://github.com/goweii/AnyLayer/releases)
 
+### 4.0.0-beta1
+
+- 重构包结构
+- 新增通知/悬浮按钮/引导浮层
+- 支持自定义浮层层级
+
 ### 3.6.0
 
 - 新增ext库，添加常用动画创建器
@@ -174,12 +184,14 @@ dependencies {
 - **[ViewManager]()**（管理View的动态添加移除和KeyEvent事件注册）
 
 - **[Layer]()**（对ViewManager的包装，实现进出场动画逻辑和事件监听，规范接口形式，分离出ViewHolder/ListenerHolder/Config三大内部类）
-  - **[DecorLayer]()**（规范父布局为DecorView的特殊Layer，引入了Layer层级概念）
-    - **[DialogLayer]()**（规范子布局层级，加入背景层，分离动画为背景动画和内容动画）
-      - **[PopupLayer]()**（可依据锚点View定位）
-    - **[ToastLayer]()**（定时消失，不响应事件的Layer）
-    - **[GuideLayer]()**（引导层Layer）
-    - **[FloatLayer]()**（悬浮按钮Layer）
+  - **[FrameLayer]()**（限定父布局为FrameLayout，引入了Layer层级概念）
+    - **[DecorLayer]()**（限定父布局为DecorView）
+      - **[DialogLayer]()**（规范子布局层级，加入背景层，分离动画为背景动画和内容动画）
+        - **[PopupLayer]()**（可依据锚点View定位）
+      - **[ToastLayer]()**（吐司）
+      - **[GuideLayer]()**（引导层）
+      - **[FloatLayer]()**（悬浮按钮）
+      - **[NotificationLayer]()**（通知）
 
 - **[AnimatorHelper]()**（创建常用属性动画）
 
@@ -245,6 +257,24 @@ public static ToastLayer toast()
  * 这个Context不能是ApplicationContext
  */
 public static ToastLayer toast(Context context)
+
+/**
+ * 创建一个FloatLayer
+ * 这个Context不能是ApplicationContext
+ */
+public static FloatLayer floats(Context context)
+
+/**
+ * 创建一个GuideLayer
+ * 这个Context不能是ApplicationContext
+ */
+public static GuideLayer guide(Context context)
+
+/**
+ * 创建一个NotificationLayer
+ * 这个Context不能是ApplicationContext
+ */
+public static NotificationLayer notification(Context context)
 ```
 
 
@@ -619,13 +649,19 @@ AnyLayer.toast()
 
 ### GuideLayer
 
-> 待实现
+> 已实现，文档待补充
 
 
 
 ### FloatLayer
 
-> 待实现
+> 已实现，文档待补充
+
+
+
+### NotificationLayer
+
+> 已实现，文档待补充
 
 
 

@@ -12,6 +12,8 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import per.goweii.anylayer.floats.FloatLayer;
+
 /**
  * @author CuiZhen
  * @date 2020/8/16
@@ -61,7 +63,39 @@ public class GlobalConfig {
     // NotificationLayer
 
     public long notificationDuration = 5000L;
-    public String notificationLabel = null;
+    public CharSequence notificationLabel = null;
     public Drawable notificationIcon = null;
     public String notificationTimePattern = null;
+
+    // FloatLayer
+
+    public boolean floatOutside = true;
+    public int floatSnapEdge = FloatLayer.Edge.HORIZONTAL;
+    @FloatRange(from = -2F, to = 2F)
+    public float floatDefPercentX = 2F;
+    @FloatRange(from = -2F, to = 2F)
+    public float floatDefPercentY = 0.236F;
+    @FloatRange(from = 0F, to = 1F)
+    public float floatDefAlpha = 1F;
+    public float floatDefScale = 1F;
+    public float floatPivotX = 0.5F;
+    public float floatPivotY = 0.5F;
+    @FloatRange(from = 0F, to = 1F)
+    public float floatNormalAlpha = 1F;
+    public float floatNormalScale = 1F;
+    @IntRange(from = 0)
+    public long floatLowProfileDelay = 3000L;
+    @FloatRange(from = 0F, to = 1F)
+    public float floatLowProfileAlpha = 0.8F;
+    public float floatLowProfileScale = 1F;
+    @FloatRange(from = 0F, to = 1F)
+    public float floatLowProfileIndent = 0F;
+    public int floatMarginLeft = Integer.MIN_VALUE;
+    public int floatMarginTop = Integer.MIN_VALUE;
+    public int floatMarginRight = Integer.MIN_VALUE;
+    public int floatMarginBottom = Integer.MIN_VALUE;
+    public int floatPaddingLeft = 0;
+    public int floatPaddingTop = 0;
+    public int floatPaddingRight = 0;
+    public int floatPaddingBottom = 0;
 }

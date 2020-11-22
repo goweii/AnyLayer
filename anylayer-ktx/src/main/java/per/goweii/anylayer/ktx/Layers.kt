@@ -8,13 +8,6 @@ import per.goweii.anylayer.ext.DefaultOnDismissListener
 import per.goweii.anylayer.ext.DefaultOnShowListener
 import per.goweii.anylayer.ext.DefaultOnVisibleChangeListener
 
-/**
- * @author CuiZhen
- * @date 2020/8/15
- */
-
-// Layer
-
 fun <T : Layer> T.doOnClick(@IdRes viewId: Int, onClickListener: T.(view: View) -> Unit) = this.apply {
     this.onClick(Layer.OnClickListener { _, v -> this.onClickListener(v) }, viewId)
 }

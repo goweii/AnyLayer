@@ -13,10 +13,12 @@ import android.widget.FrameLayout;
 
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import per.goweii.anylayer.DecorLayer;
+import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
@@ -240,12 +242,12 @@ public class FloatLayer extends DecorLayer {
         floatView.setScaleY(config.mDefScale);
     }
 
-    public FloatLayer floatView(int layoutId) {
+    public FloatLayer floatView(@LayoutRes int layoutId) {
         getConfig().mFloatViewId = layoutId;
         return this;
     }
 
-    public FloatLayer floatView(View floatView) {
+    public FloatLayer floatView(@NonNull View floatView) {
         getViewHolder().setFloat(floatView);
         return this;
     }
@@ -295,7 +297,7 @@ public class FloatLayer extends DecorLayer {
         return this;
     }
 
-    public FloatLayer lowProfileDelay(int delay) {
+    public FloatLayer lowProfileDelay(long delay) {
         getConfig().mLowProfileDelay = delay;
         return this;
     }
@@ -490,40 +492,40 @@ public class FloatLayer extends DecorLayer {
     protected static class Config extends DecorLayer.Config {
         protected int mFloatViewId = -1;
 
-        private boolean mOutside = true;
-        private int mSnapEdge = Edge.HORIZONTAL;
+        private boolean mOutside = GlobalConfig.get().floatOutside;
+        private int mSnapEdge = GlobalConfig.get().floatSnapEdge;
 
         @FloatRange(from = -2F, to = 2F)
-        private float mDefPercentX = 2F;
+        private float mDefPercentX = GlobalConfig.get().floatDefPercentX;
         @FloatRange(from = -2F, to = 2F)
-        private float mDefPercentY = 0.236F;
+        private float mDefPercentY = GlobalConfig.get().floatDefPercentY;
         @FloatRange(from = 0F, to = 1F)
-        private float mDefAlpha = 1F;
-        private float mDefScale = 1F;
+        private float mDefAlpha = GlobalConfig.get().floatDefAlpha;
+        private float mDefScale = GlobalConfig.get().floatDefScale;
 
-        private float mPivotX = 0.5F;
-        private float mPivotY = 0.5F;
+        private float mPivotX = GlobalConfig.get().floatPivotX;
+        private float mPivotY = GlobalConfig.get().floatPivotY;
 
         @FloatRange(from = 0F, to = 1F)
-        private float mNormalAlpha = 1F;
-        private float mNormalScale = 1F;
+        private float mNormalAlpha = GlobalConfig.get().floatNormalAlpha;
+        private float mNormalScale = GlobalConfig.get().floatNormalScale;
         @IntRange(from = 0)
-        private int mLowProfileDelay = 3000;
+        private long mLowProfileDelay = GlobalConfig.get().floatLowProfileDelay;
         @FloatRange(from = 0F, to = 1F)
-        private float mLowProfileAlpha = 0.8F;
-        private float mLowProfileScale = 1F;
+        private float mLowProfileAlpha = GlobalConfig.get().floatLowProfileAlpha;
+        private float mLowProfileScale = GlobalConfig.get().floatLowProfileScale;
         @FloatRange(from = 0F, to = 1F)
-        private float mLowProfileIndent = 0F;
+        private float mLowProfileIndent = GlobalConfig.get().floatLowProfileIndent;
 
-        private int mMarginLeft = Integer.MIN_VALUE;
-        private int mMarginTop = Integer.MIN_VALUE;
-        private int mMarginRight = Integer.MIN_VALUE;
-        private int mMarginBottom = Integer.MIN_VALUE;
+        private int mMarginLeft = GlobalConfig.get().floatMarginLeft;
+        private int mMarginTop = GlobalConfig.get().floatMarginTop;
+        private int mMarginRight = GlobalConfig.get().floatMarginRight;
+        private int mMarginBottom = GlobalConfig.get().floatMarginBottom;
 
-        private int mPaddingLeft = 0;
-        private int mPaddingTop = 0;
-        private int mPaddingRight = 0;
-        private int mPaddingBottom = 0;
+        private int mPaddingLeft = GlobalConfig.get().floatPaddingLeft;
+        private int mPaddingTop = GlobalConfig.get().floatPaddingTop;
+        private int mPaddingRight = GlobalConfig.get().floatPaddingRight;
+        private int mPaddingBottom = GlobalConfig.get().floatPaddingBottom;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
