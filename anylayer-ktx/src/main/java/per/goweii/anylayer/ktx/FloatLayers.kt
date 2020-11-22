@@ -48,7 +48,7 @@ fun <T : FloatLayer> T.setLowProfileIndent(indent: Float) = this.apply {
     this.lowProfileIndent(indent)
 }
 
-fun <T : FloatLayer> T.setLowProfileDelay(delay: Int) = this.apply {
+fun <T : FloatLayer> T.setLowProfileDelay(delay: Long) = this.apply {
     this.lowProfileDelay(delay)
 }
 
