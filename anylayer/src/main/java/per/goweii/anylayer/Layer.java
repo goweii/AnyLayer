@@ -369,6 +369,11 @@ public class Layer {
         return mViewHolder.getChild();
     }
 
+    @NonNull
+    public <V extends View> V requireView(@IdRes int id) {
+        return Utils.requireNonNull(getView(id));
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
     public <V extends View> V getView(@IdRes int id) {
