@@ -380,12 +380,14 @@ public class Layer {
         if (mViewCaches == null) {
             mViewCaches = new SparseArray<>();
         }
-        if (mViewCaches.indexOfKey(id) < 0) {
-            V view = getChild().findViewById(id);
-            mViewCaches.put(id, view);
-            return view;
+        View view = mViewCaches.get(id);
+        if (view == null) {
+            view = getChild().findViewById(id);
+            if (view != null) {
+                mViewCaches.put(id, view);
+            }
         }
-        return (V) mViewCaches.get(id);
+        return (V) view;
     }
 
     @NonNull
