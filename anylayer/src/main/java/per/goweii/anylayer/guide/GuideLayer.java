@@ -159,14 +159,9 @@ public class GuideLayer extends DecorLayer {
     }
 
     @Override
-    protected void onActivityConfigChanged(@NonNull Configuration newConfig) {
-        super.onActivityConfigChanged(newConfig);
-        Utils.onViewPreDraw(getViewHolder().getChild(), new Runnable() {
-            @Override
-            public void run() {
-                updateLocation();
-            }
-        });
+    public void onGlobalLayout() {
+        super.onGlobalLayout();
+        updateLocation();
     }
 
     public void updateLocation() {
@@ -197,6 +192,8 @@ public class GuideLayer extends DecorLayer {
     private void initLocation(@NonNull Rect rect, @NonNull Mapping mapping) {
         final View view = mapping.getGuideView();
         if (view == null) return;
+        view.offsetLeftAndRight(-view.getLeft());
+        view.offsetTopAndBottom(-view.getTop());
         FrameLayout parent = getViewHolder().getContentWrapper();
         final int viewWidthWithMargin = view.getWidth() + mapping.getMarginLeft() + mapping.getMarginRight();
         switch (mapping.getHorizontalAlign()) {
