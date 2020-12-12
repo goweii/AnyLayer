@@ -66,8 +66,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .marginRight(30))
                 .mapping(new GuideLayer.Mapping()
                         .guideView(textView3)
-                        .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
-                        .verticalAlign(GuideLayer.Align.Vertical.ALIGN_BOTTOM)
+                        .horizontalAlign(GuideLayer.Align.Horizontal.CENTER_PARENT)
+                        .verticalAlign(GuideLayer.Align.Vertical.ALIGN_PARENT_BOTTOM)
                         .marginBottom(60)
                         .onClick(new Layer.OnClickListener() {
                             @Override

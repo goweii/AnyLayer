@@ -346,7 +346,7 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
         initContent();
         initBackground();
@@ -354,29 +354,29 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
     }
 
     @Override
-    public void onPreRemove() {
+    protected void onPreRemove() {
         super.onPreRemove();
     }
 
     @Override
-    public void onDetach() {
+    protected void onDetach() {
         super.onDetach();
         getViewHolder().recycle();
     }
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+    protected void onActivityConfigChanged(@NonNull Configuration newConfig) {
+        super.onActivityConfigChanged(newConfig);
         Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
             @Override
             public void run() {

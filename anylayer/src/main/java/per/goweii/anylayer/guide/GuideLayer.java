@@ -115,7 +115,7 @@ public class GuideLayer extends DecorLayer {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
         getViewHolder().getChild().setClickable(true);
         getViewHolder().getBackground().setOuterColor(getConfig().mBackgroundColor);
@@ -138,9 +138,35 @@ public class GuideLayer extends DecorLayer {
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
         updateLocation();
+    }
+
+    @Override
+    protected void onShow() {
+        super.onShow();
+    }
+
+    @Override
+    protected void onPreRemove() {
+        super.onPreRemove();
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
+    protected void onActivityConfigChanged(@NonNull Configuration newConfig) {
+        super.onActivityConfigChanged(newConfig);
+        Utils.onViewPreDraw(getViewHolder().getChild(), new Runnable() {
+            @Override
+            public void run() {
+                updateLocation();
+            }
+        });
     }
 
     public void updateLocation() {
@@ -223,13 +249,13 @@ public class GuideLayer extends DecorLayer {
                 view.offsetTopAndBottom(rect.bottom - view.getHeight() - mapping.getMarginBottom());
                 break;
             case CENTER_PARENT:
-                view.offsetLeftAndRight((parent.getHeight() - viewHeightWithMargin) / 2 + mapping.getMarginTop());
+                view.offsetTopAndBottom((parent.getHeight() - viewHeightWithMargin) / 2 + mapping.getMarginTop());
                 break;
             case ABOVE_PARENT:
-                view.offsetLeftAndRight(-view.getHeight() - mapping.getMarginBottom());
+                view.offsetTopAndBottom(-view.getHeight() - mapping.getMarginBottom());
                 break;
             case BELOW_PARENT:
-                view.offsetLeftAndRight(parent.getHeight() + mapping.getMarginTop());
+                view.offsetTopAndBottom(parent.getHeight() + mapping.getMarginTop());
                 break;
             case ALIGN_PARENT_TOP:
                 view.offsetTopAndBottom(mapping.getMarginTop());
@@ -238,32 +264,6 @@ public class GuideLayer extends DecorLayer {
                 view.offsetTopAndBottom(parent.getHeight() - view.getHeight() - mapping.getMarginBottom());
                 break;
         }
-    }
-
-    @Override
-    public void onShow() {
-        super.onShow();
-    }
-
-    @Override
-    public void onPreRemove() {
-        super.onPreRemove();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
-            @Override
-            public void run() {
-                updateLocation();
-            }
-        });
     }
 
     @NonNull

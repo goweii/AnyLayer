@@ -30,7 +30,6 @@ public final class ViewManager {
     private View currentKeyView = null;
 
     private OnLifeListener mOnLifeListener = null;
-    private OnPreDrawListener mOnPreDrawListener = null;
     private OnKeyListener mOnKeyListener = null;
 
     public ViewManager() {
@@ -93,10 +92,6 @@ public final class ViewManager {
         mOnLifeListener = onLifeListener;
     }
 
-    public void setOnPreDrawListener(@Nullable OnPreDrawListener onPreDrawListener) {
-        mOnPreDrawListener = onPreDrawListener;
-    }
-
     public void setOnKeyListener(@Nullable OnKeyListener onKeyListener) {
         mOnKeyListener = onKeyListener;
     }
@@ -115,7 +110,6 @@ public final class ViewManager {
             mLayerKeyListener = new LayerKeyListener();
             currentKeyView.setOnKeyListener(mLayerKeyListener);
         }
-        mChild.getViewTreeObserver().addOnPreDrawListener(new LayerPreDrawListener());
         mParent.addView(mChild);
         if (mOnLifeListener != null) {
             mOnLifeListener.onAttach();
@@ -135,19 +129,6 @@ public final class ViewManager {
         mParent.removeView(mChild);
         if (mOnLifeListener != null) {
             mOnLifeListener.onDetach();
-        }
-    }
-
-    private final class LayerPreDrawListener implements ViewTreeObserver.OnPreDrawListener {
-        @Override
-        public boolean onPreDraw() {
-            if (mChild.getViewTreeObserver().isAlive()) {
-                mChild.getViewTreeObserver().removeOnPreDrawListener(this);
-            }
-            if (mOnPreDrawListener != null) {
-                mOnPreDrawListener.onPreDraw();
-            }
-            return true;
         }
     }
 
@@ -184,10 +165,6 @@ public final class ViewManager {
         void onAttach();
 
         void onDetach();
-    }
-
-    public interface OnPreDrawListener {
-        void onPreDraw();
     }
 
     public interface OnKeyListener {

@@ -2,10 +2,8 @@ package per.goweii.anylayer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntRange;
@@ -19,7 +17,7 @@ import androidx.annotation.Nullable;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class FrameLayer extends Layer implements ViewTreeObserver.OnGlobalLayoutListener {
+public class FrameLayer extends Layer {
 
     public FrameLayer(@NonNull FrameLayout frameLayout) {
         super();
@@ -109,33 +107,27 @@ public class FrameLayer extends Layer implements ViewTreeObserver.OnGlobalLayout
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
-        getViewHolder().getRoot().getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
     }
 
     @Override
-    public void onPreRemove() {
+    protected void onPreRemove() {
         super.onPreRemove();
     }
 
     @Override
-    public void onDetach() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            getViewHolder().getRoot().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        } else {
-            getViewHolder().getRoot().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-        }
+    protected void onDetach() {
         super.onDetach();
         final LayerLayout group = findLayerLayoutFromRoot();
         if (group == null) {
@@ -155,6 +147,7 @@ public class FrameLayer extends Layer implements ViewTreeObserver.OnGlobalLayout
 
     @Override
     public void onGlobalLayout() {
+        super.onGlobalLayout();
         final ViewGroup root = getViewHolder().getRoot();
         int count = root.getChildCount();
         if (count < 2) {

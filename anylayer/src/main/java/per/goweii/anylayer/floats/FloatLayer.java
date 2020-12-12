@@ -136,32 +136,32 @@ public class FloatLayer extends DecorLayer {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
         initDragLayout();
         initFloatView();
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
         initFloatViewDefConfig();
         toNormal();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
         getViewHolder().getChild().goEdge(getViewHolder().getFloat());
     }
 
     @Override
-    public void onPreRemove() {
+    protected void onPreRemove() {
         super.onPreRemove();
     }
 
     @Override
-    public void onDetach() {
+    protected void onDetach() {
         super.onDetach();
     }
 

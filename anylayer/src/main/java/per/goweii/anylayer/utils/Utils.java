@@ -179,6 +179,19 @@ public final class Utils {
         }
     }
 
+    public static void onViewPreDraw(@NonNull final View view, @NonNull Runnable runnable) {
+        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if (view.getViewTreeObserver().isAlive()) {
+                    view.getViewTreeObserver().removeOnPreDrawListener(this);
+                }
+                runnable.run();
+                return true;
+            }
+        });
+    }
+
     public static void onViewLayout(@NonNull final View view, @NonNull Runnable runnable) {
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override

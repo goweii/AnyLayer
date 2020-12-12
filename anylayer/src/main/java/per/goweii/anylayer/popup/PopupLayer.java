@@ -105,35 +105,35 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
     }
 
     @Override
-    public void onPreRemove() {
+    protected void onPreRemove() {
         super.onPreRemove();
     }
 
     @Override
-    public void onDetach() {
+    protected void onDetach() {
         getViewHolder().getParent().getViewTreeObserver().removeOnScrollChangedListener(mOnScrollChangedListener);
         mOnScrollChangedListener = null;
         super.onDetach();
     }
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+    protected void onActivityConfigChanged(@NonNull Configuration newConfig) {
+        super.onActivityConfigChanged(newConfig);
         Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
             @Override
             public void run() {

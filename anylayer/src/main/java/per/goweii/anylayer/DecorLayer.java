@@ -17,7 +17,18 @@ import per.goweii.anylayer.utils.Utils;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class DecorLayer extends FrameLayer implements ComponentCallbacks {
+public class DecorLayer extends FrameLayer {
+    private final ComponentCallbacks mActivityComponentCallbacks = new ComponentCallbacks() {
+        @Override
+        public void onConfigurationChanged(@NonNull Configuration newConfig) {
+            DecorLayer.this.onActivityConfigChanged(newConfig);
+        }
+
+        @Override
+        public void onLowMemory() {
+        }
+    };
+
     private final Activity mActivity;
 
     public DecorLayer(@NonNull Context context) {
@@ -71,38 +82,33 @@ public class DecorLayer extends FrameLayer implements ComponentCallbacks {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
-        getActivity().registerComponentCallbacks(this);
+        getActivity().registerComponentCallbacks(mActivityComponentCallbacks);
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
     }
 
     @Override
-    public void onPreRemove() {
+    protected void onPreRemove() {
         super.onPreRemove();
     }
 
     @Override
-    public void onDetach() {
-        getActivity().unregisterComponentCallbacks(this);
+    protected void onDetach() {
+        getActivity().unregisterComponentCallbacks(mActivityComponentCallbacks);
         super.onDetach();
     }
 
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-    }
-
-    @Override
-    public void onLowMemory() {
+    protected void onActivityConfigChanged(@NonNull Configuration newConfig) {
     }
 
     public static class ViewHolder extends FrameLayer.ViewHolder {

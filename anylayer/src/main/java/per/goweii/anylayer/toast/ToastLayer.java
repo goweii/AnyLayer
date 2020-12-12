@@ -34,7 +34,15 @@ import per.goweii.anylayer.utils.Utils;
  * E-mail: goweii@163.com
  * GitHub: https://github.com/goweii
  */
-public class ToastLayer extends DecorLayer implements Runnable {
+public class ToastLayer extends DecorLayer {
+    private final Runnable mDismissRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isShown()) {
+                dismiss();
+            }
+        }
+    };
 
     public ToastLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
@@ -258,7 +266,7 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
         getChild().setTag(this);
         if (getConfig().mRemoveOthers) {
@@ -279,35 +287,28 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
         if (getConfig().mDuration > 0) {
-            getChild().postDelayed(this, getConfig().mDuration);
+            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
         }
     }
 
     @Override
-    public void onPreRemove() {
-        getChild().removeCallbacks(this);
+    protected void onPreRemove() {
+        getChild().removeCallbacks(mDismissRunnable);
         super.onPreRemove();
     }
 
     @Override
-    public void onDetach() {
+    protected void onDetach() {
         getChild().setTag(null);
         super.onDetach();
-    }
-
-    @Override
-    public void run() {
-        if (isShown()) {
-            dismiss();
-        }
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {

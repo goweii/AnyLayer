@@ -155,7 +155,7 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
         getViewHolder().getChild().setPadding(0, Utils.getStatusBarHeight(getActivity()), 0, 0);
         getViewHolder().getChild().setClipToPadding(false);
@@ -245,12 +245,12 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
         if (getConfig().mDuration > 0) {
             if (mDismissRunnable == null) {
@@ -266,7 +266,7 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @Override
-    public void onPreRemove() {
+    protected void onPreRemove() {
         if (mDismissRunnable != null) {
             getChild().removeCallbacks(mDismissRunnable);
         }
@@ -274,7 +274,7 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @Override
-    public void onDetach() {
+    protected void onDetach() {
         super.onDetach();
     }
 
