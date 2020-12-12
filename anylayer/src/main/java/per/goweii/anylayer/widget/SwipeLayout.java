@@ -181,8 +181,6 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         mTop = mSwipeView.getTop();
         mRight = mSwipeView.getRight();
         mBottom = mSwipeView.getBottom();
-        mInnerScrollViews.clear();
-        mInnerScrollViews.addAll(DragCompat.findAllScrollViews(this));
     }
 
     private int getSwipeX() {
@@ -737,7 +735,12 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
 
         @Override
         public boolean tryCaptureView(@NonNull View child, int pointerId) {
-            return canSwipe();
+            if (canSwipe()) {
+                mInnerScrollViews.clear();
+                DragCompat.findAllScrollableView(SwipeLayout.this, mInnerScrollViews);
+                return true;
+            }
+            return false;
         }
 
         @Override
