@@ -15,16 +15,12 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.graphics.ColorUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class HoleView extends View {
     private final Paint mPaint;
-    private final List<Path> mHoleList = new ArrayList<>();
-    private Path mHolePath = new Path();
+    private final Path mTempPath = new Path();
+    private final Path mHolePath = new Path();
     @ColorInt
     private int mOuterColor = ColorUtils.setAlphaComponent(Color.BLACK, (int) (255 * 0.5));
 
@@ -46,10 +42,13 @@ public class HoleView extends View {
         mOuterColor = colorInt;
     }
 
+    public void clear() {
+        mTempPath.reset();
+        mTempPath.rewind();
+    }
+
     public void addCircle(float centerX, float centerY, float radius) {
-        final Path path = new Path();
-        path.addCircle(centerX, centerY, radius, Path.Direction.CW);
-        addPath(path);
+        mTempPath.addCircle(centerX, centerY, radius, Path.Direction.CW);
     }
 
     public void addRect(float left, float top, float right, float bottom, float radii) {
@@ -61,17 +60,16 @@ public class HoleView extends View {
     }
 
     public void addRect(@NonNull RectF rectF, float radii) {
-        final Path path = new Path();
-        path.addRoundRect(
+        mTempPath.addRoundRect(
                 rectF,
                 new float[]{radii, radii, radii, radii, radii, radii, radii, radii},
                 Path.Direction.CW
         );
-        addPath(path);
     }
 
     public void addPath(@NonNull Path path) {
-        mHoleList.add(path);
+        mTempPath.addPath(path);
+        invalidate();
     }
 
     @Override
@@ -80,24 +78,15 @@ public class HoleView extends View {
         canvas.save();
         mPaint.setColor(mOuterColor);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            preparePath();
+            mHolePath.reset();
+            mHolePath.rewind();
+            mHolePath.addRect(0F, 0F, getWidth(), getHeight(), Path.Direction.CW);
+            mHolePath.op(mHolePath, mTempPath, Path.Op.DIFFERENCE);
             canvas.drawPath(mHolePath, mPaint);
         } else {
-            for (Path path : mHoleList) {
-                canvas.clipPath(path, Region.Op.DIFFERENCE);
-            }
+            canvas.clipPath(mTempPath, Region.Op.DIFFERENCE);
             canvas.drawRect(0, 0, getWidth(), getHeight(), mPaint);
         }
         canvas.restore();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private void preparePath() {
-        mHolePath.reset();
-        mHolePath.rewind();
-        mHolePath.addRect(0F, 0F, getWidth(), getHeight(), Path.Direction.CW);
-        for (Path path : mHoleList) {
-            mHolePath.op(mHolePath, path, Path.Op.DIFFERENCE);
-        }
     }
 }

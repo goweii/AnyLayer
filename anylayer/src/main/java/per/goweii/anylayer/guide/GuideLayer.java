@@ -3,6 +3,7 @@ package per.goweii.anylayer.guide;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -119,7 +120,7 @@ public class GuideLayer extends DecorLayer {
         getViewHolder().getChild().setClickable(true);
         getViewHolder().getBackground().setOuterColor(getConfig().mBackgroundColor);
         for (Mapping mapping : getConfig().mMapping) {
-            if (mapping.getGuideView() != null) {
+            if (mapping.getGuideView() == null) {
                 if (mapping.getGuideViewRes() > 0) {
                     View view = LayoutInflater.from(getActivity()).inflate(mapping.getGuideViewRes(), getViewHolder().getContentWrapper(), false);
                     mapping.guideView(view);
@@ -139,7 +140,12 @@ public class GuideLayer extends DecorLayer {
     @Override
     public void onPreDraw() {
         super.onPreDraw();
+        updateLocation();
+    }
+
+    public void updateLocation() {
         int[] childLocation = new int[2];
+        getViewHolder().getBackground().clear();
         getViewHolder().getChild().getLocationInWindow(childLocation);
         for (Mapping mapping : getConfig().mMapping) {
             final Rect targetRect = mapping.getTargetRect();
@@ -165,6 +171,7 @@ public class GuideLayer extends DecorLayer {
     private void initLocation(@NonNull Rect rect, @NonNull Mapping mapping) {
         final View view = mapping.getGuideView();
         if (view == null) return;
+        FrameLayout parent = getViewHolder().getContentWrapper();
         final int viewWidthWithMargin = view.getWidth() + mapping.getMarginLeft() + mapping.getMarginRight();
         switch (mapping.getHorizontalAlign()) {
             case CENTER:
@@ -182,11 +189,20 @@ public class GuideLayer extends DecorLayer {
             case ALIGN_RIGHT:
                 view.offsetLeftAndRight(rect.right - view.getWidth() - mapping.getMarginRight());
                 break;
+            case CENTER_PARENT:
+                view.offsetLeftAndRight((parent.getWidth() - viewWidthWithMargin) / 2 + mapping.getMarginLeft());
+                break;
+            case TO_PARENT_LEFT:
+                view.offsetLeftAndRight(-view.getWidth() - mapping.getMarginRight());
+                break;
+            case TO_PARENT_RIGHT:
+                view.offsetLeftAndRight(parent.getWidth() + mapping.getMarginLeft());
+                break;
             case ALIGN_PARENT_LEFT:
                 view.offsetLeftAndRight(mapping.getMarginLeft());
                 break;
             case ALIGN_PARENT_RIGHT:
-                view.offsetLeftAndRight(getViewHolder().getContentWrapper().getWidth() - view.getWidth() - mapping.getMarginRight());
+                view.offsetLeftAndRight(parent.getWidth() - view.getWidth() - mapping.getMarginRight());
                 break;
         }
         final int viewHeightWithMargin = view.getHeight() + mapping.getMarginTop() + mapping.getMarginBottom();
@@ -206,11 +222,20 @@ public class GuideLayer extends DecorLayer {
             case ALIGN_BOTTOM:
                 view.offsetTopAndBottom(rect.bottom - view.getHeight() - mapping.getMarginBottom());
                 break;
+            case CENTER_PARENT:
+                view.offsetLeftAndRight((parent.getHeight() - viewHeightWithMargin) / 2 + mapping.getMarginTop());
+                break;
+            case ABOVE_PARENT:
+                view.offsetLeftAndRight(-view.getHeight() - mapping.getMarginBottom());
+                break;
+            case BELOW_PARENT:
+                view.offsetLeftAndRight(parent.getHeight() + mapping.getMarginTop());
+                break;
             case ALIGN_PARENT_TOP:
                 view.offsetTopAndBottom(mapping.getMarginTop());
                 break;
             case ALIGN_PARENT_BOTTOM:
-                view.offsetTopAndBottom(getViewHolder().getContentWrapper().getHeight() - view.getHeight() - mapping.getMarginBottom());
+                view.offsetTopAndBottom(parent.getHeight() - view.getHeight() - mapping.getMarginBottom());
                 break;
         }
     }
@@ -228,6 +253,17 @@ public class GuideLayer extends DecorLayer {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
+            @Override
+            public void run() {
+                updateLocation();
+            }
+        });
     }
 
     @NonNull
@@ -471,14 +507,12 @@ public class GuideLayer extends DecorLayer {
 
         @NonNull
         public Rect getTargetRect() {
-            if (mTargetRect.isEmpty()) {
-                if (mTargetView != null) {
-                    int[] location = new int[2];
-                    mTargetView.getLocationInWindow(location);
-                    mTargetRect.set(location[0], location[1],
-                            location[0] + mTargetView.getWidth(),
-                            location[1] + mTargetView.getHeight());
-                }
+            if (mTargetView != null) {
+                int[] location = new int[2];
+                mTargetView.getLocationInWindow(location);
+                mTargetRect.set(location[0], location[1],
+                        location[0] + mTargetView.getWidth(),
+                        location[1] + mTargetView.getHeight());
             }
             return mTargetRect;
         }
@@ -555,6 +589,9 @@ public class GuideLayer extends DecorLayer {
             TO_RIGHT,
             ALIGN_LEFT,
             ALIGN_RIGHT,
+            CENTER_PARENT,
+            TO_PARENT_LEFT,
+            TO_PARENT_RIGHT,
             ALIGN_PARENT_LEFT,
             ALIGN_PARENT_RIGHT
         }
@@ -568,6 +605,9 @@ public class GuideLayer extends DecorLayer {
             BELOW,
             ALIGN_TOP,
             ALIGN_BOTTOM,
+            CENTER_PARENT,
+            ABOVE_PARENT,
+            BELOW_PARENT,
             ALIGN_PARENT_TOP,
             ALIGN_PARENT_BOTTOM
         }

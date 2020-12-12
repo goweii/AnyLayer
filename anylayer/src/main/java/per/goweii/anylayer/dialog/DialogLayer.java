@@ -376,7 +376,8 @@ public class DialogLayer extends DecorLayer {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
+        super.onConfigurationChanged(newConfig);
+        Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
             @Override
             public void run() {
                 fitContainerToActivityContent();

@@ -179,7 +179,7 @@ public final class Utils {
         }
     }
 
-    public static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
+    public static void onViewLayout(@NonNull final View view, @NonNull Runnable runnable) {
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -193,6 +193,10 @@ public final class Utils {
                 runnable.run();
             }
         });
+    }
+
+    public static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
+        onViewLayout(view, runnable);
     }
 
     public static int getViewMarginLeft(@NonNull View view) {
