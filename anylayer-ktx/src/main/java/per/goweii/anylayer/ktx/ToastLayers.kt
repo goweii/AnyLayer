@@ -1,11 +1,25 @@
 package per.goweii.anylayer.ktx
 
 import android.graphics.drawable.Drawable
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import android.view.View
+import androidx.annotation.*
 import per.goweii.anylayer.toast.ToastLayer
+
+fun <T : ToastLayer> T.setContentView(contentView: View) = this.apply {
+    this.contentView(contentView)
+}
+
+fun <T : ToastLayer> T.setContentView(@LayoutRes contentViewId: Int) = this.apply {
+    this.contentView(contentViewId)
+}
+
+fun <T : ToastLayer> T.setTextColorInt(@ColorInt colorInt: Int) = this.apply {
+    this.textColorInt(colorInt)
+}
+
+fun <T : ToastLayer> T.setTextColorRes(@ColorRes colorRes: Int) = this.apply {
+    this.textColorRes(colorRes)
+}
 
 fun <T : ToastLayer> T.setRemoveOthers(removeOthers: Boolean) = this.apply {
     this.removeOthers(removeOthers)

@@ -16,6 +16,14 @@ fun <T : NotificationLayer> T.setContentView(@LayoutRes contentViewId: Int) = th
     this.contentView(contentViewId)
 }
 
+fun <T : NotificationLayer> T.setMaxWidth(maxWidth: Int) = this.apply {
+    this.maxWidth(maxWidth)
+}
+
+fun <T : NotificationLayer> T.setMaxHeight(maxHeight: Int) = this.apply {
+    this.maxHeight(maxHeight)
+}
+
 fun <T : NotificationLayer> T.setIcon(@DrawableRes icon: Int) = this.apply {
     this.icon(icon)
 }
