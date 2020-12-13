@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/anylayler_ll_container"
+    android:id="@+id/anylayler_toast_content"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal|bottom"
@@ -18,7 +18,7 @@
     android:paddingBottom="15dp">
 
     <ImageView
-        android:id="@+id/anylayler_notification_content_icon"
+        android:id="@+id/anylayler_toast_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
@@ -28,7 +28,7 @@
         tools:src="#FFF" />
 
     <TextView
-        android:id="@+id/anylayler_tv_msg"
+        android:id="@+id/anylayler_toast_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"

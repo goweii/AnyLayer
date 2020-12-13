@@ -272,6 +272,16 @@ public class FloatLayer extends DecorLayer {
         return this;
     }
 
+    public FloatLayer pivotX(float pivot) {
+        getConfig().mPivotX = pivot;
+        return this;
+    }
+
+    public FloatLayer pivotY(float pivot) {
+        getConfig().mPivotY = pivot;
+        return this;
+    }
+
     public FloatLayer normalAlpha(float alpha) {
         getConfig().mNormalAlpha = alpha;
         return this;

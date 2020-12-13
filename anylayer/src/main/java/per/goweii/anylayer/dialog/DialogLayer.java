@@ -924,8 +924,8 @@ public class DialogLayer extends DecorLayer {
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mContentWrapper = getChild().findViewById(R.id.anylayler_fl_content_wrapper);
-            mBackground = getChild().findViewById(R.id.anylayler_iv_background);
+            mContentWrapper = getChild().findViewById(R.id.anylayler_dialog_content_wrapper);
+            mBackground = getChild().findViewById(R.id.anylayler_dialog_background);
         }
 
         @NonNull

@@ -3,7 +3,6 @@ package per.goweii.anylayer.guide;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -288,8 +287,8 @@ public class GuideLayer extends DecorLayer {
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mContentWrapper = getChild().findViewById(R.id.anylayler_fl_content_wrapper);
-            mBackground = getChild().findViewById(R.id.anylayler_hv_background);
+            mContentWrapper = getChild().findViewById(R.id.anylayler_guide_content_wrapper);
+            mBackground = getChild().findViewById(R.id.anylayler_guide_background);
         }
 
         @NonNull
@@ -346,7 +345,7 @@ public class GuideLayer extends DecorLayer {
         private Align.Horizontal mHorizontalAlign = Align.Horizontal.CENTER;
         private Align.Vertical mVerticalAlign = Align.Vertical.BELOW;
 
-        private SparseArray<OnClickListener> mOnClickListeners = new SparseArray<>();
+        private final SparseArray<OnClickListener> mOnClickListeners = new SparseArray<>();
 
         private void bindOnClickListener(@NonNull GuideLayer layer) {
             if (mGuideView == null) return;
