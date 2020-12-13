@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
@@ -43,6 +44,10 @@ public class GlobalConfig {
     public long toastDuration = 3000L;
     @DrawableRes
     public int toastBackgroundRes = -1;
+    @ColorInt
+    public int toastTextColorInt = Color.TRANSPARENT;
+    @ColorRes
+    public int toastTextColorRes = -1;
     @FloatRange(from = 0F, to = 1F)
     public float toastAlpha = 1;
     public int toastGravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;

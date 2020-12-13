@@ -140,6 +140,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.toast()
                         .icon(isSucc ? R.drawable.ic_success : R.drawable.ic_fail)
                         .message(isSucc ? "哈哈，成功了" : "哎呀，失败了")
+                        .textColorInt(Color.WHITE)
                         .backgroundColorRes(isSucc ? R.color.colorPrimary : R.color.colorAccent)
                         .gravity(Gravity.CENTER)
                         .show();

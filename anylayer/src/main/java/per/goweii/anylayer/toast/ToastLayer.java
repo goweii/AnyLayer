@@ -21,6 +21,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import per.goweii.anylayer.DecorLayer;
 import per.goweii.anylayer.GlobalConfig;
@@ -245,6 +246,11 @@ public class ToastLayer extends DecorLayer {
             }
         }
         if (getViewHolder().getMessage() != null) {
+            if (getConfig().mTextColorInt != Color.TRANSPARENT) {
+                getViewHolder().getMessage().setTextColor(getConfig().mTextColorInt);
+            } else if (getConfig().mTextColorRes != -1) {
+                getViewHolder().getMessage().setTextColor(ContextCompat.getColor(getActivity(), getConfig().mTextColorRes));
+            }
             if (TextUtils.isEmpty(getConfig().mMessage)) {
                 getViewHolder().getMessage().setVisibility(View.GONE);
                 getViewHolder().getMessage().setText("");
@@ -357,6 +363,18 @@ public class ToastLayer extends DecorLayer {
         return this;
     }
 
+    @NonNull
+    public ToastLayer textColorInt(@ColorInt int colorInt) {
+        getConfig().mTextColorInt = colorInt;
+        return this;
+    }
+
+    @NonNull
+    public ToastLayer textColorRes(@ColorRes int colorRes) {
+        getConfig().mTextColorRes = colorRes;
+        return this;
+    }
+
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private View mContent;
 
@@ -414,6 +432,10 @@ public class ToastLayer extends DecorLayer {
         private Drawable mBackgroundDrawable = null;
         private int mBackgroundResource = GlobalConfig.get().toastBackgroundRes;
         private int mBackgroundColor = Color.TRANSPARENT;
+        @ColorInt
+        private int mTextColorInt = GlobalConfig.get().toastTextColorInt;
+        @ColorRes
+        private int mTextColorRes = GlobalConfig.get().toastTextColorRes;
         private float mAlpha = GlobalConfig.get().toastAlpha;
         private int mGravity = GlobalConfig.get().toastGravity;
         private int mMarginLeft = GlobalConfig.get().toastMarginLeft;
