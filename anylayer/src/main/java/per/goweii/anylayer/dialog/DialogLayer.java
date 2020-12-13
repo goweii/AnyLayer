@@ -41,13 +41,6 @@ import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.burred.Blurred;
 
-/**
- * @author CuiZhen
- * @date 2019/3/10
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class DialogLayer extends DecorLayer {
 
     private final long mAnimDurDef = GlobalConfig.get().dialogAnimDuration;
@@ -346,7 +339,7 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
         initContent();
         initBackground();
@@ -354,29 +347,30 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
     }
 
     @Override
-    public void onPreRemove() {
+    protected void onPreRemove() {
         super.onPreRemove();
     }
 
     @Override
-    public void onDetach() {
+    protected void onDetach() {
         super.onDetach();
         getViewHolder().recycle();
     }
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
+    protected void onActivityConfigChanged(@NonNull Configuration newConfig) {
+        super.onActivityConfigChanged(newConfig);
+        Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
             @Override
             public void run() {
                 fitContainerToActivityContent();
@@ -909,7 +903,6 @@ public class DialogLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
-        private FrameLayout mActivityContent;
         private BackgroundView mBackground;
         private SwipeLayout mContentWrapper;
         private View mContent;
@@ -924,8 +917,8 @@ public class DialogLayer extends DecorLayer {
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mContentWrapper = getChild().findViewById(R.id.anylayler_fl_content_wrapper);
-            mBackground = getChild().findViewById(R.id.anylayler_iv_background);
+            mContentWrapper = getChild().findViewById(R.id.anylayler_dialog_content_wrapper);
+            mBackground = getChild().findViewById(R.id.anylayler_dialog_background);
         }
 
         @NonNull

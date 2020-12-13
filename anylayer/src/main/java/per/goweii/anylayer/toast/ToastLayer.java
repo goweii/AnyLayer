@@ -27,14 +27,15 @@ import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/7/21
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
-public class ToastLayer extends DecorLayer implements Runnable {
+public class ToastLayer extends DecorLayer {
+    private final Runnable mDismissRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isShown()) {
+                dismiss();
+            }
+        }
+    };
 
     public ToastLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
@@ -86,14 +87,193 @@ public class ToastLayer extends DecorLayer implements Runnable {
         return (ListenerHolder) super.getListenerHolder();
     }
 
+    @NonNull
     @Override
-    public void dismiss(boolean withAnim) {
-        super.dismiss(withAnim);
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (getViewHolder().getChildNullable() == null) {
+            FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
+            getViewHolder().setChild(container);
+            getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getChild()));
+            ViewGroup.LayoutParams layoutParams = getViewHolder().getContent().getLayoutParams();
+            FrameLayout.LayoutParams contentParams;
+            if (layoutParams == null) {
+                contentParams = generateContentDefaultLayoutParams();
+            } else if (layoutParams instanceof FrameLayout.LayoutParams) {
+                contentParams = (FrameLayout.LayoutParams) layoutParams;
+            } else {
+                contentParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
+            }
+            getViewHolder().getContent().setLayoutParams(contentParams);
+            getViewHolder().getChild().addView(getViewHolder().getContent());
+        }
+        return getViewHolder().getChild();
+    }
+
+    @NonNull
+    protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (getViewHolder().getContentNullable() == null) {
+            getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
+        } else {
+            ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
+            if (contentParent != null) {
+                contentParent.removeView(getViewHolder().getContent());
+            }
+        }
+        return getViewHolder().getContent();
+    }
+
+    @NonNull
+    protected FrameLayout.LayoutParams generateContentDefaultLayoutParams() {
+        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    @NonNull
+    @Override
+    protected Animator onCreateInAnimator(@NonNull View view) {
+        Animator animator = super.onCreateInAnimator(view);
+        if (animator == null) {
+            if (GlobalConfig.get().toastAnimatorCreator != null) {
+                animator = GlobalConfig.get().toastAnimatorCreator.createInAnimator(view);
+            }
+        }
+        if (animator == null) {
+            animator = AnimatorHelper.createZoomAlphaInAnim(view);
+            animator.setDuration(GlobalConfig.get().toastAnimDuration);
+        }
+        return animator;
+    }
+
+    @NonNull
+    @Override
+    protected Animator onCreateOutAnimator(@NonNull View view) {
+        Animator animator = super.onCreateOutAnimator(view);
+        if (animator == null) {
+            if (GlobalConfig.get().toastAnimatorCreator != null) {
+                animator = GlobalConfig.get().toastAnimatorCreator.createOutAnimator(view);
+            }
+        }
+        if (animator == null) {
+            animator = AnimatorHelper.createZoomAlphaOutAnim(view);
+            animator.setDuration(GlobalConfig.get().toastAnimDuration);
+        }
+        return animator;
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        getChild().setTag(this);
+        if (getConfig().mRemoveOthers) {
+            removeOthers();
+        }
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
+        params.gravity = getConfig().mGravity;
+        if (getConfig().mMarginLeft != Integer.MIN_VALUE) {
+            params.leftMargin = getConfig().mMarginLeft;
+        }
+        if (getConfig().mMarginTop != Integer.MIN_VALUE) {
+            params.topMargin = getConfig().mMarginTop;
+        }
+        if (getConfig().mMarginRight != Integer.MIN_VALUE) {
+            params.rightMargin = getConfig().mMarginRight;
+        }
+        if (getConfig().mMarginBottom != Integer.MIN_VALUE) {
+            params.bottomMargin = getConfig().mMarginBottom;
+        }
+        getChild().setLayoutParams(params);
+        bindDefaultContentData();
+    }
+
+    @Override
+    protected void onPreDraw() {
+        super.onPreDraw();
+    }
+
+    @Override
+    protected void onShow() {
+        super.onShow();
+        if (getConfig().mDuration > 0) {
+            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
+        }
+    }
+
+    @Override
+    protected void onPreRemove() {
+        getChild().removeCallbacks(mDismissRunnable);
+        super.onPreRemove();
+    }
+
+    @Override
+    protected void onDetach() {
+        getChild().setTag(null);
+        super.onDetach();
+    }
+
+    private void removeOthers() {
+        final ViewGroup parent = getParent();
+        final int count = parent.getChildCount();
+        for (int i = count - 1; i >= 0; i--) {
+            final View child = parent.getChildAt(i);
+            Object tag = child.getTag();
+            if (tag instanceof ToastLayer) {
+                ToastLayer toastLayer = (ToastLayer) tag;
+                if (toastLayer != this) {
+                    toastLayer.dismiss(false);
+                }
+            }
+        }
+    }
+
+    private void bindDefaultContentData() {
+        if (getConfig().mBackgroundDrawable != null) {
+            getViewHolder().getContent().setBackgroundDrawable(getConfig().mBackgroundDrawable);
+        } else if (getConfig().mBackgroundResource > 0) {
+            getViewHolder().getContent().setBackgroundResource(getConfig().mBackgroundResource);
+        }
+        if (getViewHolder().getContent().getBackground() != null) {
+            getViewHolder().getContent().getBackground().setColorFilter(getConfig().mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
+        }
+        getViewHolder().getContent().setAlpha(getConfig().mAlpha);
+        if (getViewHolder().getIcon() != null) {
+            if (getConfig().mIcon > 0) {
+                getViewHolder().getIcon().setVisibility(View.VISIBLE);
+                getViewHolder().getIcon().setImageResource(getConfig().mIcon);
+            } else {
+                getViewHolder().getIcon().setVisibility(View.GONE);
+            }
+        }
+        if (getViewHolder().getMessage() != null) {
+            if (getConfig().mTextColorInt != Color.TRANSPARENT) {
+                getViewHolder().getMessage().setTextColor(getConfig().mTextColorInt);
+            } else if (getConfig().mTextColorRes != -1) {
+                getViewHolder().getMessage().setTextColor(ContextCompat.getColor(getActivity(), getConfig().mTextColorRes));
+            }
+            if (TextUtils.isEmpty(getConfig().mMessage)) {
+                getViewHolder().getMessage().setVisibility(View.GONE);
+                getViewHolder().getMessage().setText("");
+            } else {
+                getViewHolder().getMessage().setVisibility(View.VISIBLE);
+                getViewHolder().getMessage().setText(getConfig().mMessage);
+            }
+        }
     }
 
     @NonNull
     public ToastLayer removeOthers(boolean removeOthers) {
         getConfig().mRemoveOthers = removeOthers;
+        return this;
+    }
+
+    @NonNull
+    public ToastLayer contentView(View contentView) {
+        getViewHolder().setContent(contentView);
+        return this;
+    }
+
+    @NonNull
+    public ToastLayer contentView(@LayoutRes int contentView) {
+        getConfig().mContentViewId = contentView;
         return this;
     }
 
@@ -182,157 +362,65 @@ public class ToastLayer extends DecorLayer implements Runnable {
     }
 
     @NonNull
-    @Override
-    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        return inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
+    public ToastLayer textColorInt(@ColorInt int colorInt) {
+        getConfig().mTextColorInt = colorInt;
+        return this;
     }
 
     @NonNull
-    @Override
-    protected Animator onCreateInAnimator(@NonNull View view) {
-        Animator animator = super.onCreateInAnimator(view);
-        if (animator == null) {
-            if (GlobalConfig.get().toastAnimatorCreator != null) {
-                animator = GlobalConfig.get().toastAnimatorCreator.createInAnimator(view);
-            }
-        }
-        if (animator == null) {
-            animator = AnimatorHelper.createZoomAlphaInAnim(view);
-            animator.setDuration(GlobalConfig.get().toastAnimDuration);
-        }
-        return animator;
-    }
-
-    @NonNull
-    @Override
-    protected Animator onCreateOutAnimator(@NonNull View view) {
-        Animator animator = super.onCreateOutAnimator(view);
-        if (animator == null) {
-            if (GlobalConfig.get().toastAnimatorCreator != null) {
-                animator = GlobalConfig.get().toastAnimatorCreator.createOutAnimator(view);
-            }
-        }
-        if (animator == null) {
-            animator = AnimatorHelper.createZoomAlphaOutAnim(view);
-            animator.setDuration(GlobalConfig.get().toastAnimDuration);
-        }
-        return animator;
-    }
-
-    private void bindData() {
-        if (getConfig().mIcon > 0) {
-            getViewHolder().getIcon().setVisibility(View.VISIBLE);
-            getViewHolder().getIcon().setImageResource(getConfig().mIcon);
-        } else {
-            getViewHolder().getIcon().setVisibility(View.GONE);
-        }
-        if (TextUtils.isEmpty(getConfig().mMessage)) {
-            getViewHolder().getMessage().setVisibility(View.GONE);
-            getViewHolder().getMessage().setText("");
-        } else {
-            getViewHolder().getMessage().setVisibility(View.VISIBLE);
-            getViewHolder().getMessage().setText(getConfig().mMessage);
-        }
-        if (getConfig().mBackgroundDrawable != null) {
-            getChild().setBackgroundDrawable(getConfig().mBackgroundDrawable);
-        } else if (getConfig().mBackgroundResource > 0) {
-            getChild().setBackgroundResource(getConfig().mBackgroundResource);
-        }
-        getChild().getBackground().setColorFilter(getConfig().mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
-        getChild().setAlpha(getConfig().mAlpha);
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
-        params.gravity = getConfig().mGravity;
-        if (getConfig().mMarginLeft != Integer.MIN_VALUE) {
-            params.leftMargin = getConfig().mMarginLeft;
-        }
-        if (getConfig().mMarginTop != Integer.MIN_VALUE) {
-            params.topMargin = getConfig().mMarginTop;
-        }
-        if (getConfig().mMarginRight != Integer.MIN_VALUE) {
-            params.rightMargin = getConfig().mMarginRight;
-        }
-        if (getConfig().mMarginBottom != Integer.MIN_VALUE) {
-            params.bottomMargin = getConfig().mMarginBottom;
-        }
-        getChild().setLayoutParams(params);
-    }
-
-    @Override
-    public void onAttach() {
-        super.onAttach();
-        getChild().setTag(this);
-        if (getConfig().mRemoveOthers) {
-            final ViewGroup parent = getParent();
-            final int count = parent.getChildCount();
-            for (int i = count - 1; i >= 0; i--) {
-                final View child = parent.getChildAt(i);
-                Object tag = child.getTag();
-                if (tag instanceof ToastLayer) {
-                    ToastLayer toastLayer = (ToastLayer) tag;
-                    if (toastLayer != this) {
-                        toastLayer.dismiss(false);
-                    }
-                }
-            }
-        }
-        bindData();
-    }
-
-    @Override
-    public void onPreDraw() {
-        super.onPreDraw();
-    }
-
-    @Override
-    public void onShow() {
-        super.onShow();
-        if (getConfig().mDuration > 0) {
-            getChild().postDelayed(this, getConfig().mDuration);
-        }
-    }
-
-    @Override
-    public void onPreRemove() {
-        getChild().removeCallbacks(this);
-        super.onPreRemove();
-    }
-
-    @Override
-    public void onDetach() {
-        getChild().setTag(null);
-        super.onDetach();
-    }
-
-    @Override
-    public void run() {
-        if (isShown()) {
-            dismiss();
-        }
+    public ToastLayer textColorRes(@ColorRes int colorRes) {
+        getConfig().mTextColorRes = colorRes;
+        return this;
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
-        private ImageView mIcon;
-        private TextView mMessage;
+        private View mContent;
 
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mIcon = child.findViewById(R.id.anylayler_iv_icon);
-            mMessage = child.findViewById(R.id.anylayler_tv_msg);
         }
 
         @NonNull
+        @Override
+        public FrameLayout getChild() {
+            return (FrameLayout) super.getChild();
+        }
+
+        @Nullable
+        @Override
+        protected FrameLayout getChildNullable() {
+            return (FrameLayout) super.getChildNullable();
+        }
+
+        protected void setContent(@NonNull View content) {
+            mContent = content;
+        }
+
+        @Nullable
+        protected View getContentNullable() {
+            return mContent;
+        }
+
+        @NonNull
+        public View getContent() {
+            Utils.requireNonNull(mContent, "必须在show方法后调用");
+            return mContent;
+        }
+
+        @Nullable
         public ImageView getIcon() {
-            return mIcon;
+            return mContent.findViewById(R.id.anylayler_toast_content_icon);
         }
 
-        @NonNull
+        @Nullable
         public TextView getMessage() {
-            return mMessage;
+            return mContent.findViewById(R.id.anylayler_toast_content_msg);
         }
     }
 
     protected static class Config extends DecorLayer.Config {
+        private int mContentViewId = R.layout.anylayer_toast_content;
         private boolean mRemoveOthers = true;
         private long mDuration = GlobalConfig.get().toastDuration;
         @NonNull
@@ -342,6 +430,10 @@ public class ToastLayer extends DecorLayer implements Runnable {
         private Drawable mBackgroundDrawable = null;
         private int mBackgroundResource = GlobalConfig.get().toastBackgroundRes;
         private int mBackgroundColor = Color.TRANSPARENT;
+        @ColorInt
+        private int mTextColorInt = GlobalConfig.get().toastTextColorInt;
+        @ColorRes
+        private int mTextColorRes = GlobalConfig.get().toastTextColorRes;
         private float mAlpha = GlobalConfig.get().toastAlpha;
         private int mGravity = GlobalConfig.get().toastGravity;
         private int mMarginLeft = GlobalConfig.get().toastMarginLeft;

@@ -97,7 +97,7 @@ Android稳定高效的浮层创建管理框架。
 
 ## 集成
 
-![](https://img.shields.io/badge/Downloads%20Week-655-green) ![](https://img.shields.io/badge/Downloads%20Month-2.4K-blue)
+![](https://img.shields.io/badge/Downloads%20Week-1.1k-green) ![](https://img.shields.io/badge/Downloads%20Month-5.2K-blue)
 
 - ### 添加jitpack库
 
@@ -117,15 +117,15 @@ allprojects {
 // build.gradle(Module:)
 dependencies {
     // 完整引入，二选一
-    implementation 'com.github.goweii:AnyLayer:3.6.0-androidx'
-    implementation 'com.github.goweii:AnyLayer:3.6.0-support'
+    implementation 'com.github.goweii:AnyLayer:4.1.0-androidx'
+    implementation 'com.github.goweii:AnyLayer:4.1.0-support'
     
     // 基础库
-    // implementation 'com.github.goweii.AnyLayer:anylayer:3.6.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer:4.1.0-androidx'
     // 扩展库（依赖基础库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:3.6.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:4.1.0-androidx'
     // kotlin扩展库（依赖基础库和扩展库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:3.6.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:4.1.0-androidx'
     // 通用弹窗（依赖基础库）
     // implementation 'com.github.goweii.AnyLayer:anylayer-common:2.5.0'
 }
@@ -137,7 +137,16 @@ dependencies {
 
 [点击查看详细更新说明](https://github.com/goweii/AnyLayer/releases)
 
-### 4.0.0-beta1
+### 4.1.0
+
+- 适配分屏小窗和横竖屏切换
+- 新增设置通知最大宽高
+- 新增3组对其方式
+- 新增吐司自定义布局
+- 吐司和通知默认布局适配暗色模式
+- 修复一些代码错误
+
+### 4.0.0
 
 - 重构包结构
 - 新增通知/悬浮按钮/引导浮层

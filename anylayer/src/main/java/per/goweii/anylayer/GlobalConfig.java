@@ -14,10 +14,6 @@ import android.support.annotation.Nullable;
 
 import per.goweii.anylayer.floats.FloatLayer;
 
-/**
- * @author CuiZhen
- * @date 2020/8/16
- */
 public class GlobalConfig {
     private static final GlobalConfig INSTANCE = new GlobalConfig();
 
@@ -47,6 +43,10 @@ public class GlobalConfig {
     public long toastDuration = 3000L;
     @DrawableRes
     public int toastBackgroundRes = -1;
+    @ColorInt
+    public int toastTextColorInt = Color.TRANSPARENT;
+    @ColorRes
+    public int toastTextColorRes = -1;
     @FloatRange(from = 0F, to = 1F)
     public float toastAlpha = 1;
     public int toastGravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
@@ -63,6 +63,8 @@ public class GlobalConfig {
     // NotificationLayer
 
     public long notificationDuration = 5000L;
+    public int notificationMaxWidth = -1;
+    public int notificationMaxHeight = -1;
     public CharSequence notificationLabel = null;
     public Drawable notificationIcon = null;
     public String notificationTimePattern = null;

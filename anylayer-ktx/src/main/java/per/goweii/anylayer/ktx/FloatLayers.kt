@@ -56,6 +56,14 @@ fun <T : FloatLayer> T.setSnapEdge(edge: Int) = this.apply {
     this.snapEdge(edge)
 }
 
+fun <T : FloatLayer> T.setPivotX(pivot: Float) = this.apply {
+    this.pivotX(pivot)
+}
+
+fun <T : FloatLayer> T.setPivotY(pivot: Float) = this.apply {
+    this.pivotY(pivot)
+}
+
 fun <T : FloatLayer> T.setOutside(outside: Boolean) = this.apply {
     this.outside(outside)
 }

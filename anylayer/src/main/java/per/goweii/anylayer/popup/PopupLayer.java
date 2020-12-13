@@ -20,13 +20,6 @@ import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/3/10
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class PopupLayer extends DialogLayer {
 
     private ViewTreeObserver.OnScrollChangedListener mOnScrollChangedListener = null;
@@ -105,35 +98,36 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
     }
 
     @Override
-    public void onShow() {
+    protected void onShow() {
         super.onShow();
     }
 
     @Override
-    public void onPreRemove() {
+    protected void onPreRemove() {
         super.onPreRemove();
     }
 
     @Override
-    public void onDetach() {
+    protected void onDetach() {
         getViewHolder().getParent().getViewTreeObserver().removeOnScrollChangedListener(mOnScrollChangedListener);
         mOnScrollChangedListener = null;
         super.onDetach();
     }
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
+    protected void onActivityConfigChanged(@NonNull Configuration newConfig) {
+        super.onActivityConfigChanged(newConfig);
+        Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
             @Override
             public void run() {
                 updateLocation();
@@ -252,6 +246,20 @@ public class PopupLayer extends DialogLayer {
                     x = targetX - (width - targetWidth);
                 }
                 break;
+            case CENTER_PARENT:
+                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    x = 0;
+                    w -= getConfig().mOffsetX;
+                } else {
+                    x = (parentWidth - width) / 2F;
+                }
+                break;
+            case TO_PARENT_LEFT:
+                x = -width;
+                break;
+            case TO_PARENT_RIGHT:
+                x = parentWidth;
+                break;
             case ALIGN_PARENT_LEFT:
                 if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
                     x = 0;
@@ -308,7 +316,7 @@ public class PopupLayer extends DialogLayer {
                 }
                 break;
             case ALIGN_TOP:
-                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
                     int t = targetY - parentY;
                     h = parentHeight - t;
                     y = targetY;
@@ -318,7 +326,7 @@ public class PopupLayer extends DialogLayer {
                 }
                 break;
             case ALIGN_BOTTOM:
-                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
                     int t = targetY - parentY;
                     h = t + targetHeight;
                     h -= getConfig().mOffsetY;
@@ -327,8 +335,22 @@ public class PopupLayer extends DialogLayer {
                     y = targetY - (height - targetHeight);
                 }
                 break;
+            case CENTER_PARENT:
+                if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
+                    y = 0;
+                    h -= getConfig().mOffsetY;
+                } else {
+                    h = (parentHeight - height) / 2F;
+                }
+                break;
+            case ABOVE_PARENT:
+                y = -height;
+                break;
+            case BELOW_PARENT:
+                y = parentHeight;
+                break;
             case ALIGN_PARENT_TOP:
-                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
                     h -= getConfig().mOffsetY;
                     y = 0;
                 } else {
@@ -336,7 +358,7 @@ public class PopupLayer extends DialogLayer {
                 }
                 break;
             case ALIGN_PARENT_BOTTOM:
-                if (p.width == FrameLayout.LayoutParams.MATCH_PARENT) {
+                if (p.height == FrameLayout.LayoutParams.MATCH_PARENT) {
                     h -= getConfig().mOffsetY;
                     y = 0;
                 } else {
@@ -761,6 +783,9 @@ public class PopupLayer extends DialogLayer {
             TO_RIGHT,
             ALIGN_LEFT,
             ALIGN_RIGHT,
+            CENTER_PARENT,
+            TO_PARENT_LEFT,
+            TO_PARENT_RIGHT,
             ALIGN_PARENT_LEFT,
             ALIGN_PARENT_RIGHT
         }
@@ -774,6 +799,9 @@ public class PopupLayer extends DialogLayer {
             BELOW,
             ALIGN_TOP,
             ALIGN_BOTTOM,
+            CENTER_PARENT,
+            ABOVE_PARENT,
+            BELOW_PARENT,
             ALIGN_PARENT_TOP,
             ALIGN_PARENT_BOTTOM
         }

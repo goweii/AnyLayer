@@ -26,13 +26,6 @@ import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/7/21
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class GuideLayer extends DecorLayer {
 
     public GuideLayer(@NonNull Context context) {
@@ -114,12 +107,12 @@ public class GuideLayer extends DecorLayer {
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
         getViewHolder().getChild().setClickable(true);
         getViewHolder().getBackground().setOuterColor(getConfig().mBackgroundColor);
         for (Mapping mapping : getConfig().mMapping) {
-            if (mapping.getGuideView() != null) {
+            if (mapping.getGuideView() == null) {
                 if (mapping.getGuideViewRes() > 0) {
                     View view = LayoutInflater.from(getActivity()).inflate(mapping.getGuideViewRes(), getViewHolder().getContentWrapper(), false);
                     mapping.guideView(view);
@@ -137,9 +130,35 @@ public class GuideLayer extends DecorLayer {
     }
 
     @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         super.onPreDraw();
+        updateLocation();
+    }
+
+    @Override
+    protected void onShow() {
+        super.onShow();
+    }
+
+    @Override
+    protected void onPreRemove() {
+        super.onPreRemove();
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        super.onGlobalLayout();
+        updateLocation();
+    }
+
+    public void updateLocation() {
         int[] childLocation = new int[2];
+        getViewHolder().getBackground().clear();
         getViewHolder().getChild().getLocationInWindow(childLocation);
         for (Mapping mapping : getConfig().mMapping) {
             final Rect targetRect = mapping.getTargetRect();
@@ -165,6 +184,9 @@ public class GuideLayer extends DecorLayer {
     private void initLocation(@NonNull Rect rect, @NonNull Mapping mapping) {
         final View view = mapping.getGuideView();
         if (view == null) return;
+        view.offsetLeftAndRight(-view.getLeft());
+        view.offsetTopAndBottom(-view.getTop());
+        FrameLayout parent = getViewHolder().getContentWrapper();
         final int viewWidthWithMargin = view.getWidth() + mapping.getMarginLeft() + mapping.getMarginRight();
         switch (mapping.getHorizontalAlign()) {
             case CENTER:
@@ -182,11 +204,20 @@ public class GuideLayer extends DecorLayer {
             case ALIGN_RIGHT:
                 view.offsetLeftAndRight(rect.right - view.getWidth() - mapping.getMarginRight());
                 break;
+            case CENTER_PARENT:
+                view.offsetLeftAndRight((parent.getWidth() - viewWidthWithMargin) / 2 + mapping.getMarginLeft());
+                break;
+            case TO_PARENT_LEFT:
+                view.offsetLeftAndRight(-view.getWidth() - mapping.getMarginRight());
+                break;
+            case TO_PARENT_RIGHT:
+                view.offsetLeftAndRight(parent.getWidth() + mapping.getMarginLeft());
+                break;
             case ALIGN_PARENT_LEFT:
                 view.offsetLeftAndRight(mapping.getMarginLeft());
                 break;
             case ALIGN_PARENT_RIGHT:
-                view.offsetLeftAndRight(getViewHolder().getContentWrapper().getWidth() - view.getWidth() - mapping.getMarginRight());
+                view.offsetLeftAndRight(parent.getWidth() - view.getWidth() - mapping.getMarginRight());
                 break;
         }
         final int viewHeightWithMargin = view.getHeight() + mapping.getMarginTop() + mapping.getMarginBottom();
@@ -206,28 +237,22 @@ public class GuideLayer extends DecorLayer {
             case ALIGN_BOTTOM:
                 view.offsetTopAndBottom(rect.bottom - view.getHeight() - mapping.getMarginBottom());
                 break;
+            case CENTER_PARENT:
+                view.offsetTopAndBottom((parent.getHeight() - viewHeightWithMargin) / 2 + mapping.getMarginTop());
+                break;
+            case ABOVE_PARENT:
+                view.offsetTopAndBottom(-view.getHeight() - mapping.getMarginBottom());
+                break;
+            case BELOW_PARENT:
+                view.offsetTopAndBottom(parent.getHeight() + mapping.getMarginTop());
+                break;
             case ALIGN_PARENT_TOP:
                 view.offsetTopAndBottom(mapping.getMarginTop());
                 break;
             case ALIGN_PARENT_BOTTOM:
-                view.offsetTopAndBottom(getViewHolder().getContentWrapper().getHeight() - view.getHeight() - mapping.getMarginBottom());
+                view.offsetTopAndBottom(parent.getHeight() - view.getHeight() - mapping.getMarginBottom());
                 break;
         }
-    }
-
-    @Override
-    public void onShow() {
-        super.onShow();
-    }
-
-    @Override
-    public void onPreRemove() {
-        super.onPreRemove();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     @NonNull
@@ -255,8 +280,8 @@ public class GuideLayer extends DecorLayer {
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mContentWrapper = getChild().findViewById(R.id.anylayler_fl_content_wrapper);
-            mBackground = getChild().findViewById(R.id.anylayler_hv_background);
+            mContentWrapper = getChild().findViewById(R.id.anylayler_guide_content_wrapper);
+            mBackground = getChild().findViewById(R.id.anylayler_guide_background);
         }
 
         @NonNull
@@ -313,7 +338,7 @@ public class GuideLayer extends DecorLayer {
         private Align.Horizontal mHorizontalAlign = Align.Horizontal.CENTER;
         private Align.Vertical mVerticalAlign = Align.Vertical.BELOW;
 
-        private SparseArray<OnClickListener> mOnClickListeners = new SparseArray<>();
+        private final SparseArray<OnClickListener> mOnClickListeners = new SparseArray<>();
 
         private void bindOnClickListener(@NonNull GuideLayer layer) {
             if (mGuideView == null) return;
@@ -471,14 +496,12 @@ public class GuideLayer extends DecorLayer {
 
         @NonNull
         public Rect getTargetRect() {
-            if (mTargetRect.isEmpty()) {
-                if (mTargetView != null) {
-                    int[] location = new int[2];
-                    mTargetView.getLocationInWindow(location);
-                    mTargetRect.set(location[0], location[1],
-                            location[0] + mTargetView.getWidth(),
-                            location[1] + mTargetView.getHeight());
-                }
+            if (mTargetView != null) {
+                int[] location = new int[2];
+                mTargetView.getLocationInWindow(location);
+                mTargetRect.set(location[0], location[1],
+                        location[0] + mTargetView.getWidth(),
+                        location[1] + mTargetView.getHeight());
             }
             return mTargetRect;
         }
@@ -555,6 +578,9 @@ public class GuideLayer extends DecorLayer {
             TO_RIGHT,
             ALIGN_LEFT,
             ALIGN_RIGHT,
+            CENTER_PARENT,
+            TO_PARENT_LEFT,
+            TO_PARENT_RIGHT,
             ALIGN_PARENT_LEFT,
             ALIGN_PARENT_RIGHT
         }
@@ -568,6 +594,9 @@ public class GuideLayer extends DecorLayer {
             BELOW,
             ALIGN_TOP,
             ALIGN_BOTTOM,
+            CENTER_PARENT,
+            ABOVE_PARENT,
+            BELOW_PARENT,
             ALIGN_PARENT_TOP,
             ALIGN_PARENT_BOTTOM
         }

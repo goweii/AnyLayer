@@ -1,11 +1,13 @@
 package per.goweii.anylayer;
 
 import android.animation.Animator;
+import android.os.Build;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -16,14 +18,51 @@ import java.util.List;
 
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/7/20
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
-public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListener, ViewManager.OnPreDrawListener {
+public class Layer {
+    private final ViewTreeObserver.OnPreDrawListener mOnGlobalPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+            Layer.this.onGlobalPreDraw();
+            return true;
+        }
+    };
+
+    private final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            Layer.this.onGlobalLayout();
+        }
+    };
+
+    private final ViewTreeObserver.OnPreDrawListener mOnLayerPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+            if (getViewTreeObserver().isAlive()) {
+                getViewTreeObserver().removeOnPreDrawListener(this);
+            }
+            Layer.this.onPreDraw();
+            return true;
+        }
+    };
+
+    private final ViewManager.OnLifeListener mOnLayerLifeListener = new ViewManager.OnLifeListener() {
+        @Override
+        public void onAttach() {
+            Layer.this.onAttach();
+        }
+
+        @Override
+        public void onDetach() {
+            Layer.this.onDetach();
+        }
+    };
+
+    private final ViewManager.OnKeyListener mOnLayerKeyListener = new ViewManager.OnKeyListener() {
+        @Override
+        public boolean onKey(int keyCode, KeyEvent event) {
+            return Layer.this.onKey(keyCode, event);
+        }
+    };
 
     private final ViewManager mViewManager;
     private final ViewHolder mViewHolder;
@@ -45,8 +84,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         mViewHolder = onCreateViewHolder();
         mListenerHolder = onCreateListenerHolder();
         mViewManager = new ViewManager();
-        mViewManager.setOnLifeListener(this);
-        mViewManager.setOnPreDrawListener(this);
+        mViewManager.setOnLifeListener(mOnLayerLifeListener);
     }
 
     @NonNull
@@ -108,8 +146,12 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return null;
     }
 
-    @Override
-    public void onAttach() {
+    protected void onAttach() {
+        if (getViewTreeObserver().isAlive()) {
+            getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+            getViewTreeObserver().addOnPreDrawListener(mOnGlobalPreDrawListener);
+            getViewTreeObserver().addOnPreDrawListener(mOnLayerPreDrawListener);
+        }
         getViewHolder().getChild().setVisibility(View.VISIBLE);
         mListenerHolder.bindClickListeners(this);
         mListenerHolder.bindLongClickListeners(this);
@@ -121,8 +163,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         mListenerHolder.notifyDataBinder(this);
     }
 
-    @Override
-    public void onPreDraw() {
+    protected void onPreDraw() {
         mListenerHolder.notifyLayerOnShowing(this);
         cancelAnimator();
         if (mShowWithAnim) {
@@ -160,14 +201,14 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
     }
 
-    public void onShow() {
+    protected void onShow() {
         mListenerHolder.notifyLayerOnShown(this);
         if (mAnimatorIn != null) {
             mAnimatorIn = null;
         }
     }
 
-    public void onPreRemove() {
+    protected void onPreRemove() {
         mListenerHolder.notifyLayerOnDismissing(this);
         cancelAnimator();
         if (mDismissWithAnim) {
@@ -213,13 +254,42 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         }
     }
 
-    @Override
-    public void onDetach() {
+    protected void onDetach() {
         mListenerHolder.notifyVisibleChangeOnDismiss(this);
         mListenerHolder.notifyLayerOnDismissed(this);
         if (mAnimatorOut != null) {
             mAnimatorOut = null;
         }
+        if (getViewTreeObserver().isAlive()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
+            } else {
+                getViewTreeObserver().removeGlobalOnLayoutListener(mOnGlobalLayoutListener);
+            }
+            getViewTreeObserver().removeOnPreDrawListener(mOnGlobalPreDrawListener);
+        }
+    }
+
+    protected boolean onKey(int keyCode, @NonNull KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (mConfig.mCancelableOnKeyBack) {
+                    dismiss();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void onGlobalLayout() {
+    }
+
+    protected void onGlobalPreDraw() {
+    }
+
+    private ViewTreeObserver getViewTreeObserver() {
+        return getViewHolder().getParent().getViewTreeObserver();
     }
 
     private void cancelAnimator() {
@@ -231,19 +301,6 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
             mAnimatorOut.cancel();
             mAnimatorOut = null;
         }
-    }
-
-    @Override
-    public boolean onKey(int keyCode, @NonNull KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (mConfig.mCancelableOnKeyBack) {
-                    dismiss();
-                }
-                return true;
-            }
-        }
-        return false;
     }
 
     public void show() {
@@ -258,7 +315,7 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
         mViewManager.setParent(mViewHolder.getParent());
         mViewManager.setChild(mViewHolder.getChild());
-        mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? this : null);
+        mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? mOnLayerKeyListener : null);
         mViewManager.attach();
     }
 
@@ -305,18 +362,25 @@ public class Layer implements ViewManager.OnLifeListener, ViewManager.OnKeyListe
         return mViewHolder.getChild();
     }
 
+    @NonNull
+    public <V extends View> V requireView(@IdRes int id) {
+        return Utils.requireNonNull(getView(id));
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
     public <V extends View> V getView(@IdRes int id) {
         if (mViewCaches == null) {
             mViewCaches = new SparseArray<>();
         }
-        if (mViewCaches.indexOfKey(id) < 0) {
-            V view = getChild().findViewById(id);
-            mViewCaches.put(id, view);
-            return view;
+        View view = mViewCaches.get(id);
+        if (view == null) {
+            view = getChild().findViewById(id);
+            if (view != null) {
+                mViewCaches.put(id, view);
+            }
         }
-        return (V) mViewCaches.get(id);
+        return (V) view;
     }
 
     @NonNull

@@ -140,13 +140,14 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.toast()
                         .icon(isSucc ? R.drawable.ic_success : R.drawable.ic_fail)
                         .message(isSucc ? "哈哈，成功了" : "哎呀，失败了")
+                        .textColorInt(Color.WHITE)
                         .backgroundColorRes(isSucc ? R.color.colorPrimary : R.color.colorAccent)
                         .gravity(Gravity.CENTER)
                         .show();
                 break;
             case R.id.tv_show_notification:
                 AnyLayer.globalConfig().notificationTimePattern = "HH:mm";
-                AnyLayer.globalConfig().notificationIcon = getResources().getDrawable(R.mipmap.ic_launcher_round);
+                AnyLayer.globalConfig().notificationIcon = getResources().getDrawable(R.drawable.ic_notificstion);
                 AnyLayer.globalConfig().notificationLabel = getString(R.string.app_name);
                 new NotificationLayer(this)
                         .title("这是一个通知")

@@ -2,6 +2,8 @@ package per.goweii.anylayer.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,15 +13,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.ViewDragHelper;
 
+import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/12/1
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class DragLayout extends FrameLayout {
 
     private final ViewDragHelper mDragHelper;
@@ -236,6 +232,20 @@ public class DragLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            updateViewByPositionX(view);
+            updateViewByPositionY(view);
+        }
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            updateViewPositionTag(view);
+        }
     }
 
     public void onStart(@NonNull View view) {
@@ -260,6 +270,57 @@ public class DragLayout extends FrameLayout {
     private void onStop(@NonNull View view) {
         if (mOnDragListener != null) {
             mOnDragListener.onStop(view);
+        }
+    }
+
+    private void updateViewPositionTag(@NonNull View view) {
+        PointF position = (PointF) view.getTag(R.id.anylayer_float_position);
+        if (position == null) {
+            position = new PointF();
+            view.setTag(R.id.anylayer_float_position, position);
+        }
+        float px = calcViewPositionX(view);
+        float py = calcViewPositionY(view);
+        position.set(px, py);
+    }
+
+    private float calcViewPositionX(@NonNull View view) {
+        float minX = getViewLeftMinInside(view) + view.getWidth() / 2F;
+        float maxX = getViewLeftMaxInside(view) + view.getWidth() / 2F;
+        float currX = view.getLeft() + view.getWidth() / 2F;
+        return (currX - minX) / (maxX - minX);
+    }
+
+    private float calcViewPositionY(@NonNull View view) {
+        float minY = getViewTopMinInside(view) + view.getHeight() / 2F;
+        float maxY = getViewTopMaxInside(view) + view.getHeight() / 2F;
+        float currY = view.getTop() + view.getHeight() / 2F;
+        return (currY - minY) / (maxY - minY);
+    }
+
+    private void updateViewByPositionX(@NonNull View view) {
+        PointF position = (PointF) view.getTag(R.id.anylayer_float_position);
+        if (position != null) {
+            if (position.x != calcViewPositionX(view)) {
+                float currX = view.getLeft() + view.getWidth() / 2F;
+                float minX = getViewLeftMinInside(view) + view.getWidth() / 2F;
+                float maxX = getViewLeftMaxInside(view) + view.getWidth() / 2F;
+                float toX = position.x * (maxX - minX) + minX;
+                view.offsetLeftAndRight((int) (toX - currX));
+            }
+        }
+    }
+
+    private void updateViewByPositionY(@NonNull View view) {
+        PointF position = (PointF) view.getTag(R.id.anylayer_float_position);
+        if (position != null) {
+            if (position.y != calcViewPositionY(view)) {
+                float currY = view.getTop() + view.getHeight() / 2F;
+                float minY = getViewTopMinInside(view) + view.getHeight() / 2F;
+                float maxY = getViewTopMaxInside(view) + view.getHeight() / 2F;
+                float toY = position.y * (maxY - minY) + minY;
+                view.offsetTopAndBottom((int) (toY - currY));
+            }
         }
     }
 

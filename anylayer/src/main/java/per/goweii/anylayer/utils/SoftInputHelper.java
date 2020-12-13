@@ -19,10 +19,6 @@ import java.util.Map;
 /**
  * 监听软键盘的打开和隐藏
  * 打开时滚动布局，可设置仅在某几个EditText获取焦点时开启
- *
- * @author Cuizhen
- * @version v1.0.0
- * @date 2018/3/30-上午9:06
  */
 public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnGlobalFocusChangeListener {
 

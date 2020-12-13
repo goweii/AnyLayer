@@ -35,13 +35,6 @@ import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.SwipeLayout;
 
-/**
- * @author CuiZhen
- * @date 2019/7/21
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class NotificationLayer extends DecorLayer {
 
     private Runnable mDismissRunnable = null;
@@ -118,7 +111,7 @@ public class NotificationLayer extends DecorLayer {
                 contentParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
             }
             getViewHolder().getContent().setLayoutParams(contentParams);
-            getViewHolder().getChild().addView(getViewHolder().getContent());
+            getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
         }
         return getViewHolder().getChild();
     }
@@ -145,17 +138,17 @@ public class NotificationLayer extends DecorLayer {
     @Nullable
     @Override
     protected Animator onCreateInAnimator(@NonNull View view) {
-        return AnimatorHelper.createTopInAnim(getViewHolder().getContent());
+        return AnimatorHelper.createTopInAnim(getViewHolder().getContentWrapper());
     }
 
     @Nullable
     @Override
     protected Animator onCreateOutAnimator(@NonNull View view) {
-        return AnimatorHelper.createTopOutAnim(getViewHolder().getContent());
+        return AnimatorHelper.createTopOutAnim(getViewHolder().getContentWrapper());
     }
 
     @Override
-    public void onAttach() {
+    protected void onAttach() {
         super.onAttach();
         getViewHolder().getChild().setPadding(0, Utils.getStatusBarHeight(getActivity()), 0, 0);
         getViewHolder().getChild().setClipToPadding(false);
@@ -184,8 +177,52 @@ public class NotificationLayer extends DecorLayer {
                 });
             }
         });
+        if (getConfig().mMaxWidth >= 0) {
+            getViewHolder().getContentWrapper().setMaxWidth(getConfig().mMaxWidth);
+        }
+        if (getConfig().mMaxHeight >= 0) {
+            getViewHolder().getContentWrapper().setMaxHeight(getConfig().mMaxHeight);
+        }
         getViewHolder().getContent().setVisibility(View.VISIBLE);
         getListenerHolder().bindTouchListener(this);
+        bindDefaultContentData();
+    }
+
+    @Override
+    protected void onPreDraw() {
+        super.onPreDraw();
+    }
+
+    @Override
+    protected void onShow() {
+        super.onShow();
+        if (getConfig().mDuration > 0) {
+            if (mDismissRunnable == null) {
+                mDismissRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        dismiss();
+                    }
+                };
+            }
+            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
+        }
+    }
+
+    @Override
+    protected void onPreRemove() {
+        if (mDismissRunnable != null) {
+            getChild().removeCallbacks(mDismissRunnable);
+        }
+        super.onPreRemove();
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+    }
+
+    private void bindDefaultContentData() {
         if (getViewHolder().getTop() != null) {
             if (getViewHolder().getIcon() != null) {
                 if (getConfig().mIcon != null) {
@@ -244,40 +281,6 @@ public class NotificationLayer extends DecorLayer {
         }
     }
 
-    @Override
-    public void onPreDraw() {
-        super.onPreDraw();
-    }
-
-    @Override
-    public void onShow() {
-        super.onShow();
-        if (getConfig().mDuration > 0) {
-            if (mDismissRunnable == null) {
-                mDismissRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        dismiss();
-                    }
-                };
-            }
-            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
-        }
-    }
-
-    @Override
-    public void onPreRemove() {
-        if (mDismissRunnable != null) {
-            getChild().removeCallbacks(mDismissRunnable);
-        }
-        super.onPreRemove();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
     @NonNull
     public NotificationLayer contentView(@NonNull View contentView) {
         getViewHolder().setContent(contentView);
@@ -287,6 +290,18 @@ public class NotificationLayer extends DecorLayer {
     @NonNull
     public NotificationLayer contentView(@LayoutRes int contentViewId) {
         getConfig().mContentViewId = contentViewId;
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer maxWidth(int maxWidth) {
+        getConfig().mMaxWidth = maxWidth;
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer maxHeight(int maxHeight) {
+        getConfig().mMaxHeight = maxHeight;
         return this;
     }
 
@@ -380,11 +395,13 @@ public class NotificationLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
+        private MaxSizeFrameLayout mContentWrapper;
         private View mContent;
 
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
+            mContentWrapper = getChild().findViewById(R.id.anylayler_notification_content_wrapper);
         }
 
         @NonNull
@@ -397,6 +414,11 @@ public class NotificationLayer extends DecorLayer {
         @Override
         protected SwipeLayout getChildNullable() {
             return (SwipeLayout) super.getChildNullable();
+        }
+
+        @NonNull
+        protected MaxSizeFrameLayout getContentWrapper() {
+            return mContentWrapper;
         }
 
         protected void setContent(@NonNull View content) {
@@ -422,32 +444,32 @@ public class NotificationLayer extends DecorLayer {
 
         @Nullable
         public LinearLayout getTop() {
-            return mContent.findViewById(R.id.anylayler_ll_top);
+            return mContent.findViewById(R.id.anylayler_notification_content_top);
         }
 
         @Nullable
         public ImageView getIcon() {
-            return mContent.findViewById(R.id.anylayler_iv_icon);
+            return mContent.findViewById(R.id.anylayler_notification_content_icon);
         }
 
         @Nullable
         public TextView getLabel() {
-            return mContent.findViewById(R.id.anylayler_tv_label);
+            return mContent.findViewById(R.id.anylayler_notification_content_label);
         }
 
         @Nullable
         public TextView getTime() {
-            return mContent.findViewById(R.id.anylayler_tv_time);
+            return mContent.findViewById(R.id.anylayler_notification_content_time);
         }
 
         @Nullable
         public TextView getTitle() {
-            return mContent.findViewById(R.id.anylayler_tv_title);
+            return mContent.findViewById(R.id.anylayler_notification_content_title);
         }
 
         @Nullable
         public TextView getDesc() {
-            return mContent.findViewById(R.id.anylayler_tv_desc);
+            return mContent.findViewById(R.id.anylayler_notification_content_desc);
         }
     }
 
@@ -455,6 +477,8 @@ public class NotificationLayer extends DecorLayer {
         protected int mContentViewId = R.layout.anylayer_notification_content;
 
         protected long mDuration = GlobalConfig.get().notificationDuration;
+        protected int mMaxWidth = GlobalConfig.get().notificationMaxWidth;
+        protected int mMaxHeight = GlobalConfig.get().notificationMaxHeight;
 
         protected CharSequence mLabel = GlobalConfig.get().notificationLabel;
         protected Drawable mIcon = GlobalConfig.get().notificationIcon;

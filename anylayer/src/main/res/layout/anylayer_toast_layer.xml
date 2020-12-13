@@ -1,38 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/anylayler_ll_container"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/anylayler_toast_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal|bottom"
-    android:layout_marginLeft="50dp"
-    android:layout_marginTop="50dp"
-    android:layout_marginRight="50dp"
-    android:layout_marginBottom="50dp"
-    android:background="@drawable/anylayer_toast_bg"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingLeft="24dp"
-    android:paddingTop="15dp"
-    android:paddingRight="24dp"
-    android:paddingBottom="15dp">
-
-    <ImageView
-        android:id="@+id/anylayler_iv_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:scaleType="fitCenter"
-        tools:layout_height="22dp"
-        tools:layout_width="22dp"
-        tools:src="#FFF" />
-
-    <TextView
-        android:id="@+id/anylayler_tv_msg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#FFFFFF"
-        tools:text="TOAST LAYER" />
-
-</LinearLayout>
+    android:layout_marginLeft="@dimen/anylayer_toast_margin"
+    android:layout_marginTop="@dimen/anylayer_toast_margin"
+    android:layout_marginRight="@dimen/anylayer_toast_margin"
+    android:layout_marginBottom="@dimen/anylayer_toast_margin"
+    android:gravity="center" />

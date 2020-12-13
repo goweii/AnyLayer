@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#ff000000" />
+    <solid android:color="@color/anylayer_toast_bg" />
     <corners
-        android:bottomLeftRadius="8dp"
-        android:bottomRightRadius="8dp"
-        android:topLeftRadius="8dp"
-        android:topRightRadius="8dp" />
+        android:bottomLeftRadius="@dimen/anylayer_toast_corner_radius"
+        android:bottomRightRadius="@dimen/anylayer_toast_corner_radius"
+        android:topLeftRadius="@dimen/anylayer_toast_corner_radius"
+        android:topRightRadius="@dimen/anylayer_toast_corner_radius" />
 </shape>

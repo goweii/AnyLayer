@@ -162,7 +162,7 @@ public class DragCompat {
     }
 
     @NonNull
-    public static List<View> findAllScrollViews(@NonNull ViewGroup viewGroup) {
+    public static List<View> findAllScrollableView(@NonNull ViewGroup viewGroup) {
         List<View> views = new ArrayList<>();
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View view = viewGroup.getChildAt(i);
@@ -173,10 +173,25 @@ public class DragCompat {
                 views.add(view);
             }
             if (view instanceof ViewGroup) {
-                views.addAll(findAllScrollViews((ViewGroup) view));
+                views.addAll(findAllScrollableView((ViewGroup) view));
             }
         }
         return views;
+    }
+
+    public static void findAllScrollableView(@NonNull ViewGroup viewGroup, @NonNull List<View> views) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View view = viewGroup.getChildAt(i);
+            if (view.getVisibility() != View.VISIBLE) {
+                continue;
+            }
+            if (isScrollableView(view)) {
+                views.add(view);
+            }
+            if (view instanceof ViewGroup) {
+                findAllScrollableView((ViewGroup) view, views);
+            }
+        }
     }
 
     public static boolean isScrollableView(@NonNull View view) {

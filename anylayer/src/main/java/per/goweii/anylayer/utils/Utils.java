@@ -22,10 +22,6 @@ import android.support.annotation.Nullable;
 import per.goweii.anylayer.FrameLayer;
 import per.goweii.anylayer.dialog.ContainerLayout;
 
-/**
- * @author Cuizhen
- * @date 2018/10/25
- */
 public final class Utils {
 
     @NonNull
@@ -179,7 +175,20 @@ public final class Utils {
         }
     }
 
-    public static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
+    public static void onViewPreDraw(@NonNull final View view, @NonNull Runnable runnable) {
+        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if (view.getViewTreeObserver().isAlive()) {
+                    view.getViewTreeObserver().removeOnPreDrawListener(this);
+                }
+                runnable.run();
+                return true;
+            }
+        });
+    }
+
+    public static void onViewLayout(@NonNull final View view, @NonNull Runnable runnable) {
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -193,6 +202,10 @@ public final class Utils {
                 runnable.run();
             }
         });
+    }
+
+    public static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
+        onViewLayout(view, runnable);
     }
 
     public static int getViewMarginLeft(@NonNull View view) {
