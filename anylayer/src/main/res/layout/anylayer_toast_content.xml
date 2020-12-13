@@ -7,27 +7,29 @@
     android:layout_gravity="center_horizontal|bottom"
     android:background="@drawable/anylayer_toast_bg"
     android:orientation="horizontal"
-    android:paddingLeft="24dp"
-    android:paddingTop="15dp"
-    android:paddingRight="24dp"
-    android:paddingBottom="15dp">
+    android:paddingLeft="@dimen/anylayer_toast_padding_left"
+    android:paddingTop="@dimen/anylayer_toast_padding_top"
+    android:paddingRight="@dimen/anylayer_toast_padding_right"
+    android:paddingBottom="@dimen/anylayer_toast_padding_bottom"
+    tools:ignore="RtlHardcoded">
 
     <ImageView
         android:id="@+id/anylayler_toast_content_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="@dimen/anylayer_margin_common"
         android:scaleType="fitCenter"
+        tools:ignore="ContentDescription"
         tools:layout_height="22dp"
         tools:layout_width="22dp"
-        tools:src="#FFF" />
+        tools:src="@color/anylayer_toast_text_color" />
 
     <TextView
         android:id="@+id/anylayler_toast_content_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/anylayer_toast_text_color"
+        android:textSize="@dimen/anylayer_toast_text_size"
         tools:text="TOAST LAYER" />
 
 </LinearLayout>

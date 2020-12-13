@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="anylayer_margin_common">8dp</dimen>
+    <dimen name="anylayer_margin_small">6dp</dimen>
+
+    <dimen name="anylayer_notification_corner_radius">8dp</dimen>
+    <dimen name="anylayer_notification_padding_left">16dp</dimen>
+    <dimen name="anylayer_notification_padding_right">16dp</dimen>
+    <dimen name="anylayer_notification_padding_top">16dp</dimen>
+    <dimen name="anylayer_notification_padding_bottom">16dp</dimen>
+    <dimen name="anylayer_notification_title_text_size">15sp</dimen>
+    <dimen name="anylayer_notification_desc_text_size">13sp</dimen>
+    <dimen name="anylayer_notification_label_text_size">13sp</dimen>
+    <dimen name="anylayer_notification_time_text_size">11sp</dimen>
+
+    <dimen name="anylayer_toast_corner_radius">8dp</dimen>
+    <dimen name="anylayer_toast_margin">48dp</dimen>
+    <dimen name="anylayer_toast_padding_left">24dp</dimen>
+    <dimen name="anylayer_toast_padding_right">24dp</dimen>
+    <dimen name="anylayer_toast_padding_top">16dp</dimen>
+    <dimen name="anylayer_toast_padding_bottom">16dp</dimen>
+    <dimen name="anylayer_toast_text_size">14sp</dimen>
+</resources>

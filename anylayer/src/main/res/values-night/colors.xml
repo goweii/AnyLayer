@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="anylayer_card_bg">#FF111111</color>
+    <color name="anylayer_text_color">#BFFFFFFF</color>
+    <color name="anylayer_text_color_second">#80FFFFFF</color>
+    <color name="anylayer_text_color_third">#59FFFFFF</color>
+    <color name="anylayer_text_color_fourth">#33FFFFFF</color>
+
+    <color name="anylayer_notification_bg">@color/anylayer_card_bg</color>
+    <color name="anylayer_notification_title_text_color">@color/anylayer_text_color</color>
+    <color name="anylayer_notification_label_text_color">@color/anylayer_text_color_second</color>
+    <color name="anylayer_notification_time_text_color">@color/anylayer_text_color_third</color>
+    <color name="anylayer_notification_desc_text_color">@color/anylayer_text_color_second</color>
+
+    <color name="anylayer_toast_bg">@color/anylayer_card_bg</color>
+    <color name="anylayer_toast_text_color">@color/anylayer_text_color</color>
+</resources>

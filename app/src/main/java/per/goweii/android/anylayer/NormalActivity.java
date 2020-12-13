@@ -146,7 +146,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_notification:
                 AnyLayer.globalConfig().notificationTimePattern = "HH:mm";
-                AnyLayer.globalConfig().notificationIcon = getResources().getDrawable(R.mipmap.ic_launcher_round);
+                AnyLayer.globalConfig().notificationIcon = getResources().getDrawable(R.drawable.ic_notificstion);
                 AnyLayer.globalConfig().notificationLabel = getString(R.string.app_name);
                 new NotificationLayer(this)
                         .title("这是一个通知")
