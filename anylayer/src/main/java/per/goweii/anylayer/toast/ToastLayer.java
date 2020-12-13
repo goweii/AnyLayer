@@ -18,6 +18,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntRange;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -87,14 +88,188 @@ public class ToastLayer extends DecorLayer {
         return (ListenerHolder) super.getListenerHolder();
     }
 
+    @NonNull
     @Override
-    public void dismiss(boolean withAnim) {
-        super.dismiss(withAnim);
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (getViewHolder().getChildNullable() == null) {
+            FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
+            getViewHolder().setChild(container);
+            getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getChild()));
+            ViewGroup.LayoutParams layoutParams = getViewHolder().getContent().getLayoutParams();
+            FrameLayout.LayoutParams contentParams;
+            if (layoutParams == null) {
+                contentParams = generateContentDefaultLayoutParams();
+            } else if (layoutParams instanceof FrameLayout.LayoutParams) {
+                contentParams = (FrameLayout.LayoutParams) layoutParams;
+            } else {
+                contentParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
+            }
+            getViewHolder().getContent().setLayoutParams(contentParams);
+            getViewHolder().getChild().addView(getViewHolder().getContent());
+        }
+        return getViewHolder().getChild();
+    }
+
+    @NonNull
+    protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (getViewHolder().getContentNullable() == null) {
+            getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
+        } else {
+            ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
+            if (contentParent != null) {
+                contentParent.removeView(getViewHolder().getContent());
+            }
+        }
+        return getViewHolder().getContent();
+    }
+
+    @NonNull
+    protected FrameLayout.LayoutParams generateContentDefaultLayoutParams() {
+        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    @NonNull
+    @Override
+    protected Animator onCreateInAnimator(@NonNull View view) {
+        Animator animator = super.onCreateInAnimator(view);
+        if (animator == null) {
+            if (GlobalConfig.get().toastAnimatorCreator != null) {
+                animator = GlobalConfig.get().toastAnimatorCreator.createInAnimator(view);
+            }
+        }
+        if (animator == null) {
+            animator = AnimatorHelper.createZoomAlphaInAnim(view);
+            animator.setDuration(GlobalConfig.get().toastAnimDuration);
+        }
+        return animator;
+    }
+
+    @NonNull
+    @Override
+    protected Animator onCreateOutAnimator(@NonNull View view) {
+        Animator animator = super.onCreateOutAnimator(view);
+        if (animator == null) {
+            if (GlobalConfig.get().toastAnimatorCreator != null) {
+                animator = GlobalConfig.get().toastAnimatorCreator.createOutAnimator(view);
+            }
+        }
+        if (animator == null) {
+            animator = AnimatorHelper.createZoomAlphaOutAnim(view);
+            animator.setDuration(GlobalConfig.get().toastAnimDuration);
+        }
+        return animator;
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        getChild().setTag(this);
+        if (getConfig().mRemoveOthers) {
+            removeOthers();
+        }
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
+        params.gravity = getConfig().mGravity;
+        if (getConfig().mMarginLeft != Integer.MIN_VALUE) {
+            params.leftMargin = getConfig().mMarginLeft;
+        }
+        if (getConfig().mMarginTop != Integer.MIN_VALUE) {
+            params.topMargin = getConfig().mMarginTop;
+        }
+        if (getConfig().mMarginRight != Integer.MIN_VALUE) {
+            params.rightMargin = getConfig().mMarginRight;
+        }
+        if (getConfig().mMarginBottom != Integer.MIN_VALUE) {
+            params.bottomMargin = getConfig().mMarginBottom;
+        }
+        getChild().setLayoutParams(params);
+        bindDefaultContentData();
+    }
+
+    @Override
+    protected void onPreDraw() {
+        super.onPreDraw();
+    }
+
+    @Override
+    protected void onShow() {
+        super.onShow();
+        if (getConfig().mDuration > 0) {
+            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
+        }
+    }
+
+    @Override
+    protected void onPreRemove() {
+        getChild().removeCallbacks(mDismissRunnable);
+        super.onPreRemove();
+    }
+
+    @Override
+    protected void onDetach() {
+        getChild().setTag(null);
+        super.onDetach();
+    }
+
+    private void removeOthers() {
+        final ViewGroup parent = getParent();
+        final int count = parent.getChildCount();
+        for (int i = count - 1; i >= 0; i--) {
+            final View child = parent.getChildAt(i);
+            Object tag = child.getTag();
+            if (tag instanceof ToastLayer) {
+                ToastLayer toastLayer = (ToastLayer) tag;
+                if (toastLayer != this) {
+                    toastLayer.dismiss(false);
+                }
+            }
+        }
+    }
+
+    private void bindDefaultContentData() {
+        if (getConfig().mBackgroundDrawable != null) {
+            getViewHolder().getContent().setBackgroundDrawable(getConfig().mBackgroundDrawable);
+        } else if (getConfig().mBackgroundResource > 0) {
+            getViewHolder().getContent().setBackgroundResource(getConfig().mBackgroundResource);
+        }
+        if (getViewHolder().getContent().getBackground() != null) {
+            getViewHolder().getContent().getBackground().setColorFilter(getConfig().mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
+        }
+        getViewHolder().getContent().setAlpha(getConfig().mAlpha);
+        if (getViewHolder().getIcon() != null) {
+            if (getConfig().mIcon > 0) {
+                getViewHolder().getIcon().setVisibility(View.VISIBLE);
+                getViewHolder().getIcon().setImageResource(getConfig().mIcon);
+            } else {
+                getViewHolder().getIcon().setVisibility(View.GONE);
+            }
+        }
+        if (getViewHolder().getMessage() != null) {
+            if (TextUtils.isEmpty(getConfig().mMessage)) {
+                getViewHolder().getMessage().setVisibility(View.GONE);
+                getViewHolder().getMessage().setText("");
+            } else {
+                getViewHolder().getMessage().setVisibility(View.VISIBLE);
+                getViewHolder().getMessage().setText(getConfig().mMessage);
+            }
+        }
     }
 
     @NonNull
     public ToastLayer removeOthers(boolean removeOthers) {
         getConfig().mRemoveOthers = removeOthers;
+        return this;
+    }
+
+    @NonNull
+    public ToastLayer contentView(View contentView) {
+        getViewHolder().setContent(contentView);
+        return this;
+    }
+
+    @NonNull
+    public ToastLayer contentView(@LayoutRes int contentView) {
+        getConfig().mContentViewId = contentView;
         return this;
     }
 
@@ -182,151 +357,54 @@ public class ToastLayer extends DecorLayer {
         return this;
     }
 
-    @NonNull
-    @Override
-    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        return inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
-    }
-
-    @NonNull
-    @Override
-    protected Animator onCreateInAnimator(@NonNull View view) {
-        Animator animator = super.onCreateInAnimator(view);
-        if (animator == null) {
-            if (GlobalConfig.get().toastAnimatorCreator != null) {
-                animator = GlobalConfig.get().toastAnimatorCreator.createInAnimator(view);
-            }
-        }
-        if (animator == null) {
-            animator = AnimatorHelper.createZoomAlphaInAnim(view);
-            animator.setDuration(GlobalConfig.get().toastAnimDuration);
-        }
-        return animator;
-    }
-
-    @NonNull
-    @Override
-    protected Animator onCreateOutAnimator(@NonNull View view) {
-        Animator animator = super.onCreateOutAnimator(view);
-        if (animator == null) {
-            if (GlobalConfig.get().toastAnimatorCreator != null) {
-                animator = GlobalConfig.get().toastAnimatorCreator.createOutAnimator(view);
-            }
-        }
-        if (animator == null) {
-            animator = AnimatorHelper.createZoomAlphaOutAnim(view);
-            animator.setDuration(GlobalConfig.get().toastAnimDuration);
-        }
-        return animator;
-    }
-
-    private void bindData() {
-        if (getConfig().mIcon > 0) {
-            getViewHolder().getIcon().setVisibility(View.VISIBLE);
-            getViewHolder().getIcon().setImageResource(getConfig().mIcon);
-        } else {
-            getViewHolder().getIcon().setVisibility(View.GONE);
-        }
-        if (TextUtils.isEmpty(getConfig().mMessage)) {
-            getViewHolder().getMessage().setVisibility(View.GONE);
-            getViewHolder().getMessage().setText("");
-        } else {
-            getViewHolder().getMessage().setVisibility(View.VISIBLE);
-            getViewHolder().getMessage().setText(getConfig().mMessage);
-        }
-        if (getConfig().mBackgroundDrawable != null) {
-            getChild().setBackgroundDrawable(getConfig().mBackgroundDrawable);
-        } else if (getConfig().mBackgroundResource > 0) {
-            getChild().setBackgroundResource(getConfig().mBackgroundResource);
-        }
-        getChild().getBackground().setColorFilter(getConfig().mBackgroundColor, PorterDuff.Mode.SRC_ATOP);
-        getChild().setAlpha(getConfig().mAlpha);
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
-        params.gravity = getConfig().mGravity;
-        if (getConfig().mMarginLeft != Integer.MIN_VALUE) {
-            params.leftMargin = getConfig().mMarginLeft;
-        }
-        if (getConfig().mMarginTop != Integer.MIN_VALUE) {
-            params.topMargin = getConfig().mMarginTop;
-        }
-        if (getConfig().mMarginRight != Integer.MIN_VALUE) {
-            params.rightMargin = getConfig().mMarginRight;
-        }
-        if (getConfig().mMarginBottom != Integer.MIN_VALUE) {
-            params.bottomMargin = getConfig().mMarginBottom;
-        }
-        getChild().setLayoutParams(params);
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        getChild().setTag(this);
-        if (getConfig().mRemoveOthers) {
-            final ViewGroup parent = getParent();
-            final int count = parent.getChildCount();
-            for (int i = count - 1; i >= 0; i--) {
-                final View child = parent.getChildAt(i);
-                Object tag = child.getTag();
-                if (tag instanceof ToastLayer) {
-                    ToastLayer toastLayer = (ToastLayer) tag;
-                    if (toastLayer != this) {
-                        toastLayer.dismiss(false);
-                    }
-                }
-            }
-        }
-        bindData();
-    }
-
-    @Override
-    protected void onPreDraw() {
-        super.onPreDraw();
-    }
-
-    @Override
-    protected void onShow() {
-        super.onShow();
-        if (getConfig().mDuration > 0) {
-            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
-        }
-    }
-
-    @Override
-    protected void onPreRemove() {
-        getChild().removeCallbacks(mDismissRunnable);
-        super.onPreRemove();
-    }
-
-    @Override
-    protected void onDetach() {
-        getChild().setTag(null);
-        super.onDetach();
-    }
-
     public static class ViewHolder extends DecorLayer.ViewHolder {
-        private ImageView mIcon;
-        private TextView mMessage;
+        private View mContent;
 
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mIcon = child.findViewById(R.id.anylayler_toast_icon);
-            mMessage = child.findViewById(R.id.anylayler_toast_msg);
         }
 
         @NonNull
+        @Override
+        public FrameLayout getChild() {
+            return (FrameLayout) super.getChild();
+        }
+
+        @Nullable
+        @Override
+        protected FrameLayout getChildNullable() {
+            return (FrameLayout) super.getChildNullable();
+        }
+
+        protected void setContent(@NonNull View content) {
+            mContent = content;
+        }
+
+        @Nullable
+        protected View getContentNullable() {
+            return mContent;
+        }
+
+        @NonNull
+        public View getContent() {
+            Utils.requireNonNull(mContent, "必须在show方法后调用");
+            return mContent;
+        }
+
+        @Nullable
         public ImageView getIcon() {
-            return mIcon;
+            return mContent.findViewById(R.id.anylayler_toast_content_icon);
         }
 
-        @NonNull
+        @Nullable
         public TextView getMessage() {
-            return mMessage;
+            return mContent.findViewById(R.id.anylayler_toast_content_msg);
         }
     }
 
     protected static class Config extends DecorLayer.Config {
+        private int mContentViewId = R.layout.anylayer_toast_content;
         private boolean mRemoveOthers = true;
         private long mDuration = GlobalConfig.get().toastDuration;
         @NonNull
