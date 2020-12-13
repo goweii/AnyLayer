@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
 import android.support.v4.graphics.ColorUtils;
 import android.view.Gravity;
 

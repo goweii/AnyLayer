@@ -1,10 +1,8 @@
 package per.goweii.anylayer.ktx
 
 import android.graphics.drawable.Drawable
-import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
+import android.support.annotation.*
+import android.view.View
 import per.goweii.anylayer.toast.ToastLayer
 
 fun <T : ToastLayer> T.setContentView(contentView: View) = this.apply {
