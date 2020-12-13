@@ -910,7 +910,6 @@ public class DialogLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
-        private FrameLayout mActivityContent;
         private BackgroundView mBackground;
         private SwipeLayout mContentWrapper;
         private View mContent;

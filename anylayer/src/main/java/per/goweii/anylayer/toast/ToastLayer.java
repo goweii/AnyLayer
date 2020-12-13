@@ -318,7 +318,7 @@ public class ToastLayer extends DecorLayer {
         @Override
         public void setChild(@NonNull View child) {
             super.setChild(child);
-            mIcon = child.findViewById(R.id.anylayler_iv_icon);
+            mIcon = child.findViewById(R.id.anylayler_notification_content_icon);
             mMessage = child.findViewById(R.id.anylayler_tv_msg);
         }
 

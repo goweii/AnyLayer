@@ -31,6 +31,16 @@ public class MaxSizeFrameLayout extends FrameLayout {
         array.recycle();
     }
 
+    public void setMaxWidth(int maxWidth) {
+        this.mMaxWidth = maxWidth;
+        requestLayout();
+    }
+
+    public void setMaxHeight(int maxHeight) {
+        this.mMaxHeight = maxHeight;
+        requestLayout();
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);

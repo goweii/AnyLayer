@@ -18,7 +18,7 @@
     android:paddingBottom="15dp">
 
     <ImageView
-        android:id="@+id/anylayler_iv_icon"
+        android:id="@+id/anylayler_notification_content_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
