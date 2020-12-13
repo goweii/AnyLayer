@@ -477,8 +477,8 @@ public class NotificationLayer extends DecorLayer {
         protected int mContentViewId = R.layout.anylayer_notification_content;
 
         protected long mDuration = GlobalConfig.get().notificationDuration;
-        protected int mMaxWidth = -1;
-        protected int mMaxHeight = -1;
+        protected int mMaxWidth = GlobalConfig.get().notificationMaxWidth;
+        protected int mMaxHeight = GlobalConfig.get().notificationMaxHeight;
 
         protected CharSequence mLabel = GlobalConfig.get().notificationLabel;
         protected Drawable mIcon = GlobalConfig.get().notificationIcon;
