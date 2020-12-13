@@ -41,13 +41,6 @@ import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.burred.Blurred;
 
-/**
- * @author CuiZhen
- * @date 2019/3/10
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class DialogLayer extends DecorLayer {
 
     private final long mAnimDurDef = GlobalConfig.get().dialogAnimDuration;

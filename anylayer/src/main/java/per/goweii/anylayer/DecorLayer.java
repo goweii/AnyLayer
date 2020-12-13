@@ -10,13 +10,6 @@ import androidx.annotation.NonNull;
 
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/3/10
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class DecorLayer extends FrameLayer {
     private final ComponentCallbacks mActivityComponentCallbacks = new ComponentCallbacks() {
         @Override

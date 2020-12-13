@@ -16,13 +16,6 @@ import androidx.customview.widget.ViewDragHelper;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/12/1
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class DragLayout extends FrameLayout {
 
     private final ViewDragHelper mDragHelper;

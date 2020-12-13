@@ -22,10 +22,6 @@ import androidx.annotation.Nullable;
 import per.goweii.anylayer.FrameLayer;
 import per.goweii.anylayer.dialog.ContainerLayout;
 
-/**
- * @author Cuizhen
- * @date 2018/10/25
- */
 public final class Utils {
 
     @NonNull

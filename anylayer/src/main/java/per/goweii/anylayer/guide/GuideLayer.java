@@ -26,13 +26,6 @@ import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/7/21
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class GuideLayer extends DecorLayer {
 
     public GuideLayer(@NonNull Context context) {

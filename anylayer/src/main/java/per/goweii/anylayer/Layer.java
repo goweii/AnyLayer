@@ -18,13 +18,6 @@ import java.util.List;
 
 import per.goweii.anylayer.utils.Utils;
 
-/**
- * @author CuiZhen
- * @date 2019/7/20
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class Layer {
     private final ViewTreeObserver.OnPreDrawListener mOnGlobalPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override

@@ -10,13 +10,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * @author CuiZhen
- * @date 2019/3/10
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class FrameLayer extends Layer {
 
     public FrameLayer(@NonNull FrameLayout frameLayout) {

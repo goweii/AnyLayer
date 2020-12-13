@@ -9,9 +9,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * Create by cuizhen on {2019/12/3}
- */
 public class ContainerLayout extends FrameLayout {
 
     private OnTouchedListener mOnTouchedListener = null;

@@ -14,10 +14,6 @@ import androidx.core.graphics.ColorUtils;
 
 import per.goweii.anylayer.floats.FloatLayer;
 
-/**
- * @author CuiZhen
- * @date 2020/8/16
- */
 public class GlobalConfig {
     private static final GlobalConfig INSTANCE = new GlobalConfig();
 

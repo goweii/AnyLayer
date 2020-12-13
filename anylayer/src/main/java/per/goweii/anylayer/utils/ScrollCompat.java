@@ -5,13 +5,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.core.view.ScrollingView;
 
-/**
- * @author CuiZhen
- * @date 2019/6/6
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class ScrollCompat {
 
     public static boolean canScrollUp(@NonNull View view) {

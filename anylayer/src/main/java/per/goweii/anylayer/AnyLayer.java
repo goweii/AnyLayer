@@ -15,12 +15,6 @@ import per.goweii.anylayer.popup.PopupLayer;
 import per.goweii.anylayer.toast.ToastLayer;
 import per.goweii.burred.Blurred;
 
-/**
- * @author Cuizhen
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public final class AnyLayer {
 
     public static void init(@NonNull Application application) {

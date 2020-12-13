@@ -18,13 +18,6 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Cuizhen
- * @date 2018/5/20
- * QQ: 302833254
- * E-mail: goweii@163.com
- * GitHub: https://github.com/goweii
- */
 public class AnimatorHelper {
 
     public static final float ZOOM_PERCENT = 0.9F;

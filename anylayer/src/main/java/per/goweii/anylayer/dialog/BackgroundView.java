@@ -9,9 +9,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * Create by cuizhen on {2019/12/3}
- */
 @SuppressLint("AppCompatCustomView")
 public class BackgroundView extends ImageView {
 
