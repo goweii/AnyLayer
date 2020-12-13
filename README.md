@@ -117,15 +117,15 @@ allprojects {
 // build.gradle(Module:)
 dependencies {
     // 完整引入，二选一
-    implementation 'com.github.goweii:AnyLayer:4.0.0-androidx'
-    implementation 'com.github.goweii:AnyLayer:4.0.0-support'
+    implementation 'com.github.goweii:AnyLayer:4.1.0-androidx'
+    implementation 'com.github.goweii:AnyLayer:4.1.0-support'
     
     // 基础库
-    // implementation 'com.github.goweii.AnyLayer:anylayer:4.0.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer:4.1.0-androidx'
     // 扩展库（依赖基础库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:4.0.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:4.1.0-androidx'
     // kotlin扩展库（依赖基础库和扩展库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:4.0.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:4.1.0-androidx'
     // 通用弹窗（依赖基础库）
     // implementation 'com.github.goweii.AnyLayer:anylayer-common:2.5.0'
 }
@@ -136,6 +136,15 @@ dependencies {
 ## 更新说明
 
 [点击查看详细更新说明](https://github.com/goweii/AnyLayer/releases)
+
+### 4.1.0
+
+- 适配分屏小窗和横竖屏切换
+- 新增设置通知最大宽高
+- 新增3组对其方式
+- 新增吐司自定义布局
+- 吐司和通知默认布局适配暗色模式
+- 修复一些代码错误
 
 ### 4.0.0
 
