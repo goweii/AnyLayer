@@ -1,0 +1,14 @@
+apply plugin: 'maven'
+
+group "per.goweii.anylayer"
+version "4.1.0"
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            snapshotRepository(url: uri("C:/Users/goweii/AndroidStudioProjects/maven-repository/snapshots"))
+            repository(url: uri("C:/Users/goweii/AndroidStudioProjects/maven-repository/releases"))
+            pom.packaging = "aar"
+        }
+    }
+}
