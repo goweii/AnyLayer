@@ -380,9 +380,9 @@ public class DialogLayer extends DecorLayer {
 
     protected void initContainer() {
         if (getConfig().mOutsideInterceptTouchEvent) {
-            getViewHolder().getChild().setClickable(true);
+            getViewHolder().getBackground().setClickable(true);
             if (getConfig().mCancelableOnTouchOutside) {
-                getViewHolder().getChild().setOnClickListener(new View.OnClickListener() {
+                getViewHolder().getBackground().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dismiss();
@@ -390,8 +390,8 @@ public class DialogLayer extends DecorLayer {
                 });
             }
         } else {
-            getViewHolder().getChild().setOnClickListener(null);
-            getViewHolder().getChild().setClickable(false);
+            getViewHolder().getBackground().setOnClickListener(null);
+            getViewHolder().getBackground().setClickable(false);
         }
         if (getConfig().mOutsideTouchedToDismiss || getConfig().mOutsideTouchedListener != null) {
             getViewHolder().getChild().setOnTouchedListener(new ContainerLayout.OnTouchedListener() {

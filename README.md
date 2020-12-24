@@ -106,6 +106,8 @@ Android稳定高效的浮层创建管理框架。
 allprojects {
     repositories {
         maven { url 'https://www.jitpack.io' }
+        // 支持4.1.0及以后版本 
+        // maven { url "https://gitee.com/goweii/maven-repository/raw/master/releases/" }
     }
 }
 ```
