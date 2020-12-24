@@ -106,6 +106,8 @@ Android稳定高效的浮层创建管理框架。
 allprojects {
     repositories {
         maven { url 'https://www.jitpack.io' }
+        // 支持4.1.0及以后版本 
+        // maven { url "https://gitee.com/goweii/maven-repository/raw/master/releases/" }
     }
 }
 ```
@@ -136,6 +138,11 @@ dependencies {
 ## 更新说明
 
 [点击查看详细更新说明](https://github.com/goweii/AnyLayer/releases)
+
+### 4.1.1
+
+- 修复物理返回键事件拦截问题
+- 修复带输入框弹窗点击外部关闭需要2次才能触发的问题
 
 ### 4.1.0
 

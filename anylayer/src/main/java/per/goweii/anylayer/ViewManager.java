@@ -97,17 +97,15 @@ public final class ViewManager {
      * 添加到父View
      */
     private void onAttach() {
+        mParent.addView(mChild);
         if (mOnKeyListener != null) {
             mChild.setFocusable(true);
             mChild.setFocusableInTouchMode(true);
-            mChild.requestFocus();
-            currentKeyView = mChild;
+            mLayerKeyListener = new LayerKeyListener();
+            findFocusViewAndBindKeyListener();
             mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
             mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
-            mLayerKeyListener = new LayerKeyListener();
-            currentKeyView.setOnKeyListener(mLayerKeyListener);
         }
-        mParent.addView(mChild);
         if (mOnLifeListener != null) {
             mOnLifeListener.onAttach();
         }
@@ -129,17 +127,42 @@ public final class ViewManager {
         }
     }
 
+    private void findFocusViewAndBindKeyListener() {
+        Utils.onViewLayout(mChild, new Runnable() {
+            @Override
+            public void run() {
+                currentKeyView = mChild.findFocus();
+                if (currentKeyView != null) {
+                    currentKeyView.setOnKeyListener(mLayerKeyListener);
+                    return;
+                }
+                mChild.requestFocus();
+                currentKeyView = mChild.findFocus();
+                if (currentKeyView != null) {
+                    currentKeyView.setOnKeyListener(mLayerKeyListener);
+                }
+            }
+        });
+    }
+
     private final class LayerGlobalFocusChangeListener implements ViewTreeObserver.OnGlobalFocusChangeListener {
         @Override
         public void onGlobalFocusChanged(View oldFocus, View newFocus) {
             if (currentKeyView != null) {
                 currentKeyView.setOnKeyListener(null);
             }
-            if (oldFocus != null) {
-                oldFocus.setOnKeyListener(null);
+            currentKeyView = mChild.findFocus();
+            if (currentKeyView != null) {
+                currentKeyView.setOnKeyListener(mLayerKeyListener);
+                return;
             }
-            if (newFocus != null) {
-                currentKeyView = newFocus;
+            View rootFocus = mChild.getRootView().findFocus();
+            if (rootFocus != null) {
+                return;
+            }
+            mChild.requestFocus();
+            currentKeyView = mChild.findFocus();
+            if (currentKeyView != null) {
                 currentKeyView.setOnKeyListener(mLayerKeyListener);
             }
         }
