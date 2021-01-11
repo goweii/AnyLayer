@@ -1,10 +1,9 @@
 package per.goweii.anylayer.ext;
 
 import android.animation.Animator;
-import android.view.View;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import per.goweii.anylayer.utils.AnimatorHelper;
 

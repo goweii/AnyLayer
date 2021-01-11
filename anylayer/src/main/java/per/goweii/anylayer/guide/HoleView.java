@@ -9,14 +9,12 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.os.Build;
-import android.util.AttributeSet;
-import android.view.View;
-
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.graphics.ColorUtils;
+import android.util.AttributeSet;
+import android.view.View;
 
 public class HoleView extends View {
     private final Paint mPaint;

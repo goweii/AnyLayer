@@ -2,7 +2,15 @@ package per.goweii.anylayer.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.NestedScrollingParent2;
+import android.support.v4.view.NestedScrollingParentHelper;
+import android.support.v4.view.ScrollingView;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,15 +18,6 @@ import android.view.ViewConfiguration;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
-
-import android.support.annotation.FloatRange;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.view.NestedScrollingParentHelper;
-import android.support.v4.view.ScrollingView;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ViewDragHelper;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

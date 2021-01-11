@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.widget.FrameLayout;
-
 import android.support.annotation.NonNull;
+import android.widget.FrameLayout;
 
 import per.goweii.anylayer.utils.Utils;
 

@@ -3,6 +3,7 @@ package per.goweii.anylayer.ktx
 import android.animation.Animator
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.support.annotation.*
 import android.view.View
 import androidx.annotation.*
 import per.goweii.anylayer.Layer

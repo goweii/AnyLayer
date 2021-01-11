@@ -1,11 +1,11 @@
 package per.goweii.anylayer.ktx
 
 import android.graphics.drawable.Drawable
+import android.support.annotation.DrawableRes
+import android.support.annotation.FloatRange
+import android.support.annotation.LayoutRes
+import android.support.annotation.StringRes
 import android.view.View
-import androidx.annotation.DrawableRes
-import androidx.annotation.FloatRange
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
 import per.goweii.anylayer.ext.DefaultNotificationOnSwipeListener
 import per.goweii.anylayer.notification.NotificationLayer
 import per.goweii.anylayer.widget.SwipeLayout

@@ -3,9 +3,8 @@ package per.goweii.anylayer;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.view.View;
-
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.floats.FloatLayer;

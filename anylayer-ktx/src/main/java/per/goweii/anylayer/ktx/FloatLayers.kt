@@ -1,7 +1,7 @@
 package per.goweii.anylayer.ktx
 
-import android.view.View
 import android.support.annotation.LayoutRes
+import android.view.View
 import per.goweii.anylayer.floats.FloatLayer
 
 fun <T : FloatLayer> T.setFloatView(@LayoutRes layoutId: Int) = this.apply {

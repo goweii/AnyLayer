@@ -1,9 +1,9 @@
 package per.goweii.anylayer.ktx
 
-import android.view.View
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.annotation.IdRes
+import android.view.View
 import per.goweii.anylayer.Layer
 import per.goweii.anylayer.guide.GuideLayer
 

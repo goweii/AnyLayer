@@ -2,12 +2,11 @@ package per.goweii.anylayer.dialog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 @SuppressLint("AppCompatCustomView")
 public class BackgroundView extends ImageView {
