@@ -20,6 +20,8 @@ import androidx.core.view.ScrollingView;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import per.goweii.anylayer.utils.Utils;
 public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
 
     @IntDef({Direction.LEFT, Direction.TOP, Direction.RIGHT, Direction.BOTTOM})
+    @Retention(RetentionPolicy.SOURCE)
     public @interface Direction {
         int LEFT = 1;
         int TOP = 1 << 1;
