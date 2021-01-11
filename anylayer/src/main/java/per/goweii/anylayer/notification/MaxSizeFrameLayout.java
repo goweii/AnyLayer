@@ -3,6 +3,7 @@ package per.goweii.anylayer.notification;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,8 @@ public class MaxSizeFrameLayout extends FrameLayout {
 
     private int mMaxWidth = -1;
     private int mMaxHeight = -1;
+
+    private OnDispatchTouchListener mOnDispatchTouchListener = null;
 
     public MaxSizeFrameLayout(@NonNull Context context) {
         this(context, null);
@@ -42,6 +45,19 @@ public class MaxSizeFrameLayout extends FrameLayout {
     }
 
     @Override
+    public boolean dispatchTouchEvent(MotionEvent e) {
+        if (mOnDispatchTouchListener != null) {
+            mOnDispatchTouchListener.onDispatch(e);
+        }
+        return super.dispatchTouchEvent(e);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent e) {
+        return super.onInterceptTouchEvent(e);
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -58,5 +74,13 @@ public class MaxSizeFrameLayout extends FrameLayout {
         int newWidthSpec = MeasureSpec.makeMeasureSpec(newWidthSize, widthMode);
         int newHeightSpec = MeasureSpec.makeMeasureSpec(newHeightSize, heightMode);
         super.onMeasure(newWidthSpec, newHeightSpec);
+    }
+
+    public void setOnDispatchTouchListener(@Nullable OnDispatchTouchListener onDispatchTouchListener) {
+        this.mOnDispatchTouchListener = onDispatchTouchListener;
+    }
+
+    public interface OnDispatchTouchListener {
+        void onDispatch(MotionEvent e);
     }
 }

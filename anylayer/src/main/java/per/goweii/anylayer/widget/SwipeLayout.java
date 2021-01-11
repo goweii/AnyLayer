@@ -48,10 +48,11 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
     private OnSwipeListener mOnSwipeListener = null;
 
     private View mSwipeView = null;
-    private List<View> mInnerScrollViews = new ArrayList<>(0);
+    private final List<View> mInnerScrollViews = new ArrayList<>(0);
 
     private boolean mUsingNested = false;
     private boolean mHandleTouchEvent = false;
+    private boolean mSwiping = false;
     private float mDownX = 0F;
     private float mDownY = 0F;
     private int mLeft = 0;
@@ -271,29 +272,42 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         onSwiping();
         if (mSwipeFraction == 0) {
             mCurrSwipeDirection = 0;
+            if (!mSwiping) {
+                onSwipeEnd();
+            }
         } else if (mSwipeFraction == 1) {
-            mCurrSwipeDirection = 0;
-            onSwipeEnd();
+            if (!mSwiping) {
+                onSwipeEnd();
+            }
         }
     }
 
     private void onSwipeStart() {
-        if (mSwipeFraction == 0) {
-            if (mOnSwipeListener != null) {
-                mOnSwipeListener.onStart();
-            }
+        mSwiping = true;
+        if (mOnSwipeListener != null) {
+            mOnSwipeListener.onStart(mCurrSwipeDirection, mSwipeFraction);
         }
     }
 
     private void onSwiping() {
         if (mOnSwipeListener != null) {
-            mOnSwipeListener.onSwiping(mSwipeDirection, mSwipeFraction);
+            mOnSwipeListener.onSwiping(mCurrSwipeDirection, mSwipeFraction);
+        }
+    }
+
+    private void onSwipeStop() {
+        mSwiping = false;
+        if (mSwipeFraction == 0) {
+            mCurrSwipeDirection = 0;
+            onSwipeEnd();
+        } else if (mSwipeFraction == 1) {
+            onSwipeEnd();
         }
     }
 
     private void onSwipeEnd() {
         if (mOnSwipeListener != null) {
-            mOnSwipeListener.onEnd(mSwipeDirection);
+            mOnSwipeListener.onEnd(mCurrSwipeDirection, mSwipeFraction);
         }
     }
 
@@ -627,6 +641,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
     public void onStopNestedScroll(@NonNull View target, int type) {
         mNestedHelper.onStopNestedScroll(target, type);
         if (type == ViewCompat.TYPE_TOUCH) {
+            onSwipeStop();
             int fromx = getSwipeX();
             int fromy = getSwipeY();
             int endx = 0;
@@ -857,6 +872,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         @Override
         public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
+            onSwipeStop();
             mBeanDragged = false;
             float vel = 0F;
             switch (mCurrSwipeDirection) {
@@ -900,7 +916,7 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
         /**
          * 开始滑动
          */
-        void onStart();
+        void onStart(@Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction);
 
         /**
          * 滑动中
@@ -908,14 +924,14 @@ public class SwipeLayout extends FrameLayout implements NestedScrollingParent3 {
          * @param direction 滑动关闭的方向
          * @param fraction  滑动比例 0为开始，1为结束
          */
-        void onSwiping(@Direction int direction,
-                       @FloatRange(from = 0F, to = 1F) float fraction);
+        void onSwiping(@Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction);
 
         /**
          * 滑动结束
          *
          * @param direction 滑动关闭的方向，0表示复位
+         * @param fraction  滑动比例 0为复位，1为关闭
          */
-        void onEnd(@Direction int direction);
+        void onEnd(@Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction);
     }
 }

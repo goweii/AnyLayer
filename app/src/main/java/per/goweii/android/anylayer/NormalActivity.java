@@ -384,7 +384,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .swipeDismiss(SwipeLayout.Direction.BOTTOM)
                         .swipeTransformer(new DialogLayer.SwipeTransformer() {
                             @Override
-                            public void onDragging(@NonNull View content, @NonNull View background, float f) {
+                            public void onSwiping(@NonNull View content, @NonNull View background, float f) {
                                 content.setAlpha(1 - f);
                             }
                         })
