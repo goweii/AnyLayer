@@ -1,12 +1,10 @@
 package per.goweii.anylayer.notification;
 
 import android.animation.Animator;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,16 +14,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntRange;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntRange;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import per.goweii.anylayer.DecorLayer;
@@ -38,6 +39,7 @@ import per.goweii.anylayer.widget.SwipeLayout;
 public class NotificationLayer extends DecorLayer {
 
     private Runnable mDismissRunnable = null;
+    private boolean mSwiping = false;
 
     public NotificationLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
@@ -157,24 +159,34 @@ public class NotificationLayer extends DecorLayer {
         );
         getViewHolder().getChild().setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
             @Override
-            public void onStart() {
+            public void onStart(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
+                mSwiping = true;
+                autoDismiss(false);
+                getListenerHolder().notifyOnSwipeStart(NotificationLayer.this);
             }
 
             @Override
-            public void onSwiping(int direction, float fraction) {
+            public void onSwiping(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
+                getListenerHolder().notifyOnSwiping(NotificationLayer.this, direction, fraction);
             }
 
             @Override
-            public void onEnd(int direction) {
-                // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
-                // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
-                getViewHolder().getContent().setVisibility(View.INVISIBLE);
-                getViewHolder().getContent().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        dismiss(false);
-                    }
-                });
+            public void onEnd(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
+                mSwiping = false;
+                if (fraction == 1F) {
+                    getListenerHolder().notifyOnSwipeEnd(NotificationLayer.this, direction);
+                    // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
+                    // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                    getViewHolder().getContent().setVisibility(View.INVISIBLE);
+                    getViewHolder().getContent().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            dismiss(false);
+                        }
+                    });
+                } else if (fraction == 0F) {
+                    autoDismiss(true);
+                }
             }
         });
         if (getConfig().mMaxWidth >= 0) {
@@ -184,7 +196,22 @@ public class NotificationLayer extends DecorLayer {
             getViewHolder().getContentWrapper().setMaxHeight(getConfig().mMaxHeight);
         }
         getViewHolder().getContent().setVisibility(View.VISIBLE);
-        getListenerHolder().bindTouchListener(this);
+        getViewHolder().getContentWrapper().setOnDispatchTouchListener(new MaxSizeFrameLayout.OnDispatchTouchListener() {
+            @Override
+            public void onDispatch(MotionEvent e) {
+                switch (e.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        autoDismiss(false);
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                    case MotionEvent.ACTION_UP:
+                        if (!mSwiping) {
+                            autoDismiss(true);
+                        }
+                        break;
+                }
+            }
+        });
         bindDefaultContentData();
     }
 
@@ -196,17 +223,7 @@ public class NotificationLayer extends DecorLayer {
     @Override
     protected void onShow() {
         super.onShow();
-        if (getConfig().mDuration > 0) {
-            if (mDismissRunnable == null) {
-                mDismissRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        dismiss();
-                    }
-                };
-            }
-            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
-        }
+        autoDismiss(true);
     }
 
     @Override
@@ -394,6 +411,23 @@ public class NotificationLayer extends DecorLayer {
         }
     }
 
+    @NonNull
+    public NotificationLayer swipeTransformer(@Nullable NotificationLayer.SwipeTransformer swipeTransformer) {
+        getConfig().mSwipeTransformer = swipeTransformer;
+        return this;
+    }
+
+    /**
+     * 浮层拖拽事件监听
+     *
+     * @param swipeListener OnSwipeListener
+     */
+    @NonNull
+    public NotificationLayer onSwipeListener(@NonNull NotificationLayer.OnSwipeListener swipeListener) {
+        getListenerHolder().addOnSwipeListener(swipeListener);
+        return this;
+    }
+
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private MaxSizeFrameLayout mContentWrapper;
         private View mContent;
@@ -485,52 +519,63 @@ public class NotificationLayer extends DecorLayer {
         protected CharSequence mTime = null;
         protected CharSequence mTitle = null;
         protected CharSequence mDesc = null;
+
+        @Nullable
+        protected SwipeTransformer mSwipeTransformer = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
-        private GestureDetector mGestureDetector = null;
+        private List<OnSwipeListener> mOnSwipeListeners = null;
 
-        public void bindTouchListener(@NonNull NotificationLayer layer) {
-            final View content = layer.getViewHolder().getContent();
-            mGestureDetector = new GestureDetector(content.getContext(), new GestureDetector.OnGestureListener() {
-                @Override
-                public boolean onDown(MotionEvent e) {
-                    layer.autoDismiss(false);
-                    return true;
-                }
-
-                @Override
-                public void onShowPress(MotionEvent e) {
-                }
-
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    content.performClick();
-                    return true;
-                }
-
-                @Override
-                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                    return false;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    content.performLongClick();
-                }
-
-                @Override
-                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                    return false;
-                }
-            });
-            content.setOnTouchListener(new View.OnTouchListener() {
-                @SuppressLint("ClickableViewAccessibility")
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    return mGestureDetector.onTouchEvent(event);
-                }
-            });
+        private void addOnSwipeListener(@NonNull OnSwipeListener onSwipeListener) {
+            if (mOnSwipeListeners == null) {
+                mOnSwipeListeners = new ArrayList<>(1);
+            }
+            mOnSwipeListeners.add(onSwipeListener);
         }
+
+        private void notifyOnSwipeStart(@NonNull NotificationLayer layer) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onStart(layer);
+                }
+            }
+        }
+
+        private void notifyOnSwiping(@NonNull NotificationLayer layer,
+                                     @SwipeLayout.Direction int direction,
+                                     @FloatRange(from = 0F, to = 1F) float fraction) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onSwiping(layer, direction, fraction);
+                }
+            }
+        }
+
+        private void notifyOnSwipeEnd(@NonNull NotificationLayer layer,
+                                      @SwipeLayout.Direction int direction) {
+            if (mOnSwipeListeners != null) {
+                for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
+                    onSwipeListener.onEnd(layer, direction);
+                }
+            }
+        }
+    }
+
+    public interface SwipeTransformer {
+        void onSwiping(@NonNull NotificationLayer layer,
+                       @SwipeLayout.Direction int direction,
+                       @FloatRange(from = 0F, to = 1F) float fraction);
+    }
+
+    public interface OnSwipeListener {
+        void onStart(@NonNull NotificationLayer layer);
+
+        void onSwiping(@NonNull NotificationLayer layer,
+                       @SwipeLayout.Direction int direction,
+                       @FloatRange(from = 0F, to = 1F) float fraction);
+
+        void onEnd(@NonNull NotificationLayer layer,
+                   @SwipeLayout.Direction int direction);
     }
 }
