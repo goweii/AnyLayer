@@ -411,6 +411,12 @@ public class NotificationLayer extends DecorLayer {
         }
     }
 
+    @NonNull
+    public NotificationLayer swipeTransformer(@Nullable NotificationLayer.SwipeTransformer swipeTransformer) {
+        getConfig().mSwipeTransformer = swipeTransformer;
+        return this;
+    }
+
     /**
      * 浮层拖拽事件监听
      *
@@ -513,6 +519,9 @@ public class NotificationLayer extends DecorLayer {
         protected CharSequence mTime = null;
         protected CharSequence mTitle = null;
         protected CharSequence mDesc = null;
+
+        @Nullable
+        protected SwipeTransformer mSwipeTransformer = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
@@ -551,6 +560,12 @@ public class NotificationLayer extends DecorLayer {
                 }
             }
         }
+    }
+
+    public interface SwipeTransformer {
+        void onSwiping(@NonNull NotificationLayer layer,
+                       @SwipeLayout.Direction int direction,
+                       @FloatRange(from = 0F, to = 1F) float fraction);
     }
 
     public interface OnSwipeListener {

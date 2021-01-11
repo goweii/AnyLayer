@@ -425,11 +425,10 @@ public class DialogLayer extends DecorLayer {
                 if (getConfig().mSwipeTransformer == null) {
                     getConfig().mSwipeTransformer = new SwipeTransformer() {
                         @Override
-                        public void onSwiping(@NonNull View content, @NonNull View background, float f) {
-                            background.setAlpha(1F - f);
+                        public void onSwiping(@NonNull DialogLayer layer, @SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
+                            layer.getViewHolder().getBackground().setAlpha(1F - fraction);
                         }
                     };
-                    getConfig().mSwipeTransformer.onSwiping(getViewHolder().getContent(), getViewHolder().getBackground(), fraction);
                 }
                 getListenerHolder().notifyOnSwipeStart(DialogLayer.this);
             }
@@ -437,7 +436,7 @@ public class DialogLayer extends DecorLayer {
             @Override
             public void onSwiping(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
                 if (getConfig().mSwipeTransformer != null) {
-                    getConfig().mSwipeTransformer.onSwiping(getViewHolder().getContent(), getViewHolder().getBackground(), fraction);
+                    getConfig().mSwipeTransformer.onSwiping(DialogLayer.this, direction, fraction);
                 }
                 getListenerHolder().notifyOnSwiping(DialogLayer.this, direction, fraction);
             }
@@ -836,7 +835,7 @@ public class DialogLayer extends DecorLayer {
      * @return ImageView
      */
     @NonNull
-    public ImageView getBackground() {
+    public BackgroundView getBackground() {
         return getViewHolder().getBackground();
     }
 
@@ -1044,9 +1043,9 @@ public class DialogLayer extends DecorLayer {
     }
 
     public interface SwipeTransformer {
-        void onSwiping(@NonNull View content,
-                       @NonNull View background,
-                       @FloatRange(from = 0F, to = 1F) float f);
+        void onSwiping(@NonNull DialogLayer layer,
+                       @SwipeLayout.Direction int direction,
+                       @FloatRange(from = 0F, to = 1F) float fraction);
     }
 
     public interface OnSwipeListener {
