@@ -7,7 +7,7 @@ import android.view.View
 import androidx.annotation.*
 import per.goweii.anylayer.Layer
 import per.goweii.anylayer.dialog.DialogLayer
-import per.goweii.anylayer.ext.DefaultOnSwipeListener
+import per.goweii.anylayer.ext.DefaultDialogOnSwipeListener
 import per.goweii.anylayer.widget.SwipeLayout
 
 fun <T : DialogLayer> T.setCancelableOnTouchOutside(enable: Boolean) = this.apply {
@@ -43,16 +43,16 @@ fun <T : DialogLayer> T.setSwipeTransformer(swipeTransformer: DialogLayer.SwipeT
 }
 
 fun <T : DialogLayer> T.doOnSwipeStart(onStart: T.() -> Unit) = this.apply {
-    this.onSwipeListener(object : DefaultOnSwipeListener() {
-        override fun onStart(layer: Layer) {
+    this.onSwipeListener(object : DefaultDialogOnSwipeListener() {
+        override fun onStart(layer: DialogLayer) {
             this@apply.onStart()
         }
     })
 }
 
 fun <T : DialogLayer> T.doOnSwiping(onSwiping: T.(direction: Int, fraction: Float) -> Unit) = this.apply {
-    this.onSwipeListener(object : DefaultOnSwipeListener() {
-        override fun onSwiping(layer: Layer,
+    this.onSwipeListener(object : DefaultDialogOnSwipeListener() {
+        override fun onSwiping(layer: DialogLayer,
                                @SwipeLayout.Direction direction: Int,
                                @FloatRange(from = 0.0, to = 1.0) fraction: Float) {
             this@apply.onSwiping(direction, fraction)
@@ -61,8 +61,8 @@ fun <T : DialogLayer> T.doOnSwiping(onSwiping: T.(direction: Int, fraction: Floa
 }
 
 fun <T : DialogLayer> T.doOnSwipeEnd(onEnd: T.(direction: Int) -> Unit) = this.apply {
-    this.onSwipeListener(object : DefaultOnSwipeListener() {
-        override fun onEnd(layer: Layer, @SwipeLayout.Direction direction: Int) {
+    this.onSwipeListener(object : DefaultDialogOnSwipeListener() {
+        override fun onEnd(layer: DialogLayer, @SwipeLayout.Direction direction: Int) {
             this@apply.onEnd(direction)
         }
     })

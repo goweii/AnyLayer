@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -384,8 +385,10 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .swipeDismiss(SwipeLayout.Direction.BOTTOM)
                         .swipeTransformer(new DialogLayer.SwipeTransformer() {
                             @Override
-                            public void onDragging(@NonNull View content, @NonNull View background, float f) {
-                                content.setAlpha(1 - f);
+                            public void onSwiping(@NonNull DialogLayer layer,
+                                                  @SwipeLayout.Direction int direction,
+                                                  @FloatRange(from = 0F, to = 1F) float fraction) {
+                                layer.getViewHolder().getContent().setAlpha(1 - fraction);
                             }
                         })
                         .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)

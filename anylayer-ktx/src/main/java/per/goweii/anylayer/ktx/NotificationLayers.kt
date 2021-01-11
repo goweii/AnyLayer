@@ -3,10 +3,12 @@ package per.goweii.anylayer.ktx
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.annotation.FloatRange
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import per.goweii.anylayer.ext.DefaultNotificationOnSwipeListener
 import per.goweii.anylayer.notification.NotificationLayer
-
+import per.goweii.anylayer.widget.SwipeLayout
 
 fun <T : NotificationLayer> T.setContentView(contentView: View) = this.apply {
     this.contentView(contentView)
@@ -74,4 +76,34 @@ fun <T : NotificationLayer> T.doOnNotificationLongClick(onNotificationClick: T.(
 
 fun <T : NotificationLayer> T.setAutoDismiss(autoDismiss: Boolean) = this.apply {
     this.autoDismiss(autoDismiss)
+}
+
+fun <T : NotificationLayer> T.setSwipeTransformer(swipeTransformer: NotificationLayer.SwipeTransformer) = this.apply {
+    this.swipeTransformer(swipeTransformer)
+}
+
+fun <T : NotificationLayer> T.doOnSwipeStart(onStart: T.() -> Unit) = this.apply {
+    this.onSwipeListener(object : DefaultNotificationOnSwipeListener() {
+        override fun onStart(layer: NotificationLayer) {
+            this@apply.onStart()
+        }
+    })
+}
+
+fun <T : NotificationLayer> T.doOnSwiping(onSwiping: T.(direction: Int, fraction: Float) -> Unit) = this.apply {
+    this.onSwipeListener(object : DefaultNotificationOnSwipeListener() {
+        override fun onSwiping(layer: NotificationLayer,
+                               @SwipeLayout.Direction direction: Int,
+                               @FloatRange(from = 0.0, to = 1.0) fraction: Float) {
+            this@apply.onSwiping(direction, fraction)
+        }
+    })
+}
+
+fun <T : NotificationLayer> T.doOnSwipeEnd(onEnd: T.(direction: Int) -> Unit) = this.apply {
+    this.onSwipeListener(object : DefaultNotificationOnSwipeListener() {
+        override fun onEnd(layer: NotificationLayer, @SwipeLayout.Direction direction: Int) {
+            this@apply.onEnd(direction)
+        }
+    })
 }

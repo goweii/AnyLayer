@@ -421,12 +421,12 @@ public class DialogLayer extends DecorLayer {
         getViewHolder().getContentWrapper().setSwipeDirection(getConfig().mSwipeDirection);
         getViewHolder().getContentWrapper().setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
             @Override
-            public void onStart() {
+            public void onStart(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
                 if (getConfig().mSwipeTransformer == null) {
                     getConfig().mSwipeTransformer = new SwipeTransformer() {
                         @Override
-                        public void onDragging(@NonNull View content, @NonNull View background, float f) {
-                            background.setAlpha(1F - f);
+                        public void onSwiping(@NonNull DialogLayer layer, @SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
+                            layer.getViewHolder().getBackground().setAlpha(1F - fraction);
                         }
                     };
                 }
@@ -436,23 +436,25 @@ public class DialogLayer extends DecorLayer {
             @Override
             public void onSwiping(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
                 if (getConfig().mSwipeTransformer != null) {
-                    getConfig().mSwipeTransformer.onDragging(getViewHolder().getContent(), getViewHolder().getBackground(), fraction);
+                    getConfig().mSwipeTransformer.onSwiping(DialogLayer.this, direction, fraction);
                 }
                 getListenerHolder().notifyOnSwiping(DialogLayer.this, direction, fraction);
             }
 
             @Override
-            public void onEnd(@SwipeLayout.Direction int direction) {
-                getListenerHolder().notifyOnSwipeEnd(DialogLayer.this, direction);
-                // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
-                // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
-                getViewHolder().getContentWrapper().setVisibility(View.INVISIBLE);
-                getViewHolder().getContentWrapper().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        dismiss(false);
-                    }
-                });
+            public void onEnd(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
+                if (fraction == 1F) {
+                    getListenerHolder().notifyOnSwipeEnd(DialogLayer.this, direction);
+                    // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
+                    // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                    getViewHolder().getContentWrapper().setVisibility(View.INVISIBLE);
+                    getViewHolder().getContentWrapper().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            dismiss(false);
+                        }
+                    });
+                }
             }
         });
         getViewHolder().getContentWrapper().setVisibility(View.VISIBLE);
@@ -833,7 +835,7 @@ public class DialogLayer extends DecorLayer {
      * @return ImageView
      */
     @NonNull
-    public ImageView getBackground() {
+    public BackgroundView getBackground() {
         return getViewHolder().getBackground();
     }
 
@@ -1008,7 +1010,7 @@ public class DialogLayer extends DecorLayer {
             mOnSwipeListeners.add(onSwipeListener);
         }
 
-        private void notifyOnSwipeStart(@NonNull Layer layer) {
+        private void notifyOnSwipeStart(@NonNull DialogLayer layer) {
             if (mOnSwipeListeners != null) {
                 for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
                     onSwipeListener.onStart(layer);
@@ -1016,7 +1018,7 @@ public class DialogLayer extends DecorLayer {
             }
         }
 
-        private void notifyOnSwiping(@NonNull Layer layer,
+        private void notifyOnSwiping(@NonNull DialogLayer layer,
                                      @SwipeLayout.Direction int direction,
                                      @FloatRange(from = 0F, to = 1F) float fraction) {
             if (mOnSwipeListeners != null) {
@@ -1026,7 +1028,7 @@ public class DialogLayer extends DecorLayer {
             }
         }
 
-        private void notifyOnSwipeEnd(@NonNull Layer layer,
+        private void notifyOnSwipeEnd(@NonNull DialogLayer layer,
                                       @SwipeLayout.Direction int direction) {
             if (mOnSwipeListeners != null) {
                 for (OnSwipeListener onSwipeListener : mOnSwipeListeners) {
@@ -1041,19 +1043,19 @@ public class DialogLayer extends DecorLayer {
     }
 
     public interface SwipeTransformer {
-        void onDragging(@NonNull View content,
-                        @NonNull View background,
-                        @FloatRange(from = 0F, to = 1F) float f);
+        void onSwiping(@NonNull DialogLayer layer,
+                       @SwipeLayout.Direction int direction,
+                       @FloatRange(from = 0F, to = 1F) float fraction);
     }
 
     public interface OnSwipeListener {
-        void onStart(@NonNull Layer layer);
+        void onStart(@NonNull DialogLayer layer);
 
-        void onSwiping(@NonNull Layer layer,
+        void onSwiping(@NonNull DialogLayer layer,
                        @SwipeLayout.Direction int direction,
                        @FloatRange(from = 0F, to = 1F) float fraction);
 
-        void onEnd(@NonNull Layer layer,
+        void onEnd(@NonNull DialogLayer layer,
                    @SwipeLayout.Direction int direction);
     }
 
