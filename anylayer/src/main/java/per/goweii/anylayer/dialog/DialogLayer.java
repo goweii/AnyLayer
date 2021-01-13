@@ -347,8 +347,8 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
-    protected void onPreDraw() {
-        super.onPreDraw();
+    protected void onAppear() {
+        super.onAppear();
     }
 
     @Override
@@ -357,8 +357,13 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
-    protected void onPreRemove() {
-        super.onPreRemove();
+    protected void onDismiss() {
+        super.onDismiss();
+    }
+
+    @Override
+    protected void onDisappear() {
+        super.onDisappear();
     }
 
     @Override
@@ -380,18 +385,18 @@ public class DialogLayer extends DecorLayer {
 
     protected void initContainer() {
         if (getConfig().mOutsideInterceptTouchEvent) {
-            getViewHolder().getBackground().setClickable(true);
+            getViewHolder().getChild().setHandleTouchEvent(true);
             if (getConfig().mCancelableOnTouchOutside) {
-                getViewHolder().getBackground().setOnClickListener(new View.OnClickListener() {
+                getViewHolder().getChild().setOnTappedListener(new ContainerLayout.OnTappedListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onTapped() {
                         dismiss();
                     }
                 });
             }
         } else {
-            getViewHolder().getBackground().setOnClickListener(null);
-            getViewHolder().getBackground().setClickable(false);
+            getViewHolder().getChild().setOnTappedListener(null);
+            getViewHolder().getChild().setHandleTouchEvent(false);
         }
         if (getConfig().mOutsideTouchedToDismiss || getConfig().mOutsideTouchedListener != null) {
             getViewHolder().getChild().setOnTouchedListener(new ContainerLayout.OnTouchedListener() {

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,29 +32,6 @@ public class Layer {
         @Override
         public void onGlobalLayout() {
             Layer.this.onGlobalLayout();
-        }
-    };
-
-    private final ViewTreeObserver.OnPreDrawListener mOnLayerPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
-        @Override
-        public boolean onPreDraw() {
-            if (getViewTreeObserver().isAlive()) {
-                getViewTreeObserver().removeOnPreDrawListener(this);
-            }
-            Layer.this.onPreDraw();
-            return true;
-        }
-    };
-
-    private final ViewManager.OnLifeListener mOnLayerLifeListener = new ViewManager.OnLifeListener() {
-        @Override
-        public void onAttach() {
-            Layer.this.onAttach();
-        }
-
-        @Override
-        public void onDetach() {
-            Layer.this.onDetach();
         }
     };
 
@@ -80,26 +58,10 @@ public class Layer {
     private boolean mInitialized = false;
 
     public Layer() {
+        mViewManager = new ViewManager();
         mConfig = onCreateConfig();
         mViewHolder = onCreateViewHolder();
         mListenerHolder = onCreateListenerHolder();
-        mViewManager = new ViewManager();
-        mViewManager.setOnLifeListener(mOnLayerLifeListener);
-    }
-
-    @NonNull
-    public ViewHolder getViewHolder() {
-        return mViewHolder;
-    }
-
-    @NonNull
-    public Config getConfig() {
-        return mConfig;
-    }
-
-    @NonNull
-    public ListenerHolder getListenerHolder() {
-        return mListenerHolder;
     }
 
     @NonNull
@@ -146,120 +108,54 @@ public class Layer {
         return null;
     }
 
-    protected void onAttach() {
-        if (getViewTreeObserver().isAlive()) {
-            getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-            getViewTreeObserver().addOnPreDrawListener(mOnGlobalPreDrawListener);
-            getViewTreeObserver().addOnPreDrawListener(mOnLayerPreDrawListener);
-        }
-        getViewHolder().getChild().setVisibility(View.VISIBLE);
-        mListenerHolder.bindClickListeners(this);
-        mListenerHolder.bindLongClickListeners(this);
-        mListenerHolder.notifyVisibleChangeOnShow(this);
+    @CallSuper
+    protected void onCreate() {
+        mViewHolder.setParent(onGetParent());
+        mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
+        mViewManager.setParent(mViewHolder.getParent());
+        mViewManager.setChild(mViewHolder.getChild());
+        mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? mOnLayerKeyListener : null);
         if (!mInitialized) {
             mInitialized = true;
             mListenerHolder.notifyOnInitialize(this);
         }
+    }
+
+    @CallSuper
+    protected void onAttach() {
+        if (getViewTreeObserver().isAlive()) {
+            getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+            getViewTreeObserver().addOnPreDrawListener(mOnGlobalPreDrawListener);
+        }
+        mListenerHolder.bindClickListeners(this);
+        mListenerHolder.bindLongClickListeners(this);
+        mListenerHolder.notifyVisibleChangeOnShow(this);
         mListenerHolder.notifyDataBinder(this);
     }
 
-    protected void onPreDraw() {
+    @CallSuper
+    protected void onAppear() {
         mListenerHolder.notifyLayerOnShowing(this);
-        cancelAnimator();
-        if (mShowWithAnim) {
-            mAnimatorIn = onCreateInAnimator(mViewManager.requireChild());
-            if (mAnimatorIn != null) {
-                mAnimatorIn.addListener(new Animator.AnimatorListener() {
-                    private boolean beenCanceled = false;
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (!beenCanceled) {
-                            onShow();
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        beenCanceled = true;
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                });
-                mAnimatorIn.start();
-            } else {
-                onShow();
-            }
-        } else {
-            onShow();
-        }
     }
 
+    @CallSuper
     protected void onShow() {
         mListenerHolder.notifyLayerOnShown(this);
-        if (mAnimatorIn != null) {
-            mAnimatorIn = null;
-        }
     }
 
-    protected void onPreRemove() {
+    @CallSuper
+    protected void onDismiss() {
         mListenerHolder.notifyLayerOnDismissing(this);
-        cancelAnimator();
-        if (mDismissWithAnim) {
-            mAnimatorOut = onCreateOutAnimator(mViewManager.requireChild());
-            if (mAnimatorOut != null) {
-                mAnimatorOut.addListener(new Animator.AnimatorListener() {
-                    private boolean beenCanceled = false;
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (!beenCanceled) {
-                            // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
-                            // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
-                            getViewHolder().getChild().setVisibility(View.INVISIBLE);
-                            getViewHolder().getChild().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mViewManager.detach();
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        beenCanceled = true;
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                });
-                mAnimatorOut.start();
-            } else {
-                mViewManager.detach();
-            }
-        } else {
-            mViewManager.detach();
-        }
     }
 
-    protected void onDetach() {
+    @CallSuper
+    protected void onDisappear() {
         mListenerHolder.notifyVisibleChangeOnDismiss(this);
         mListenerHolder.notifyLayerOnDismissed(this);
-        if (mAnimatorOut != null) {
-            mAnimatorOut = null;
-        }
+    }
+
+    @CallSuper
+    protected void onDetach() {
         if (getViewTreeObserver().isAlive()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
@@ -288,6 +184,119 @@ public class Layer {
     protected void onGlobalPreDraw() {
     }
 
+    private void handleShow() {
+        onCreate();
+        mViewManager.attach();
+        onAttach();
+        getViewHolder().getChild().setVisibility(View.VISIBLE);
+        getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                if (getViewTreeObserver().isAlive()) {
+                    getViewTreeObserver().removeOnPreDrawListener(this);
+                }
+                onAppear();
+                startAnimatorIn(new Runnable() {
+                    @Override
+                    public void run() {
+                        onShow();
+                    }
+                });
+                return true;
+            }
+        });
+    }
+
+    private void startAnimatorIn(@NonNull Runnable onEnd) {
+        cancelAnimator();
+        if (mShowWithAnim) {
+            mAnimatorIn = onCreateInAnimator(mViewManager.requireChild());
+            if (mAnimatorIn != null) {
+                mAnimatorIn.addListener(new Animator.AnimatorListener() {
+                    private boolean beenCanceled = false;
+
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (!beenCanceled) {
+                            onEnd.run();
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        beenCanceled = true;
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+                mAnimatorIn.start();
+            } else {
+                onEnd.run();
+            }
+        } else {
+            onEnd.run();
+        }
+    }
+
+    private void handleDismiss() {
+        onDismiss();
+        startAnimatorOut(new Runnable() {
+            @Override
+            public void run() {
+                onDisappear();
+                mViewManager.detach();
+                onDetach();
+            }
+        });
+    }
+
+    private void startAnimatorOut(@NonNull final Runnable onEnd) {
+        cancelAnimator();
+        if (mDismissWithAnim) {
+            mAnimatorOut = onCreateOutAnimator(mViewManager.requireChild());
+            if (mAnimatorOut != null) {
+                mAnimatorOut.addListener(new Animator.AnimatorListener() {
+                    private boolean beenCanceled = false;
+
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mAnimatorOut = null;
+                        if (!beenCanceled) {
+                            // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
+                            // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                            getViewHolder().getChild().setVisibility(View.INVISIBLE);
+                            getViewHolder().getChild().post(onEnd);
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        beenCanceled = true;
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+                mAnimatorOut.start();
+            } else {
+                onEnd.run();
+            }
+        } else {
+            onEnd.run();
+        }
+    }
+
     private ViewTreeObserver getViewTreeObserver() {
         return getViewHolder().getParent().getViewTreeObserver();
     }
@@ -311,12 +320,7 @@ public class Layer {
         if (isShown()) return;
         if (isInAnimRunning()) return;
         mShowWithAnim = withAnim;
-        mViewHolder.setParent(onGetParent());
-        mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
-        mViewManager.setParent(mViewHolder.getParent());
-        mViewManager.setChild(mViewHolder.getChild());
-        mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? mOnLayerKeyListener : null);
-        mViewManager.attach();
+        handleShow();
     }
 
     public void dismiss() {
@@ -327,7 +331,7 @@ public class Layer {
         if (!isShown()) return;
         if (isOutAnimRunning()) return;
         mDismissWithAnim = withAnim;
-        onPreRemove();
+        handleDismiss();
     }
 
     public boolean isShown() {
@@ -343,13 +347,23 @@ public class Layer {
     }
 
     @NonNull
-    public LayoutInflater getLayoutInflater() {
-        return LayoutInflater.from(mViewHolder.getParent().getContext());
+    public ViewHolder getViewHolder() {
+        return mViewHolder;
     }
 
     @NonNull
-    public ViewManager getViewManager() {
-        return mViewManager;
+    public Config getConfig() {
+        return mConfig;
+    }
+
+    @NonNull
+    public ListenerHolder getListenerHolder() {
+        return mListenerHolder;
+    }
+
+    @NonNull
+    public LayoutInflater getLayoutInflater() {
+        return LayoutInflater.from(mViewHolder.getParent().getContext());
     }
 
     @NonNull
