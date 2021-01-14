@@ -215,8 +215,8 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @Override
-    protected void onPreDraw() {
-        super.onPreDraw();
+    protected void onAppear() {
+        super.onAppear();
     }
 
     @Override
@@ -226,11 +226,16 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @Override
-    protected void onPreRemove() {
+    protected void onDismiss() {
         if (mDismissRunnable != null) {
             getChild().removeCallbacks(mDismissRunnable);
         }
-        super.onPreRemove();
+        super.onDismiss();
+    }
+
+    @Override
+    protected void onDisappear() {
+        super.onDisappear();
     }
 
     @Override

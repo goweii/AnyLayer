@@ -104,8 +104,8 @@ public class FrameLayer extends Layer {
     }
 
     @Override
-    protected void onPreDraw() {
-        super.onPreDraw();
+    protected void onAppear() {
+        super.onAppear();
     }
 
     @Override
@@ -114,8 +114,13 @@ public class FrameLayer extends Layer {
     }
 
     @Override
-    protected void onPreRemove() {
-        super.onPreRemove();
+    protected void onDismiss() {
+        super.onDismiss();
+    }
+
+    @Override
+    protected void onDisappear() {
+        super.onDisappear();
     }
 
     @Override

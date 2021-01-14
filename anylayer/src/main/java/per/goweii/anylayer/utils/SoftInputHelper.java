@@ -1,5 +1,6 @@
 package per.goweii.anylayer.utils;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Rect;
@@ -23,24 +24,25 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
 
     private final Window window;
     private final View rootView;
+    private final int oldSoftInputMode;
 
-    private long duration = 300;
-    @Nullable
-    private View moveView = null;
-    private Map<View, View> focusBottomMap = new HashMap<>(1);
-    @Nullable
-    private OnSoftInputListener onSoftInputListener = null;
-
-    private boolean moveWithScroll = false;
+    private final Rect windowVisibleDisplayFrame = new Rect();
+    private final int[] viewInWindowLocation = new int[2];
 
     private boolean isOpened = false;
-    private int moveHeight = 0;
-    private boolean isFocusChange = false;
 
-    private Runnable moveRunnable = new Runnable() {
+    private long duration = 200;
+    private View moveView = null;
+    private final Map<View, View> focusBottomMap = new HashMap<>(0);
+    private View focusBottomView = null;
+    private OnSoftInputListener onSoftInputListener = null;
+
+    private Animator moveAnim = null;
+
+    private final Runnable moveRunnable = new Runnable() {
         @Override
         public void run() {
-            calcToMove();
+            calcMove();
         }
     };
 
@@ -52,33 +54,61 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
         this.window = activity.getWindow();
         this.rootView = window.getDecorView().getRootView();
         ViewTreeObserver observer = rootView.getViewTreeObserver();
-        observer.addOnGlobalLayoutListener(this);
-        observer.addOnGlobalFocusChangeListener(this);
+        if (observer.isAlive()) {
+            observer.addOnGlobalLayoutListener(this);
+            observer.addOnGlobalFocusChangeListener(this);
+        }
+        oldSoftInputMode = window.getAttributes().softInputMode;
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
     }
 
     public void detach() {
-        if (rootView.getViewTreeObserver().isAlive()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            } else {
-                rootView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-            }
-            rootView.getViewTreeObserver().removeOnGlobalFocusChangeListener(this);
+        rootView.removeCallbacks(moveRunnable);
+        if (moveAnim != null) {
+            moveAnim.cancel();
         }
+        ViewTreeObserver observer = rootView.getViewTreeObserver();
+        if (observer.isAlive()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                observer.removeOnGlobalLayoutListener(this);
+            } else {
+                observer.removeGlobalOnLayoutListener(this);
+            }
+            observer.removeOnGlobalFocusChangeListener(this);
+        }
+        window.setSoftInputMode(oldSoftInputMode);
     }
 
     @NonNull
-    public SoftInputHelper moveBy(@NonNull View moveView) {
+    public SoftInputHelper move(@NonNull View moveView) {
         this.moveView = moveView;
         return this;
     }
 
     @NonNull
-    public SoftInputHelper moveWith(@NonNull View bottomView, View... focusViews) {
-        for (View focusView : focusViews) {
-            focusBottomMap.put(focusView, bottomView);
+    public SoftInputHelper follow(@Nullable View bottomView, View... focusViews) {
+        if (focusViews != null && focusViews.length > 0) {
+            for (View focusView : focusViews) {
+                if (focusView != null) {
+                    if (bottomView != null) {
+                        focusBottomMap.put(focusView, bottomView);
+                    } else {
+                        focusBottomMap.put(focusView, focusView);
+                    }
+                }
+            }
+        } else {
+            this.focusBottomView = bottomView;
         }
+        return this;
+    }
+
+    @NonNull
+    public SoftInputHelper clear() {
+        this.moveView = null;
+        this.focusBottomMap.clear();
+        this.focusBottomView = null;
         return this;
     }
 
@@ -94,150 +124,118 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
         return this;
     }
 
-    /**
-     * 设置moveView移动以ScrollY属性滚动内容
-     *
-     * @return SoftInputHelper
-     */
-    @NonNull
-    public SoftInputHelper moveWithScroll() {
-        this.moveWithScroll = true;
-        return this;
-    }
-
-    /**
-     * 设置moveView移动以TranslationY属性移动位置
-     *
-     * @return SoftInputHelper
-     */
-    @NonNull
-    public SoftInputHelper moveWithTranslation() {
-        this.moveWithScroll = false;
-        return this;
-    }
-
     @Override
     public void onGlobalLayout() {
-        boolean isOpen = isSoftOpen();
-        if (isOpen) {
-            if (!isOpened) {
-                isOpened = true;
-                if (onSoftInputListener != null) {
-                    onSoftInputListener.onOpen();
-                }
-            }
-            if (moveView != null) {
-                if (isFocusChange) {
-                    isFocusChange = false;
-                    rootView.removeCallbacks(moveRunnable);
-                }
-                calcToMove();
-            }
-        } else {
+        final boolean isOpen = calcIsOpen();
+        if (isOpened == isOpen) return;
+        isOpened = isOpen;
+        notifyListener();
+        startMove();
+    }
+
+    private void notifyListener() {
+        if (onSoftInputListener != null) {
             if (isOpened) {
-                isOpened = false;
-                if (onSoftInputListener != null) {
-                    onSoftInputListener.onClose();
-                }
-            }
-            if (moveView != null) {
-                moveHeight = 0;
-                move();
+                onSoftInputListener.onOpen();
+            } else {
+                onSoftInputListener.onClose();
             }
         }
     }
 
-    private void calcToMove(){
-        View focusView = currFocusView();
-        if (focusView != null) {
+    private void startMove() {
+        if (moveView != null) {
+            rootView.removeCallbacks(moveRunnable);
+            calcMove();
+        }
+    }
+
+    private void calcMove() {
+        if (!isOpened) {
+            moveTo(0);
+            return;
+        }
+        final View focusView = window.getCurrentFocus();
+        if (focusView == null) {
+            moveTo(0);
+            return;
+        }
+        if (focusBottomMap.containsKey(focusView)) {
             View bottomView = focusBottomMap.get(focusView);
             if (bottomView != null) {
-                Rect rect = getRootViewRect();
-                int bottomViewY = getBottomViewY(bottomView);
-                if (bottomViewY > rect.bottom) {
-                    int offHeight = bottomViewY - rect.bottom;
-                    moveHeight += offHeight;
-                    move();
-                } else if (bottomViewY < rect.bottom) {
-                    int offHeight = -(bottomViewY - rect.bottom);
-                    if (moveHeight > 0) {
-                        if (moveHeight >= offHeight) {
-                            moveHeight -= offHeight;
-                        } else {
-                            moveHeight = 0;
-                        }
-                        move();
-                    }
-                }
+                calcMoveToBottom(bottomView);
             }
         } else {
-            moveHeight = 0;
-            move();
+            if (isFocusInMove(focusView)) {
+                if (focusBottomView != null) {
+                    calcMoveToBottom(focusBottomView);
+                } else {
+                    calcMoveToBottom(focusView);
+                }
+            }
         }
+    }
+
+    private boolean isFocusInMove(@NonNull View focusView) {
+        if (moveView == null) return false;
+        return moveView.findFocus() == focusView;
+    }
+
+    private void calcMoveToBottom(@NonNull View bottomView) {
+        final Rect rect = getWindowVisibleDisplayFrame();
+        int bottomViewY = getBottomViewY(bottomView);
+        int offHeight = bottomViewY - rect.bottom;
+        if (offHeight > 0) {
+            moveBy(-offHeight);
+        } else if (offHeight < 0) {
+            moveBy(-offHeight);
+        }
+    }
+
+    private void moveBy(float off) {
+        if (moveView == null) return;
+        float from = moveView.getTranslationY();
+        moveTo(from + off);
+    }
+
+    private void moveTo(float to) {
+        if (moveView == null) return;
+        translationTo(moveView, Math.min(to, 0));
     }
 
     @Override
     public void onGlobalFocusChanged(View oldFocus, View newFocus) {
         if (isOpened) {
             if (moveView != null) {
-                isFocusChange = true;
                 rootView.postDelayed(moveRunnable, 100);
             }
         }
     }
 
     private int getBottomViewY(@NonNull View bottomView) {
-        int[] bottomLocation = new int[2];
-        bottomView.getLocationOnScreen(bottomLocation);
-        return bottomLocation[1] + bottomView.getHeight();
+        bottomView.getLocationInWindow(viewInWindowLocation);
+        return viewInWindowLocation[1] + bottomView.getHeight();
     }
 
     @NonNull
-    private Rect getRootViewRect() {
-        Rect rect = new Rect();
-        rootView.getWindowVisibleDisplayFrame(rect);
-        return rect;
+    private Rect getWindowVisibleDisplayFrame() {
+        rootView.getWindowVisibleDisplayFrame(windowVisibleDisplayFrame);
+        return windowVisibleDisplayFrame;
     }
 
-    private void move() {
-        if (moveWithScroll) {
-            scrollTo(moveHeight);
-        } else {
-            translationTo(-moveHeight);
-        }
+    private void translationTo(@NonNull View view, float to) {
+        if (moveAnim != null) moveAnim.cancel();
+        float from = moveView.getTranslationY();
+        if (from == to) return;
+        moveAnim = ObjectAnimator.ofFloat(view, "translationY", from, to);
+        moveAnim.setInterpolator(new DecelerateInterpolator());
+        moveAnim.setDuration(duration);
+        moveAnim.start();
     }
 
-    private void translationTo(int to) {
-        float translationY = moveView.getTranslationY();
-        if (translationY == to) {
-            return;
-        }
-        ObjectAnimator anim = ObjectAnimator.ofFloat(moveView, "translationY", translationY, to);
-        anim.setInterpolator(new DecelerateInterpolator());
-        anim.setDuration(duration);
-        anim.start();
-    }
-
-    private void scrollTo(int to) {
-        int scrollY = moveView.getScrollY();
-        if (scrollY == to) {
-            return;
-        }
-        ObjectAnimator anim = ObjectAnimator.ofInt(moveView, "scrollY", scrollY, to);
-        anim.setInterpolator(new DecelerateInterpolator());
-        anim.setDuration(duration);
-        anim.start();
-    }
-
-    /**
-     * 判断软键盘打开状态的阈值
-     * 此处以用户可用高度变化值大于1/4总高度时作为判断依据。
-     *
-     * @return boolean
-     */
-    private boolean isSoftOpen() {
-        Rect rect = getRootViewRect();
-        int usableHeightNow = rect.bottom - rect.top;
+    private boolean calcIsOpen() {
+        Rect rect = getWindowVisibleDisplayFrame();
+        int usableHeightNow = rect.height();
         int usableHeightSansKeyboard = rootView.getHeight();
         int heightDifference = usableHeightSansKeyboard - usableHeightNow;
         return heightDifference > (usableHeightSansKeyboard / 4);
@@ -255,14 +253,8 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
     }
 
     public interface OnSoftInputListener {
-        /**
-         * 软键盘由关闭变为打开时调用
-         */
         void onOpen();
 
-        /**
-         * 软键盘由打开变为关闭时调用
-         */
         void onClose();
     }
 }

@@ -189,29 +189,11 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
-                            @Override
-                            public void onShow(@NonNull Layer layer) {
-                                DialogLayer dialogLayer = (DialogLayer) layer;
-                                dialogLayer.compatSoftInput(
-                                        layer.getView(R.id.et_dialog_content2),
-                                        layer.getView(R.id.et_dialog_content3),
-                                        layer.getView(R.id.et_dialog_content4),
-                                        layer.getView(R.id.et_dialog_content5)
-                                );
-                            }
-
-                            @Override
-                            public void onDismiss(@NonNull Layer layer) {
-                                DialogLayer dialogLayer = (DialogLayer) layer;
-                                dialogLayer.removeSoftInput();
-                            }
-                        })
+                        .compatSoftInput(false)
                         .onClickToDismiss(R.id.fl_dialog_no)
-                        .onClick(new Layer.OnClickListener() {
+                        .onClickToDismiss(new Layer.OnClickListener() {
                             @Override
                             public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
-                                anyLayer.dismiss();
                                 EditText et = anyLayer.getView(R.id.et_dialog_content);
                                 Toast.makeText(FullScreenActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
                             }

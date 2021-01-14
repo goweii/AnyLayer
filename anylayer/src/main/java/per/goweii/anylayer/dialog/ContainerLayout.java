@@ -5,12 +5,17 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
 public class ContainerLayout extends FrameLayout {
+    private final GestureDetector mGestureDetector;
+
+    private boolean handleTouchEvent = false;
 
     private OnTouchedListener mOnTouchedListener = null;
+    private OnTappedListener mOnTappedListener = null;
 
     public ContainerLayout(@NonNull Context context) {
         this(context, null);
@@ -22,28 +27,50 @@ public class ContainerLayout extends FrameLayout {
 
     public ContainerLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mGestureDetector = new GestureDetector(context, new OnGestureListener());
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (mOnTouchedListener != null) {
-                    mOnTouchedListener.onTouched();
-                }
-                break;
-            default:
-                break;
-        }
-        return super.onTouchEvent(ev);
+        return mGestureDetector.onTouchEvent(ev);
+    }
+
+    public void setHandleTouchEvent(boolean handleTouchEvent) {
+        this.handleTouchEvent = handleTouchEvent;
     }
 
     public void setOnTouchedListener(@Nullable OnTouchedListener onTouchedListener) {
         this.mOnTouchedListener = onTouchedListener;
     }
 
+    public void setOnTappedListener(@Nullable OnTappedListener onTappedListener) {
+        this.mOnTappedListener = onTappedListener;
+    }
+
+    private class OnGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            if (mOnTouchedListener != null) {
+                mOnTouchedListener.onTouched();
+            }
+            return handleTouchEvent;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            if (mOnTappedListener != null) {
+                mOnTappedListener.onTapped();
+            }
+            return true;
+        }
+    }
+
     public interface OnTouchedListener {
         void onTouched();
+    }
+
+    public interface OnTappedListener {
+        void onTapped();
     }
 }

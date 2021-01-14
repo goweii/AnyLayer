@@ -102,8 +102,8 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    protected void onPreDraw() {
-        super.onPreDraw();
+    protected void onAppear() {
+        super.onAppear();
     }
 
     @Override
@@ -112,8 +112,13 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    protected void onPreRemove() {
-        super.onPreRemove();
+    protected void onDismiss() {
+        super.onDismiss();
+    }
+
+    @Override
+    protected void onDisappear() {
+        super.onDisappear();
     }
 
     @Override

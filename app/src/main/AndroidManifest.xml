@@ -19,12 +19,15 @@
         </activity>
         <activity
             android:name=".NormalActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize|keyboard|smallestScreenSize|screenLayout" />
         <activity
             android:name=".DragActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize|keyboard|smallestScreenSize|screenLayout" />
         <activity
             android:name=".FullScreenActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize|keyboard|smallestScreenSize|screenLayout"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
