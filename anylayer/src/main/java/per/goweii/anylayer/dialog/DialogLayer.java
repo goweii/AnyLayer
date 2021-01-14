@@ -15,7 +15,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -31,11 +30,9 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import per.goweii.anylayer.DecorLayer;
 import per.goweii.anylayer.GlobalConfig;
-import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.SoftInputHelper;

@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import per.goweii.anylayer.utils.AnimatorListener;
 import per.goweii.anylayer.utils.Utils;
 
 public class Layer {
@@ -46,8 +47,6 @@ public class Layer {
     private final ViewHolder mViewHolder;
     private final ListenerHolder mListenerHolder;
     private final Config mConfig;
-
-    private SparseArray<View> mViewCaches = null;
 
     private boolean mShowWithAnim = false;
     private boolean mDismissWithAnim = false;
@@ -150,12 +149,12 @@ public class Layer {
 
     @CallSuper
     protected void onDisappear() {
-        mListenerHolder.notifyVisibleChangeOnDismiss(this);
         mListenerHolder.notifyLayerOnDismissed(this);
     }
 
     @CallSuper
     protected void onDetach() {
+        mListenerHolder.notifyVisibleChangeOnDismiss(this);
         if (getViewTreeObserver().isAlive()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
@@ -164,6 +163,13 @@ public class Layer {
             }
             getViewTreeObserver().removeOnPreDrawListener(mOnGlobalPreDrawListener);
         }
+    }
+
+    @CallSuper
+    protected void onDestroy() {
+        mViewManager.setParent(null);
+        mViewManager.setChild(null);
+        mViewManager.setOnKeyListener(null);
     }
 
     protected boolean onKey(int keyCode, @NonNull KeyEvent event) {
@@ -185,6 +191,17 @@ public class Layer {
     }
 
     private void handleShow() {
+        if (isShown()) {
+            if (isOutAnimRunning()) {
+                startAnimatorIn(new Runnable() {
+                    @Override
+                    public void run() {
+                        onShow();
+                    }
+                });
+            }
+            return;
+        }
         onCreate();
         mViewManager.attach();
         onAttach();
@@ -210,29 +227,18 @@ public class Layer {
     private void startAnimatorIn(@NonNull Runnable onEnd) {
         cancelAnimator();
         if (mShowWithAnim) {
-            mAnimatorIn = onCreateInAnimator(mViewManager.requireChild());
+            mAnimatorIn = onCreateInAnimator(mViewHolder.getChild());
             if (mAnimatorIn != null) {
-                mAnimatorIn.addListener(new Animator.AnimatorListener() {
-                    private boolean beenCanceled = false;
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
+                mAnimatorIn.addListener(new AnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        if (!beenCanceled) {
-                            onEnd.run();
-                        }
+                        super.onAnimationEnd(animation);
+                        mAnimatorIn = null;
                     }
 
                     @Override
-                    public void onAnimationCancel(Animator animation) {
-                        beenCanceled = true;
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
+                    public void onAnimationEndWithoutCancel(Animator animation) {
+                        onEnd.run();
                     }
                 });
                 mAnimatorIn.start();
@@ -245,6 +251,8 @@ public class Layer {
     }
 
     private void handleDismiss() {
+        if (!isShown()) return;
+        if (isOutAnimRunning()) return;
         onDismiss();
         startAnimatorOut(new Runnable() {
             @Override
@@ -252,6 +260,7 @@ public class Layer {
                 onDisappear();
                 mViewManager.detach();
                 onDetach();
+                onDestroy();
             }
         });
     }
@@ -259,40 +268,30 @@ public class Layer {
     private void startAnimatorOut(@NonNull final Runnable onEnd) {
         cancelAnimator();
         if (mDismissWithAnim) {
-            mAnimatorOut = onCreateOutAnimator(mViewManager.requireChild());
+            mAnimatorOut = onCreateOutAnimator(mViewHolder.getChild());
             if (mAnimatorOut != null) {
-                mAnimatorOut.addListener(new Animator.AnimatorListener() {
-                    private boolean beenCanceled = false;
-
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
+                mAnimatorOut.addListener(new AnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
                         mAnimatorOut = null;
-                        if (!beenCanceled) {
-                            // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
-                            // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
-                            getViewHolder().getChild().setVisibility(View.INVISIBLE);
-                            getViewHolder().getChild().post(onEnd);
-                        }
                     }
 
                     @Override
-                    public void onAnimationCancel(Animator animation) {
-                        beenCanceled = true;
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
+                    public void onAnimationEndWithoutCancel(Animator animation) {
+                        // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
+                        // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
+                        getViewHolder().getChild().setVisibility(View.INVISIBLE);
+                        getViewHolder().getParent().post(onEnd);
                     }
                 });
                 mAnimatorOut.start();
             } else {
+                getViewHolder().getChild().setVisibility(View.INVISIBLE);
                 onEnd.run();
             }
         } else {
+            getViewHolder().getChild().setVisibility(View.INVISIBLE);
             onEnd.run();
         }
     }
@@ -317,8 +316,6 @@ public class Layer {
     }
 
     public void show(boolean withAnim) {
-        if (isShown()) return;
-        if (isInAnimRunning()) return;
         mShowWithAnim = withAnim;
         handleShow();
     }
@@ -328,8 +325,6 @@ public class Layer {
     }
 
     public void dismiss(boolean withAnim) {
-        if (!isShown()) return;
-        if (isOutAnimRunning()) return;
         mDismissWithAnim = withAnim;
         handleDismiss();
     }
@@ -378,23 +373,12 @@ public class Layer {
 
     @NonNull
     public <V extends View> V requireView(@IdRes int id) {
-        return Utils.requireNonNull(getView(id));
+        return Utils.requireNonNull(mViewHolder.findView(id));
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     public <V extends View> V getView(@IdRes int id) {
-        if (mViewCaches == null) {
-            mViewCaches = new SparseArray<>();
-        }
-        View view = mViewCaches.get(id);
-        if (view == null) {
-            view = getChild().findViewById(id);
-            if (view != null) {
-                mViewCaches.put(id, view);
-            }
-        }
-        return (V) view;
+        return mViewHolder.findView(id);
     }
 
     @NonNull
@@ -598,6 +582,8 @@ public class Layer {
         private ViewGroup mParent;
         private View mChild;
 
+        private SparseArray<View> mViewCaches = null;
+
         public void setParent(@NonNull ViewGroup parent) {
             mParent = parent;
         }
@@ -629,6 +615,25 @@ public class Layer {
         @Nullable
         protected View getNoIdClickView() {
             return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Nullable
+        public final <V extends View> V findView(@IdRes int id) {
+            if (mChild == null) {
+                return null;
+            }
+            if (mViewCaches == null) {
+                mViewCaches = new SparseArray<>();
+            }
+            View view = mViewCaches.get(id);
+            if (view == null) {
+                view = mChild.findViewById(id);
+                if (view != null) {
+                    mViewCaches.put(id, view);
+                }
+            }
+            return (V) view;
         }
     }
 
