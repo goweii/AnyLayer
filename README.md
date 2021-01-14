@@ -125,15 +125,15 @@ allprojects {
 // build.gradle(Module:)
 dependencies {
     // 完整引入，二选一
-    implementation 'com.github.goweii:AnyLayer:4.1.0-androidx'
-    implementation 'com.github.goweii:AnyLayer:4.1.0-support'
+    implementation 'com.github.goweii:AnyLayer:4.1.3-androidx'
+    implementation 'com.github.goweii:AnyLayer:4.1.3-support'
     
     // 基础库
-    // implementation 'com.github.goweii.AnyLayer:anylayer:4.1.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer:4.1.3-androidx'
     // 扩展库（依赖基础库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:4.1.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:4.1.3-androidx'
     // kotlin扩展库（依赖基础库和扩展库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:4.1.0-androidx'
+    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:4.1.3-androidx'
     // 通用弹窗（依赖基础库）
     // implementation 'com.github.goweii.AnyLayer:anylayer-common:2.5.0'
 }
@@ -144,6 +144,11 @@ dependencies {
 ## 更新说明
 
 [点击查看详细更新说明](https://github.com/goweii/AnyLayer/releases)
+
+### 4.1.3
+
+- 优化输入法适配
+- 修复一些BUG
 
 ### 4.1.1
 
