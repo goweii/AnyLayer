@@ -25,6 +25,7 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
 
     private final Window window;
     private final View rootView;
+    private final int oldSoftInputMode;
 
     private final Rect windowVisibleDisplayFrame = new Rect();
     private final int[] viewInWindowLocation = new int[2];
@@ -54,8 +55,12 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
         this.window = activity.getWindow();
         this.rootView = window.getDecorView().getRootView();
         ViewTreeObserver observer = rootView.getViewTreeObserver();
-        observer.addOnGlobalLayoutListener(this);
-        observer.addOnGlobalFocusChangeListener(this);
+        if (observer.isAlive()) {
+            observer.addOnGlobalLayoutListener(this);
+            observer.addOnGlobalFocusChangeListener(this);
+        }
+        oldSoftInputMode = window.getAttributes().softInputMode;
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
     }
 
@@ -64,14 +69,16 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
         if (moveAnim != null) {
             moveAnim.cancel();
         }
-        if (rootView.getViewTreeObserver().isAlive()) {
+        ViewTreeObserver observer = rootView.getViewTreeObserver();
+        if (observer.isAlive()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                observer.removeOnGlobalLayoutListener(this);
             } else {
-                rootView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                observer.removeGlobalOnLayoutListener(this);
             }
-            rootView.getViewTreeObserver().removeOnGlobalFocusChangeListener(this);
+            observer.removeOnGlobalFocusChangeListener(this);
         }
+        window.setSoftInputMode(oldSoftInputMode);
     }
 
     @NonNull
