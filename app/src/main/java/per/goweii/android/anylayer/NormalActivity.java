@@ -168,26 +168,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
                         .swipeDismiss(SwipeLayout.Direction.BOTTOM)
-                        .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
-                            @Override
-                            public void onShow(@NonNull Layer layer) {
-                                DialogLayer dialogLayer = (DialogLayer) layer;
-                                dialogLayer.compatSoftInput(false,
-                                        layer.getView(R.id.et_dialog_content),
-                                        layer.getView(R.id.et_dialog_content1),
-                                        layer.getView(R.id.et_dialog_content2),
-                                        layer.getView(R.id.et_dialog_content3),
-                                        layer.getView(R.id.et_dialog_content4),
-                                        layer.getView(R.id.et_dialog_content5)
-                                );
-                            }
-
-                            @Override
-                            public void onDismiss(@NonNull Layer layer) {
-                                DialogLayer dialogLayer = (DialogLayer) layer;
-                                dialogLayer.removeSoftInput();
-                            }
-                        })
+                        .compatSoftInput(false)
+                        .compatSoftInput(true, R.id.et_dialog_content4)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override

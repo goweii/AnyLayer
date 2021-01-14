@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import per.goweii.anylayer.DecorLayer;
 import per.goweii.anylayer.GlobalConfig;
@@ -339,11 +341,17 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
+    protected void onCreate() {
+        super.onCreate();
+    }
+
+    @Override
     protected void onAttach() {
         super.onAttach();
         initContent();
         initBackground();
         initContainer();
+        registerSoftInputCompat();
     }
 
     @Override
@@ -369,6 +377,7 @@ public class DialogLayer extends DecorLayer {
     @Override
     protected void onDetach() {
         super.onDetach();
+        unregisterSoftInputCompat();
         getViewHolder().recycle();
     }
 
@@ -564,6 +573,61 @@ public class DialogLayer extends DecorLayer {
                 statusBar.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    private void registerSoftInputCompat() {
+        if (mSoftInputHelper == null) {
+            mSoftInputHelper = SoftInputHelper.attach(getActivity());
+        } else {
+            mSoftInputHelper.clear();
+        }
+        mSoftInputHelper.move(getViewHolder().getContentWrapper());
+        final SparseBooleanArray mapping = getConfig().mSoftInputMapping;
+        if (mapping != null) {
+            for (int i = 0; i < mapping.size(); i++) {
+                boolean alignToContentOrFocus = mapping.valueAt(i);
+                int focusId = mapping.keyAt(i);
+                if (focusId == View.NO_ID) {
+                    if (alignToContentOrFocus) {
+                        mSoftInputHelper.follow(getViewHolder().getContent());
+                    }
+                } else  {
+                    if (alignToContentOrFocus) {
+                        mSoftInputHelper.follow(getViewHolder().getContent(), getView(focusId));
+                    } else {
+                        mSoftInputHelper.follow(null, getView(focusId));
+                    }
+                }
+            }
+        }
+    }
+
+    private void unregisterSoftInputCompat() {
+        if (mSoftInputHelper != null) {
+            mSoftInputHelper.clear();
+            mSoftInputHelper.detach();
+            mSoftInputHelper = null;
+        }
+    }
+
+    /**
+     * 获取自定义的浮层控件
+     *
+     * @return View
+     */
+    @Nullable
+    public View getContentView() {
+        return getViewHolder().getContent();
+    }
+
+    /**
+     * 获取背景图
+     *
+     * @return ImageView
+     */
+    @NonNull
+    public BackgroundView getBackground() {
+        return getViewHolder().getBackground();
     }
 
     /**
@@ -825,64 +889,25 @@ public class DialogLayer extends DecorLayer {
     }
 
     /**
-     * 获取自定义的浮层控件
-     *
-     * @return View
-     */
-    @Nullable
-    public View getContentView() {
-        return getViewHolder().getContent();
-    }
-
-    /**
-     * 获取背景图
-     *
-     * @return ImageView
-     */
-    @NonNull
-    public BackgroundView getBackground() {
-        return getViewHolder().getBackground();
-    }
-
-    /**
      * 适配软键盘的弹出，布局自动上移
-     * 在某几个EditText获取焦点时布局上移
-     * 在{@link OnVisibleChangeListener#onShow(Layer)}中调用
-     * 应该和{@link #removeSoftInput()}成对出现
+     * 在某几个View获取焦点时布局上移
      *
-     * @param editTexts 焦点EditTexts
+     * @param alignToContentOrFocus true为对齐到contentView，false为对齐到focusView自身
+     * @param focusIds             焦点View
      */
     @NonNull
-    public DialogLayer compatSoftInput(boolean bottomToContentView, EditText... editTexts) {
-        if (mSoftInputHelper == null) {
-            mSoftInputHelper = SoftInputHelper.attach(getActivity())
-                    .moveWithTranslation()
-                    .moveBy(getViewHolder().getContentWrapper());
+    public DialogLayer compatSoftInput(boolean alignToContentOrFocus, @Nullable int... focusIds) {
+        if (getConfig().mSoftInputMapping == null) {
+            getConfig().mSoftInputMapping = new SparseBooleanArray(1);
         }
-        if (bottomToContentView) {
-            mSoftInputHelper.moveWith(getViewHolder().getContent(), editTexts);
-        } else {
-            for (EditText editText : editTexts) {
-                mSoftInputHelper.moveWith(editText, editText);
+        if (focusIds != null && focusIds.length > 0) {
+            for (int focusId : focusIds) {
+                getConfig().mSoftInputMapping.append(focusId, alignToContentOrFocus);
             }
+        } else {
+            getConfig().mSoftInputMapping.append(View.NO_ID, alignToContentOrFocus);
         }
         return this;
-    }
-
-    @NonNull
-    public DialogLayer compatSoftInput(EditText... editTexts) {
-        return compatSoftInput(true, editTexts);
-    }
-
-    /**
-     * 移除软键盘适配
-     * 在{@link OnVisibleChangeListener#onDismiss(Layer)}中调用
-     * 应该和{@link #compatSoftInput(EditText...)}成对出现
-     */
-    public void removeSoftInput() {
-        if (mSoftInputHelper != null) {
-            mSoftInputHelper.detach();
-        }
     }
 
     /**
@@ -1003,6 +1028,8 @@ public class DialogLayer extends DecorLayer {
         protected int mSwipeDirection = 0;
         @Nullable
         protected SwipeTransformer mSwipeTransformer = null;
+
+        protected SparseBooleanArray mSoftInputMapping = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
