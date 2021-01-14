@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.animation.Animator;
 import android.os.Build;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
