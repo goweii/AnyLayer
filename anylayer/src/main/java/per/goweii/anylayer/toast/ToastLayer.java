@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -162,6 +163,7 @@ public class ToastLayer extends DecorLayer {
         return animator;
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -187,11 +189,13 @@ public class ToastLayer extends DecorLayer {
         bindDefaultContentData();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
@@ -200,21 +204,30 @@ public class ToastLayer extends DecorLayer {
         }
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         getChild().removeCallbacks(mDismissRunnable);
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         getChild().setTag(null);
         super.onDetach();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void removeOthers() {

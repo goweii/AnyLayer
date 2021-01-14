@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
@@ -149,6 +150,7 @@ public class NotificationLayer extends DecorLayer {
         return AnimatorHelper.createTopOutAnim(getViewHolder().getContentWrapper());
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -215,17 +217,20 @@ public class NotificationLayer extends DecorLayer {
         bindDefaultContentData();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
         autoDismiss(true);
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         if (mDismissRunnable != null) {
@@ -234,14 +239,22 @@ public class NotificationLayer extends DecorLayer {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         super.onDetach();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void bindDefaultContentData() {
