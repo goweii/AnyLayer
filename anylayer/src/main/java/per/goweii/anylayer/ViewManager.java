@@ -17,7 +17,6 @@ import per.goweii.anylayer.utils.Utils;
  * {@link #onDetach()}
  */
 public final class ViewManager {
-
     private ViewGroup mParent = null;
     private View mChild = null;
 
@@ -32,12 +31,13 @@ public final class ViewManager {
     public ViewManager() {
     }
 
-    public void setParent(@NonNull ViewGroup parent) {
+    public void setParent(@Nullable ViewGroup parent) {
         mParent = parent;
     }
 
-    public void setChild(@NonNull View child) {
+    public void setChild(@Nullable View child) {
         mChild = child;
+        checkChildParent();
     }
 
     @Nullable
@@ -61,15 +61,15 @@ public final class ViewManager {
     }
 
     private void checkChildParent() {
-        ViewGroup parent = (ViewGroup) mChild.getParent();
-        if (parent != null && parent != mParent) {
-            parent.removeView(mChild);
+        if (mChild != null) {
+            ViewGroup parent = (ViewGroup) mChild.getParent();
+            if (parent != null && parent != mParent) {
+                parent.removeView(mChild);
+            }
         }
     }
 
     public void attach() {
-        Utils.requireNonNull(mParent, "必须设置parent");
-        checkChildParent();
         if (!isAttached()) {
             onAttach();
         }
@@ -91,6 +91,35 @@ public final class ViewManager {
 
     public void setOnKeyListener(@Nullable OnKeyListener onKeyListener) {
         mOnKeyListener = onKeyListener;
+        if (mOnKeyListener != null) {
+            if (isAttached()) {
+                registerKeyListener();
+            }
+        } else {
+            unregisterKeyListener();
+        }
+    }
+
+    private void registerKeyListener() {
+        mChild.setFocusable(true);
+        mChild.setFocusableInTouchMode(true);
+        mLayerKeyListener = new LayerKeyListener();
+        findFocusViewAndBindKeyListener();
+        mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
+        mParent.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
+    }
+
+    private void unregisterKeyListener() {
+        if (currentKeyView != null) {
+            currentKeyView.setOnKeyListener(null);
+            mLayerKeyListener = null;
+        }
+        if (mLayerGlobalFocusChangeListener != null) {
+            if (mParent.getViewTreeObserver().isAlive()) {
+                mParent.getViewTreeObserver().removeOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
+            }
+            mLayerGlobalFocusChangeListener = null;
+        }
     }
 
     /**
@@ -99,12 +128,7 @@ public final class ViewManager {
     private void onAttach() {
         mParent.addView(mChild);
         if (mOnKeyListener != null) {
-            mChild.setFocusable(true);
-            mChild.setFocusableInTouchMode(true);
-            mLayerKeyListener = new LayerKeyListener();
-            findFocusViewAndBindKeyListener();
-            mLayerGlobalFocusChangeListener = new LayerGlobalFocusChangeListener();
-            mChild.getViewTreeObserver().addOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
+            registerKeyListener();
         }
         if (mOnLifeListener != null) {
             mOnLifeListener.onAttach();
@@ -115,12 +139,7 @@ public final class ViewManager {
      * 从父View移除
      */
     private void onDetach() {
-        if (currentKeyView != null) {
-            currentKeyView.setOnKeyListener(null);
-            mLayerKeyListener = null;
-            mChild.getViewTreeObserver().removeOnGlobalFocusChangeListener(mLayerGlobalFocusChangeListener);
-            mLayerGlobalFocusChangeListener = null;
-        }
+        unregisterKeyListener();
         mParent.removeView(mChild);
         if (mOnLifeListener != null) {
             mOnLifeListener.onDetach();

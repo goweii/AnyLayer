@@ -34,6 +34,7 @@ import per.goweii.anylayer.widget.SwipeLayout;
 public class NormalActivity extends AppCompatActivity implements View.OnClickListener {
 
     private DialogLayer anyLayer_show_target_right = null;
+    private boolean anyLayer_show_target_right_shown = false;
     private DialogLayer anyLayer_show_target_bottom = null;
     private Layer layer_dark_bg;
 
@@ -168,26 +169,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
                         .swipeDismiss(SwipeLayout.Direction.BOTTOM)
-                        .onVisibleChangeListener(new Layer.OnVisibleChangeListener() {
-                            @Override
-                            public void onShow(@NonNull Layer layer) {
-                                DialogLayer dialogLayer = (DialogLayer) layer;
-                                dialogLayer.compatSoftInput(false,
-                                        layer.getView(R.id.et_dialog_content),
-                                        layer.getView(R.id.et_dialog_content1),
-                                        layer.getView(R.id.et_dialog_content2),
-                                        layer.getView(R.id.et_dialog_content3),
-                                        layer.getView(R.id.et_dialog_content4),
-                                        layer.getView(R.id.et_dialog_content5)
-                                );
-                            }
-
-                            @Override
-                            public void onDismiss(@NonNull Layer layer) {
-                                DialogLayer dialogLayer = (DialogLayer) layer;
-                                dialogLayer.removeSoftInput();
-                            }
-                        })
+                        .compatSoftInput(false)
+                        .compatSoftInput(true, R.id.et_dialog_content4)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
                             @Override
@@ -259,9 +242,11 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .contentView(R.layout.popup_normal)
                             .animStyle(DialogLayer.AnimStyle.LEFT);
                 }
-                if (anyLayer_show_target_right.isShown()) {
+                if (anyLayer_show_target_right_shown) {
+                    anyLayer_show_target_right_shown = false;
                     anyLayer_show_target_right.dismiss();
                 } else {
+                    anyLayer_show_target_right_shown = true;
                     anyLayer_show_target_right.show();
                 }
                 break;
@@ -409,9 +394,9 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             public Animator createInAnimator(@NonNull View content) {
                                 AnimatorSet set = new AnimatorSet();
                                 Animator a1 = AnimatorHelper.createBottomAlphaInAnim(content, 0.3F);
-                                a1.setInterpolator(new DecelerateInterpolator(1.5f));
+                                a1.setInterpolator(new DecelerateInterpolator(2.5f));
                                 Animator a2 = AnimatorHelper.createZoomAlphaInAnim(content, 0.9F);
-                                a2.setInterpolator(new DecelerateInterpolator(2.5f));
+                                a2.setInterpolator(new DecelerateInterpolator(1.5f));
                                 set.playTogether(a1, a2);
                                 return set;
                             }
