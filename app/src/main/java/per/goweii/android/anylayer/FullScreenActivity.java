@@ -18,6 +18,7 @@ import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.guide.GuideLayer;
+import per.goweii.anylayer.popup.PopupLayer;
 import per.goweii.anylayer.popup.PopupLayer.Align;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.widget.SwipeLayout;
@@ -26,9 +27,9 @@ import per.goweii.statusbarcompat.StatusBarCompat;
 public class FullScreenActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView tvTitle;
-    private DialogLayer anyLayer_show_target_right = null;
-    private DialogLayer anyLayer_show_target_bottom = null;
-    private DialogLayer anyLayer_show_target_full = null;
+    private PopupLayer anyLayer_show_target_right = null;
+    private PopupLayer anyLayer_show_target_bottom = null;
+    private PopupLayer anyLayer_show_target_full = null;
     private DialogLayer anyLayer_show_menu = null;
 
     @Override
@@ -229,7 +230,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_full:
                 if (anyLayer_show_target_full == null) {
-                    anyLayer_show_target_full = AnyLayer.popup(findViewById(R.id.tv_show_target_full))
+                    anyLayer_show_target_full = (PopupLayer) AnyLayer.popup(findViewById(R.id.tv_show_target_full))
                             .outsideInterceptTouchEvent(false)
                             .contentView(R.layout.dialog_fullscreen)
                             .contentAnimator(new DialogLayer.AnimatorCreator() {
@@ -252,7 +253,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_right:
                 if (anyLayer_show_target_right == null) {
-                    anyLayer_show_target_right = AnyLayer.popup(findViewById(R.id.tv_show_target_right))
+                    anyLayer_show_target_right = (PopupLayer) AnyLayer.popup(findViewById(R.id.tv_show_target_right))
                             .direction(Align.Direction.HORIZONTAL)
                             .horizontal(Align.Horizontal.TO_RIGHT)
                             .vertical(Align.Vertical.CENTER)
@@ -270,6 +271,12 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                     return AnimatorHelper.createLeftOutAnim(content);
                                 }
                             });
+                    anyLayer_show_target_right.updateLocationInterceptor(new PopupLayer.UpdateLocationInterceptor() {
+                        @Override
+                        public void interceptor(@NonNull float[] popupXY, int popupWidth, int popupHeight, int targetX, int targetY, int targetWidth, int targetHeight, int parentX, int parentY, int parentWidth, int parentHeight) {
+                            popupXY[1] = Math.max(100, popupXY[1]);
+                        }
+                    });
                 }
                 if (anyLayer_show_target_right.isShown()) {
                     anyLayer_show_target_right.dismiss();
@@ -315,7 +322,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_bottom:
                 if (anyLayer_show_target_bottom == null) {
-                    anyLayer_show_target_bottom = AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
+                    anyLayer_show_target_bottom = (PopupLayer) AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
                             .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.BELOW, true)
                             .outsideInterceptTouchEvent(false)
                             .backgroundDimDefault()

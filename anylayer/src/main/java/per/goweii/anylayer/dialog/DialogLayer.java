@@ -23,7 +23,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -118,7 +117,7 @@ public class DialogLayer extends DecorLayer {
             getViewHolder().getContent().setLayoutParams(contentParams);
             getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
         }
-        return getViewHolder().getChild();
+        return getViewHolder().getContainer();
     }
 
     @NonNull
@@ -348,10 +347,10 @@ public class DialogLayer extends DecorLayer {
     @Override
     protected void onAttach() {
         super.onAttach();
+        registerSoftInputCompat();
         initContent();
         initBackground();
         initContainer();
-        registerSoftInputCompat();
     }
 
     @CallSuper
@@ -393,21 +392,22 @@ public class DialogLayer extends DecorLayer {
     }
 
     @Override
-    protected void onActivityConfigChanged(@NonNull Configuration newConfig) {
-        super.onActivityConfigChanged(newConfig);
-        Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
-            @Override
-            public void run() {
-                fitContainerToActivityContent();
-            }
-        });
+    protected void fitDecorInsides() {
+        fitDecorInsidesToViewPadding(getViewHolder().getContentWrapper());
+        if (getConfig().mAvoidStatusBar) {
+            int paddingTop = getViewHolder().getContentWrapper().getPaddingTop();
+            int statusBarHeight = Utils.getStatusBarHeight(getActivity());
+            Utils.setViewPaddingTop(getViewHolder().getContentWrapper(), Math.max(paddingTop, statusBarHeight));
+        }
+        getViewHolder().getContentWrapper().setClipToPadding(false);
+        getViewHolder().getContentWrapper().setClipChildren(false);
     }
 
     protected void initContainer() {
         if (getConfig().mOutsideInterceptTouchEvent) {
-            getViewHolder().getChild().setHandleTouchEvent(true);
+            getViewHolder().getContainer().setHandleTouchEvent(true);
             if (getConfig().mCancelableOnTouchOutside) {
-                getViewHolder().getChild().setOnTappedListener(new ContainerLayout.OnTappedListener() {
+                getViewHolder().getContainer().setOnTappedListener(new ContainerLayout.OnTappedListener() {
                     @Override
                     public void onTapped() {
                         dismiss();
@@ -415,11 +415,11 @@ public class DialogLayer extends DecorLayer {
                 });
             }
         } else {
-            getViewHolder().getChild().setOnTappedListener(null);
-            getViewHolder().getChild().setHandleTouchEvent(false);
+            getViewHolder().getContainer().setOnTappedListener(null);
+            getViewHolder().getContainer().setHandleTouchEvent(false);
         }
         if (getConfig().mOutsideTouchedToDismiss || getConfig().mOutsideTouchedListener != null) {
-            getViewHolder().getChild().setOnTouchedListener(new ContainerLayout.OnTouchedListener() {
+            getViewHolder().getContainer().setOnTouchedListener(new ContainerLayout.OnTouchedListener() {
                 @Override
                 public void onTouched() {
                     if (getConfig().mOutsideTouchedToDismiss) {
@@ -431,18 +431,10 @@ public class DialogLayer extends DecorLayer {
                 }
             });
         }
-        fitContainerToActivityContent();
         FrameLayout.LayoutParams contentWrapperParams = (FrameLayout.LayoutParams) getViewHolder().getContentWrapper().getLayoutParams();
         contentWrapperParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
         contentWrapperParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
         getViewHolder().getContentWrapper().setLayoutParams(contentWrapperParams);
-        if (getConfig().mAvoidStatusBar) {
-            getViewHolder().getContentWrapper().setPadding(0, Utils.getStatusBarHeight(getActivity()), 0, 0);
-            getViewHolder().getContentWrapper().setClipToPadding(false);
-        } else {
-            getViewHolder().getContentWrapper().setPadding(0, 0, 0, 0);
-            getViewHolder().getContentWrapper().setClipToPadding(true);
-        }
         getViewHolder().getContentWrapper().setSwipeDirection(getConfig().mSwipeDirection);
         getViewHolder().getContentWrapper().setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
             @Override
@@ -485,26 +477,9 @@ public class DialogLayer extends DecorLayer {
         getViewHolder().getContentWrapper().setVisibility(View.VISIBLE);
     }
 
-    private void fitContainerToActivityContent() {
-        final int dh = getViewHolder().getDecor().getHeight();
-        final int dw = getViewHolder().getDecor().getWidth();
-        final int[] dl = new int[2];
-        getViewHolder().getDecor().getLocationOnScreen(dl);
-        final int ach = getViewHolder().getActivityContent().getHeight();
-        final int acw = getViewHolder().getActivityContent().getWidth();
-        final int[] acl = new int[2];
-        getViewHolder().getActivityContent().getLocationOnScreen(acl);
-        FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getViewHolder().getChild().getLayoutParams();
-        containerParams.leftMargin = 0/*acl[0] - dl[0]*/;
-        containerParams.topMargin = 0/*acl[1] - dl[1]*/;
-        containerParams.rightMargin = dl[0] + dw - (acl[0] + acw);
-        containerParams.bottomMargin = dl[1] + dh - (acl[1] + ach);
-        getViewHolder().getChild().setLayoutParams(containerParams);
-    }
-
     protected void initBackground() {
         if (getConfig().mBackgroundBlurPercent > 0 || getConfig().mBackgroundBlurRadius > 0) {
-            Utils.getViewSize(getViewHolder().getBackground(), new Runnable() {
+            Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
                 @Override
                 public void run() {
                     float radius = getConfig().mBackgroundBlurRadius;
@@ -523,7 +498,7 @@ public class DialogLayer extends DecorLayer {
                             getViewHolder().getBackground(),
                             simple,
                             getViewHolder().getParent(),
-                            getViewHolder().getChild());
+                            getViewHolder().getContainer());
                     if (snapshot != null) {
                         Blurred.init(getActivity());
                         Bitmap blurBitmap = Blurred.with(snapshot)
@@ -575,15 +550,6 @@ public class DialogLayer extends DecorLayer {
             contentParams.gravity = getConfig().mGravity;
         }
         getViewHolder().getContent().setLayoutParams(contentParams);
-        if (getConfig().mAsStatusBarViewId > 0) {
-            View statusBar = getViewHolder().getContent().findViewById(getConfig().mAsStatusBarViewId);
-            if (statusBar != null) {
-                ViewGroup.LayoutParams params = statusBar.getLayoutParams();
-                params.height = Utils.getStatusBarHeight(getActivity());
-                statusBar.setLayoutParams(params);
-                statusBar.setVisibility(View.VISIBLE);
-            }
-        }
     }
 
     private void registerSoftInputCompat() {
@@ -602,7 +568,7 @@ public class DialogLayer extends DecorLayer {
                     if (alignToContentOrFocus) {
                         mSoftInputHelper.follow(getViewHolder().getContent());
                     }
-                } else  {
+                } else {
                     if (alignToContentOrFocus) {
                         mSoftInputHelper.follow(getViewHolder().getContent(), getView(focusId));
                     } else {
@@ -660,18 +626,6 @@ public class DialogLayer extends DecorLayer {
     @NonNull
     public DialogLayer contentView(@LayoutRes int contentViewId) {
         getConfig().mContentViewId = contentViewId;
-        return this;
-    }
-
-    /**
-     * 设置自定义布局文件中状态栏的占位View
-     * 该控件高度将设置为状态栏高度，可用来使布局整体下移，避免状态栏遮挡
-     *
-     * @param statusBarId 状态栏的占位View
-     */
-    @NonNull
-    public DialogLayer asStatusBar(@IdRes int statusBarId) {
-        getConfig().mAsStatusBarViewId = statusBarId;
         return this;
     }
 
@@ -904,7 +858,7 @@ public class DialogLayer extends DecorLayer {
      * 在某几个View获取焦点时布局上移
      *
      * @param alignToContentOrFocus true为对齐到contentView，false为对齐到focusView自身
-     * @param focusIds             焦点View
+     * @param focusIds              焦点View
      */
     @NonNull
     public DialogLayer compatSoftInput(boolean alignToContentOrFocus, @Nullable int... focusIds) {
@@ -965,6 +919,11 @@ public class DialogLayer extends DecorLayer {
         }
 
         @NonNull
+        public ContainerLayout getContainer() {
+            return getChild();
+        }
+
+        @NonNull
         @Override
         public ContainerLayout getChild() {
             return (ContainerLayout) super.getChild();
@@ -1019,7 +978,6 @@ public class DialogLayer extends DecorLayer {
 
         protected boolean mCancelableOnTouchOutside = true;
 
-        protected int mAsStatusBarViewId = -1;
         protected boolean mAvoidStatusBar = false;
 
         protected int mGravity = Gravity.CENTER;
