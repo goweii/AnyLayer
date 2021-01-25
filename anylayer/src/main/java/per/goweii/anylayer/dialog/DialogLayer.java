@@ -587,27 +587,28 @@ public class DialogLayer extends DecorLayer {
     }
 
     private void registerSoftInputCompat() {
+        final SparseBooleanArray mapping = getConfig().mSoftInputMapping;
+        if (mapping == null || mapping.size() == 0) {
+            return;
+        }
         if (mSoftInputHelper == null) {
             mSoftInputHelper = SoftInputHelper.attach(getActivity());
         } else {
             mSoftInputHelper.clear();
         }
         mSoftInputHelper.move(getViewHolder().getContentWrapper());
-        final SparseBooleanArray mapping = getConfig().mSoftInputMapping;
-        if (mapping != null) {
-            for (int i = 0; i < mapping.size(); i++) {
-                boolean alignToContentOrFocus = mapping.valueAt(i);
-                int focusId = mapping.keyAt(i);
-                if (focusId == View.NO_ID) {
-                    if (alignToContentOrFocus) {
-                        mSoftInputHelper.follow(getViewHolder().getContent());
-                    }
-                } else  {
-                    if (alignToContentOrFocus) {
-                        mSoftInputHelper.follow(getViewHolder().getContent(), getView(focusId));
-                    } else {
-                        mSoftInputHelper.follow(null, getView(focusId));
-                    }
+        for (int i = 0; i < mapping.size(); i++) {
+            boolean alignToContentOrFocus = mapping.valueAt(i);
+            int focusId = mapping.keyAt(i);
+            if (focusId == View.NO_ID) {
+                if (alignToContentOrFocus) {
+                    mSoftInputHelper.follow(getViewHolder().getContent());
+                }
+            } else  {
+                if (alignToContentOrFocus) {
+                    mSoftInputHelper.follow(getViewHolder().getContent(), getView(focusId));
+                } else {
+                    mSoftInputHelper.follow(null, getView(focusId));
                 }
             }
         }
