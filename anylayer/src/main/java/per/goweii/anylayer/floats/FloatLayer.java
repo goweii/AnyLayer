@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
@@ -128,6 +129,7 @@ public class FloatLayer extends DecorLayer {
         return AnimatorHelper.createZoomAlphaOutAnim(view);
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -135,6 +137,7 @@ public class FloatLayer extends DecorLayer {
         initFloatView();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
@@ -142,25 +145,35 @@ public class FloatLayer extends DecorLayer {
         toNormal();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
         getViewHolder().getChild().goEdge(getViewHolder().getFloat());
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         super.onDetach();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void initDragLayout() {

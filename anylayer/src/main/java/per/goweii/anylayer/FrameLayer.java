@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -99,31 +100,37 @@ public class FrameLayer extends Layer {
         return parent;
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         super.onDetach();
@@ -141,6 +148,12 @@ public class FrameLayer extends Layer {
         if (group.getChildCount() == 0) {
             removeLayerLayoutFromRoot(group);
         }
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

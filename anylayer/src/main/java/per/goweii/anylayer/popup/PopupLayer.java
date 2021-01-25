@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -97,36 +98,48 @@ public class PopupLayer extends DialogLayer {
         return AnimatorHelper.createTopOutAnim(view);
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         getViewHolder().getParent().getViewTreeObserver().removeOnScrollChangedListener(mOnScrollChangedListener);
         mOnScrollChangedListener = null;
         super.onDetach();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
