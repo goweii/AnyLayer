@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IntRange;
@@ -105,6 +106,7 @@ public class GuideLayer extends DecorLayer {
                 FrameLayout.LayoutParams.WRAP_CONTENT);
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -128,30 +130,41 @@ public class GuideLayer extends DecorLayer {
         }
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
         updateLocation();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         super.onDetach();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

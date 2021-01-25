@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -336,11 +337,13 @@ public class DialogLayer extends DecorLayer {
                 FrameLayout.LayoutParams.WRAP_CONTENT);
     }
 
+    @CallSuper
     @Override
     protected void onCreate() {
         super.onCreate();
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -350,31 +353,42 @@ public class DialogLayer extends DecorLayer {
         registerSoftInputCompat();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         super.onDetach();
         unregisterSoftInputCompat();
         getViewHolder().recycle();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -572,27 +586,28 @@ public class DialogLayer extends DecorLayer {
     }
 
     private void registerSoftInputCompat() {
+        final SparseBooleanArray mapping = getConfig().mSoftInputMapping;
+        if (mapping == null || mapping.size() == 0) {
+            return;
+        }
         if (mSoftInputHelper == null) {
             mSoftInputHelper = SoftInputHelper.attach(getActivity());
         } else {
             mSoftInputHelper.clear();
         }
         mSoftInputHelper.move(getViewHolder().getContentWrapper());
-        final SparseBooleanArray mapping = getConfig().mSoftInputMapping;
-        if (mapping != null) {
-            for (int i = 0; i < mapping.size(); i++) {
-                boolean alignToContentOrFocus = mapping.valueAt(i);
-                int focusId = mapping.keyAt(i);
-                if (focusId == View.NO_ID) {
-                    if (alignToContentOrFocus) {
-                        mSoftInputHelper.follow(getViewHolder().getContent());
-                    }
-                } else  {
-                    if (alignToContentOrFocus) {
-                        mSoftInputHelper.follow(getViewHolder().getContent(), getView(focusId));
-                    } else {
-                        mSoftInputHelper.follow(null, getView(focusId));
-                    }
+        for (int i = 0; i < mapping.size(); i++) {
+            boolean alignToContentOrFocus = mapping.valueAt(i);
+            int focusId = mapping.keyAt(i);
+            if (focusId == View.NO_ID) {
+                if (alignToContentOrFocus) {
+                    mSoftInputHelper.follow(getViewHolder().getContent());
+                }
+            } else  {
+                if (alignToContentOrFocus) {
+                    mSoftInputHelper.follow(getViewHolder().getContent(), getView(focusId));
+                } else {
+                    mSoftInputHelper.follow(null, getView(focusId));
                 }
             }
         }

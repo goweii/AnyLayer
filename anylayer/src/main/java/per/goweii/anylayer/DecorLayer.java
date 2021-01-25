@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.widget.FrameLayout;
 
@@ -73,36 +74,48 @@ public class DecorLayer extends FrameLayer {
         return (ListenerHolder) super.getListenerHolder();
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
         getActivity().registerComponentCallbacks(mActivityComponentCallbacks);
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         getActivity().unregisterComponentCallbacks(mActivityComponentCallbacks);
         super.onDetach();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     protected void onActivityConfigChanged(@NonNull Configuration newConfig) {

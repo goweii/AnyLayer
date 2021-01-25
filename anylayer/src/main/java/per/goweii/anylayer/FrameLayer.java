@@ -2,6 +2,7 @@ package per.goweii.anylayer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -98,31 +99,37 @@ public class FrameLayer extends Layer {
         return parent;
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         super.onDetach();
@@ -140,6 +147,12 @@ public class FrameLayer extends Layer {
         if (group.getChildCount() == 0) {
             removeLayerLayoutFromRoot(group);
         }
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

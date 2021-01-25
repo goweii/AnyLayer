@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
@@ -148,6 +149,7 @@ public class NotificationLayer extends DecorLayer {
         return AnimatorHelper.createTopOutAnim(getViewHolder().getContentWrapper());
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -214,17 +216,20 @@ public class NotificationLayer extends DecorLayer {
         bindDefaultContentData();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
         autoDismiss(true);
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         if (mDismissRunnable != null) {
@@ -233,14 +238,22 @@ public class NotificationLayer extends DecorLayer {
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         super.onDetach();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void bindDefaultContentData() {

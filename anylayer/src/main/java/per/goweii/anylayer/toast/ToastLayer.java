@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -161,6 +162,7 @@ public class ToastLayer extends DecorLayer {
         return animator;
     }
 
+    @CallSuper
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -186,11 +188,13 @@ public class ToastLayer extends DecorLayer {
         bindDefaultContentData();
     }
 
+    @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
     }
 
+    @CallSuper
     @Override
     protected void onShow() {
         super.onShow();
@@ -199,21 +203,30 @@ public class ToastLayer extends DecorLayer {
         }
     }
 
+    @CallSuper
     @Override
     protected void onDismiss() {
         getChild().removeCallbacks(mDismissRunnable);
         super.onDismiss();
     }
 
+    @CallSuper
     @Override
     protected void onDisappear() {
         super.onDisappear();
     }
 
+    @CallSuper
     @Override
     protected void onDetach() {
         getChild().setTag(null);
         super.onDetach();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void removeOthers() {
