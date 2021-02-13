@@ -169,7 +169,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .backgroundDimDefault()
                         .gravity(Gravity.BOTTOM)
                         .swipeDismiss(SwipeLayout.Direction.BOTTOM)
-                        .compatSoftInput(false)
+//                        .compatSoftInput(false)
                         .compatSoftInput(true, R.id.et_dialog_content4)
                         .onClickToDismiss(R.id.fl_dialog_no)
                         .onClick(new Layer.OnClickListener() {
