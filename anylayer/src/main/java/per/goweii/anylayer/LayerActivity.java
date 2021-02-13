@@ -41,6 +41,7 @@ public class LayerActivity extends AppCompatActivity implements Layer.OnVisibleC
 
   @Override
   public void onDismiss(@NonNull Layer layer) {
+    sOnLayerCreatedCallback = null;
     finish();
     overridePendingTransition(0, 0);
   }
