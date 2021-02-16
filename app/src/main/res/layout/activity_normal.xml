@@ -46,6 +46,15 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/tv_show_edit_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="回复框"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
+                <TextView
                     android:id="@+id/tv_show_full"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
