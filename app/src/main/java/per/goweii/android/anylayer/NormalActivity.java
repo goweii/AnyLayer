@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -191,15 +192,28 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             dialogLayer.contentView(R.layout.dialog_reply)
                     .backgroundDimDefault()
                     .gravity(Gravity.BOTTOM)
+                    //目前的 swipe bottom 中包含的 bottomIn 动画会使出场错位，所以需要自己另外再安排一个动画来覆盖
                     .swipeDismiss(SwipeLayout.Direction.BOTTOM)
-                    .compatSoftInput(true,true)
+                    .compatSoftInput(true)
+                    .contentAnimator(new Layer.AnimatorCreator() {
+                      @Nullable
+                      @Override
+                      public Animator createInAnimator(@NonNull View target) {
+                        return AnimatorHelper.createAlphaInAnim(target);
+                      }
+
+                      @Nullable
+                      @Override
+                      public Animator createOutAnimator(@NonNull View target) {
+                        return AnimatorHelper.createBottomOutAnim(target);
+                      }
+                    })
                     .show();
 
             EditText et = dialogLayer.getView(R.id.et_dialog_content);
             et.requestFocus();
           }
         });
-
 
         break;
       case R.id.tv_show_full:
