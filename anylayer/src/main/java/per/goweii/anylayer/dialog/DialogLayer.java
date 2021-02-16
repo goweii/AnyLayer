@@ -195,7 +195,11 @@ public class DialogLayer extends DecorLayer {
                         contentAnimator = AnimatorHelper.createTopInAnim(view);
                         break;
                     case BOTTOM:
-                        contentAnimator = AnimatorHelper.createBottomInAnim(view);
+                        if (getConfig().mIsAttachToKeyboard) {
+                            contentAnimator = AnimatorHelper.createAlphaInAnim(view);
+                        } else{
+                            contentAnimator = AnimatorHelper.createBottomInAnim(view);
+                        }
                         break;
                     default:
                         contentAnimator = onCreateDefContentInAnimator(view);
@@ -210,7 +214,11 @@ public class DialogLayer extends DecorLayer {
                 } else if ((swipeDirection & SwipeLayout.Direction.RIGHT) != 0) {
                     contentAnimator = AnimatorHelper.createRightInAnim(view);
                 } else if ((swipeDirection & SwipeLayout.Direction.BOTTOM) != 0) {
-                    contentAnimator = AnimatorHelper.createBottomInAnim(view);
+                    if (getConfig().mIsAttachToKeyboard) {
+                        contentAnimator = AnimatorHelper.createAlphaInAnim(view);
+                    } else{
+                        contentAnimator = AnimatorHelper.createBottomInAnim(view);
+                    }
                 } else {
                     contentAnimator = onCreateDefContentInAnimator(view);
                 }
@@ -900,15 +908,21 @@ public class DialogLayer extends DecorLayer {
         return (DialogLayer) super.cancelableOnClickKeyBack(cancelable);
     }
 
+    public DialogLayer compatSoftInput(boolean alignToContentOrFocus, @Nullable int... focusIds) {
+        return compatSoftInput(alignToContentOrFocus,false, focusIds);
+    }
+
     /**
      * 适配软键盘的弹出，布局自动上移
      * 在某几个View获取焦点时布局上移
      *
-     * @param alignToContentOrFocus true为对齐到contentView，false为对齐到focusView自身
+     * @param alignToContentOrFocus true 为对齐到contentView，false为对齐到focusView自身
+     * @param isAttachToKeyboard   true 让弹窗的底部和键盘无缝相连
      * @param focusIds             焦点View
      */
     @NonNull
-    public DialogLayer compatSoftInput(boolean alignToContentOrFocus, @Nullable int... focusIds) {
+    public DialogLayer compatSoftInput(boolean alignToContentOrFocus, boolean isAttachToKeyboard, @Nullable int... focusIds) {
+        getConfig().mIsAttachToKeyboard = isAttachToKeyboard;
         if (getConfig().mSoftInputMapping == null) {
             getConfig().mSoftInputMapping = new SparseBooleanArray(1);
         }
@@ -1042,6 +1056,8 @@ public class DialogLayer extends DecorLayer {
         protected SwipeTransformer mSwipeTransformer = null;
 
         protected SparseBooleanArray mSoftInputMapping = null;
+
+        protected boolean mIsAttachToKeyboard = false;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

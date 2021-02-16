@@ -191,17 +191,8 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             dialogLayer.contentView(R.layout.dialog_reply)
                     .backgroundDimDefault()
                     .gravity(Gravity.BOTTOM)
-//                    .swipeDismiss(SwipeLayout.Direction.BOTTOM)
-                    .compatSoftInput(true)
-                    .onClickToDismiss(R.id.fl_dialog_no)
-                    .onClick(new Layer.OnClickListener() {
-                      @Override
-                      public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
-                        anyLayer.dismiss();
-                        EditText et = anyLayer.getView(R.id.et_dialog_content);
-                        Toast.makeText(NormalActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
-                      }
-                    }, R.id.fl_dialog_yes)
+                    .swipeDismiss(SwipeLayout.Direction.BOTTOM)
+                    .compatSoftInput(true,true)
                     .show();
 
             EditText et = dialogLayer.getView(R.id.et_dialog_content);
