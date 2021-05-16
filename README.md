@@ -2,8 +2,6 @@
 
 
 
-
-
 # AnyLayer
 
 Android稳定高效的浮层创建管理框架。
@@ -13,8 +11,6 @@ Android稳定高效的浮层创建管理框架。
 [GitHub主页](https://github.com/goweii/AnyLayer)
 
 [Demo下载](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)
-
-
 
 
 
@@ -55,8 +51,6 @@ Android稳定高效的浮层创建管理框架。
 
 
 
-
-
 # 说明
 
 **详细原理和使用说明本人会在后续补上，但因个人开发，时间不定，请谅解。**
@@ -66,8 +60,6 @@ Android稳定高效的浮层创建管理框架。
 当然也欢迎加群共同探讨，共同进步。
 
 > QQ群：147715512（爱Android）
-
-
 
 
 
@@ -85,15 +77,11 @@ Android稳定高效的浮层创建管理框架。
 
 
 
-
-
 # 截图
 
 截图效果较差且版本较老，建议[下载Demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)体验最新功能
 
 ![demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.gif)
-
-
 
 
 
@@ -130,12 +118,12 @@ dependencies {
     
     // 基础库
     // implementation 'com.github.goweii.AnyLayer:anylayer:4.1.3-androidx'
+    // 自动初始化（依赖基础库和Android Jetpack App Startup）
+    // implementation 'com.github.goweii.AnyLayer:anylayer-startup:4.1.3-androidx'
     // 扩展库（依赖基础库）
     // implementation 'com.github.goweii.AnyLayer:anylayer-ext:4.1.3-androidx'
-    // kotlin扩展库（依赖基础库和扩展库）
+    // Kotlin扩展库（依赖基础库和扩展库）
     // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:4.1.3-androidx'
-    // 通用弹窗（依赖基础库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-common:2.5.0'
 }
 ```
 

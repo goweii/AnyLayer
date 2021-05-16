@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -66,6 +67,12 @@ public class DecorLayer extends FrameLayer {
     @Override
     public ListenerHolder getListenerHolder() {
         return (ListenerHolder) super.getListenerHolder();
+    }
+
+    @NonNull
+    @Override
+    public LayoutInflater getLayoutInflater() {
+        return LayoutInflater.from(mActivity);
     }
 
     @CallSuper

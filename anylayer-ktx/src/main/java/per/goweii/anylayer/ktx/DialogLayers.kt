@@ -22,10 +22,6 @@ fun <T : DialogLayer> T.setContentView(@LayoutRes contentViewId: Int) = this.app
     this.contentView(contentViewId)
 }
 
-fun <T : DialogLayer> T.setAsStatusBar(@IdRes viewId: Int) = this.apply {
-    this.asStatusBar(viewId)
-}
-
 fun <T : DialogLayer> T.setAvoidStatusBar(enable: Boolean) = this.apply {
     this.avoidStatusBar(enable)
 }

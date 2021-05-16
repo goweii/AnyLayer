@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -38,7 +37,9 @@ import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.SoftInputHelper;
 import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.SwipeLayout;
-import per.goweii.burred.Blurred;
+import per.goweii.visualeffect.blur.RSBlurEffect;
+import per.goweii.visualeffect.core.VisualEffect;
+import per.goweii.visualeffect.view.BackdropVisualEffectView;
 
 public class DialogLayer extends DecorLayer {
 
@@ -382,7 +383,6 @@ public class DialogLayer extends DecorLayer {
     protected void onDetach() {
         super.onDetach();
         unregisterSoftInputCompat();
-        getViewHolder().recycle();
     }
 
     @CallSuper
@@ -479,66 +479,60 @@ public class DialogLayer extends DecorLayer {
 
     protected void initBackground() {
         if (getConfig().mBackgroundBlurPercent > 0 || getConfig().mBackgroundBlurRadius > 0) {
-            Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
-                @Override
-                public void run() {
-                    float radius = getConfig().mBackgroundBlurRadius;
-                    if (getConfig().mBackgroundBlurPercent > 0) {
-                        int w = getViewHolder().getBackground().getWidth();
-                        int h = getViewHolder().getBackground().getHeight();
-                        int min = Math.min(w, h);
-                        radius = min * getConfig().mBackgroundBlurPercent;
-                    }
-                    float simple = getConfig().mBackgroundBlurSimple;
-                    if (radius > 25) {
-                        simple = simple * (radius / 25);
-                        radius = 25;
-                    }
-                    Bitmap snapshot = Utils.snapshotSafely(getViewHolder().getDecor(),
-                            getViewHolder().getBackground(),
-                            simple,
-                            getViewHolder().getParent(),
-                            getViewHolder().getContainer());
-                    if (snapshot != null) {
-                        Blurred.init(getActivity());
-                        Bitmap blurBitmap = Blurred.with(snapshot)
-                                .recycleOriginal(true)
-                                .keepSize(false)
-                                .radius(radius)
-                                .blur();
-                        getViewHolder().getBackground().setImageBitmap(blurBitmap);
-                        if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                            getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+            getViewHolder().replaceBackgroundToBackdropVisualEffectView();
+            getViewHolder().getBackdropVisualEffectView().setShowDebugInfo(false);
+            getViewHolder().getBackdropVisualEffectView().setOverlayColor(getConfig().mBackgroundColor);
+            if (getConfig().mBackgroundBlurPercent > 0) {
+                Utils.onViewLayout(getViewHolder().getBackdropVisualEffectView(), new Runnable() {
+                    @Override
+                    public void run() {
+                        int w = getViewHolder().getBackdropVisualEffectView().getWidth();
+                        int h = getViewHolder().getBackdropVisualEffectView().getHeight();
+                        float radius = Math.min(w, h) * getConfig().mBackgroundBlurPercent;
+                        float simple = getConfig().mBackgroundBlurSimple;
+                        if (radius > 25) {
+                            simple = simple * (radius / 25);
+                            radius = 25;
                         }
-                    } else {
-                        getViewHolder().getBackground().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
+                        getViewHolder().getBackdropVisualEffectView().setSimpleSize(simple);
+                        VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
+                        getViewHolder().getBackdropVisualEffectView().setVisualEffect(visualEffect);
                     }
-                    getViewHolder().getBackground().setScaleType(ImageView.ScaleType.CENTER_CROP);
+                });
+            } else {
+                float radius = getConfig().mBackgroundBlurRadius;
+                float simple = getConfig().mBackgroundBlurSimple;
+                if (radius > 25) {
+                    simple = simple * (radius / 25);
+                    radius = 25;
                 }
-            });
+                getViewHolder().getBackdropVisualEffectView().setSimpleSize(simple);
+                VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
+                getViewHolder().getBackdropVisualEffectView().setVisualEffect(visualEffect);
+            }
         } else {
             if (getConfig().mBackgroundBitmap != null) {
-                getViewHolder().getBackground().setImageBitmap(getConfig().mBackgroundBitmap);
+                getViewHolder().getBackgroundView().setImageBitmap(getConfig().mBackgroundBitmap);
                 if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                    getViewHolder().getBackgroundView().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundDrawable != null) {
-                getViewHolder().getBackground().setImageDrawable(getConfig().mBackgroundDrawable);
+                getViewHolder().getBackgroundView().setImageDrawable(getConfig().mBackgroundDrawable);
                 if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                    getViewHolder().getBackgroundView().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundResource != -1) {
-                getViewHolder().getBackground().setImageResource(getConfig().mBackgroundResource);
+                getViewHolder().getBackgroundView().setImageResource(getConfig().mBackgroundResource);
                 if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    getViewHolder().getBackground().setColorFilter(getConfig().mBackgroundColor);
+                    getViewHolder().getBackgroundView().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                getViewHolder().getBackground().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
+                getViewHolder().getBackgroundView().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
             } else if (getConfig().mBackgroundDimAmount != -1) {
                 int color = Color.argb((int) (255 * Utils.floatRange01(getConfig().mBackgroundDimAmount)), 0, 0, 0);
-                getViewHolder().getBackground().setImageDrawable(new ColorDrawable(color));
+                getViewHolder().getBackgroundView().setImageDrawable(new ColorDrawable(color));
             } else {
-                getViewHolder().getBackground().setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
+                getViewHolder().getBackgroundView().setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
             }
         }
     }
@@ -570,7 +564,7 @@ public class DialogLayer extends DecorLayer {
                 if (alignToContentOrFocus) {
                     mSoftInputHelper.follow(getViewHolder().getContent());
                 }
-            } else  {
+            } else {
                 if (alignToContentOrFocus) {
                     mSoftInputHelper.follow(getViewHolder().getContent(), getView(focusId));
                 } else {
@@ -601,10 +595,10 @@ public class DialogLayer extends DecorLayer {
     /**
      * 获取背景图
      *
-     * @return ImageView
+     * @return View
      */
     @NonNull
-    public BackgroundView getBackground() {
+    public View getBackground() {
         return getViewHolder().getBackground();
     }
 
@@ -901,16 +895,9 @@ public class DialogLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
-        private BackgroundView mBackground;
+        private View mBackground;
         private SwipeLayout mContentWrapper;
         private View mContent;
-
-        public void recycle() {
-            if (mBackground.getDrawable() instanceof BitmapDrawable) {
-                BitmapDrawable bd = (BitmapDrawable) mBackground.getDrawable();
-                bd.getBitmap().recycle();
-            }
-        }
 
         @Override
         public void setChild(@NonNull View child) {
@@ -957,8 +944,33 @@ public class DialogLayer extends DecorLayer {
         }
 
         @NonNull
-        public BackgroundView getBackground() {
+        public View getBackground() {
             return mBackground;
+        }
+
+        public void replaceBackgroundToBackdropVisualEffectView() {
+            if (mBackground instanceof BackdropVisualEffectView) return;
+            ViewGroup.LayoutParams layoutParams = mBackground.getLayoutParams();
+            int index = getChild().indexOfChild(mBackground);
+            getChild().removeViewAt(index);
+            mBackground = new BackdropVisualEffectView(getChild().getContext());
+            getChild().addView(mBackground, index, new ViewGroup.LayoutParams(layoutParams));
+        }
+
+        @Nullable
+        public BackdropVisualEffectView getBackdropVisualEffectView() {
+            if (mBackground instanceof BackdropVisualEffectView) {
+                return (BackdropVisualEffectView) mBackground;
+            }
+            return null;
+        }
+
+        @Nullable
+        public BackgroundView getBackgroundView() {
+            if (mBackground instanceof BackgroundView) {
+                return (BackgroundView) mBackground;
+            }
+            return null;
         }
     }
 

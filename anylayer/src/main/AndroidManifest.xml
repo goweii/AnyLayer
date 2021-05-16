@@ -2,12 +2,7 @@
     package="per.goweii.anylayer">
     <application>
         <activity
-            android:name=".LayerActivity"
+            android:name="per.goweii.anylayer.LayerActivity"
             android:theme="@style/AnyLayerActivityTheme" />
-        <provider
-            android:name=".ActivityProvider"
-            android:authorities="${applicationId}.anylayer.activityprovider"
-            android:exported="false"
-            android:multiprocess="true" />
     </application>
 </manifest>
