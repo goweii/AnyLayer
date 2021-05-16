@@ -1,7 +1,6 @@
 package per.goweii.anylayer;
 
 import android.app.Activity;
-import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
