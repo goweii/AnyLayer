@@ -128,9 +128,10 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
     @Override
     public void onGlobalLayout() {
         final boolean isOpen = calcIsOpen();
-        if (isOpened == isOpen) return;
-        isOpened = isOpen;
-        notifyListener();
+        if (isOpened != isOpen) {
+            isOpened = isOpen;
+            notifyListener();
+        }
         startMove();
     }
 
