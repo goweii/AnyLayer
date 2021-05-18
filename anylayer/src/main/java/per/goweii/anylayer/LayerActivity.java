@@ -32,6 +32,7 @@ public class LayerActivity extends Activity implements Layer.OnVisibleChangeList
         dialogLayer.onVisibleChangeListener(this);
         if (sOnLayerCreatedCallback != null) {
             sOnLayerCreatedCallback.onLayerCreated(dialogLayer);
+            sOnLayerCreatedCallback = null;
         }
     }
 
