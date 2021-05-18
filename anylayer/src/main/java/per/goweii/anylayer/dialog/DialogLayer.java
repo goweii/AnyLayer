@@ -24,6 +24,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -554,6 +555,22 @@ public class DialogLayer extends DecorLayer {
         } else {
             mSoftInputHelper.clear();
         }
+        mSoftInputHelper.listener(new SoftInputHelper.OnSoftInputListener() {
+            @Override
+            public void onOpen(int height) {
+                getListenerHolder().notifyOnSoftInputOpen(DialogLayer.this, height);
+            }
+
+            @Override
+            public void onClose(int height) {
+                getListenerHolder().notifyOnSoftInputClose(DialogLayer.this, height);
+            }
+
+            @Override
+            public void onHeightChange(int height) {
+                getListenerHolder().notifyOnSoftInputHeightChange(DialogLayer.this, height);
+            }
+        });
         mSoftInputHelper.move(getViewHolder().getContentWrapper());
         for (int i = 0; i < mapping.size(); i++) {
             boolean alignToContentOrFocus = mapping.valueAt(i);
@@ -574,6 +591,7 @@ public class DialogLayer extends DecorLayer {
 
     private void unregisterSoftInputCompat() {
         if (mSoftInputHelper != null) {
+            mSoftInputHelper.listener(null);
             mSoftInputHelper.clear();
             mSoftInputHelper.detach();
             mSoftInputHelper = null;
@@ -868,6 +886,11 @@ public class DialogLayer extends DecorLayer {
         return this;
     }
 
+    public DialogLayer onSoftInputListener(@NonNull OnSoftInputListener onSoftInputListener) {
+        getListenerHolder().addOnSoftInputListener(onSoftInputListener);
+        return this;
+    }
+
     /**
      * 设置浮层外部是否拦截触摸
      * 默认为true，false则事件有activityContent本身消费
@@ -1014,12 +1037,20 @@ public class DialogLayer extends DecorLayer {
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
         private List<OnSwipeListener> mOnSwipeListeners = null;
+        private List<OnSoftInputListener> mOnSoftInputListeners = null;
 
         private void addOnSwipeListener(@NonNull OnSwipeListener onSwipeListener) {
             if (mOnSwipeListeners == null) {
                 mOnSwipeListeners = new ArrayList<>(1);
             }
             mOnSwipeListeners.add(onSwipeListener);
+        }
+
+        private void addOnSoftInputListener(@NonNull OnSoftInputListener onSoftInputListener) {
+            if (mOnSoftInputListeners == null) {
+                mOnSoftInputListeners = new ArrayList<>(1);
+            }
+            mOnSoftInputListeners.add(onSoftInputListener);
         }
 
         private void notifyOnSwipeStart(@NonNull DialogLayer layer) {
@@ -1048,6 +1079,30 @@ public class DialogLayer extends DecorLayer {
                 }
             }
         }
+
+        private void notifyOnSoftInputOpen(@NonNull DialogLayer layer, @Px int height) {
+            if (mOnSoftInputListeners != null) {
+                for (OnSoftInputListener onSoftInputListener : mOnSoftInputListeners) {
+                    onSoftInputListener.onOpen(layer, height);
+                }
+            }
+        }
+
+        private void notifyOnSoftInputClose(@NonNull DialogLayer layer, @Px int height) {
+            if (mOnSoftInputListeners != null) {
+                for (OnSoftInputListener onSoftInputListener : mOnSoftInputListeners) {
+                    onSoftInputListener.onClose(layer, height);
+                }
+            }
+        }
+
+        private void notifyOnSoftInputHeightChange(@NonNull DialogLayer layer, @Px int height) {
+            if (mOnSoftInputListeners != null) {
+                for (OnSoftInputListener onSoftInputListener : mOnSoftInputListeners) {
+                    onSoftInputListener.onHeightChange(layer, height);
+                }
+            }
+        }
     }
 
     public interface OutsideTouchedListener {
@@ -1069,6 +1124,14 @@ public class DialogLayer extends DecorLayer {
 
         void onEnd(@NonNull DialogLayer layer,
                    @SwipeLayout.Direction int direction);
+    }
+
+    public interface OnSoftInputListener {
+        void onOpen(@NonNull DialogLayer layer, @Px int height);
+
+        void onClose(@NonNull DialogLayer layer, @Px int height);
+
+        void onHeightChange(@NonNull DialogLayer layer, @Px int height);
     }
 
     public enum AnimStyle {

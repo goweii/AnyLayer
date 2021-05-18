@@ -79,6 +79,15 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/tv_show_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="输入文字"
+                    android:textColor="#232323"
+                    android:textSize="14sp" />
+
+                <TextView
                     android:id="@+id/tv_show_edit"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"

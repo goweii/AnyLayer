@@ -3,34 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:orientation="horizontal"
-    android:paddingLeft="15dp"
-    android:paddingTop="8dp"
-    android:paddingRight="15dp"
-    android:paddingBottom="8dp"
-    android:background="#ffffff">
+    android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/et_input"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:maxLines="5"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/shape_input_bg"
-        android:text="@string/dialog_msg"
-        android:textColor="#232323"
-        android:textSize="15sp" />
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingTop="8dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="8dp"
+        android:background="#ffffff">
 
-    <TextView
-        android:id="@+id/tv_send"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:padding="8dp"
-        android:gravity="center"
-        android:textColor="#ffffff"
-        android:background="@drawable/shape_send_bg"
-        android:text="发送"/>
+        <EditText
+            android:id="@+id/et_input"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:maxLines="5"
+            android:lines="3"
+            android:gravity="top|left"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/shape_input_bg"
+            android:hint="@string/dialog_msg"
+            android:textColor="#232323"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv_send"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:background="@drawable/shape_send_bg"
+            android:text="发送"/>
+
+    </LinearLayout>
 
 </LinearLayout>

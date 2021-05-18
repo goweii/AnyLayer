@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -13,6 +14,7 @@ import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +32,9 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
     private final Rect windowVisibleDisplayFrame = new Rect();
     private final int[] viewInWindowLocation = new int[2];
 
-    private boolean isOpened = false;
+    private final int keyboardMinHeight;
+
+    private int keyBoardHeight = 0;
 
     private long duration = 200;
     private View moveView = null;
@@ -54,6 +58,11 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
     private SoftInputHelper(@NonNull Activity activity) {
         this.window = activity.getWindow();
         this.rootView = window.getDecorView().getRootView();
+        keyboardMinHeight = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                200f,
+                rootView.getResources().getDisplayMetrics()
+        );
         ViewTreeObserver observer = rootView.getViewTreeObserver();
         if (observer.isAlive()) {
             observer.addOnGlobalLayoutListener(this);
@@ -125,23 +134,40 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
         return this;
     }
 
+    public boolean isOpen() {
+        return keyBoardHeight > 0;
+    }
+
     @Override
     public void onGlobalLayout() {
-        final boolean isOpen = calcIsOpen();
-        if (isOpened != isOpen) {
-            isOpened = isOpen;
-            notifyListener();
+        final int keyboardHeight = calcKeyboardHeight();
+        final int lastHeight = keyBoardHeight;
+        final boolean lastOpened = keyBoardHeight > 0;
+        final boolean nowOpened = keyboardHeight > 0;
+        keyBoardHeight = keyboardHeight;
+        if (lastOpened != nowOpened) {
+            notifyOpenOrClose();
+        } else {
+            if (lastHeight != keyboardHeight) {
+                notifyHeightChanged();
+            }
         }
         startMove();
     }
 
-    private void notifyListener() {
+    private void notifyOpenOrClose() {
         if (onSoftInputListener != null) {
-            if (isOpened) {
-                onSoftInputListener.onOpen();
+            if (isOpen()) {
+                onSoftInputListener.onOpen(keyBoardHeight);
             } else {
-                onSoftInputListener.onClose();
+                onSoftInputListener.onClose(keyBoardHeight);
             }
+        }
+    }
+
+    private void notifyHeightChanged() {
+        if (onSoftInputListener != null) {
+            onSoftInputListener.onHeightChange(keyBoardHeight);
         }
     }
 
@@ -153,7 +179,7 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
     }
 
     private void calcMove() {
-        if (!isOpened) {
+        if (!isOpen()) {
             moveTo(0);
             return;
         }
@@ -207,7 +233,7 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
 
     @Override
     public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-        if (isOpened) {
+        if (isOpen()) {
             if (moveView != null) {
                 rootView.postDelayed(moveRunnable, 100);
             }
@@ -235,16 +261,20 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
         moveAnim.start();
     }
 
-    private boolean calcIsOpen() {
+    private int calcKeyboardHeight() {
         Rect rect = getWindowVisibleDisplayFrame();
         int usableHeightNow = rect.height();
         int usableHeightSansKeyboard = rootView.getHeight();
         int heightDifference = usableHeightSansKeyboard - usableHeightNow;
-        return heightDifference > (usableHeightSansKeyboard / 4);
+        if (heightDifference > (usableHeightSansKeyboard / 4) || heightDifference > keyboardMinHeight) {
+            return heightDifference;
+        } else {
+            return 0;
+        }
     }
 
     @Nullable
-    private View currFocusView() {
+    private View currFocusViewInMap() {
         View focusView = window.getCurrentFocus();
         for (View view : focusBottomMap.keySet()) {
             if (focusView == view) {
@@ -255,8 +285,10 @@ public final class SoftInputHelper implements ViewTreeObserver.OnGlobalLayoutLis
     }
 
     public interface OnSoftInputListener {
-        void onOpen();
+        void onOpen(@Px int height);
 
-        void onClose();
+        void onClose(@Px int height);
+
+        void onHeightChange(@Px int height);
     }
 }

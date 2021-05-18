@@ -1,11 +1,14 @@
 package per.goweii.android.anylayer;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +23,7 @@ import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.guide.GuideLayer;
 import per.goweii.anylayer.popup.PopupLayer;
 import per.goweii.anylayer.popup.PopupLayer.Align;
+import per.goweii.anylayer.toast.ToastLayer;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.statusbarcompat.StatusBarCompat;
@@ -121,6 +125,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         tvTitle.setOnClickListener(this);
         findViewById(R.id.tv_show_app_context).setOnClickListener(this);
         findViewById(R.id.tv_show_multi).setOnClickListener(this);
+        findViewById(R.id.tv_show_input).setOnClickListener(this);
         findViewById(R.id.tv_show_edit).setOnClickListener(this);
         findViewById(R.id.tv_show_full).setOnClickListener(this);
         findViewById(R.id.tv_show_top).setOnClickListener(this);
@@ -173,6 +178,91 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_multi:
                 showMulti();
+                break;
+            case R.id.tv_show_input:
+                AnyLayer.dialog(FullScreenActivity.this)
+                        .contentView(R.layout.dialog_input)
+                        .backgroundDimDefault()
+                        .gravity(Gravity.BOTTOM)
+                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
+                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                            @Override
+                            public Animator createInAnimator(@NonNull View content) {
+                                return ObjectAnimator.ofInt(content, "scrollY", -content.getHeight(), 0)
+                                        .setDuration(200);
+                            }
+
+                            @Override
+                            public Animator createOutAnimator(@NonNull View content) {
+                                return ObjectAnimator.ofInt(content, "scrollY", 0, -content.getHeight())
+                                        .setDuration(200);
+                            }
+                        })
+                        .compatSoftInput(true)
+                        .onSoftInputListener(new DialogLayer.OnSoftInputListener() {
+                            @Override
+                            public void onOpen(@NonNull DialogLayer layer, int height) {
+                                AnyLayer.toast(FullScreenActivity.this)
+                                        .message("输入法打开->当前高度" + height)
+                                        .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                                        .marginTop(300)
+                                        .show();
+                            }
+
+                            @Override
+                            public void onClose(@NonNull DialogLayer layer, int height) {
+                                layer.dismiss();
+                                AnyLayer.toast(FullScreenActivity.this)
+                                        .message("输入法关闭->当前高度" + height)
+                                        .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                                        .marginTop(300)
+                                        .show();
+                            }
+
+                            @Override
+                            public void onHeightChange(@NonNull DialogLayer layer, int height) {
+                                AnyLayer.toast(FullScreenActivity.this)
+                                        .message("输入法高度改变->当前高度" + height)
+                                        .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                                        .marginTop(300)
+                                        .show();
+                            }
+                        })
+                        .onShowListener(new Layer.OnShowListener() {
+                            @Override
+                            public void onShowing(@NonNull Layer layer) {
+                                EditText et = layer.requireView(R.id.et_input);
+                                et.setFocusable(true);
+                                et.setFocusableInTouchMode(true);
+                                et.requestFocus();
+                                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.showSoftInput(et, InputMethodManager.SHOW_FORCED);
+                            }
+
+                            @Override
+                            public void onShown(@NonNull Layer layer) {
+                            }
+                        })
+                        .onDismissListener(new Layer.OnDismissListener() {
+                            @Override
+                            public void onDismissing(@NonNull Layer layer) {
+                                EditText et = layer.requireView(R.id.et_input);
+                                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+                            }
+
+                            @Override
+                            public void onDismissed(@NonNull Layer layer) {
+                            }
+                        })
+                        .onClickToDismiss(new Layer.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull Layer layer, @NonNull View v) {
+                                EditText et = layer.requireView(R.id.et_input);
+                                Toast.makeText(FullScreenActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        }, R.id.tv_send)
+                        .show();
                 break;
             case R.id.tv_show_edit:
                 AnyLayer.dialog(FullScreenActivity.this)
