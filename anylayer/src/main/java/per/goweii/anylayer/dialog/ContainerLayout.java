@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 public class ContainerLayout extends FrameLayout {
     private final GestureDetector mGestureDetector;
 
-    private boolean handleTouchEvent = false;
+    private boolean mHandleTouchEvent = false;
 
     private OnTouchedListener mOnTouchedListener = null;
     private OnTappedListener mOnTappedListener = null;
@@ -38,7 +38,7 @@ public class ContainerLayout extends FrameLayout {
     }
 
     public void setHandleTouchEvent(boolean handleTouchEvent) {
-        this.handleTouchEvent = handleTouchEvent;
+        this.mHandleTouchEvent = handleTouchEvent;
     }
 
     public void setOnTouchedListener(@Nullable OnTouchedListener onTouchedListener) {
@@ -55,7 +55,7 @@ public class ContainerLayout extends FrameLayout {
             if (mOnTouchedListener != null) {
                 mOnTouchedListener.onTouched();
             }
-            return handleTouchEvent;
+            return mHandleTouchEvent;
         }
 
         @Override

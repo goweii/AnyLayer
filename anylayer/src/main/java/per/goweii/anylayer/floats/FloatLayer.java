@@ -253,133 +253,133 @@ public class FloatLayer extends DecorLayer {
         floatView.setScaleY(config.mDefScale);
     }
 
-    public FloatLayer floatView(@LayoutRes int layoutId) {
+    public FloatLayer setFloatView(@LayoutRes int layoutId) {
         getConfig().mFloatViewId = layoutId;
         return this;
     }
 
-    public FloatLayer floatView(@NonNull View floatView) {
+    public FloatLayer setFloatView(@NonNull View floatView) {
         getViewHolder().setFloat(floatView);
         return this;
     }
 
-    public FloatLayer defPercentX(float p) {
+    public FloatLayer setDefPercentX(float p) {
         getConfig().mDefPercentX = p;
         return this;
     }
 
-    public FloatLayer defPercentY(float p) {
+    public FloatLayer setDefPercentY(float p) {
         getConfig().mDefPercentY = p;
         return this;
     }
 
-    public FloatLayer defAlpha(float alpha) {
+    public FloatLayer setDefAlpha(float alpha) {
         getConfig().mDefAlpha = alpha;
         return this;
     }
 
-    public FloatLayer defScale(float scale) {
+    public FloatLayer setDefScale(float scale) {
         getConfig().mDefScale = scale;
         return this;
     }
 
-    public FloatLayer pivotX(float pivot) {
+    public FloatLayer setPivotX(float pivot) {
         getConfig().mPivotX = pivot;
         return this;
     }
 
-    public FloatLayer pivotY(float pivot) {
+    public FloatLayer setPivotY(float pivot) {
         getConfig().mPivotY = pivot;
         return this;
     }
 
-    public FloatLayer normalAlpha(float alpha) {
+    public FloatLayer setNormalAlpha(float alpha) {
         getConfig().mNormalAlpha = alpha;
         return this;
     }
 
-    public FloatLayer normalScale(float scale) {
+    public FloatLayer setNormalScale(float scale) {
         getConfig().mNormalScale = scale;
         return this;
     }
 
-    public FloatLayer lowProfileAlpha(float alpha) {
+    public FloatLayer setLowProfileAlpha(float alpha) {
         getConfig().mLowProfileAlpha = alpha;
         return this;
     }
 
-    public FloatLayer lowProfileScale(float scale) {
+    public FloatLayer setLowProfileScale(float scale) {
         getConfig().mLowProfileScale = scale;
         return this;
     }
 
-    public FloatLayer lowProfileIndent(float indent) {
+    public FloatLayer setLowProfileIndent(float indent) {
         getConfig().mLowProfileIndent = indent;
         return this;
     }
 
-    public FloatLayer lowProfileDelay(long delay) {
+    public FloatLayer setLowProfileDelay(long delay) {
         getConfig().mLowProfileDelay = delay;
         return this;
     }
 
-    public FloatLayer snapEdge(int edge) {
+    public FloatLayer setSnapEdge(int edge) {
         getConfig().mSnapEdge = edge;
         return this;
     }
 
-    public FloatLayer outside(boolean outside) {
+    public FloatLayer setOutside(boolean outside) {
         getConfig().mOutside = outside;
         return this;
     }
 
-    public FloatLayer marginLeft(int margin) {
+    public FloatLayer setMarginLeft(int margin) {
         getConfig().mMarginLeft = margin;
         return this;
     }
 
-    public FloatLayer marginTop(int margin) {
+    public FloatLayer setMarginTop(int margin) {
         getConfig().mMarginTop = margin;
         return this;
     }
 
-    public FloatLayer marginRight(int margin) {
+    public FloatLayer setMarginRight(int margin) {
         getConfig().mMarginRight = margin;
         return this;
     }
 
-    public FloatLayer marginBottom(int margin) {
+    public FloatLayer setMarginBottom(int margin) {
         getConfig().mMarginBottom = margin;
         return this;
     }
 
-    public FloatLayer paddingLeft(int padding) {
+    public FloatLayer setPaddingLeft(int padding) {
         getConfig().mPaddingLeft = padding;
         return this;
     }
 
-    public FloatLayer paddingTop(int padding) {
+    public FloatLayer setPaddingTop(int padding) {
         getConfig().mPaddingTop = padding;
         return this;
     }
 
-    public FloatLayer paddingRight(int padding) {
+    public FloatLayer setPaddingRight(int padding) {
         getConfig().mPaddingRight = padding;
         return this;
     }
 
-    public FloatLayer paddingBottom(int padding) {
+    public FloatLayer setPaddingBottom(int padding) {
         getConfig().mPaddingBottom = padding;
         return this;
     }
 
-    public FloatLayer onFloatClick(@NonNull OnClickListener listener) {
-        onClick(listener);
+    public FloatLayer addOnFloatClickListener(@NonNull OnClickListener listener) {
+        addOnClickListener(listener);
         return this;
     }
 
-    public FloatLayer onFloatLongClick(@NonNull OnLongClickListener listener) {
-        onLongClick(listener);
+    public FloatLayer setOnFloatLongClickListener(@NonNull OnLongClickListener listener) {
+        addOnLongClickListener(listener);
         return this;
     }
 

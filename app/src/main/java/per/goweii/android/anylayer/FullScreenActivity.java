@@ -23,7 +23,6 @@ import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.guide.GuideLayer;
 import per.goweii.anylayer.popup.PopupLayer;
 import per.goweii.anylayer.popup.PopupLayer.Align;
-import per.goweii.anylayer.toast.ToastLayer;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.statusbarcompat.StatusBarCompat;
@@ -57,24 +56,24 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         textView3.setTextColor(Color.WHITE);
         textView3.setTextSize(16F);
         new GuideLayer(FullScreenActivity.this)
-                .mapping(new GuideLayer.Mapping()
-                        .targetView(findViewById(R.id.tv_show_menu))
-                        .cornerRadius(9999F)
-                        .paddingLeft(30)
-                        .paddingRight(30)
-                        .paddingTop(-10)
-                        .paddingBottom(-10)
-                        .guideView(textView1)
-                        .horizontalAlign(GuideLayer.Align.Horizontal.ALIGN_RIGHT)
-                        .verticalAlign(GuideLayer.Align.Vertical.BELOW)
-                        .marginTop(30)
-                        .marginRight(30))
-                .mapping(new GuideLayer.Mapping()
-                        .guideView(textView3)
-                        .horizontalAlign(GuideLayer.Align.Horizontal.CENTER_PARENT)
-                        .verticalAlign(GuideLayer.Align.Vertical.ALIGN_PARENT_BOTTOM)
-                        .marginBottom(60)
-                        .onClick(new Layer.OnClickListener() {
+                .addMapping(new GuideLayer.Mapping()
+                        .setTargetView(findViewById(R.id.tv_show_menu))
+                        .setCornerRadius(9999F)
+                        .setPaddingLeft(30)
+                        .setPaddingRight(30)
+                        .setPaddingTop(-10)
+                        .setPaddingBottom(-10)
+                        .setGuideView(textView1)
+                        .setHorizontalAlign(GuideLayer.Align.Horizontal.ALIGN_RIGHT)
+                        .setVerticalAlign(GuideLayer.Align.Vertical.BELOW)
+                        .setMarginTop(30)
+                        .setMarginRight(30))
+                .addMapping(new GuideLayer.Mapping()
+                        .setGuideView(textView3)
+                        .setHorizontalAlign(GuideLayer.Align.Horizontal.CENTER_PARENT)
+                        .setVerticalAlign(GuideLayer.Align.Vertical.ALIGN_PARENT_BOTTOM)
+                        .setMarginBottom(60)
+                        .addOnClickListener(new Layer.OnClickListener() {
                             @Override
                             public void onClick(@NonNull Layer layer, @NonNull View v) {
                                 layer.dismiss();
@@ -97,20 +96,20 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
         textView3.setTextColor(Color.WHITE);
         textView3.setTextSize(16F);
         new GuideLayer(FullScreenActivity.this)
-                .mapping(new GuideLayer.Mapping()
-                        .targetView(findViewById(R.id.tv_show_blur_bg))
-                        .cornerRadius(8F)
-                        .padding(-30)
-                        .guideView(textView1)
-                        .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
-                        .verticalAlign(GuideLayer.Align.Vertical.ABOVE)
-                        .marginBottom(30))
-                .mapping(new GuideLayer.Mapping()
-                        .guideView(textView3)
-                        .horizontalAlign(GuideLayer.Align.Horizontal.CENTER)
-                        .verticalAlign(GuideLayer.Align.Vertical.ALIGN_BOTTOM)
-                        .marginBottom(60)
-                        .onClick(new Layer.OnClickListener() {
+                .addMapping(new GuideLayer.Mapping()
+                        .setTargetView(findViewById(R.id.tv_show_blur_bg))
+                        .setCornerRadius(8F)
+                        .setPadding(-30)
+                        .setGuideView(textView1)
+                        .setHorizontalAlign(GuideLayer.Align.Horizontal.CENTER)
+                        .setVerticalAlign(GuideLayer.Align.Vertical.ABOVE)
+                        .setMarginBottom(30))
+                .addMapping(new GuideLayer.Mapping()
+                        .setGuideView(textView3)
+                        .setHorizontalAlign(GuideLayer.Align.Horizontal.CENTER)
+                        .setVerticalAlign(GuideLayer.Align.Vertical.ALIGN_BOTTOM)
+                        .setMarginBottom(60)
+                        .addOnClickListener(new Layer.OnClickListener() {
                             @Override
                             public void onClick(@NonNull Layer layer, @NonNull View v) {
                                 layer.dismiss();
@@ -169,9 +168,9 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 AnyLayer.dialog(new LayerActivity.OnLayerCreatedCallback() {
                     @Override
                     public void onLayerCreated(@NonNull DialogLayer anyLayer) {
-                        anyLayer.contentView(R.layout.dialog_normal)
-                                .backgroundDimDefault()
-                                .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        anyLayer.setContentView(R.layout.dialog_normal)
+                                .setBackgroundDimDefault()
+                                .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                                 .show();
                     }
                 });
@@ -181,11 +180,11 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_input:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_input)
-                        .backgroundDimDefault()
-                        .gravity(Gravity.BOTTOM)
-                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_input)
+                        .setBackgroundDimDefault()
+                        .setGravity(Gravity.BOTTOM)
+                        .setSwipeDismiss(SwipeLayout.Direction.BOTTOM)
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return ObjectAnimator.ofInt(content, "scrollY", -content.getHeight(), 0)
@@ -198,14 +197,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                         .setDuration(200);
                             }
                         })
-                        .compatSoftInput(true)
-                        .onSoftInputListener(new DialogLayer.OnSoftInputListener() {
+                        .addSoftInputCompat(true)
+                        .addOnSoftInputListener(new DialogLayer.OnSoftInputListener() {
                             @Override
                             public void onOpen(@NonNull DialogLayer layer, int height) {
                                 AnyLayer.toast(FullScreenActivity.this)
-                                        .message("输入法打开->当前高度" + height)
-                                        .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
-                                        .marginTop(300)
+                                        .setMessage("输入法打开->当前高度" + height)
+                                        .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                                        .setMarginTop(300)
                                         .show();
                             }
 
@@ -213,22 +212,22 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                             public void onClose(@NonNull DialogLayer layer, int height) {
                                 layer.dismiss();
                                 AnyLayer.toast(FullScreenActivity.this)
-                                        .message("输入法关闭->当前高度" + height)
-                                        .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
-                                        .marginTop(300)
+                                        .setMessage("输入法关闭->当前高度" + height)
+                                        .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                                        .setMarginTop(300)
                                         .show();
                             }
 
                             @Override
                             public void onHeightChange(@NonNull DialogLayer layer, int height) {
                                 AnyLayer.toast(FullScreenActivity.this)
-                                        .message("输入法高度改变->当前高度" + height)
-                                        .gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
-                                        .marginTop(300)
+                                        .setMessage("输入法高度改变->当前高度" + height)
+                                        .setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL)
+                                        .setMarginTop(300)
                                         .show();
                             }
                         })
-                        .onShowListener(new Layer.OnShowListener() {
+                        .addOnShowListener(new Layer.OnShowListener() {
                             @Override
                             public void onShowing(@NonNull Layer layer) {
                                 EditText et = layer.requireView(R.id.et_input);
@@ -243,7 +242,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                             public void onShown(@NonNull Layer layer) {
                             }
                         })
-                        .onDismissListener(new Layer.OnDismissListener() {
+                        .addOnDismissListener(new Layer.OnDismissListener() {
                             @Override
                             public void onDismissing(@NonNull Layer layer) {
                                 EditText et = layer.requireView(R.id.et_input);
@@ -255,7 +254,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                             public void onDismissed(@NonNull Layer layer) {
                             }
                         })
-                        .onClickToDismiss(new Layer.OnClickListener() {
+                        .addOnClickToDismissListener(new Layer.OnClickListener() {
                             @Override
                             public void onClick(@NonNull Layer layer, @NonNull View v) {
                                 EditText et = layer.requireView(R.id.et_input);
@@ -266,11 +265,11 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_edit:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_edit)
-                        .backgroundDimDefault()
-                        .gravity(Gravity.BOTTOM)
-                        .swipeDismiss(SwipeLayout.Direction.BOTTOM)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_edit)
+                        .setBackgroundDimDefault()
+                        .setGravity(Gravity.BOTTOM)
+                        .setSwipeDismiss(SwipeLayout.Direction.BOTTOM)
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomInAnim(content);
@@ -281,12 +280,12 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
-                        .compatSoftInput(false)
-                        .onClickToDismiss(R.id.fl_dialog_no)
-                        .onClickToDismiss(new Layer.OnClickListener() {
+                        .addSoftInputCompat(false)
+                        .addOnClickToDismissListener(R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(new Layer.OnClickListener() {
                             @Override
                             public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
-                                EditText et = anyLayer.getView(R.id.et_dialog_content);
+                                EditText et = anyLayer.findView(R.id.et_dialog_content);
                                 Toast.makeText(FullScreenActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
                             }
                         }, R.id.fl_dialog_yes)
@@ -294,17 +293,17 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_full:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_fullscreen)
-                        .onClickToDismiss(R.id.iv_1)
+                        .setContentView(R.layout.dialog_fullscreen)
+                        .addOnClickToDismissListener(R.id.iv_1)
                         .show();
                 break;
             case R.id.tv_show_top:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_match_width)
-                        .avoidStatusBar(true)
-                        .backgroundDimDefault()
-                        .gravity(Gravity.TOP)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_match_width)
+                        .setAvoidStatusBar(true)
+                        .setBackgroundDimDefault()
+                        .setGravity(Gravity.TOP)
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopInAnim(content);
@@ -315,15 +314,15 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_target_full:
                 if (anyLayer_show_target_full == null) {
                     anyLayer_show_target_full = (PopupLayer) AnyLayer.popup(findViewById(R.id.tv_show_target_full))
-                            .outsideInterceptTouchEvent(false)
-                            .contentView(R.layout.dialog_fullscreen)
-                            .contentAnimator(new DialogLayer.AnimatorCreator() {
+                            .setOutsideInterceptTouchEvent(false)
+                            .setContentView(R.layout.dialog_fullscreen)
+                            .setContentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(@NonNull View content) {
                                     return AnimatorHelper.createTopInAnim(content);
@@ -344,13 +343,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_right:
                 if (anyLayer_show_target_right == null) {
                     anyLayer_show_target_right = (PopupLayer) AnyLayer.popup(findViewById(R.id.tv_show_target_right))
-                            .direction(Align.Direction.HORIZONTAL)
-                            .horizontal(Align.Horizontal.TO_RIGHT)
-                            .vertical(Align.Vertical.CENTER)
-                            .inside(true)
-                            .outsideInterceptTouchEvent(false)
-                            .contentView(R.layout.popup_normal)
-                            .contentAnimator(new DialogLayer.AnimatorCreator() {
+                            .setDirection(Align.Direction.HORIZONTAL)
+                            .setHorizontal(Align.Horizontal.TO_RIGHT)
+                            .setVertical(Align.Vertical.CENTER)
+                            .setInside(true)
+                            .setOutsideInterceptTouchEvent(false)
+                            .setContentView(R.layout.popup_normal)
+                            .setContentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(@NonNull View content) {
                                     return AnimatorHelper.createLeftInAnim(content);
@@ -361,7 +360,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                     return AnimatorHelper.createLeftOutAnim(content);
                                 }
                             });
-                    anyLayer_show_target_right.updateLocationInterceptor(new PopupLayer.UpdateLocationInterceptor() {
+                    anyLayer_show_target_right.setUpdateLocationInterceptor(new PopupLayer.UpdateLocationInterceptor() {
                         @Override
                         public void interceptor(@NonNull float[] popupXY, int popupWidth, int popupHeight, int targetX, int targetY, int targetWidth, int targetHeight, int parentX, int parentY, int parentWidth, int parentHeight) {
                             popupXY[1] = Math.max(100, popupXY[1]);
@@ -376,9 +375,9 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_left:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_left))
-                        .align(Align.Direction.HORIZONTAL, Align.Horizontal.TO_LEFT, Align.Vertical.CENTER, true)
-                        .contentView(R.layout.popup_normal)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setAlign(Align.Direction.HORIZONTAL, Align.Horizontal.TO_LEFT, Align.Vertical.CENTER, true)
+                        .setContentView(R.layout.popup_normal)
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightInAnim(content);
@@ -393,11 +392,11 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_target_top:
                 AnyLayer.popup(findViewById(R.id.tv_show_target_top))
-                        .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.ABOVE, true)
-                        .contentView(R.layout.popup_match_width)
-                        .backgroundDimDefault()
-                        .gravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setAlign(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.ABOVE, true)
+                        .setContentView(R.layout.popup_match_width)
+                        .setBackgroundDimDefault()
+                        .setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL)
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomInAnim(content);
@@ -413,11 +412,11 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_target_bottom:
                 if (anyLayer_show_target_bottom == null) {
                     anyLayer_show_target_bottom = (PopupLayer) AnyLayer.popup(findViewById(R.id.tv_show_target_bottom))
-                            .align(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.BELOW, true)
-                            .outsideInterceptTouchEvent(false)
-                            .backgroundDimDefault()
-                            .contentView(R.layout.popup_match_width)
-                            .contentAnimator(new DialogLayer.AnimatorCreator() {
+                            .setAlign(Align.Direction.VERTICAL, Align.Horizontal.CENTER, Align.Vertical.BELOW, true)
+                            .setOutsideInterceptTouchEvent(false)
+                            .setBackgroundDimDefault()
+                            .setContentView(R.layout.popup_match_width)
+                            .setContentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(@NonNull View content) {
                                     return AnimatorHelper.createTopInAnim(content);
@@ -437,10 +436,10 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.tv_show_bottom:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_match_width)
-                        .backgroundDimDefault()
-                        .gravity(Gravity.BOTTOM)
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_match_width)
+                        .setBackgroundDimDefault()
+                        .setGravity(Gravity.BOTTOM)
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomInAnim(content);
@@ -451,34 +450,34 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_blur_bg:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_icon)
-                        .backgroundBlurPercent(0.05f)
-                        .backgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
+                        .setContentView(R.layout.dialog_icon)
+                        .setBackgroundBlurPercent(0.05f)
+                        .setBackgroundColorInt(getResources().getColor(R.color.dialog_blur_bg))
                         .show();
                 break;
             case R.id.tv_show_dark_bg:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_tran_bg:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .setContentView(R.layout.dialog_normal)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_bottom_in:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomInAnim(content);
@@ -489,14 +488,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_bottom_alpha_in:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomAlphaInAnim(content);
@@ -507,14 +506,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createBottomAlphaOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_top_in:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopInAnim(content);
@@ -525,14 +524,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_top_alpha_in:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopAlphaInAnim(content);
@@ -543,14 +542,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createTopAlphaOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_top_bottom:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopInAnim(content);
@@ -561,14 +560,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_bottom_top:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomInAnim(content);
@@ -579,14 +578,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createTopOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_top_bottom_alpha:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createTopAlphaInAnim(content);
@@ -597,14 +596,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createBottomAlphaOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_bottom_top_alpha:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createBottomAlphaInAnim(content);
@@ -615,14 +614,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createTopAlphaOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_left_in:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftInAnim(content);
@@ -633,14 +632,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createLeftOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_left_alpha_in:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftAlphaInAnim(content);
@@ -651,14 +650,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createLeftAlphaOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_right_in:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightInAnim(content);
@@ -669,14 +668,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createRightOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_right_alpha_in:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightAlphaInAnim(content);
@@ -687,14 +686,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createRightAlphaOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_left_right:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftInAnim(content);
@@ -705,14 +704,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createRightOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_right_left:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightInAnim(content);
@@ -723,14 +722,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createLeftOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_left_right_alpha:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createLeftAlphaInAnim(content);
@@ -741,14 +740,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createRightAlphaOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_right_left_alpha:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 return AnimatorHelper.createRightAlphaInAnim(content);
@@ -759,14 +758,14 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createLeftAlphaOutAnim(content);
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_reveal:
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .contentView(R.layout.dialog_normal)
-                        .backgroundDimDefault()
-                        .contentAnimator(new DialogLayer.AnimatorCreator() {
+                        .setContentView(R.layout.dialog_normal)
+                        .setBackgroundDimDefault()
+                        .setContentAnimator(new DialogLayer.AnimatorCreator() {
                             @Override
                             public Animator createInAnimator(@NonNull View content) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -783,18 +782,18 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return null;
                             }
                         })
-                        .onClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_menu:
                 if (anyLayer_show_menu == null) {
                     anyLayer_show_menu = AnyLayer.popup(findViewById(R.id.tv_show_menu))
-                            .align(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
-                            .offsetYdp(15)
-                            .outsideTouchedToDismiss(true)
-                            .outsideInterceptTouchEvent(false)
-                            .contentView(R.layout.popup_meun)
-                            .contentAnimator(new DialogLayer.AnimatorCreator() {
+                            .setAlign(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
+                            .setOffsetYdp(15)
+                            .setOutsideTouchToDismiss(true)
+                            .setOutsideInterceptTouchEvent(false)
+                            .setContentView(R.layout.popup_meun)
+                            .setContentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(@NonNull View content) {
                                     return AnimatorHelper.createDelayedZoomInAnim(content, 1F, 0F);
@@ -817,12 +816,12 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
 
     private void showMulti() {
         AnyLayer.dialog(FullScreenActivity.this)
-                .contentView(R.layout.dialog_more)
-                .backgroundDimDefault()
-                .gravity(Gravity.CENTER)
-                .cancelableOnTouchOutside(false)
-                .cancelableOnClickKeyBack(false)
-                .contentAnimator(new DialogLayer.AnimatorCreator() {
+                .setContentView(R.layout.dialog_more)
+                .setBackgroundDimDefault()
+                .setGravity(Gravity.CENTER)
+                .setCancelableOnTouchOutside(false)
+                .setCancelableOnClickKeyBack(false)
+                .setContentAnimator(new DialogLayer.AnimatorCreator() {
                     @Override
                     public Animator createInAnimator(@NonNull View content) {
                         return AnimatorHelper.createZoomAlphaInAnim(content);
@@ -833,13 +832,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         return AnimatorHelper.createZoomAlphaOutAnim(content);
                     }
                 })
-                .onClick(new Layer.OnClickListener() {
+                .addOnClickListener(new Layer.OnClickListener() {
                     @Override
                     public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                         anyLayer.dismiss();
                     }
                 }, R.id.fl_dialog_no)
-                .onClick(new Layer.OnClickListener() {
+                .addOnClickListener(new Layer.OnClickListener() {
                     @Override
                     public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
                         showMulti();

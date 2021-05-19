@@ -160,8 +160,8 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    protected void initContainer() {
-        super.initContainer();
+    protected void onInitContainer() {
+        super.onInitContainer();
         getViewHolder().getContentWrapper().setClipChildren(getConfig().mContentClip);
         getViewHolder().getContainer().setClipChildren(getConfig().mContentClip);
         getViewHolder().getContainer().setClipToPadding(true);
@@ -200,13 +200,13 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    protected void initBackground() {
-        super.initBackground();
+    protected void onInitBackground() {
+        super.onInitBackground();
     }
 
     @Override
-    protected void initContent() {
-        super.initContent();
+    protected void onInitContent() {
+        super.onInitContent();
         final FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             contentParams.gravity = FrameLayout.LayoutParams.UNSPECIFIED_GRAVITY;
@@ -545,25 +545,25 @@ public class PopupLayer extends DialogLayer {
     }
 
     @NonNull
-    public PopupLayer updateLocationInterceptor(@Nullable UpdateLocationInterceptor interceptor) {
+    public PopupLayer setUpdateLocationInterceptor(@Nullable UpdateLocationInterceptor interceptor) {
         getConfig().mUpdateLocationInterceptor = interceptor;
         return this;
     }
 
     @NonNull
-    public PopupLayer onViewTreeScrollChangedListener(@Nullable OnViewTreeScrollChangedListener listener) {
+    public PopupLayer setOnViewTreeScrollChangedListener(@Nullable OnViewTreeScrollChangedListener listener) {
         getConfig().mOnViewTreeScrollChangedListener = listener;
         return this;
     }
 
     @NonNull
-    public PopupLayer scrollChangedToDismiss(boolean toDismiss) {
+    public PopupLayer setScrollChangedToDismiss(boolean toDismiss) {
         getConfig().mViewTreeScrollChangedToDismiss = toDismiss;
         return this;
     }
 
     @NonNull
-    public PopupLayer targetView(@Nullable View targetView) {
+    public PopupLayer setTargetView(@Nullable View targetView) {
         getViewHolder().setTarget(targetView);
         updateLocation();
         return this;
@@ -575,7 +575,7 @@ public class PopupLayer extends DialogLayer {
      * @param clip 是否裁剪contentView至包裹边界
      */
     @NonNull
-    public PopupLayer contentClip(boolean clip) {
+    public PopupLayer setContentClip(boolean clip) {
         getConfig().mContentClip = clip;
         return this;
     }
@@ -586,7 +586,7 @@ public class PopupLayer extends DialogLayer {
      * @param align 是否偏移背景对齐目标控件
      */
     @NonNull
-    public PopupLayer backgroundAlign(boolean align) {
+    public PopupLayer setBackgroundAlign(boolean align) {
         getConfig().mBackgroundAlign = align;
         return this;
     }
@@ -597,7 +597,7 @@ public class PopupLayer extends DialogLayer {
      * @param offset 是否背景应用offset设置
      */
     @NonNull
-    public PopupLayer backgroundOffset(boolean offset) {
+    public PopupLayer setBackgroundOffset(boolean offset) {
         getConfig().mBackgroundOffset = offset;
         return this;
     }
@@ -609,7 +609,7 @@ public class PopupLayer extends DialogLayer {
      * @param resize 背景重新调整尺寸
      */
     @NonNull
-    public PopupLayer backgroundResize(boolean resize) {
+    public PopupLayer setBackgroundResize(boolean resize) {
         getConfig().mBackgroundResize = resize;
         return this;
     }
@@ -624,10 +624,10 @@ public class PopupLayer extends DialogLayer {
      * @param inside     是否强制位于屏幕内部
      */
     @NonNull
-    public PopupLayer align(@NonNull Align.Direction direction,
-                            @NonNull Align.Horizontal horizontal,
-                            @NonNull Align.Vertical vertical,
-                            boolean inside) {
+    public PopupLayer setAlign(@NonNull Align.Direction direction,
+                               @NonNull Align.Horizontal horizontal,
+                               @NonNull Align.Vertical vertical,
+                               boolean inside) {
         getConfig().mAlignDirection = direction;
         getConfig().mAlignHorizontal = horizontal;
         getConfig().mAlignVertical = vertical;
@@ -641,7 +641,7 @@ public class PopupLayer extends DialogLayer {
      * @param direction 主方向
      */
     @NonNull
-    public PopupLayer direction(@NonNull Align.Direction direction) {
+    public PopupLayer setDirection(@NonNull Align.Direction direction) {
         getConfig().mAlignDirection = direction;
         return this;
     }
@@ -652,7 +652,7 @@ public class PopupLayer extends DialogLayer {
      * @param horizontal 水平对齐方式
      */
     @NonNull
-    public PopupLayer horizontal(@NonNull Align.Horizontal horizontal) {
+    public PopupLayer setHorizontal(@NonNull Align.Horizontal horizontal) {
         getConfig().mAlignHorizontal = horizontal;
         return this;
     }
@@ -663,7 +663,7 @@ public class PopupLayer extends DialogLayer {
      * @param vertical 垂直对齐方式
      */
     @NonNull
-    public PopupLayer vertical(@NonNull Align.Vertical vertical) {
+    public PopupLayer setVertical(@NonNull Align.Vertical vertical) {
         getConfig().mAlignVertical = vertical;
         return this;
     }
@@ -674,7 +674,7 @@ public class PopupLayer extends DialogLayer {
      * @param inside 是否强制位于屏幕内部
      */
     @NonNull
-    public PopupLayer inside(boolean inside) {
+    public PopupLayer setInside(boolean inside) {
         getConfig().mInside = inside;
         return this;
     }
@@ -685,7 +685,7 @@ public class PopupLayer extends DialogLayer {
      * @param offsetX X轴偏移
      */
     @NonNull
-    public PopupLayer offsetX(float offsetX, int unit) {
+    public PopupLayer setOffsetX(float offsetX, int unit) {
         getConfig().mOffsetX = TypedValue.applyDimension(unit, offsetX, getActivity().getResources().getDisplayMetrics());
         return this;
     }
@@ -696,8 +696,8 @@ public class PopupLayer extends DialogLayer {
      * @param dp X轴偏移
      */
     @NonNull
-    public PopupLayer offsetXdp(float dp) {
-        return offsetX(dp, TypedValue.COMPLEX_UNIT_DIP);
+    public PopupLayer setOffsetXdp(float dp) {
+        return setOffsetX(dp, TypedValue.COMPLEX_UNIT_DIP);
     }
 
     /**
@@ -706,8 +706,8 @@ public class PopupLayer extends DialogLayer {
      * @param px X轴偏移
      */
     @NonNull
-    public PopupLayer offsetXpx(float px) {
-        return offsetX(px, TypedValue.COMPLEX_UNIT_PX);
+    public PopupLayer setOffsetXpx(float px) {
+        return setOffsetX(px, TypedValue.COMPLEX_UNIT_PX);
     }
 
     /**
@@ -716,7 +716,7 @@ public class PopupLayer extends DialogLayer {
      * @param offsetY Y轴偏移
      */
     @NonNull
-    public PopupLayer offsetY(float offsetY, int unit) {
+    public PopupLayer setOffsetY(float offsetY, int unit) {
         getConfig().mOffsetY = TypedValue.applyDimension(unit, offsetY, getActivity().getResources().getDisplayMetrics());
         return this;
     }
@@ -727,8 +727,8 @@ public class PopupLayer extends DialogLayer {
      * @param dp Y轴偏移
      */
     @NonNull
-    public PopupLayer offsetYdp(float dp) {
-        return offsetY(dp, TypedValue.COMPLEX_UNIT_DIP);
+    public PopupLayer setOffsetYdp(float dp) {
+        return setOffsetY(dp, TypedValue.COMPLEX_UNIT_DIP);
     }
 
     /**
@@ -737,8 +737,8 @@ public class PopupLayer extends DialogLayer {
      * @param px Y轴偏移
      */
     @NonNull
-    public PopupLayer offsetYpx(float px) {
-        return offsetY(px, TypedValue.COMPLEX_UNIT_PX);
+    public PopupLayer setOffsetYpx(float px) {
+        return setOffsetY(px, TypedValue.COMPLEX_UNIT_PX);
     }
 
     public static class ViewHolder extends DialogLayer.ViewHolder {

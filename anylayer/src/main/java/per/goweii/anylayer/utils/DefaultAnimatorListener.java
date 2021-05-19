@@ -2,7 +2,7 @@ package per.goweii.anylayer.utils;
 
 import android.animation.Animator;
 
-public class AnimatorListener implements Animator.AnimatorListener {
+public class DefaultAnimatorListener implements Animator.AnimatorListener {
     private boolean beenCanceled = false;
 
     @Override
@@ -13,7 +13,7 @@ public class AnimatorListener implements Animator.AnimatorListener {
     @Override
     public void onAnimationEnd(Animator animation) {
         if (!beenCanceled) {
-            onAnimationEndWithoutCancel(animation);
+            onAnimationEndNotCanceled(animation);
         }
     }
 
@@ -26,6 +26,6 @@ public class AnimatorListener implements Animator.AnimatorListener {
     public void onAnimationRepeat(Animator animation) {
     }
 
-    public void onAnimationEndWithoutCancel(Animator animation){
+    public void onAnimationEndNotCanceled(Animator animation) {
     }
 }

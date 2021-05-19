@@ -29,7 +29,7 @@ public class LayerActivity extends Activity implements Layer.OnVisibleChangeList
         super.onCreate(savedInstanceState);
         Utils.transparent(this);
         DialogLayer dialogLayer = AnyLayer.dialog(this);
-        dialogLayer.onVisibleChangeListener(this);
+        dialogLayer.addOnVisibleChangeListener(this);
         if (sOnLayerCreatedCallback != null) {
             sOnLayerCreatedCallback.onLayerCreated(dialogLayer);
             sOnLayerCreatedCallback = null;

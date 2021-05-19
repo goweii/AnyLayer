@@ -89,42 +89,42 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
 
         private boolean usePivotPercent = true;
 
-        public ScaleAttr from(float from) {
-            return from(from, from);
+        public ScaleAttr setFrom(float from) {
+            return setFrom(from, from);
         }
 
-        public ScaleAttr from(float fromX, float fromY) {
+        public ScaleAttr setFrom(float fromX, float fromY) {
             this.fromX = fromX;
             this.fromY = fromY;
             return this;
         }
 
-        public ScaleAttr to(float to) {
-            return to(to, to);
+        public ScaleAttr setTo(float to) {
+            return setTo(to, to);
         }
 
-        public ScaleAttr to(float toX, float toY) {
+        public ScaleAttr setTo(float toX, float toY) {
             this.toX = toX;
             this.toY = toY;
             return this;
         }
 
-        public ScaleAttr pivot(float pivot) {
-            return pivot(pivot, pivot);
+        public ScaleAttr setPivot(float pivot) {
+            return setPivot(pivot, pivot);
         }
 
-        public ScaleAttr pivot(float pivotX, float pivotY) {
+        public ScaleAttr setPivot(float pivotX, float pivotY) {
             this.usePivotPercent = false;
             this.pivotX = pivotX;
             this.pivotY = pivotY;
             return this;
         }
 
-        public ScaleAttr pivotPercent(float pivotPercent) {
-            return pivotPercent(pivotPercent, pivotPercent);
+        public ScaleAttr setPivotPercent(float pivotPercent) {
+            return setPivotPercent(pivotPercent, pivotPercent);
         }
 
-        public ScaleAttr pivotPercent(float pivotPercentX, float pivotPercentY) {
+        public ScaleAttr setPivotPercent(float pivotPercentX, float pivotPercentY) {
             this.usePivotPercent = true;
             this.pivotPercentX = pivotPercentX;
             this.pivotPercentY = pivotPercentY;
@@ -156,7 +156,7 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
         private TimeInterpolator xOutTimeInterpolator = null;
         private TimeInterpolator yOutTimeInterpolator = null;
 
-        public ScaleAttr timeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xInTimeInterpolator = timeInterpolator;
             this.yInTimeInterpolator = timeInterpolator;
             this.xOutTimeInterpolator = timeInterpolator;
@@ -164,46 +164,46 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
             return this;
         }
 
-        public ScaleAttr inTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setInTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xInTimeInterpolator = timeInterpolator;
             this.yInTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public ScaleAttr outTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setOutTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xOutTimeInterpolator = timeInterpolator;
             this.yOutTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public ScaleAttr xTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setXTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xInTimeInterpolator = timeInterpolator;
             this.xOutTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public ScaleAttr yTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setYTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.yInTimeInterpolator = timeInterpolator;
             this.yOutTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public ScaleAttr xInTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setXInTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xInTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public ScaleAttr xOutTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setXOutTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xOutTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public ScaleAttr yInTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setYInTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.yInTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public ScaleAttr yOutTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public ScaleAttr setYOutTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.yOutTimeInterpolator = timeInterpolator;
             return this;
         }
@@ -250,44 +250,44 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
         private boolean useFromPercent = true;
         private boolean useToPercent = true;
 
-        public TranslationAttr from(float from) {
-            return from(from, from);
+        public TranslationAttr setFrom(float from) {
+            return setFrom(from, from);
         }
 
-        public TranslationAttr from(float fromX, float fromY) {
+        public TranslationAttr setFrom(float fromX, float fromY) {
             this.useFromPercent = false;
             this.fromX = fromX;
             this.fromY = fromY;
             return this;
         }
 
-        public TranslationAttr fromPercent(float fromPercent) {
-            return fromPercent(fromPercent, fromPercent);
+        public TranslationAttr setFromPercent(float fromPercent) {
+            return setFromPercent(fromPercent, fromPercent);
         }
 
-        public TranslationAttr fromPercent(float fromPercentX, float fromPercentY) {
+        public TranslationAttr setFromPercent(float fromPercentX, float fromPercentY) {
             this.useFromPercent = true;
             this.fromPercentX = fromPercentX;
             this.fromPercentY = fromPercentY;
             return this;
         }
 
-        public TranslationAttr to(float to) {
-            return to(to, to);
+        public TranslationAttr setTo(float to) {
+            return setTo(to, to);
         }
 
-        public TranslationAttr to(float toX, float toY) {
+        public TranslationAttr setTo(float toX, float toY) {
             this.useToPercent = false;
             this.toX = toX;
             this.toY = toY;
             return this;
         }
 
-        public TranslationAttr toPercent(float toPercent) {
-            return toPercent(toPercent, toPercent);
+        public TranslationAttr setToPercent(float toPercent) {
+            return setToPercent(toPercent, toPercent);
         }
 
-        public TranslationAttr toPercent(float toPercentX, float toPercentY) {
+        public TranslationAttr setToPercent(float toPercentX, float toPercentY) {
             this.useToPercent = true;
             this.toPercentX = toPercentX;
             this.toPercentY = toPercentY;
@@ -339,7 +339,7 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
         private TimeInterpolator xOutTimeInterpolator = null;
         private TimeInterpolator yOutTimeInterpolator = null;
 
-        public TranslationAttr timeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xInTimeInterpolator = timeInterpolator;
             this.yInTimeInterpolator = timeInterpolator;
             this.xOutTimeInterpolator = timeInterpolator;
@@ -347,46 +347,46 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
             return this;
         }
 
-        public TranslationAttr inTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setInTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xInTimeInterpolator = timeInterpolator;
             this.yInTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public TranslationAttr outTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setOutTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xOutTimeInterpolator = timeInterpolator;
             this.yOutTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public TranslationAttr xTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setXTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xInTimeInterpolator = timeInterpolator;
             this.xOutTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public TranslationAttr yTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setYTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.yInTimeInterpolator = timeInterpolator;
             this.yOutTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public TranslationAttr xInTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setXInTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xInTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public TranslationAttr xOutTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setXOutTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.xOutTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public TranslationAttr yInTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setYInTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.yInTimeInterpolator = timeInterpolator;
             return this;
         }
 
-        public TranslationAttr yOutTimeInterpolator(TimeInterpolator timeInterpolator) {
+        public TranslationAttr setYOutTimeInterpolator(TimeInterpolator timeInterpolator) {
             this.yOutTimeInterpolator = timeInterpolator;
             return this;
         }
@@ -416,7 +416,7 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
         }
     }
 
-    private List<Attr> attrs = new ArrayList<>();
+    private final List<Attr> attrs = new ArrayList<>();
     private TimeInterpolator inTimeInterpolator = null;
     private TimeInterpolator outTimeInterpolator = null;
 
@@ -425,18 +425,18 @@ public class CommonAnimatorCreator implements Layer.AnimatorCreator {
         return this;
     }
 
-    public CommonAnimatorCreator timeInterpolator(TimeInterpolator timeInterpolator) {
+    public CommonAnimatorCreator setTimeInterpolator(TimeInterpolator timeInterpolator) {
         this.inTimeInterpolator = timeInterpolator;
         this.outTimeInterpolator = timeInterpolator;
         return this;
     }
 
-    public CommonAnimatorCreator inTimeInterpolator(TimeInterpolator timeInterpolator) {
+    public CommonAnimatorCreator setInTimeInterpolator(TimeInterpolator timeInterpolator) {
         this.inTimeInterpolator = timeInterpolator;
         return this;
     }
 
-    public CommonAnimatorCreator outTimeInterpolator(TimeInterpolator timeInterpolator) {
+    public CommonAnimatorCreator setOutTimeInterpolator(TimeInterpolator timeInterpolator) {
         this.outTimeInterpolator = timeInterpolator;
         return this;
     }

@@ -21,7 +21,7 @@ public final class AnyLayer {
     }
 
     @NonNull
-    public static GlobalConfig globalConfig() {
+    public static GlobalConfig getGlobalConfig() {
         return GlobalConfig.get();
     }
 

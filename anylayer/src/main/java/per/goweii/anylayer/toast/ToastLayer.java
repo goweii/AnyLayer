@@ -280,115 +280,115 @@ public class ToastLayer extends DecorLayer {
     }
 
     @NonNull
-    public ToastLayer removeOthers(boolean removeOthers) {
+    public ToastLayer setRemoveOthers(boolean removeOthers) {
         getConfig().mRemoveOthers = removeOthers;
         return this;
     }
 
     @NonNull
-    public ToastLayer contentView(View contentView) {
+    public ToastLayer setContentView(@NonNull View contentView) {
         getViewHolder().setContent(contentView);
         return this;
     }
 
     @NonNull
-    public ToastLayer contentView(@LayoutRes int contentView) {
+    public ToastLayer setContentView(@LayoutRes int contentView) {
         getConfig().mContentViewId = contentView;
         return this;
     }
 
     @NonNull
-    public ToastLayer duration(long duration) {
+    public ToastLayer setDuration(long duration) {
         getConfig().mDuration = duration;
         return this;
     }
 
     @NonNull
-    public ToastLayer message(@NonNull CharSequence message) {
+    public ToastLayer setMessage(@NonNull CharSequence message) {
         getConfig().mMessage = message;
         return this;
     }
 
     @NonNull
-    public ToastLayer message(int message) {
+    public ToastLayer setMessage(int message) {
         getConfig().mMessage = getActivity().getString(message);
         return this;
     }
 
     @NonNull
-    public ToastLayer icon(@DrawableRes int icon) {
+    public ToastLayer setIcon(@DrawableRes int icon) {
         getConfig().mIcon = icon;
         return this;
     }
 
     @NonNull
-    public ToastLayer gravity(int gravity) {
+    public ToastLayer setGravity(int gravity) {
         getConfig().mGravity = gravity;
         return this;
     }
 
     @NonNull
-    public ToastLayer marginLeft(int marginLeft) {
+    public ToastLayer setMarginLeft(int marginLeft) {
         getConfig().mMarginLeft = marginLeft;
         return this;
     }
 
     @NonNull
-    public ToastLayer marginTop(int marginTop) {
+    public ToastLayer setMarginTop(int marginTop) {
         getConfig().mMarginTop = marginTop;
         return this;
     }
 
     @NonNull
-    public ToastLayer marginRight(int marginRight) {
+    public ToastLayer setMarginRight(int marginRight) {
         getConfig().mMarginRight = marginRight;
         return this;
     }
 
     @NonNull
-    public ToastLayer marginBottom(int marginBottom) {
+    public ToastLayer setMarginBottom(int marginBottom) {
         getConfig().mMarginBottom = marginBottom;
         return this;
     }
 
     @NonNull
-    public ToastLayer alpha(float alpha) {
+    public ToastLayer setAlpha(float alpha) {
         getConfig().mAlpha = alpha;
         return this;
     }
 
     @NonNull
-    public ToastLayer backgroundResource(@NonNull Drawable drawable) {
+    public ToastLayer setBackgroundDrawable(@NonNull Drawable drawable) {
         getConfig().mBackgroundDrawable = drawable;
         return this;
     }
 
     @NonNull
-    public ToastLayer backgroundResource(@DrawableRes int resource) {
+    public ToastLayer setBackgroundResource(@DrawableRes int resource) {
         getConfig().mBackgroundResource = resource;
         return this;
     }
 
     @NonNull
-    public ToastLayer backgroundColorInt(@ColorInt int colorInt) {
+    public ToastLayer setBackgroundColorInt(@ColorInt int colorInt) {
         getConfig().mBackgroundColor = colorInt;
         return this;
     }
 
     @NonNull
-    public ToastLayer backgroundColorRes(@ColorRes int colorRes) {
+    public ToastLayer setBackgroundColorRes(@ColorRes int colorRes) {
         getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
         return this;
     }
 
     @NonNull
-    public ToastLayer textColorInt(@ColorInt int colorInt) {
+    public ToastLayer setTextColorInt(@ColorInt int colorInt) {
         getConfig().mTextColorInt = colorInt;
         return this;
     }
 
     @NonNull
-    public ToastLayer textColorRes(@ColorRes int colorRes) {
+    public ToastLayer setTextColorRes(@ColorRes int colorRes) {
         getConfig().mTextColorRes = colorRes;
         return this;
     }

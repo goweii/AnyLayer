@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import per.goweii.anylayer.Layer;
 
-public class DefaultOnShowListener implements Layer.OnShowListener{
+public class DefaultOnShowListener implements Layer.OnShowListener {
     @Override
     public void onShowing(@NonNull Layer layer) {
     }

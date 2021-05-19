@@ -118,7 +118,7 @@ public class GuideLayer extends DecorLayer {
             if (mapping.getGuideView() == null) {
                 if (mapping.getGuideViewRes() > 0) {
                     View view = LayoutInflater.from(getActivity()).inflate(mapping.getGuideViewRes(), getViewHolder().getContentWrapper(), false);
-                    mapping.guideView(view);
+                    mapping.setGuideView(view);
                 }
             }
             if (mapping.getGuideView() != null) {
@@ -299,19 +299,19 @@ public class GuideLayer extends DecorLayer {
     }
 
     @NonNull
-    public GuideLayer mapping(@NonNull Mapping mapping) {
+    public GuideLayer addMapping(@NonNull Mapping mapping) {
         getConfig().mMapping.add(mapping);
         return this;
     }
 
     @NonNull
-    public GuideLayer backgroundColorInt(@ColorInt int colorInt) {
+    public GuideLayer setBackgroundColorInt(@ColorInt int colorInt) {
         getConfig().mBackgroundColor = colorInt;
         return this;
     }
 
     @NonNull
-    public GuideLayer backgroundColorRes(@ColorRes int colorRes) {
+    public GuideLayer setBackgroundColorRes(@ColorRes int colorRes) {
         getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
         return this;
     }
@@ -399,7 +399,7 @@ public class GuideLayer extends DecorLayer {
             }
         }
 
-        public Mapping onClick(@NonNull OnClickListener listener, int... viewIds) {
+        public Mapping addOnClickListener(@NonNull OnClickListener listener, int... viewIds) {
             if (viewIds != null && viewIds.length > 0) {
                 for (int id : viewIds) {
                     mOnClickListeners.put(id, listener);
@@ -411,56 +411,56 @@ public class GuideLayer extends DecorLayer {
         }
 
         @NonNull
-        public Mapping targetRect(@NonNull Rect targetRect) {
+        public Mapping setTargetRect(@NonNull Rect targetRect) {
             this.mTargetRect.set(targetRect);
             return this;
         }
 
         @NonNull
-        public Mapping targetView(@Nullable View targetView) {
+        public Mapping setTargetView(@Nullable View targetView) {
             this.mTargetView = targetView;
             return this;
         }
 
         @NonNull
-        public Mapping guideView(@Nullable View guideView) {
+        public Mapping setGuideView(@Nullable View guideView) {
             this.mGuideView = guideView;
             return this;
         }
 
         @NonNull
-        public Mapping guideView(@LayoutRes int guideViewRes) {
+        public Mapping setGuideView(@LayoutRes int guideViewRes) {
             this.mGuideViewRes = guideViewRes;
             return this;
         }
 
         @NonNull
-        public Mapping cornerRadius(float cornerRadius) {
+        public Mapping setCornerRadius(float cornerRadius) {
             this.mCornerRadius = cornerRadius;
             return this;
         }
 
         @NonNull
-        public Mapping offset(int offset) {
+        public Mapping setOffset(int offset) {
             this.mOffsetX = offset;
             this.mOffsetY = offset;
             return this;
         }
 
         @NonNull
-        public Mapping offsetX(int offset) {
+        public Mapping setOffsetX(int offset) {
             this.mOffsetX = offset;
             return this;
         }
 
         @NonNull
-        public Mapping offsetY(int offset) {
+        public Mapping setOffsetY(int offset) {
             this.mOffsetY = offset;
             return this;
         }
 
         @NonNull
-        public Mapping padding(int padding) {
+        public Mapping setPadding(int padding) {
             this.mPaddingLeft = padding;
             this.mPaddingTop = padding;
             this.mPaddingRight = padding;
@@ -469,31 +469,31 @@ public class GuideLayer extends DecorLayer {
         }
 
         @NonNull
-        public Mapping paddingLeft(int padding) {
+        public Mapping setPaddingLeft(int padding) {
             this.mPaddingLeft = padding;
             return this;
         }
 
         @NonNull
-        public Mapping paddingTop(int padding) {
+        public Mapping setPaddingTop(int padding) {
             this.mPaddingTop = padding;
             return this;
         }
 
         @NonNull
-        public Mapping paddingRight(int padding) {
+        public Mapping setPaddingRight(int padding) {
             this.mPaddingRight = padding;
             return this;
         }
 
         @NonNull
-        public Mapping paddingBottom(int padding) {
+        public Mapping setPaddingBottom(int padding) {
             this.mPaddingBottom = padding;
             return this;
         }
 
         @NonNull
-        public Mapping margin(int margin) {
+        public Mapping setMargin(int margin) {
             this.mMarginLeft = margin;
             this.mMarginTop = margin;
             this.mMarginRight = margin;
@@ -502,37 +502,37 @@ public class GuideLayer extends DecorLayer {
         }
 
         @NonNull
-        public Mapping marginLeft(int margin) {
+        public Mapping setMarginLeft(int margin) {
             this.mMarginLeft = margin;
             return this;
         }
 
         @NonNull
-        public Mapping marginTop(int margin) {
+        public Mapping setMarginTop(int margin) {
             this.mMarginTop = margin;
             return this;
         }
 
         @NonNull
-        public Mapping marginRight(int margin) {
+        public Mapping setMarginRight(int margin) {
             this.mMarginRight = margin;
             return this;
         }
 
         @NonNull
-        public Mapping marginBottom(int margin) {
+        public Mapping setMarginBottom(int margin) {
             this.mMarginBottom = margin;
             return this;
         }
 
         @NonNull
-        public Mapping horizontalAlign(@NonNull Align.Horizontal horizontalAlign) {
+        public Mapping setHorizontalAlign(@NonNull Align.Horizontal horizontalAlign) {
             mHorizontalAlign = horizontalAlign;
             return this;
         }
 
         @NonNull
-        public Mapping verticalAlign(@NonNull Align.Vertical verticalAlign) {
+        public Mapping setVerticalAlign(@NonNull Align.Vertical verticalAlign) {
             mVerticalAlign = verticalAlign;
             return this;
         }

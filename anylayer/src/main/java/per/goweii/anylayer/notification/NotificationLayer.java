@@ -161,7 +161,7 @@ public class NotificationLayer extends DecorLayer {
             @Override
             public void onStart(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
                 mSwiping = true;
-                autoDismiss(false);
+                setAutoDismiss(false);
                 getListenerHolder().notifyOnSwipeStart(NotificationLayer.this);
             }
 
@@ -185,7 +185,7 @@ public class NotificationLayer extends DecorLayer {
                         }
                     });
                 } else if (fraction == 0F) {
-                    autoDismiss(true);
+                    setAutoDismiss(true);
                 }
             }
         });
@@ -201,12 +201,12 @@ public class NotificationLayer extends DecorLayer {
             public void onDispatch(MotionEvent e) {
                 switch (e.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        autoDismiss(false);
+                        setAutoDismiss(false);
                         break;
                     case MotionEvent.ACTION_CANCEL:
                     case MotionEvent.ACTION_UP:
                         if (!mSwiping) {
-                            autoDismiss(true);
+                            setAutoDismiss(true);
                         }
                         break;
                 }
@@ -225,7 +225,7 @@ public class NotificationLayer extends DecorLayer {
     @Override
     protected void onShow() {
         super.onShow();
-        autoDismiss(true);
+        setAutoDismiss(true);
     }
 
     @CallSuper
@@ -321,102 +321,102 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @NonNull
-    public NotificationLayer contentView(@NonNull View contentView) {
+    public NotificationLayer setContentView(@NonNull View contentView) {
         getViewHolder().setContent(contentView);
         return this;
     }
 
     @NonNull
-    public NotificationLayer contentView(@LayoutRes int contentViewId) {
+    public NotificationLayer setContentView(@LayoutRes int contentViewId) {
         getConfig().mContentViewId = contentViewId;
         return this;
     }
 
     @NonNull
-    public NotificationLayer maxWidth(int maxWidth) {
+    public NotificationLayer setMaxWidth(int maxWidth) {
         getConfig().mMaxWidth = maxWidth;
         return this;
     }
 
     @NonNull
-    public NotificationLayer maxHeight(int maxHeight) {
+    public NotificationLayer setMaxHeight(int maxHeight) {
         getConfig().mMaxHeight = maxHeight;
         return this;
     }
 
     @NonNull
-    public NotificationLayer icon(@DrawableRes int drawableId) {
+    public NotificationLayer setIcon(@DrawableRes int drawableId) {
         getConfig().mIcon = ContextCompat.getDrawable(getActivity(), drawableId);
         return this;
     }
 
     @NonNull
-    public NotificationLayer icon(@Nullable Drawable drawable) {
+    public NotificationLayer setIcon(@Nullable Drawable drawable) {
         getConfig().mIcon = drawable;
         return this;
     }
 
     @NonNull
-    public NotificationLayer label(@Nullable CharSequence label) {
+    public NotificationLayer setLabel(@Nullable CharSequence label) {
         getConfig().mLabel = label;
         return this;
     }
 
     @NonNull
-    public NotificationLayer label(@StringRes int labelRes) {
+    public NotificationLayer setLabel(@StringRes int labelRes) {
         getConfig().mLabel = getActivity().getString(labelRes);
         return this;
     }
 
     @NonNull
-    public NotificationLayer time(@Nullable CharSequence time) {
+    public NotificationLayer setTime(@Nullable CharSequence time) {
         getConfig().mTime = time;
         return this;
     }
 
     @NonNull
-    public NotificationLayer title(@NonNull CharSequence title) {
+    public NotificationLayer setTitle(@NonNull CharSequence title) {
         getConfig().mTitle = title;
         return this;
     }
 
     @NonNull
-    public NotificationLayer title(@StringRes int titleRes) {
+    public NotificationLayer setTitle(@StringRes int titleRes) {
         getConfig().mTitle = getActivity().getString(titleRes);
         return this;
     }
 
     @NonNull
-    public NotificationLayer desc(@NonNull CharSequence desc) {
+    public NotificationLayer setDesc(@NonNull CharSequence desc) {
         getConfig().mDesc = desc;
         return this;
     }
 
     @NonNull
-    public NotificationLayer desc(@StringRes int descRes) {
+    public NotificationLayer setDesc(@StringRes int descRes) {
         getConfig().mDesc = getActivity().getString(descRes);
         return this;
     }
 
     @NonNull
-    public NotificationLayer duration(long duration) {
+    public NotificationLayer setDuration(long duration) {
         getConfig().mDuration = duration;
         return this;
     }
 
     @NonNull
-    public NotificationLayer onNotificationClick(@NonNull OnClickListener listener) {
-        onClickToDismiss(listener);
+    public NotificationLayer setOnNotificationClickListener(@NonNull OnClickListener listener) {
+        addOnClickToDismissListener(listener);
         return this;
     }
 
     @NonNull
-    public NotificationLayer onNotificationLongClick(@NonNull OnLongClickListener listener) {
-        onLongClickToDismiss(listener);
+    public NotificationLayer setOnNotificationLongClickListener(@NonNull OnLongClickListener listener) {
+        addOnLongClickToDismissListener(listener);
         return this;
     }
 
-    public void autoDismiss(boolean enable) {
+    public void setAutoDismiss(boolean enable) {
         if (mDismissRunnable != null) {
             getChild().removeCallbacks(mDismissRunnable);
         }
@@ -434,7 +434,7 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @NonNull
-    public NotificationLayer swipeTransformer(@Nullable NotificationLayer.SwipeTransformer swipeTransformer) {
+    public NotificationLayer setSwipeTransformer(@Nullable NotificationLayer.SwipeTransformer swipeTransformer) {
         getConfig().mSwipeTransformer = swipeTransformer;
         return this;
     }
@@ -445,7 +445,7 @@ public class NotificationLayer extends DecorLayer {
      * @param swipeListener OnSwipeListener
      */
     @NonNull
-    public NotificationLayer onSwipeListener(@NonNull NotificationLayer.OnSwipeListener swipeListener) {
+    public NotificationLayer addOnSwipeListener(@NonNull NotificationLayer.OnSwipeListener swipeListener) {
         getListenerHolder().addOnSwipeListener(swipeListener);
         return this;
     }

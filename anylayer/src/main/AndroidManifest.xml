@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="per.goweii.anylayer">
+
     <application>
         <activity
             android:name="per.goweii.anylayer.LayerActivity"

@@ -234,14 +234,14 @@ public class FrameLayer extends Layer {
     }
 
     @NonNull
-    public FrameLayer level(int level) {
+    public FrameLayer setLevel(int level) {
         getConfig().mLevel = level;
         return this;
     }
 
     @NonNull
-    public FrameLayer cancelableOnClickKeyBack(boolean cancelable) {
-        cancelableOnKeyBack(cancelable);
+    public FrameLayer setCancelableOnClickKeyBack(boolean cancelable) {
+        setCancelableOnKeyBack(cancelable);
         return this;
     }
 
