@@ -21,26 +21,9 @@ import per.goweii.anylayer.utils.DefaultAnimatorListener;
 import per.goweii.anylayer.utils.Utils;
 
 public class Layer {
-    private final ViewTreeObserver.OnPreDrawListener mOnGlobalPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
-        @Override
-        public boolean onPreDraw() {
-            return Layer.this.onGlobalPreDraw();
-        }
-    };
-
-    private final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            Layer.this.onGlobalLayout();
-        }
-    };
-
-    private final ViewManager.OnKeyListener mOnKeyListener = new ViewManager.OnKeyListener() {
-        @Override
-        public boolean onKey(int keyCode, KeyEvent event) {
-            return Layer.this.onKeyEvent(keyCode, event);
-        }
-    };
+    private final ViewTreeObserver.OnPreDrawListener mOnGlobalPreDrawListener = new OnGlobalPreDrawListener();
+    private final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new OnGlobalLayoutListener();
+    private final ViewManager.OnKeyListener mOnViewKeyListener = new OnViewKeyListener();
 
     private final ViewManager mViewManager;
     private final ViewHolder mViewHolder;
@@ -112,7 +95,7 @@ public class Layer {
         mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
         mViewManager.setParent(mViewHolder.getParent());
         mViewManager.setChild(mViewHolder.getChild());
-        mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? mOnKeyListener : null);
+        mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? mOnViewKeyListener : null);
         if (!mInitialized) {
             mInitialized = true;
             mListenerHolder.notifyOnInitialize(this);
@@ -171,13 +154,17 @@ public class Layer {
         mViewManager.setOnKeyListener(null);
     }
 
+    protected boolean onKeyBack() {
+        if (mConfig.mCancelableOnKeyBack) {
+            dismiss();
+        }
+        return true;
+    }
+
     protected boolean onKeyEvent(int keyCode, @NonNull KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (mConfig.mCancelableOnKeyBack) {
-                    dismiss();
-                }
-                return true;
+                return onKeyBack();
             }
         }
         return false;
@@ -810,6 +797,27 @@ public class Layer {
                     onDismissListener.onPostDismiss(layer);
                 }
             }
+        }
+    }
+
+    private class OnGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
+        @Override
+        public void onGlobalLayout() {
+            Layer.this.onGlobalLayout();
+        }
+    }
+
+    private class OnGlobalPreDrawListener implements ViewTreeObserver.OnPreDrawListener {
+        @Override
+        public boolean onPreDraw() {
+            return Layer.this.onGlobalPreDraw();
+        }
+    }
+
+    private class OnViewKeyListener implements ViewManager.OnKeyListener {
+        @Override
+        public boolean onKey(int keyCode, KeyEvent keyEvent) {
+            return Layer.this.onKeyEvent(keyCode, keyEvent);
         }
     }
 
