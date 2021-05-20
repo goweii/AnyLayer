@@ -6,10 +6,10 @@ import per.goweii.anylayer.Layer;
 
 public class DefaultOnShowListener implements Layer.OnShowListener {
     @Override
-    public void onShowing(@NonNull Layer layer) {
+    public void onPreShow(@NonNull Layer layer) {
     }
 
     @Override
-    public void onShown(@NonNull Layer layer) {
+    public void onPostShow(@NonNull Layer layer) {
     }
 }

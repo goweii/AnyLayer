@@ -6,10 +6,10 @@ import per.goweii.anylayer.Layer;
 
 public class DefaultOnDismissListener implements Layer.OnDismissListener {
     @Override
-    public void onDismissing(@NonNull Layer layer) {
+    public void onPreDismiss(@NonNull Layer layer) {
     }
 
     @Override
-    public void onDismissed(@NonNull Layer layer) {
+    public void onPostDismiss(@NonNull Layer layer) {
     }
 }

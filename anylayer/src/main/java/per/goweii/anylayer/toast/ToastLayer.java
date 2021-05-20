@@ -191,14 +191,14 @@ public class ToastLayer extends DecorLayer {
 
     @CallSuper
     @Override
-    protected void onAppear() {
-        super.onAppear();
+    protected void onPreShow() {
+        super.onPreShow();
     }
 
     @CallSuper
     @Override
-    protected void onShow() {
-        super.onShow();
+    protected void onPostShow() {
+        super.onPostShow();
         if (getConfig().mDuration > 0) {
             getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
         }
@@ -206,15 +206,15 @@ public class ToastLayer extends DecorLayer {
 
     @CallSuper
     @Override
-    protected void onDismiss() {
+    protected void onPreDismiss() {
         getChild().removeCallbacks(mDismissRunnable);
-        super.onDismiss();
+        super.onPreDismiss();
     }
 
     @CallSuper
     @Override
-    protected void onDisappear() {
-        super.onDisappear();
+    protected void onPostDismiss() {
+        super.onPostDismiss();
     }
 
     @CallSuper

@@ -6,7 +6,7 @@ import androidx.annotation.IdRes
 import per.goweii.anylayer.Layer
 import per.goweii.anylayer.ext.DefaultOnDismissListener
 import per.goweii.anylayer.ext.DefaultOnShowListener
-import per.goweii.anylayer.ext.DefaultOnVisibleChangeListener
+import per.goweii.anylayer.ext.DefaultOnVisibleChangedListener
 
 fun <T : Layer> T.onClick(@IdRes viewId: Int, onClickListener: T.(view: View) -> Unit) = this.apply {
     this.addOnClickListener(Layer.OnClickListener { _, v -> this.onClickListener(v) }, viewId)
@@ -37,7 +37,7 @@ fun <T : Layer> T.onInitialize(onInitialize: T.() -> Unit) = this.apply {
 }
 
 fun <T : Layer> T.onShow(onShow: T.() -> Unit) = this.apply {
-    this.addOnVisibleChangeListener(object : DefaultOnVisibleChangeListener() {
+    this.addOnVisibleChangeListener(object : DefaultOnVisibleChangedListener() {
         override fun onShow(layer: Layer) {
             onShow.invoke(this@apply)
         }
@@ -45,7 +45,7 @@ fun <T : Layer> T.onShow(onShow: T.() -> Unit) = this.apply {
 }
 
 fun <T : Layer> T.onDismiss(onDismiss: T.() -> Unit) = this.apply {
-    this.addOnVisibleChangeListener(object : DefaultOnVisibleChangeListener() {
+    this.addOnVisibleChangeListener(object : DefaultOnVisibleChangedListener() {
         override fun onDismiss(layer: Layer) {
             onDismiss.invoke(this@apply)
         }
@@ -54,7 +54,7 @@ fun <T : Layer> T.onDismiss(onDismiss: T.() -> Unit) = this.apply {
 
 fun <T : Layer> T.onPreShow(onPreShow: T.() -> Unit) = this.apply {
     this.addOnShowListener(object : DefaultOnShowListener() {
-        override fun onShowing(layer: Layer) {
+        override fun onPreShow(layer: Layer) {
             this@apply.onPreShow()
         }
     })
@@ -62,7 +62,7 @@ fun <T : Layer> T.onPreShow(onPreShow: T.() -> Unit) = this.apply {
 
 fun <T : Layer> T.onPostShow(onPostShow: T.() -> Unit) = this.apply {
     this.addOnShowListener(object : DefaultOnShowListener() {
-        override fun onShown(layer: Layer) {
+        override fun onPostShow(layer: Layer) {
             this@apply.onPostShow()
         }
     })
@@ -70,7 +70,7 @@ fun <T : Layer> T.onPostShow(onPostShow: T.() -> Unit) = this.apply {
 
 fun <T : Layer> T.onPreDismiss(onPreDismiss: T.() -> Unit) = this.apply {
     this.addOnDismissListener(object : DefaultOnDismissListener() {
-        override fun onDismissing(layer: Layer) {
+        override fun onPreDismiss(layer: Layer) {
             this@apply.onPreDismiss()
         }
     })
@@ -78,7 +78,7 @@ fun <T : Layer> T.onPreDismiss(onPreDismiss: T.() -> Unit) = this.apply {
 
 fun <T : Layer> T.onPostDismiss(onPostDismiss: T.() -> Unit) = this.apply {
     this.addOnDismissListener(object : DefaultOnDismissListener() {
-        override fun onDismissed(layer: Layer) {
+        override fun onPostDismiss(layer: Layer) {
             this@apply.onPostDismiss()
         }
     })

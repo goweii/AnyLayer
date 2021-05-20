@@ -69,7 +69,7 @@ public class DragActivity extends AppCompatActivity implements View.OnClickListe
                         .addOnClickToDismissListener(R.id.fl_dialog_no)
                         .addOnBindDataListener(new Layer.OnBindDataListener() {
                             @Override
-                            public void onDataBind(@NonNull Layer layer) {
+                            public void onBindData(@NonNull Layer layer) {
                                 layer.findView(R.id.tv_dialog_title).setOnLongClickListener(new View.OnLongClickListener() {
                                     @Override
                                     public boolean onLongClick(View v) {

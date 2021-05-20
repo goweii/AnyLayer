@@ -24,8 +24,7 @@ public class Layer {
     private final ViewTreeObserver.OnPreDrawListener mOnGlobalPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override
         public boolean onPreDraw() {
-            Layer.this.onGlobalPreDraw();
-            return true;
+            return Layer.this.onGlobalPreDraw();
         }
     };
 
@@ -39,7 +38,7 @@ public class Layer {
     private final ViewManager.OnKeyListener mOnKeyListener = new ViewManager.OnKeyListener() {
         @Override
         public boolean onKey(int keyCode, KeyEvent event) {
-            return Layer.this.onKey(keyCode, event);
+            return Layer.this.onKeyEvent(keyCode, event);
         }
     };
 
@@ -133,23 +132,23 @@ public class Layer {
     }
 
     @CallSuper
-    protected void onAppear() {
-        mListenerHolder.notifyOnShowing(this);
+    protected void onPreShow() {
+        mListenerHolder.notifyOnPreShow(this);
     }
 
     @CallSuper
-    protected void onShow() {
-        mListenerHolder.notifyOnShown(this);
+    protected void onPostShow() {
+        mListenerHolder.notifyOnPostShow(this);
     }
 
     @CallSuper
-    protected void onDismiss() {
-        mListenerHolder.notifyOnDismissing(this);
+    protected void onPreDismiss() {
+        mListenerHolder.notifyOnPreDismiss(this);
     }
 
     @CallSuper
-    protected void onDisappear() {
-        mListenerHolder.notifyOnDismissed(this);
+    protected void onPostDismiss() {
+        mListenerHolder.notifyOnPostDismiss(this);
     }
 
     @CallSuper
@@ -172,7 +171,7 @@ public class Layer {
         mViewManager.setOnKeyListener(null);
     }
 
-    protected boolean onKey(int keyCode, @NonNull KeyEvent event) {
+    protected boolean onKeyEvent(int keyCode, @NonNull KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 if (mConfig.mCancelableOnKeyBack) {
@@ -187,7 +186,8 @@ public class Layer {
     protected void onGlobalLayout() {
     }
 
-    protected void onGlobalPreDraw() {
+    protected boolean onGlobalPreDraw() {
+        return true;
     }
 
     private void handleShow() {
@@ -196,7 +196,7 @@ public class Layer {
                 startAnimatorIn(new Runnable() {
                     @Override
                     public void run() {
-                        onShow();
+                        onPostShow();
                     }
                 });
             }
@@ -212,11 +212,11 @@ public class Layer {
                 if (getViewTreeObserver().isAlive()) {
                     getViewTreeObserver().removeOnPreDrawListener(this);
                 }
-                onAppear();
+                onPreShow();
                 startAnimatorIn(new Runnable() {
                     @Override
                     public void run() {
-                        onShow();
+                        onPostShow();
                     }
                 });
                 return true;
@@ -253,11 +253,11 @@ public class Layer {
     private void handleDismiss() {
         if (!isShown()) return;
         if (isOutAnimRunning()) return;
-        onDismiss();
+        onPreDismiss();
         startAnimatorOut(new Runnable() {
             @Override
             public void run() {
-                onDisappear();
+                onPostDismiss();
                 mViewManager.detach();
                 onDetach();
                 onDestroy();
@@ -279,8 +279,6 @@ public class Layer {
 
                     @Override
                     public void onAnimationEndNotCanceled(Animator animation) {
-                        // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
-                        // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
                         getViewHolder().getChild().setVisibility(View.INVISIBLE);
                         getViewHolder().getParent().post(onEnd);
                     }
@@ -445,11 +443,11 @@ public class Layer {
     /**
      * 设置显示状态改变的监听
      *
-     * @param onVisibleChangeListener OnVisibleChangeListener
+     * @param onVisibleChangedListener OnVisibleChangeListener
      */
     @NonNull
-    public Layer addOnVisibleChangeListener(@NonNull OnVisibleChangeListener onVisibleChangeListener) {
-        mListenerHolder.addOnVisibleChangeListener(onVisibleChangeListener);
+    public Layer addOnVisibleChangeListener(@NonNull OnVisibleChangedListener onVisibleChangedListener) {
+        mListenerHolder.addOnVisibleChangeListener(onVisibleChangedListener);
         return this;
     }
 
@@ -641,7 +639,7 @@ public class Layer {
         private SparseArray<OnLongClickListener> mOnLongClickListeners = null;
         private List<OnInitializeListener> mOnInitializeListeners = null;
         private List<OnBindDataListener> mOnBindDataListeners = null;
-        private List<OnVisibleChangeListener> mOnVisibleChangeListeners = null;
+        private List<OnVisibleChangedListener> mOnVisibleChangedListeners = null;
         private List<OnShowListener> mOnShowListeners = null;
         private List<OnDismissListener> mOnDismissListeners = null;
 
@@ -729,11 +727,11 @@ public class Layer {
             mOnInitializeListeners.add(onInitializeListener);
         }
 
-        private void addOnVisibleChangeListener(@NonNull OnVisibleChangeListener onVisibleChangeListener) {
-            if (mOnVisibleChangeListeners == null) {
-                mOnVisibleChangeListeners = new ArrayList<>(1);
+        private void addOnVisibleChangeListener(@NonNull OnVisibleChangedListener onVisibleChangedListener) {
+            if (mOnVisibleChangedListeners == null) {
+                mOnVisibleChangedListeners = new ArrayList<>(1);
             }
-            mOnVisibleChangeListeners.add(onVisibleChangeListener);
+            mOnVisibleChangedListeners.add(onVisibleChangedListener);
         }
 
         private void addOnShowListener(@NonNull OnShowListener onShowListener) {
@@ -753,7 +751,7 @@ public class Layer {
         private void notifyOnBindData(@NonNull Layer layer) {
             if (mOnBindDataListeners != null) {
                 for (OnBindDataListener onBindDataListener : mOnBindDataListeners) {
-                    onBindDataListener.onDataBind(layer);
+                    onBindDataListener.onBindData(layer);
                 }
             }
         }
@@ -767,49 +765,49 @@ public class Layer {
         }
 
         private void notifyOnVisibleChangeToShow(@NonNull Layer layer) {
-            if (mOnVisibleChangeListeners != null) {
-                for (OnVisibleChangeListener onVisibleChangeListener : mOnVisibleChangeListeners) {
-                    onVisibleChangeListener.onShow(layer);
+            if (mOnVisibleChangedListeners != null) {
+                for (OnVisibleChangedListener onVisibleChangedListener : mOnVisibleChangedListeners) {
+                    onVisibleChangedListener.onShow(layer);
                 }
             }
         }
 
         private void notifyOnVisibleChangeToDismiss(@NonNull Layer layer) {
-            if (mOnVisibleChangeListeners != null) {
-                for (OnVisibleChangeListener onVisibleChangeListener : mOnVisibleChangeListeners) {
-                    onVisibleChangeListener.onDismiss(layer);
+            if (mOnVisibleChangedListeners != null) {
+                for (OnVisibleChangedListener onVisibleChangedListener : mOnVisibleChangedListeners) {
+                    onVisibleChangedListener.onDismiss(layer);
                 }
             }
         }
 
-        private void notifyOnShowing(@NonNull Layer layer) {
+        private void notifyOnPreShow(@NonNull Layer layer) {
             if (mOnShowListeners != null) {
                 for (OnShowListener onShowListener : mOnShowListeners) {
-                    onShowListener.onShowing(layer);
+                    onShowListener.onPreShow(layer);
                 }
             }
         }
 
-        private void notifyOnShown(@NonNull Layer layer) {
+        private void notifyOnPostShow(@NonNull Layer layer) {
             if (mOnShowListeners != null) {
                 for (OnShowListener onShowListener : mOnShowListeners) {
-                    onShowListener.onShown(layer);
+                    onShowListener.onPostShow(layer);
                 }
             }
         }
 
-        private void notifyOnDismissing(@NonNull Layer layer) {
+        private void notifyOnPreDismiss(@NonNull Layer layer) {
             if (mOnDismissListeners != null) {
                 for (OnDismissListener onDismissListener : mOnDismissListeners) {
-                    onDismissListener.onDismissing(layer);
+                    onDismissListener.onPreDismiss(layer);
                 }
             }
         }
 
-        private void notifyOnDismissed(@NonNull Layer layer) {
+        private void notifyOnPostDismiss(@NonNull Layer layer) {
             if (mOnDismissListeners != null) {
                 for (OnDismissListener onDismissListener : mOnDismissListeners) {
-                    onDismissListener.onDismissed(layer);
+                    onDismissListener.onPostDismiss(layer);
                 }
             }
         }
@@ -817,17 +815,17 @@ public class Layer {
 
     public interface AnimatorCreator {
         /**
-         * 内容进入动画
+         * 进入动画
          *
-         * @param target 内容
+         * @param target 目标View
          */
         @Nullable
         Animator createInAnimator(@NonNull View target);
 
         /**
-         * 内容消失动画
+         * 消失动画
          *
-         * @param target 内容
+         * @param target 目标View
          */
         @Nullable
         Animator createOutAnimator(@NonNull View target);
@@ -844,7 +842,7 @@ public class Layer {
         /**
          * 绑定数据
          */
-        void onDataBind(@NonNull Layer layer);
+        void onBindData(@NonNull Layer layer);
     }
 
     public interface OnClickListener {
@@ -865,27 +863,27 @@ public class Layer {
         /**
          * 开始隐藏，动画刚开始执行
          */
-        void onDismissing(@NonNull Layer layer);
+        void onPreDismiss(@NonNull Layer layer);
 
         /**
          * 已隐藏，浮层已被移除
          */
-        void onDismissed(@NonNull Layer layer);
+        void onPostDismiss(@NonNull Layer layer);
     }
 
     public interface OnShowListener {
         /**
          * 开始显示，动画刚开始执行
          */
-        void onShowing(@NonNull Layer layer);
+        void onPreShow(@NonNull Layer layer);
 
         /**
          * 已显示，浮层已显示且动画结束
          */
-        void onShown(@NonNull Layer layer);
+        void onPostShow(@NonNull Layer layer);
     }
 
-    public interface OnVisibleChangeListener {
+    public interface OnVisibleChangedListener {
         /**
          * 浮层显示，刚被添加到父布局，进入动画未开始
          */

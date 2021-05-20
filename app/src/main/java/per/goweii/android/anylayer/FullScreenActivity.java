@@ -229,7 +229,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         })
                         .addOnShowListener(new Layer.OnShowListener() {
                             @Override
-                            public void onShowing(@NonNull Layer layer) {
+                            public void onPreShow(@NonNull Layer layer) {
                                 EditText et = layer.requireView(R.id.et_input);
                                 et.setFocusable(true);
                                 et.setFocusableInTouchMode(true);
@@ -239,19 +239,19 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                             }
 
                             @Override
-                            public void onShown(@NonNull Layer layer) {
+                            public void onPostShow(@NonNull Layer layer) {
                             }
                         })
                         .addOnDismissListener(new Layer.OnDismissListener() {
                             @Override
-                            public void onDismissing(@NonNull Layer layer) {
+                            public void onPreDismiss(@NonNull Layer layer) {
                                 EditText et = layer.requireView(R.id.et_input);
                                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
                             }
 
                             @Override
-                            public void onDismissed(@NonNull Layer layer) {
+                            public void onPostDismiss(@NonNull Layer layer) {
                             }
                         })
                         .addOnClickToDismissListener(new Layer.OnClickListener() {

@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.utils.Utils;
 
-public class LayerActivity extends Activity implements Layer.OnVisibleChangeListener {
+public class LayerActivity extends Activity implements Layer.OnVisibleChangedListener {
 
     @Nullable
     private static OnLayerCreatedCallback sOnLayerCreatedCallback = null;

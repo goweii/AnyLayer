@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import per.goweii.anylayer.Layer;
 
-public class DefaultOnVisibleChangeListener implements Layer.OnVisibleChangeListener {
+public class DefaultOnVisibleChangedListener implements Layer.OnVisibleChangedListener {
     @Override
     public void onShow(@NonNull Layer layer) {
     }

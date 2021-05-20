@@ -323,7 +323,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             })
                             .addOnBindDataListener(new Layer.OnBindDataListener() {
                                 @Override
-                                public void onDataBind(@NonNull Layer layer) {
+                                public void onBindData(@NonNull Layer layer) {
                                     TextView tv_dialog_title = layer.findView(R.id.tv_dialog_title);
                                     tv_dialog_title.setText("标题View$" + System.identityHashCode(tv_dialog_title));
                                 }
