@@ -31,14 +31,7 @@ import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 
 public class ToastLayer extends DecorLayer {
-    private final Runnable mDismissRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (isShown()) {
-                dismiss();
-            }
-        }
-    };
+    private final Runnable mDismissRunnable = new DismissRunnable();
 
     public ToastLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
@@ -391,6 +384,15 @@ public class ToastLayer extends DecorLayer {
     public ToastLayer setTextColorRes(@ColorRes int colorRes) {
         getConfig().mTextColorRes = colorRes;
         return this;
+    }
+
+    private class DismissRunnable implements Runnable {
+        @Override
+        public void run() {
+            if (isShown()) {
+                dismiss();
+            }
+        }
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {

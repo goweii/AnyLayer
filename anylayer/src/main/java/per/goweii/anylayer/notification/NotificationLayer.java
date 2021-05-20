@@ -35,6 +35,7 @@ import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
+import per.goweii.anylayer.widget.MaxSizeFrameLayout;
 import per.goweii.anylayer.widget.SwipeLayout;
 
 public class NotificationLayer extends DecorLayer {

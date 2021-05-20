@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:clipToPadding="false">
 
-    <per.goweii.anylayer.notification.MaxSizeFrameLayout
+    <per.goweii.anylayer.widget.MaxSizeFrameLayout
         android:id="@+id/anylayler_notification_content_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

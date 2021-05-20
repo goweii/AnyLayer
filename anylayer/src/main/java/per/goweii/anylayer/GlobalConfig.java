@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 
-import per.goweii.anylayer.floats.FloatLayer;
+import per.goweii.anylayer.overlay.OverlayLayer;
 
 public class GlobalConfig {
     private static final GlobalConfig INSTANCE = new GlobalConfig();
@@ -70,35 +70,35 @@ public class GlobalConfig {
     public Drawable notificationIcon = null;
     public String notificationTimePattern = null;
 
-    // FloatLayer
+    // OverlayLayer
 
-    public boolean floatOutside = true;
-    public int floatSnapEdge = FloatLayer.Edge.HORIZONTAL;
+    public boolean overlayOutside = true;
+    public int overlaySnapEdge = OverlayLayer.Edge.HORIZONTAL;
     @FloatRange(from = -2F, to = 2F)
-    public float floatDefPercentX = 2F;
+    public float overlayDefPercentX = 2F;
     @FloatRange(from = -2F, to = 2F)
-    public float floatDefPercentY = 0.236F;
+    public float overlayDefPercentY = 0.236F;
     @FloatRange(from = 0F, to = 1F)
-    public float floatDefAlpha = 1F;
-    public float floatDefScale = 1F;
-    public float floatPivotX = 0.5F;
-    public float floatPivotY = 0.5F;
+    public float overlayDefAlpha = 1F;
+    public float overlayDefScale = 1F;
+    public float overlayPivotX = 0.5F;
+    public float overlayPivotY = 0.5F;
     @FloatRange(from = 0F, to = 1F)
-    public float floatNormalAlpha = 1F;
-    public float floatNormalScale = 1F;
+    public float overlayNormalAlpha = 1F;
+    public float overlayNormalScale = 1F;
     @IntRange(from = 0)
-    public long floatLowProfileDelay = 3000L;
+    public long overlayLowProfileDelay = 3000L;
     @FloatRange(from = 0F, to = 1F)
-    public float floatLowProfileAlpha = 0.8F;
-    public float floatLowProfileScale = 1F;
+    public float overlayLowProfileAlpha = 0.8F;
+    public float overlayLowProfileScale = 1F;
     @FloatRange(from = 0F, to = 1F)
-    public float floatLowProfileIndent = 0F;
-    public int floatMarginLeft = Integer.MIN_VALUE;
-    public int floatMarginTop = Integer.MIN_VALUE;
-    public int floatMarginRight = Integer.MIN_VALUE;
-    public int floatMarginBottom = Integer.MIN_VALUE;
-    public int floatPaddingLeft = 0;
-    public int floatPaddingTop = 0;
-    public int floatPaddingRight = 0;
-    public int floatPaddingBottom = 0;
+    public float overlayLowProfileIndent = 0F;
+    public int overlayMarginLeft = Integer.MIN_VALUE;
+    public int overlayMarginTop = Integer.MIN_VALUE;
+    public int overlayMarginRight = Integer.MIN_VALUE;
+    public int overlayMarginBottom = Integer.MIN_VALUE;
+    public int overlayPaddingLeft = 0;
+    public int overlayPaddingTop = 0;
+    public int overlayPaddingRight = 0;
+    public int overlayPaddingBottom = 0;
 }

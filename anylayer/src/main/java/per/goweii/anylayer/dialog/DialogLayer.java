@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -511,27 +512,27 @@ public class DialogLayer extends DecorLayer {
             }
         } else {
             if (getConfig().mBackgroundBitmap != null) {
-                getViewHolder().getBackgroundView().setImageBitmap(getConfig().mBackgroundBitmap);
+                getViewHolder().getBackgroundImageView().setImageBitmap(getConfig().mBackgroundBitmap);
                 if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    getViewHolder().getBackgroundView().setColorFilter(getConfig().mBackgroundColor);
+                    getViewHolder().getBackgroundImageView().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundDrawable != null) {
-                getViewHolder().getBackgroundView().setImageDrawable(getConfig().mBackgroundDrawable);
+                getViewHolder().getBackgroundImageView().setImageDrawable(getConfig().mBackgroundDrawable);
                 if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    getViewHolder().getBackgroundView().setColorFilter(getConfig().mBackgroundColor);
+                    getViewHolder().getBackgroundImageView().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundResource != -1) {
-                getViewHolder().getBackgroundView().setImageResource(getConfig().mBackgroundResource);
+                getViewHolder().getBackgroundImageView().setImageResource(getConfig().mBackgroundResource);
                 if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    getViewHolder().getBackgroundView().setColorFilter(getConfig().mBackgroundColor);
+                    getViewHolder().getBackgroundImageView().setColorFilter(getConfig().mBackgroundColor);
                 }
             } else if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                getViewHolder().getBackgroundView().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
+                getViewHolder().getBackgroundImageView().setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
             } else if (getConfig().mBackgroundDimAmount != -1) {
                 int color = Color.argb((int) (255 * Utils.floatRange01(getConfig().mBackgroundDimAmount)), 0, 0, 0);
-                getViewHolder().getBackgroundView().setImageDrawable(new ColorDrawable(color));
+                getViewHolder().getBackgroundImageView().setImageDrawable(new ColorDrawable(color));
             } else {
-                getViewHolder().getBackgroundView().setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
+                getViewHolder().getBackgroundImageView().setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
             }
         }
     }
@@ -987,9 +988,9 @@ public class DialogLayer extends DecorLayer {
         }
 
         @Nullable
-        public BackgroundView getBackgroundView() {
-            if (mBackground instanceof BackgroundView) {
-                return (BackgroundView) mBackground;
+        public ImageView getBackgroundImageView() {
+            if (mBackground instanceof ImageView) {
+                return (ImageView) mBackground;
             }
             return null;
         }

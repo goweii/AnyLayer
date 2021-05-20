@@ -279,7 +279,7 @@ public class FrameLayer extends Layer {
         public static final int GUIDE = 1000;
         public static final int POPUP = 2000;
         public static final int DIALOG = 3000;
-        public static final int FLOAT = 4000;
+        public static final int OVERLAY = 4000;
         public static final int NOTIFICATION = 5000;
         public static final int TOAST = 6000;
 

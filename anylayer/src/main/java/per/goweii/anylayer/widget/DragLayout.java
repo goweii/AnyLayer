@@ -274,10 +274,10 @@ public class DragLayout extends FrameLayout {
     }
 
     private void updateViewPositionTag(@NonNull View view) {
-        PointF position = (PointF) view.getTag(R.id.anylayer_float_position);
+        PointF position = (PointF) view.getTag(R.id.anylayer_overlay_position);
         if (position == null) {
             position = new PointF();
-            view.setTag(R.id.anylayer_float_position, position);
+            view.setTag(R.id.anylayer_overlay_position, position);
         }
         float px = calcViewPositionX(view);
         float py = calcViewPositionY(view);
@@ -299,7 +299,7 @@ public class DragLayout extends FrameLayout {
     }
 
     private void updateViewByPositionX(@NonNull View view) {
-        PointF position = (PointF) view.getTag(R.id.anylayer_float_position);
+        PointF position = (PointF) view.getTag(R.id.anylayer_overlay_position);
         if (position != null) {
             if (position.x != calcViewPositionX(view)) {
                 float currX = view.getLeft() + view.getWidth() / 2F;
@@ -312,7 +312,7 @@ public class DragLayout extends FrameLayout {
     }
 
     private void updateViewByPositionY(@NonNull View view) {
-        PointF position = (PointF) view.getTag(R.id.anylayer_float_position);
+        PointF position = (PointF) view.getTag(R.id.anylayer_overlay_position);
         if (position != null) {
             if (position.y != calcViewPositionY(view)) {
                 float currY = view.getTop() + view.getHeight() / 2F;

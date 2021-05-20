@@ -76,8 +76,8 @@ public final class Utils {
         }
         if (context instanceof ContextWrapper) {
             Context baseContext = ((ContextWrapper) context).getBaseContext();
-            if (baseContext instanceof Activity) {
-                return (Activity) baseContext;
+            if (baseContext != context) {
+                return getActivity(baseContext);
             }
         }
         return null;

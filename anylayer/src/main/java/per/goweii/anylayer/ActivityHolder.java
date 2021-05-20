@@ -15,7 +15,6 @@ import java.util.List;
 import per.goweii.anylayer.utils.Utils;
 
 public final class ActivityHolder implements Application.ActivityLifecycleCallbacks {
-
     private static ActivityHolder INSTANCE = null;
 
     @NonNull
@@ -35,7 +34,7 @@ public final class ActivityHolder implements Application.ActivityLifecycleCallba
 
     @NonNull
     public static ActivityHolder getInstance() {
-        return Utils.requireNonNull(INSTANCE, "请先在Application中初始化");
+        return Utils.requireNonNull(INSTANCE, "需要先在Application中初始化");
     }
 
     @NonNull
@@ -46,7 +45,7 @@ public final class ActivityHolder implements Application.ActivityLifecycleCallba
     @NonNull
     public static Activity requireActivity(@NonNull Class<Activity> clazz) {
         Activity activity = ActivityHolder.getActivity(clazz);
-        Utils.requireNonNull(activity, "请确保有已启动的Activity实例");
+        Utils.requireNonNull(activity, "请确保有已启动的Activity实例：" + clazz.getName());
         return activity;
     }
 

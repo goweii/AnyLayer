@@ -25,7 +25,7 @@ import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.dialog.DialogLayer;
-import per.goweii.anylayer.floats.FloatLayer;
+import per.goweii.anylayer.overlay.OverlayLayer;
 import per.goweii.anylayer.notification.NotificationLayer;
 import per.goweii.anylayer.popup.PopupLayer.Align;
 import per.goweii.anylayer.utils.AnimatorHelper;
@@ -90,9 +90,9 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
         floatCardView.setCardBackgroundColor(Color.TRANSPARENT);
         floatCardView.setRadius(90);
         floatCardView.setLayoutParams(new ViewGroup.LayoutParams(180, 180));
-        new FloatLayer(this)
-                .setFloatView(floatCardView)
-                .setSnapEdge(FloatLayer.Edge.ALL)
+        new OverlayLayer(this)
+                .setOverlayView(floatCardView)
+                .setSnapEdge(OverlayLayer.Edge.ALL)
                 .setOutside(true)
                 .setDefPercentX(1)
                 .setDefPercentY(0.6F)
@@ -112,7 +112,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 .setMarginTop(0)
                 .setMarginRight(0)
                 .setMarginBottom(0)
-                .addOnFloatClickListener(new Layer.OnClickListener() {
+                .addOnOverlayClickListener(new Layer.OnClickListener() {
                     @Override
                     public void onClick(@NonNull Layer layer, @NonNull View v) {
                         AnyLayer.toast().setMessage("点击了悬浮按钮").setGravity(Gravity.CENTER).show();

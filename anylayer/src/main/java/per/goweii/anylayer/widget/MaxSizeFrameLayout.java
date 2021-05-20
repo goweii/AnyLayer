@@ -1,4 +1,4 @@
-package per.goweii.anylayer.notification;
+package per.goweii.anylayer.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
