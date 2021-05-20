@@ -274,6 +274,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                             .setOutsideInterceptTouchEvent(false)
                             .setOutsideTouchToDismiss(true)
                             .setContentView(R.layout.popup_meun)
+                            .setBackgroundBlurRadius(5F)
                             .setContentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(@NonNull View content) {

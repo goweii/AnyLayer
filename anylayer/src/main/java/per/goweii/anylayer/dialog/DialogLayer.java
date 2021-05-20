@@ -976,6 +976,7 @@ public class DialogLayer extends DecorLayer {
             int index = getChild().indexOfChild(mBackground);
             getChild().removeViewAt(index);
             mBackground = new BackdropVisualEffectView(getChild().getContext());
+            mBackground.setId(R.id.anylayler_dialog_background);
             getChild().addView(mBackground, index, new ViewGroup.LayoutParams(layoutParams));
         }
 
