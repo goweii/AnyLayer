@@ -218,7 +218,7 @@ public class DragCompat {
             View v = views.get(i);
             Rect localRect = new Rect();
             int[] l = new int[2];
-            v.getLocationOnScreen(l);
+            v.getLocationInWindow(l);
             localRect.set(l[0], l[1], l[0] + v.getWidth(), l[1] + v.getHeight());
             if (localRect.contains((int) x, (int) y)) {
                 contains.add(v);

@@ -30,6 +30,8 @@ import per.goweii.anylayer.utils.Utils;
 
 public class GuideLayer extends DecorLayer {
 
+    private final int[] mLocationTemp = new int[2];
+
     public GuideLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
     }
@@ -196,15 +198,21 @@ public class GuideLayer extends DecorLayer {
         });
     }
 
+    private void resetLocationTemp() {
+        mLocationTemp[0] = 0;
+        mLocationTemp[1] = 0;
+    }
+
     public void updateLocation() {
-        int[] childLocation = new int[2];
+        resetLocationTemp();
+        final int[] location = mLocationTemp;
         getViewHolder().getBackground().clear();
-        getViewHolder().getChild().getLocationInWindow(childLocation);
+        getViewHolder().getChild().getLocationInWindow(location);
         for (Mapping mapping : getConfig().mMapping) {
             final Rect targetRect = mapping.getTargetRect();
             if (!targetRect.isEmpty()) {
                 final Rect holeRect = new Rect(targetRect);
-                holeRect.offset(-childLocation[0], -childLocation[1]);
+                holeRect.offset(-location[0], -location[1]);
                 holeRect.offset(mapping.getOffsetX(), mapping.getOffsetY());
                 holeRect.set(holeRect.left - mapping.getPaddingLeft(),
                         holeRect.top - mapping.getPaddingTop(),
@@ -360,6 +368,7 @@ public class GuideLayer extends DecorLayer {
     }
 
     public static class Mapping {
+        private final int[] mTargetLocation = new int[2];
         private final Rect mTargetRect = new Rect();
         @Nullable
         private View mTargetView = null;
@@ -540,11 +549,14 @@ public class GuideLayer extends DecorLayer {
         @NonNull
         public Rect getTargetRect() {
             if (mTargetView != null) {
-                int[] location = new int[2];
+                final int[] location = mTargetLocation;
                 mTargetView.getLocationInWindow(location);
-                mTargetRect.set(location[0], location[1],
+                mTargetRect.set(
+                        location[0],
+                        location[1],
                         location[0] + mTargetView.getWidth(),
-                        location[1] + mTargetView.getHeight());
+                        location[1] + mTargetView.getHeight()
+                );
             }
             return mTargetRect;
         }
