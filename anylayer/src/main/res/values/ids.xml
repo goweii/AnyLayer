@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item type="id" name="anylayer_overlay_position" />
+    <item type="id" name="anylayer_dialog_content" />
+    <item type="id" name="anylayer_dialog_content_really" />
+    <item type="id" name="anylayer_dialog_content_effect" />
 </resources>

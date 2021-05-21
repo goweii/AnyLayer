@@ -311,8 +311,12 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.tv_show_dark_bg:
                 if (layer_dark_bg == null) {
                     layer_dark_bg = AnyLayer.dialog(NormalActivity.this)
-                            .setContentView(R.layout.dialog_normal)
-                            .setBackgroundDimDefault()
+                            .setContentView(R.layout.dialog_content_blur)
+                            .setBackgroundColorInt(Color.parseColor("#33000000"))
+                            .setContentBlurRadius(8F)
+                            .setContentBlurSimple(8F)
+                            .setContentBlurCornerRadiusDp(10F)
+                            .setContentBlurColorInt(Color.parseColor("#66ffffff"))
                             .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                             .addOnInitializeListener(new Layer.OnInitializeListener() {
                                 @Override

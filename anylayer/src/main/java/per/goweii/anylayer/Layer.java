@@ -91,12 +91,8 @@ public class Layer {
 
     @CallSuper
     protected void onCreate() {
-        if (mViewHolder.getParentNullable() == null) {
-            mViewHolder.setParent(onGetParent());
-        }
-        if (mViewHolder.getChildNullable() == null) {
-            mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
-        }
+        mViewHolder.setParent(onGetParent());
+        mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
         mViewManager.setParent(mViewHolder.getParent());
         mViewManager.setChild(mViewHolder.getChild());
         mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? mOnViewKeyListener : null);
