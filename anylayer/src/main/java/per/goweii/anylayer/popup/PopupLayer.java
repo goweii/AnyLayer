@@ -150,20 +150,15 @@ public class PopupLayer extends DialogLayer {
     }
 
     @Override
-    protected void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
+    protected void fitDecorInsides() {
+        fitDecorInsidesToViewPadding(getViewHolder().getContainer());
+        getViewHolder().getContainer().setClipToPadding(true);
+        Utils.onViewLayout(getViewHolder().getDecor(), new Runnable() {
             @Override
             public void run() {
                 updateLocation();
             }
         });
-    }
-
-    @Override
-    protected void fitDecorInsides() {
-        fitDecorInsidesToViewPadding(getViewHolder().getContainer());
-        getViewHolder().getContainer().setClipToPadding(true);
     }
 
     @Override

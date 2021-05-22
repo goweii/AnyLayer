@@ -180,23 +180,18 @@ public class GuideLayer extends DecorLayer {
     @Override
     protected void fitDecorInsides() {
         fitDecorInsidesToViewMargin(getViewHolder().getContentWrapper());
-    }
-
-    @Override
-    public void onGlobalLayout() {
-        super.onGlobalLayout();
-        updateLocation();
-    }
-
-    @Override
-    protected void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
         Utils.onViewLayout(getViewHolder().getChild(), new Runnable() {
             @Override
             public void run() {
                 updateLocation();
             }
         });
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        super.onGlobalLayout();
+        updateLocation();
     }
 
     private void resetLocationTemp() {

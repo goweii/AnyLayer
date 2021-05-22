@@ -138,7 +138,7 @@ public class DecorLayer extends FrameLayer {
         getViewHolder().getParent().setClipChildren(false);
     }
 
-    protected void fitDecorInsidesToViewPadding(@NonNull View view) {
+    protected final void fitDecorInsidesToViewPadding(@NonNull View view) {
         Rect padding = getDecorPadding();
         Rect margin = getDecorMargin();
         padding.left += margin.left;
@@ -150,7 +150,7 @@ public class DecorLayer extends FrameLayer {
         margin.setEmpty();
     }
 
-    protected void fitDecorInsidesToViewMargin(@NonNull View view) {
+    protected final void fitDecorInsidesToViewMargin(@NonNull View view) {
         Rect padding = getDecorPadding();
         Rect margin = getDecorMargin();
         margin.left += padding.left;
@@ -162,24 +162,24 @@ public class DecorLayer extends FrameLayer {
         margin.setEmpty();
     }
 
-    protected void fitDecorInsidesTo(@NonNull View view) {
+    protected final void fitDecorInsidesTo(@NonNull View view) {
         fitDecorPaddingTo(view);
         fitDecorMarginTo(view);
     }
 
-    protected void fitDecorPaddingTo(@NonNull View view) {
+    protected final void fitDecorPaddingTo(@NonNull View view) {
         Rect padding = getDecorPadding();
         setViewPaddingTo(view, padding);
         padding.setEmpty();
     }
 
-    protected void fitDecorMarginTo(@NonNull View view) {
+    protected final void fitDecorMarginTo(@NonNull View view) {
         Rect margin = getDecorMargin();
         setViewMarginTo(view, margin);
         margin.setEmpty();
     }
 
-    protected void setViewPaddingTo(@NonNull View view, @NonNull Rect padding) {
+    protected final void setViewPaddingTo(@NonNull View view, @NonNull Rect padding) {
         if (view.getPaddingLeft() != padding.left ||
                 view.getPaddingTop() != padding.top ||
                 view.getPaddingRight() != padding.right ||
@@ -188,47 +188,39 @@ public class DecorLayer extends FrameLayer {
         }
     }
 
-    protected void setViewMarginTo(@NonNull View view, @NonNull Rect margin) {
+    protected final void setViewMarginTo(@NonNull View view, @NonNull Rect margin) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        boolean needRequestLayout = false;
+        boolean changed = false;
         if (params.leftMargin != margin.left) {
             params.leftMargin = margin.left;
-            needRequestLayout = true;
+            changed = true;
         }
         if (params.topMargin != margin.top) {
             params.topMargin = margin.top;
-            needRequestLayout = true;
+            changed = true;
         }
         if (params.rightMargin != margin.right) {
             params.rightMargin = margin.right;
-            needRequestLayout = true;
+            changed = true;
         }
         if (params.bottomMargin != margin.bottom) {
             params.bottomMargin = margin.bottom;
-            needRequestLayout = true;
+            changed = true;
         }
-        if (needRequestLayout) {
+        if (changed) {
             view.requestLayout();
         }
     }
 
     @NonNull
-    protected Rect getDecorPadding() {
-        View decorChild = getViewHolder().getDecorChild();
-        mDecorPadding.left = decorChild.getPaddingLeft();
-        mDecorPadding.top = decorChild.getPaddingTop();
-        mDecorPadding.right = decorChild.getPaddingRight();
-        mDecorPadding.bottom = decorChild.getPaddingBottom();
+    protected final Rect getDecorPadding() {
+        Utils.getViewPadding(getViewHolder().getDecorChild(), mDecorPadding);
         return mDecorPadding;
     }
 
     @NonNull
-    protected Rect getDecorMargin() {
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) getViewHolder().getDecorChild().getLayoutParams();
-        mDecorMargin.left = params.leftMargin;
-        mDecorMargin.top = params.topMargin;
-        mDecorMargin.right = params.rightMargin;
-        mDecorMargin.bottom = params.bottomMargin;
+    protected final Rect getDecorMargin() {
+        Utils.getViewMargin(getViewHolder().getDecorChild(), mDecorMargin);
         return mDecorMargin;
     }
 

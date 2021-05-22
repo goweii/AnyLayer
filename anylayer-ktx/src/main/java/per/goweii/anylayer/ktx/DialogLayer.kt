@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.*
+import androidx.core.view.doOnNextLayout
 import per.goweii.anylayer.Layer
 import per.goweii.anylayer.dialog.DialogLayer
 import per.goweii.anylayer.ext.DefaultDialogOnSwipeListener

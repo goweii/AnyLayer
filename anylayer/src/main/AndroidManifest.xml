@@ -4,6 +4,7 @@
     <application>
         <activity
             android:name="per.goweii.anylayer.LayerActivity"
+            android:configChanges="screenLayout|screenSize|density|layoutDirection|colorMode|smallestScreenSize|locale|fontScale|orientation|keyboard|keyboardHidden|touchscreen|navigation|uiMode"
             android:theme="@style/AnyLayerActivityTheme" />
     </application>
 </manifest>

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -130,6 +132,24 @@ public final class Utils {
 
     public static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
         onViewLayout(view, runnable);
+    }
+
+    public static void getViewPadding(@NonNull View view, @NonNull Rect rect) {
+        rect.setEmpty();
+        rect.left = view.getPaddingLeft();
+        rect.top = view.getPaddingTop();
+        rect.right = view.getPaddingRight();
+        rect.bottom = view.getPaddingBottom();
+    }
+
+    public static void getViewMargin(@NonNull View view, @NonNull Rect rect) {
+        rect.setEmpty();
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return;
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        rect.left = params.leftMargin;
+        rect.top = params.topMargin;
+        rect.right = params.rightMargin;
+        rect.bottom = params.bottomMargin;
     }
 
     public static int getViewMarginLeft(@NonNull View view) {
