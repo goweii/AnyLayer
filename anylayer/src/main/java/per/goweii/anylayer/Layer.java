@@ -91,8 +91,8 @@ public class Layer {
 
     @CallSuper
     protected void onCreate() {
-        mViewHolder.setParent(onGetParent());
-        mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
+        onGetParent();
+        onCreateChild(getLayoutInflater(), mViewHolder.getParent());
         mViewManager.setParent(mViewHolder.getParent());
         mViewManager.setChild(mViewHolder.getChild());
         mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? mOnViewKeyListener : null);

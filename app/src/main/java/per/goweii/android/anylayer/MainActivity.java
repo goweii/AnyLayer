@@ -12,10 +12,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
-    }
-
-    private void initView() {
         findViewById(R.id.tv_activity_normal).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

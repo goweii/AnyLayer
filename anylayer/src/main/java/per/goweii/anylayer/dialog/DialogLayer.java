@@ -350,11 +350,11 @@ public class DialogLayer extends DecorLayer {
     @CallSuper
     @Override
     protected void onAttach() {
-        super.onAttach();
-        registerSoftInputCompat();
         onInitContent();
         onInitBackground();
         onInitContainer();
+        super.onAttach();
+        registerSoftInputCompat();
     }
 
     @CallSuper
@@ -634,26 +634,6 @@ public class DialogLayer extends DecorLayer {
             mSoftInputHelper.detach();
             mSoftInputHelper = null;
         }
-    }
-
-    /**
-     * 获取自定义的浮层控件
-     *
-     * @return View
-     */
-    @Nullable
-    public View getContentView() {
-        return getViewHolder().getContent();
-    }
-
-    /**
-     * 获取背景图
-     *
-     * @return View
-     */
-    @NonNull
-    public View getBackground() {
-        return getViewHolder().getBackground();
     }
 
     /**

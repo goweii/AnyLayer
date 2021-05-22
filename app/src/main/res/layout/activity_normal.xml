@@ -1,353 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/fl_content"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ScrollView
+        <TextView
+            android:id="@+id/tv_show_toast"
+            style="@style/ListTextStyle"
+            android:text="吐司" />
+
+        <TextView
+            android:id="@+id/tv_show_notification"
+            style="@style/ListTextStyle"
+            android:text="通知" />
+
+        <TextView
+            android:id="@+id/tv_show_app_context"
+            style="@style/ListTextStyle"
+            android:text="AppContext弹出" />
+
+        <TextView
+            android:id="@+id/tv_show_no_context"
+            style="@style/ListTextStyle"
+            android:text="无需Context弹出" />
+
+        <TextView
+            android:id="@+id/tv_show_blur_bg"
+            style="@style/ListTextStyle"
+            android:text="背景高斯模糊" />
+
+        <TextView
+            android:id="@+id/tv_show_blur_content"
+            style="@style/ListTextStyle"
+            android:text="主体高斯模糊" />
+
+        <TextView
+            android:id="@+id/tv_show_tran_bg"
+            style="@style/ListTextStyle"
+            android:text="背景全透明" />
+
+        <TextView
+            android:id="@+id/tv_show_full"
+            style="@style/ListTextStyle"
+            android:text="全屏" />
+
+        <TextView
+            android:id="@+id/tv_show_target_full"
+            style="@style/ListTextStyle"
+            android:text="在下面全屏" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_show_target_right"
+                style="@style/ListTextStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="在右边" />
 
-                <TextView
-                    android:id="@+id/tv_show_toast"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="吐司"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tv_show_target_top"
+                style="@style/ListTextStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="在上面" />
 
-                <TextView
-                    android:id="@+id/tv_show_notification"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="通知"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tv_show_target_bottom"
+                style="@style/ListTextStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="在下面" />
 
-                <TextView
-                    android:id="@+id/tv_show_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="带输入框"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tv_show_target_left"
+                style="@style/ListTextStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="在左边" />
 
-                <TextView
-                    android:id="@+id/tv_show_full"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="全屏"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tv_show_app_context"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="AppContext弹出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_bottom_zoom_alpha_in"
+            style="@style/ListTextStyle"
+            android:text="底部缩放进入底部缩放退出alpha" />
 
-                <TextView
-                    android:id="@+id/tv_show_no_context"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="无需Context弹出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_bottom_in"
+            style="@style/ListTextStyle"
+            android:text="底部进入底部退出" />
 
-                <TextView
-                    android:id="@+id/tv_show_delay"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="5秒后弹出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_bottom_alpha_in"
+            style="@style/ListTextStyle"
+            android:text="底部进入底部退出alpha" />
 
-                <TextView
-                    android:id="@+id/tv_show_top"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="顶部"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_top_in"
+            style="@style/ListTextStyle"
+            android:text="顶部进入顶部退出" />
 
-                <TextView
-                    android:id="@+id/tv_show_bottom"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="底部"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_top_alpha_in"
+            style="@style/ListTextStyle"
+            android:text="顶部进入顶部退出alpha" />
 
-                <TextView
-                    android:id="@+id/tv_show_blur_bg"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="背景高斯模糊"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_left_in"
+            style="@style/ListTextStyle"
+            android:text="左侧进入左侧退出" />
 
-                <TextView
-                    android:id="@+id/tv_show_dark_bg"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="背景变暗"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_left_alpha_in"
+            style="@style/ListTextStyle"
+            android:text="左侧进入左侧退出alpha" />
 
-                <TextView
-                    android:id="@+id/tv_show_tran_bg"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="背景全透明"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_right_in"
+            style="@style/ListTextStyle"
+            android:text="右侧进入右侧退出" />
 
-                <TextView
-                    android:id="@+id/tv_show_bottom_zoom_alpha_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="底部缩放进入底部缩放退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_right_alpha_in"
+            style="@style/ListTextStyle"
+            android:text="右侧进入右侧退出alpha" />
 
-                <TextView
-                    android:id="@+id/tv_show_target_full"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="在下面全屏"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tv_show_reveal"
+            style="@style/ListTextStyle"
+            android:text="圆形揭露" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:orientation="horizontal">
+    </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tv_show_target_right"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="在右边"
-                        android:textColor="#232323"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tv_show_target_top"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="在上面"
-                        android:textColor="#232323"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tv_show_target_bottom"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="在下面"
-                        android:textColor="#232323"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tv_show_target_left"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="在左边"
-                        android:textColor="#232323"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tv_show_bottom_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="底部进入底部退出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_bottom_alpha_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="底部进入底部退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_top_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="顶部进入顶部退出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_top_alpha_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="顶部进入顶部退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_top_bottom"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="顶部进入底部退出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_top_bottom_alpha"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="顶部进入底部退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_bottom_top"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="底部进入顶部退出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_bottom_top_alpha"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="底部进入顶部退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_left_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="左侧进入左侧退出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_left_alpha_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="左侧进入左侧退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_right_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="右侧进入右侧退出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_right_alpha_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="右侧进入右侧退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_left_right"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="左侧进入右侧退出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_left_right_alpha"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="左侧进入右侧退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_right_left"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="右侧进入左侧退出"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_right_left_alpha"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="右侧进入左侧退出alpha"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_show_reveal"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center"
-                    android:text="圆形揭露"
-                    android:textColor="#232323"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-        </ScrollView>
-
-    </FrameLayout>
-
-</LinearLayout>
+</ScrollView>

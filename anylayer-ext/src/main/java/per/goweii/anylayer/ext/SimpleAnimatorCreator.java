@@ -1,7 +1,9 @@
 package per.goweii.anylayer.ext;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,9 +11,6 @@ import androidx.annotation.Nullable;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.utils.AnimatorHelper;
 
-/**
- * @author CuiZhen
- */
 public class SimpleAnimatorCreator implements Layer.AnimatorCreator {
     private final AnimStyle animStyle;
 
@@ -46,6 +45,7 @@ public class SimpleAnimatorCreator implements Layer.AnimatorCreator {
         LEFT_ALPHA,
         RIGHT,
         RIGHT_ALPHA,
+        BOTTOM_ZOOM_ALPHA,
         ;
 
         @Nullable
@@ -76,6 +76,14 @@ public class SimpleAnimatorCreator implements Layer.AnimatorCreator {
                     return AnimatorHelper.createRightInAnim(target);
                 case RIGHT_ALPHA:
                     return AnimatorHelper.createRightAlphaInAnim(target);
+                case BOTTOM_ZOOM_ALPHA:
+                    AnimatorSet set = new AnimatorSet();
+                    Animator a1 = AnimatorHelper.createBottomAlphaInAnim(target, 0.3F);
+                    a1.setInterpolator(new DecelerateInterpolator(2.5f));
+                    Animator a2 = AnimatorHelper.createZoomAlphaInAnim(target, 0.9F);
+                    a2.setInterpolator(new DecelerateInterpolator(1.5f));
+                    set.playTogether(a1, a2);
+                    return set;
             }
         }
 
@@ -107,6 +115,14 @@ public class SimpleAnimatorCreator implements Layer.AnimatorCreator {
                     return AnimatorHelper.createRightOutAnim(target);
                 case RIGHT_ALPHA:
                     return AnimatorHelper.createRightAlphaOutAnim(target);
+                case BOTTOM_ZOOM_ALPHA:
+                    AnimatorSet set = new AnimatorSet();
+                    Animator a1 = AnimatorHelper.createBottomAlphaOutAnim(target, 0.3F);
+                    a1.setInterpolator(new DecelerateInterpolator(1.5f));
+                    Animator a2 = AnimatorHelper.createZoomAlphaOutAnim(target, 0.9F);
+                    a2.setInterpolator(new DecelerateInterpolator(2.5f));
+                    set.playTogether(a1, a2);
+                    return set;
             }
         }
     }

@@ -145,7 +145,7 @@ public class DecorLayer extends FrameLayer {
         padding.top += margin.top;
         padding.right += margin.right;
         padding.bottom += margin.bottom;
-        setViewPaddingTo(view, margin);
+        setViewPaddingTo(view, padding);
         padding.setEmpty();
         margin.setEmpty();
     }
@@ -180,9 +180,9 @@ public class DecorLayer extends FrameLayer {
     }
 
     protected void setViewPaddingTo(@NonNull View view, @NonNull Rect padding) {
-        if (view.getPaddingLeft() != padding.left &&
-                view.getPaddingTop() != padding.top &&
-                view.getPaddingRight() != padding.right &&
+        if (view.getPaddingLeft() != padding.left ||
+                view.getPaddingTop() != padding.top ||
+                view.getPaddingRight() != padding.right ||
                 view.getPaddingBottom() != padding.bottom) {
             view.setPadding(padding.left, padding.top, padding.right, padding.bottom);
         }
