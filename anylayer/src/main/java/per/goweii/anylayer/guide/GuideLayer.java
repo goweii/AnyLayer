@@ -3,7 +3,6 @@ package per.goweii.anylayer.guide;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.SparseArray;
@@ -179,7 +178,7 @@ public class GuideLayer extends DecorLayer {
 
     @Override
     protected void fitDecorInsides() {
-        fitDecorInsidesToViewMargin(getViewHolder().getContentWrapper());
+        fitDecorInsidesToViewPadding(getViewHolder().getContentWrapper());
         Utils.onViewLayout(getViewHolder().getChild(), new Runnable() {
             @Override
             public void run() {
@@ -199,32 +198,32 @@ public class GuideLayer extends DecorLayer {
         mLocationTemp[1] = 0;
     }
 
+    private final Rect mTargetRect = new Rect();
+
     public void updateLocation() {
         resetLocationTemp();
         final int[] location = mLocationTemp;
         getViewHolder().getBackground().clear();
         getViewHolder().getChild().getLocationInWindow(location);
         for (Mapping mapping : getConfig().mMapping) {
-            final Rect targetRect = mapping.getTargetRect();
-            if (!targetRect.isEmpty()) {
-                final Rect holeRect = new Rect(targetRect);
-                holeRect.offset(-location[0], -location[1]);
-                holeRect.offset(mapping.getOffsetX(), mapping.getOffsetY());
-                holeRect.set(holeRect.left - mapping.getPaddingLeft(),
-                        holeRect.top - mapping.getPaddingTop(),
-                        holeRect.right + mapping.getPaddingRight(),
-                        holeRect.bottom + mapping.getPaddingBottom());
-                getViewHolder().getBackground().addRect(holeRect, mapping.getCornerRadius());
-                initLocation(holeRect, mapping);
+            mTargetRect.set(mapping.getTargetRect());
+            if (!mTargetRect.isEmpty()) {
+                mTargetRect.offset(-location[0], -location[1]);
+                mTargetRect.offset(mapping.getOffsetX(), mapping.getOffsetY());
+                mTargetRect.set(mTargetRect.left - mapping.getPaddingLeft(),
+                        mTargetRect.top - mapping.getPaddingTop(),
+                        mTargetRect.right + mapping.getPaddingRight(),
+                        mTargetRect.bottom + mapping.getPaddingBottom());
+                getViewHolder().getBackground().addRect(mTargetRect, mapping.getCornerRadius());
             } else {
-                Rect wrapperRect = new Rect(
+                mTargetRect.set(
                         getViewHolder().getContentWrapper().getLeft(),
                         getViewHolder().getContentWrapper().getTop(),
                         getViewHolder().getContentWrapper().getRight(),
                         getViewHolder().getContentWrapper().getBottom()
                 );
-                initLocation(wrapperRect, mapping);
             }
+            initLocation(mTargetRect, mapping);
         }
     }
 
@@ -261,10 +260,10 @@ public class GuideLayer extends DecorLayer {
                 view.offsetLeftAndRight(parent.getWidth() + mapping.getMarginLeft());
                 break;
             case ALIGN_PARENT_LEFT:
-                view.offsetLeftAndRight(mapping.getMarginLeft());
+                view.offsetLeftAndRight(parent.getPaddingLeft() + mapping.getMarginLeft());
                 break;
             case ALIGN_PARENT_RIGHT:
-                view.offsetLeftAndRight(parent.getWidth() - view.getWidth() - mapping.getMarginRight());
+                view.offsetLeftAndRight(parent.getWidth() - parent.getPaddingRight() - view.getWidth() - mapping.getMarginRight());
                 break;
         }
         final int viewHeightWithMargin = view.getHeight() + mapping.getMarginTop() + mapping.getMarginBottom();
@@ -294,10 +293,10 @@ public class GuideLayer extends DecorLayer {
                 view.offsetTopAndBottom(parent.getHeight() + mapping.getMarginTop());
                 break;
             case ALIGN_PARENT_TOP:
-                view.offsetTopAndBottom(mapping.getMarginTop());
+                view.offsetTopAndBottom(parent.getPaddingTop() + mapping.getMarginTop());
                 break;
             case ALIGN_PARENT_BOTTOM:
-                view.offsetTopAndBottom(parent.getHeight() - view.getHeight() - mapping.getMarginBottom());
+                view.offsetTopAndBottom(parent.getHeight() - parent.getPaddingBottom() - view.getHeight() - mapping.getMarginBottom());
                 break;
         }
     }
