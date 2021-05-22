@@ -4,4 +4,6 @@
     <item type="id" name="anylayer_dialog_content" />
     <item type="id" name="anylayer_dialog_content_really" />
     <item type="id" name="anylayer_dialog_content_effect" />
+    <item type="id" name="anylayler_notification_content_really" />
+    <item type="id" name="anylayler_notification_content_effect" />
 </resources>

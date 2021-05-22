@@ -141,6 +141,10 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 AnyLayer.getGlobalConfig().notificationIcon = getResources().getDrawable(R.drawable.ic_notificstion);
                 AnyLayer.getGlobalConfig().notificationLabel = getString(R.string.app_name);
                 new NotificationLayer(this)
+                        .setContentBlurSimple(8)
+                        .setContentBlurRadius(20)
+                        .setContentBlurColorInt(Color.parseColor("#aaffffff"))
+                        .setContentBlurCornerRadiusDp(10)
                         .setTitle("这是一个通知")
                         .setDesc(R.string.dialog_msg)
                         .setOnNotificationClickListener(new Layer.OnClickListener() {

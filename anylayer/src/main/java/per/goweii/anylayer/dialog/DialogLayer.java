@@ -513,7 +513,7 @@ public class DialogLayer extends DecorLayer {
             VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
             backdropVisualEffectView.setVisualEffect(visualEffect);
         } else {
-            ImageView backgroundView = Utils.requireNonNull(getViewHolder().getBackgroundImageView());
+            ImageView backgroundView = (ImageView) getViewHolder().getBackground();
             if (getConfig().mBackgroundBitmap != null) {
                 backgroundView.setImageBitmap(getConfig().mBackgroundBitmap);
                 if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
@@ -1064,12 +1064,18 @@ public class DialogLayer extends DecorLayer {
             effectViewLP.addRule(RelativeLayout.ALIGN_RIGHT, realContent.getId());
             relativeLayout.addView(backdropVisualEffectView, effectViewLP);
 
-            RelativeLayout.LayoutParams contentViewLP = new RelativeLayout.LayoutParams(layoutParams);
+            RelativeLayout.LayoutParams contentViewLP = new RelativeLayout.LayoutParams(
+                    layoutParams.width, layoutParams.height
+            );
             relativeLayout.addView(realContent, contentViewLP);
 
             cardView.addView(relativeLayout, new CardView.LayoutParams(buildWrapInnerLayoutParams(layoutParams)));
 
             FrameLayout.LayoutParams cardLP = new FrameLayout.LayoutParams(buildWrapInnerLayoutParams(layoutParams));
+            cardLP.leftMargin = layoutParams.leftMargin;
+            cardLP.topMargin = layoutParams.topMargin;
+            cardLP.rightMargin = layoutParams.rightMargin;
+            cardLP.bottomMargin = layoutParams.bottomMargin;
             cardLP.gravity = layoutParams.gravity;
             contentWrapper.addView(cardView, contentIndex, cardLP);
 
@@ -1116,22 +1122,6 @@ public class DialogLayer extends DecorLayer {
             getChild().addView(backdropVisualEffectView, index, new ViewGroup.LayoutParams(layoutParams));
             mBackground = backdropVisualEffectView;
             return backdropVisualEffectView;
-        }
-
-        @Nullable
-        public BackdropVisualEffectView getBackgroundVisualEffectView() {
-            if (mBackground instanceof BackdropVisualEffectView) {
-                return (BackdropVisualEffectView) mBackground;
-            }
-            return null;
-        }
-
-        @Nullable
-        public ImageView getBackgroundImageView() {
-            if (mBackground instanceof ImageView) {
-                return (ImageView) mBackground;
-            }
-            return null;
         }
     }
 

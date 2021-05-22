@@ -3,8 +3,10 @@ package per.goweii.anylayer.notification;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,9 +14,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
@@ -22,6 +27,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +43,9 @@ import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.MaxSizeFrameLayout;
 import per.goweii.anylayer.widget.SwipeLayout;
+import per.goweii.visualeffect.blur.RSBlurEffect;
+import per.goweii.visualeffect.core.VisualEffect;
+import per.goweii.visualeffect.view.BackdropVisualEffectView;
 
 public class NotificationLayer extends DecorLayer {
 
@@ -154,6 +163,7 @@ public class NotificationLayer extends DecorLayer {
     @CallSuper
     @Override
     protected void onAttach() {
+        onInitContent();
         super.onAttach();
         getViewHolder().getChild().setSwipeDirection(
                 SwipeLayout.Direction.TOP | SwipeLayout.Direction.LEFT | SwipeLayout.Direction.RIGHT
@@ -256,6 +266,43 @@ public class NotificationLayer extends DecorLayer {
         super.onDestroy();
     }
 
+    protected void onInitContent() {
+        if (getConfig().mContentBlurPercent > 0) {
+            final BackdropVisualEffectView backdropVisualEffectView = getViewHolder()
+                    .replaceContentToBackdropVisualEffectView(getConfig().mContentBlurCornerRadius);
+            backdropVisualEffectView.setOverlayColor(getConfig().mContentBlurColor);
+            Utils.onViewLayout(backdropVisualEffectView, new Runnable() {
+                @Override
+                public void run() {
+                    int w = backdropVisualEffectView.getWidth();
+                    int h = backdropVisualEffectView.getHeight();
+                    float radius = Math.min(w, h) * getConfig().mContentBlurPercent;
+                    float simple = getConfig().mContentBlurSimple;
+                    if (radius > 25) {
+                        simple = simple * (radius / 25);
+                        radius = 25;
+                    }
+                    backdropVisualEffectView.setSimpleSize(simple);
+                    VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
+                    backdropVisualEffectView.setVisualEffect(visualEffect);
+                }
+            });
+        } else if (getConfig().mContentBlurRadius > 0) {
+            BackdropVisualEffectView backdropVisualEffectView = getViewHolder()
+                    .replaceContentToBackdropVisualEffectView(getConfig().mContentBlurCornerRadius);
+            backdropVisualEffectView.setOverlayColor(getConfig().mContentBlurColor);
+            float radius = getConfig().mContentBlurRadius;
+            float simple = getConfig().mContentBlurSimple;
+            if (radius > 25) {
+                simple = simple * (radius / 25);
+                radius = 25;
+            }
+            backdropVisualEffectView.setSimpleSize(simple);
+            VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
+            backdropVisualEffectView.setVisualEffect(visualEffect);
+        }
+    }
+
     @Override
     protected void fitDecorInsides() {
         fitDecorInsidesToViewPadding(getViewHolder().getChild());
@@ -342,6 +389,58 @@ public class NotificationLayer extends DecorLayer {
     @NonNull
     public NotificationLayer setMaxHeight(int maxHeight) {
         getConfig().mMaxHeight = maxHeight;
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setContentBlurRadius(@FloatRange(from = 0F) float radius) {
+        getConfig().mContentBlurRadius = radius;
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setContentBlurPercent(@FloatRange(from = 0F) float percent) {
+        getConfig().mContentBlurPercent = percent;
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setContentBlurSimple(@FloatRange(from = 1F) float simple) {
+        getConfig().mContentBlurSimple = simple;
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setContentBlurColorInt(@ColorInt int colorInt) {
+        getConfig().mContentBlurColor = colorInt;
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setContentBlurColorRes(@ColorRes int colorRes) {
+        getConfig().mContentBlurColor = getActivity().getResources().getColor(colorRes);
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setContentBlurCornerRadius(float radius, int unit) {
+        getConfig().mContentBlurCornerRadius = TypedValue.applyDimension(
+                unit, radius, getActivity().getResources().getDisplayMetrics()
+        );
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setContentBlurCornerRadiusDp(float radius) {
+        getConfig().mContentBlurCornerRadius = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, radius, getActivity().getResources().getDisplayMetrics()
+        );
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setContentBlurCornerRadiusPx(float radius) {
+        getConfig().mContentBlurCornerRadius = radius;
         return this;
     }
 
@@ -493,6 +592,81 @@ public class NotificationLayer extends DecorLayer {
             return mContent;
         }
 
+        public BackdropVisualEffectView replaceContentToBackdropVisualEffectView(float cornerRadius) {
+            if (mContent instanceof CardView && mContent.getId() == R.id.anylayler_notification_content) {
+                return (BackdropVisualEffectView) mContent.findViewById(R.id.anylayler_notification_content_effect);
+            }
+            final ViewGroup contentWrapper = mContentWrapper;
+            final View realContent = mContent;
+            final Context context = contentWrapper.getContext();
+            if (realContent.getId() == View.NO_ID) {
+                realContent.setId(R.id.anylayler_notification_content_really);
+            }
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) realContent.getLayoutParams();
+
+            int contentIndex = contentWrapper.indexOfChild(realContent);
+            contentWrapper.removeViewAt(contentIndex);
+
+            Drawable realContentBg = realContent.getBackground();
+            if (realContentBg != null) {
+                realContentBg.setAlpha(0);
+            }
+
+            BackdropVisualEffectView backdropVisualEffectView = new BackdropVisualEffectView(context);
+            backdropVisualEffectView.setId(R.id.anylayler_notification_content_effect);
+            backdropVisualEffectView.setShowDebugInfo(false);
+
+            CardView cardView = new CardView(context);
+            cardView.setId(R.id.anylayler_notification_content);
+            cardView.setCardBackgroundColor(Color.TRANSPARENT);
+            cardView.setMaxCardElevation(0);
+            cardView.setCardElevation(0);
+            cardView.setRadius(cornerRadius);
+
+            RelativeLayout relativeLayout = new RelativeLayout(context);
+
+            RelativeLayout.LayoutParams effectViewLP = new RelativeLayout.LayoutParams(0, 0);
+            effectViewLP.addRule(RelativeLayout.ALIGN_TOP, realContent.getId());
+            effectViewLP.addRule(RelativeLayout.ALIGN_BOTTOM, realContent.getId());
+            effectViewLP.addRule(RelativeLayout.ALIGN_LEFT, realContent.getId());
+            effectViewLP.addRule(RelativeLayout.ALIGN_RIGHT, realContent.getId());
+            relativeLayout.addView(backdropVisualEffectView, effectViewLP);
+
+            RelativeLayout.LayoutParams contentViewLP = new RelativeLayout.LayoutParams(
+                    layoutParams.width, layoutParams.height
+            );
+            relativeLayout.addView(realContent, contentViewLP);
+
+            cardView.addView(relativeLayout, new CardView.LayoutParams(buildWrapInnerLayoutParams(layoutParams)));
+
+            FrameLayout.LayoutParams cardLP = new FrameLayout.LayoutParams(buildWrapInnerLayoutParams(layoutParams));
+            cardLP.leftMargin = layoutParams.leftMargin;
+            cardLP.topMargin = layoutParams.topMargin;
+            cardLP.rightMargin = layoutParams.rightMargin;
+            cardLP.bottomMargin = layoutParams.bottomMargin;
+            cardLP.gravity = layoutParams.gravity;
+            contentWrapper.addView(cardView, contentIndex, cardLP);
+
+            mContent = cardView;
+            return backdropVisualEffectView;
+        }
+
+        @NonNull
+        private ViewGroup.LayoutParams buildWrapInnerLayoutParams(@NonNull ViewGroup.LayoutParams layoutParams) {
+            final int lpw, lph;
+            if (layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT) {
+                lpw = ViewGroup.LayoutParams.MATCH_PARENT;
+            } else {
+                lpw = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
+            if (layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT) {
+                lph = ViewGroup.LayoutParams.MATCH_PARENT;
+            } else {
+                lph = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
+            return new ViewGroup.LayoutParams(lpw, lph);
+        }
+
         @Nullable
         @Override
         protected View getNoIdClickView() {
@@ -532,6 +706,13 @@ public class NotificationLayer extends DecorLayer {
 
     protected static class Config extends DecorLayer.Config {
         protected int mContentViewId = R.layout.anylayer_notification_content;
+
+        protected float mContentBlurPercent = 0F;
+        protected float mContentBlurRadius = 0F;
+        protected float mContentBlurSimple = 4F;
+        @ColorInt
+        protected int mContentBlurColor = Color.TRANSPARENT;
+        protected float mContentBlurCornerRadius = 0F;
 
         protected long mDuration = GlobalConfig.get().notificationDuration;
         protected int mMaxWidth = GlobalConfig.get().notificationMaxWidth;

@@ -2,10 +2,7 @@ package per.goweii.anylayer.ktx
 
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.annotation.DrawableRes
-import androidx.annotation.FloatRange
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
+import androidx.annotation.*
 import per.goweii.anylayer.ext.DefaultNotificationOnSwipeListener
 import per.goweii.anylayer.notification.NotificationLayer
 import per.goweii.anylayer.widget.SwipeLayout
@@ -24,6 +21,38 @@ fun <T : NotificationLayer> T.maxWidth(maxWidth: Int) = this.apply {
 
 fun <T : NotificationLayer> T.maxHeight(maxHeight: Int) = this.apply {
     this.setMaxHeight(maxHeight)
+}
+
+fun <T :  NotificationLayer> T.contentBlurRadius(@FloatRange(from = 0.0) radius: Float) = this.apply {
+    this.setContentBlurRadius(radius)
+}
+
+fun <T :  NotificationLayer> T.contentBlurPercent(@FloatRange(from = 0.0) percent: Float) = this.apply {
+    this.setContentBlurPercent(percent)
+}
+
+fun <T :  NotificationLayer> T.contentBlurScale(@FloatRange(from = 1.0) scale: Float) = this.apply {
+    this.setContentBlurSimple(scale)
+}
+
+fun <T :  NotificationLayer> T.contentBlurCornerRadius(@FloatRange(from = 0.0) radius: Float, unit: Int) = this.apply {
+    this.setContentBlurCornerRadius(radius, unit)
+}
+
+fun <T :  NotificationLayer> T.contentBlurCornerRadiusPx(@FloatRange(from = 0.0) radius: Float) = this.apply {
+    this.setContentBlurCornerRadiusPx(radius)
+}
+
+fun <T :  NotificationLayer> T.contentBlurCornerRadiusDp(@FloatRange(from = 0.0) radius: Float) = this.apply {
+    this.setContentBlurCornerRadiusDp(radius)
+}
+
+fun <T :  NotificationLayer> T.contentBlurColorInt(@ColorInt colorInt: Int) = this.apply {
+    this.setContentBlurColorInt(colorInt)
+}
+
+fun <T :  NotificationLayer> T.contentBlurColorRes(@ColorRes colorRes: Int) = this.apply {
+    this.setContentBlurColorRes(colorRes)
 }
 
 fun <T : NotificationLayer> T.icon(@DrawableRes icon: Int) = this.apply {
