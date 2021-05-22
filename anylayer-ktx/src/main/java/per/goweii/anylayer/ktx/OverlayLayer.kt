@@ -68,19 +68,19 @@ fun <T : OverlayLayer> T.outside(outside: Boolean) = this.apply {
     this.setOutside(outside)
 }
 
-fun <T : OverlayLayer> T.marginLeft(margin: Int) = this.apply {
+fun <T : OverlayLayer> T.marginLeft(margin: Int?) = this.apply {
     this.setMarginLeft(margin)
 }
 
-fun <T : OverlayLayer> T.marginTop(margin: Int) = this.apply {
+fun <T : OverlayLayer> T.marginTop(margin: Int?) = this.apply {
     this.setMarginTop(margin)
 }
 
-fun <T : OverlayLayer> T.marginRight(margin: Int) = this.apply {
+fun <T : OverlayLayer> T.marginRight(margin: Int?) = this.apply {
     this.setMarginRight(margin)
 }
 
-fun <T : OverlayLayer> T.marginBottom(margin: Int) = this.apply {
+fun <T : OverlayLayer> T.marginBottom(margin: Int?) = this.apply {
     this.setMarginBottom(margin)
 }
 

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -18,12 +19,12 @@ import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
@@ -360,8 +361,8 @@ public class GuideLayer extends DecorLayer {
 
     protected static class Config extends DecorLayer.Config {
         @ColorInt
-        protected int mBackgroundColor = GlobalConfig.get().guideBackgroundInt;
-        protected List<Mapping> mMapping = new ArrayList<>(1);
+        protected int mBackgroundColor = ColorUtils.setAlphaComponent(Color.BLACK, (int) (255 * 0.6));
+        protected final List<Mapping> mMapping = new ArrayList<>(1);
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

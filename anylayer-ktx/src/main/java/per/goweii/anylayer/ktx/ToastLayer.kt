@@ -45,19 +45,19 @@ fun <T : ToastLayer> T.gravity(gravity: Int) = this.apply {
     this.setGravity(gravity)
 }
 
-fun <T : ToastLayer> T.marginLeft(margin: Int) = this.apply {
+fun <T : ToastLayer> T.marginLeft(margin: Int?) = this.apply {
     this.setMarginLeft(margin)
 }
 
-fun <T : ToastLayer> T.marginTop(margin: Int) = this.apply {
+fun <T : ToastLayer> T.marginTop(margin: Int?) = this.apply {
     this.setMarginTop(margin)
 }
 
-fun <T : ToastLayer> T.marginRight(margin: Int) = this.apply {
+fun <T : ToastLayer> T.marginRight(margin: Int?) = this.apply {
     this.setMarginRight(margin)
 }
 
-fun <T : ToastLayer> T.marginBottom(margin: Int) = this.apply {
+fun <T : ToastLayer> T.marginBottom(margin: Int?) = this.apply {
     this.setMarginBottom(margin)
 }
 

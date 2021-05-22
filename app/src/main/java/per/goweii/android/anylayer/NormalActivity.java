@@ -137,9 +137,6 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .show();
                 break;
             case R.id.tv_show_notification:
-                AnyLayer.getGlobalConfig().notificationTimePattern = "HH:mm";
-                AnyLayer.getGlobalConfig().notificationIcon = getResources().getDrawable(R.drawable.ic_notificstion);
-                AnyLayer.getGlobalConfig().notificationLabel = getString(R.string.app_name);
                 new NotificationLayer(this)
                         .setContentBlurSimple(8)
                         .setContentBlurRadius(20)
@@ -147,6 +144,9 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                         .setContentBlurCornerRadiusDp(10)
                         .setTitle("这是一个通知")
                         .setDesc(R.string.dialog_msg)
+                        .setTimePattern("HH:mm")
+                        .setIcon(R.drawable.ic_notificstion)
+                        .setLabel(R.string.app_name)
                         .setOnNotificationClickListener(new Layer.OnClickListener() {
                             @Override
                             public void onClick(@NonNull Layer layer, @NonNull View view) {

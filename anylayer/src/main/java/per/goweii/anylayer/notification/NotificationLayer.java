@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
@@ -332,9 +331,9 @@ public class NotificationLayer extends DecorLayer {
                     getViewHolder().getTime().setVisibility(View.VISIBLE);
                     getViewHolder().getTime().setText(getConfig().mTime);
                 } else {
-                    if (!TextUtils.isEmpty(GlobalConfig.get().notificationTimePattern)) {
+                    if (!TextUtils.isEmpty(getConfig().mTimePattern)) {
                         getViewHolder().getTime().setVisibility(View.VISIBLE);
-                        String time = new SimpleDateFormat(GlobalConfig.get().notificationTimePattern, Locale.getDefault()).format(new Date());
+                        String time = new SimpleDateFormat(getConfig().mTimePattern, Locale.getDefault()).format(new Date());
                         getViewHolder().getTime().setText(time);
                     } else {
                         getViewHolder().getTime().setVisibility(View.GONE);
@@ -471,6 +470,12 @@ public class NotificationLayer extends DecorLayer {
     @NonNull
     public NotificationLayer setTime(@Nullable CharSequence time) {
         getConfig().mTime = time;
+        return this;
+    }
+
+    @NonNull
+    public NotificationLayer setTimePattern(@Nullable String pattern) {
+        getConfig().mTimePattern = pattern;
         return this;
     }
 
@@ -714,13 +719,14 @@ public class NotificationLayer extends DecorLayer {
         protected int mContentBlurColor = Color.TRANSPARENT;
         protected float mContentBlurCornerRadius = 0F;
 
-        protected long mDuration = GlobalConfig.get().notificationDuration;
-        protected int mMaxWidth = GlobalConfig.get().notificationMaxWidth;
-        protected int mMaxHeight = GlobalConfig.get().notificationMaxHeight;
+        protected long mDuration = 5000L;
+        protected int mMaxWidth = -1;
+        protected int mMaxHeight = -1;
 
-        protected CharSequence mLabel = GlobalConfig.get().notificationLabel;
-        protected Drawable mIcon = GlobalConfig.get().notificationIcon;
+        protected CharSequence mLabel = null;
+        protected Drawable mIcon = null;
         protected CharSequence mTime = null;
+        protected String mTimePattern = null;
         protected CharSequence mTitle = null;
         protected CharSequence mDesc = null;
 

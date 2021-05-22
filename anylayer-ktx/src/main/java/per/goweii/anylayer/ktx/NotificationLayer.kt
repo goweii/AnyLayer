@@ -23,35 +23,35 @@ fun <T : NotificationLayer> T.maxHeight(maxHeight: Int) = this.apply {
     this.setMaxHeight(maxHeight)
 }
 
-fun <T :  NotificationLayer> T.contentBlurRadius(@FloatRange(from = 0.0) radius: Float) = this.apply {
+fun <T : NotificationLayer> T.contentBlurRadius(@FloatRange(from = 0.0) radius: Float) = this.apply {
     this.setContentBlurRadius(radius)
 }
 
-fun <T :  NotificationLayer> T.contentBlurPercent(@FloatRange(from = 0.0) percent: Float) = this.apply {
+fun <T : NotificationLayer> T.contentBlurPercent(@FloatRange(from = 0.0) percent: Float) = this.apply {
     this.setContentBlurPercent(percent)
 }
 
-fun <T :  NotificationLayer> T.contentBlurScale(@FloatRange(from = 1.0) scale: Float) = this.apply {
+fun <T : NotificationLayer> T.contentBlurScale(@FloatRange(from = 1.0) scale: Float) = this.apply {
     this.setContentBlurSimple(scale)
 }
 
-fun <T :  NotificationLayer> T.contentBlurCornerRadius(@FloatRange(from = 0.0) radius: Float, unit: Int) = this.apply {
+fun <T : NotificationLayer> T.contentBlurCornerRadius(@FloatRange(from = 0.0) radius: Float, unit: Int) = this.apply {
     this.setContentBlurCornerRadius(radius, unit)
 }
 
-fun <T :  NotificationLayer> T.contentBlurCornerRadiusPx(@FloatRange(from = 0.0) radius: Float) = this.apply {
+fun <T : NotificationLayer> T.contentBlurCornerRadiusPx(@FloatRange(from = 0.0) radius: Float) = this.apply {
     this.setContentBlurCornerRadiusPx(radius)
 }
 
-fun <T :  NotificationLayer> T.contentBlurCornerRadiusDp(@FloatRange(from = 0.0) radius: Float) = this.apply {
+fun <T : NotificationLayer> T.contentBlurCornerRadiusDp(@FloatRange(from = 0.0) radius: Float) = this.apply {
     this.setContentBlurCornerRadiusDp(radius)
 }
 
-fun <T :  NotificationLayer> T.contentBlurColorInt(@ColorInt colorInt: Int) = this.apply {
+fun <T : NotificationLayer> T.contentBlurColorInt(@ColorInt colorInt: Int) = this.apply {
     this.setContentBlurColorInt(colorInt)
 }
 
-fun <T :  NotificationLayer> T.contentBlurColorRes(@ColorRes colorRes: Int) = this.apply {
+fun <T : NotificationLayer> T.contentBlurColorRes(@ColorRes colorRes: Int) = this.apply {
     this.setContentBlurColorRes(colorRes)
 }
 
@@ -73,6 +73,10 @@ fun <T : NotificationLayer> T.label(@StringRes label: Int) = this.apply {
 
 fun <T : NotificationLayer> T.time(time: CharSequence) = this.apply {
     this.setTime(time)
+}
+
+fun <T : NotificationLayer> T.timePattern(pattern: String) = this.apply {
+    this.setTimePattern(pattern)
 }
 
 fun <T : NotificationLayer> T.title(title: CharSequence) = this.apply {

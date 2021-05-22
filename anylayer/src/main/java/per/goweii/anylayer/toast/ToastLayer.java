@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +26,12 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 
 public class ToastLayer extends DecorLayer {
+    private final long mAnimDurDef = 220L;
     private final Runnable mDismissRunnable = new DismissRunnable();
 
     public ToastLayer(@NonNull Context context) {
@@ -129,13 +130,8 @@ public class ToastLayer extends DecorLayer {
     protected Animator onCreateInAnimator(@NonNull View view) {
         Animator animator = super.onCreateInAnimator(view);
         if (animator == null) {
-            if (GlobalConfig.get().toastAnimatorCreator != null) {
-                animator = GlobalConfig.get().toastAnimatorCreator.createInAnimator(view);
-            }
-        }
-        if (animator == null) {
             animator = AnimatorHelper.createZoomAlphaInAnim(view);
-            animator.setDuration(GlobalConfig.get().toastAnimDuration);
+            animator.setDuration(mAnimDurDef);
         }
         return animator;
     }
@@ -145,13 +141,8 @@ public class ToastLayer extends DecorLayer {
     protected Animator onCreateOutAnimator(@NonNull View view) {
         Animator animator = super.onCreateOutAnimator(view);
         if (animator == null) {
-            if (GlobalConfig.get().toastAnimatorCreator != null) {
-                animator = GlobalConfig.get().toastAnimatorCreator.createOutAnimator(view);
-            }
-        }
-        if (animator == null) {
             animator = AnimatorHelper.createZoomAlphaOutAnim(view);
-            animator.setDuration(GlobalConfig.get().toastAnimDuration);
+            animator.setDuration(mAnimDurDef);
         }
         return animator;
     }
@@ -166,16 +157,16 @@ public class ToastLayer extends DecorLayer {
         }
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
         params.gravity = getConfig().mGravity;
-        if (getConfig().mMarginLeft != Integer.MIN_VALUE) {
+        if (getConfig().mMarginLeft != null) {
             params.leftMargin = getConfig().mMarginLeft;
         }
-        if (getConfig().mMarginTop != Integer.MIN_VALUE) {
+        if (getConfig().mMarginTop != null) {
             params.topMargin = getConfig().mMarginTop;
         }
-        if (getConfig().mMarginRight != Integer.MIN_VALUE) {
+        if (getConfig().mMarginRight != null) {
             params.rightMargin = getConfig().mMarginRight;
         }
-        if (getConfig().mMarginBottom != Integer.MIN_VALUE) {
+        if (getConfig().mMarginBottom != null) {
             params.bottomMargin = getConfig().mMarginBottom;
         }
         getChild().setLayoutParams(params);
@@ -321,25 +312,25 @@ public class ToastLayer extends DecorLayer {
     }
 
     @NonNull
-    public ToastLayer setMarginLeft(int marginLeft) {
+    public ToastLayer setMarginLeft(@Nullable Integer marginLeft) {
         getConfig().mMarginLeft = marginLeft;
         return this;
     }
 
     @NonNull
-    public ToastLayer setMarginTop(int marginTop) {
+    public ToastLayer setMarginTop(@Nullable Integer marginTop) {
         getConfig().mMarginTop = marginTop;
         return this;
     }
 
     @NonNull
-    public ToastLayer setMarginRight(int marginRight) {
+    public ToastLayer setMarginRight(@Nullable Integer marginRight) {
         getConfig().mMarginRight = marginRight;
         return this;
     }
 
     @NonNull
-    public ToastLayer setMarginBottom(int marginBottom) {
+    public ToastLayer setMarginBottom(@Nullable Integer marginBottom) {
         getConfig().mMarginBottom = marginBottom;
         return this;
     }
@@ -444,24 +435,24 @@ public class ToastLayer extends DecorLayer {
     protected static class Config extends DecorLayer.Config {
         private int mContentViewId = R.layout.anylayer_toast_content;
         private boolean mRemoveOthers = true;
-        private long mDuration = GlobalConfig.get().toastDuration;
+        private long mDuration = 3000L;
         @NonNull
         private CharSequence mMessage = "";
         private int mIcon = 0;
         @Nullable
         private Drawable mBackgroundDrawable = null;
-        private int mBackgroundResource = GlobalConfig.get().toastBackgroundRes;
+        private int mBackgroundResource = -1;
         private int mBackgroundColor = Color.TRANSPARENT;
         @ColorInt
-        private int mTextColorInt = GlobalConfig.get().toastTextColorInt;
+        private int mTextColorInt = Color.TRANSPARENT;
         @ColorRes
-        private int mTextColorRes = GlobalConfig.get().toastTextColorRes;
-        private float mAlpha = GlobalConfig.get().toastAlpha;
-        private int mGravity = GlobalConfig.get().toastGravity;
-        private int mMarginLeft = GlobalConfig.get().toastMarginLeft;
-        private int mMarginTop = GlobalConfig.get().toastMarginTop;
-        private int mMarginRight = GlobalConfig.get().toastMarginRight;
-        private int mMarginBottom = GlobalConfig.get().toastMarginBottom;
+        private int mTextColorRes = -1;
+        private float mAlpha = 1;
+        private int mGravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        private Integer mMarginLeft = null;
+        private Integer mMarginTop = null;
+        private Integer mMarginRight = null;
+        private Integer mMarginBottom = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

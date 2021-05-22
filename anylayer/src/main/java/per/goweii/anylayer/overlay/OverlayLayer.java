@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
@@ -189,16 +188,16 @@ public class OverlayLayer extends DecorLayer {
         final Config config = getConfig();
         final View overlayView = getViewHolder().getOverlay();
         final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) overlayView.getLayoutParams();
-        if (config.mMarginLeft != Integer.MIN_VALUE) {
+        if (config.mMarginLeft != null) {
             params.leftMargin = config.mMarginLeft;
         }
-        if (config.mMarginTop != Integer.MIN_VALUE) {
+        if (config.mMarginTop != null) {
             params.topMargin = config.mMarginTop;
         }
-        if (config.mMarginRight != Integer.MIN_VALUE) {
+        if (config.mMarginRight != null) {
             params.rightMargin = config.mMarginRight;
         }
-        if (config.mMarginBottom != Integer.MIN_VALUE) {
+        if (config.mMarginBottom != null) {
             params.bottomMargin = config.mMarginBottom;
         }
         getListenerHolder().bindTouchListener(this);
@@ -333,22 +332,22 @@ public class OverlayLayer extends DecorLayer {
         return this;
     }
 
-    public OverlayLayer setMarginLeft(int margin) {
+    public OverlayLayer setMarginLeft(@Nullable Integer margin) {
         getConfig().mMarginLeft = margin;
         return this;
     }
 
-    public OverlayLayer setMarginTop(int margin) {
+    public OverlayLayer setMarginTop(@Nullable Integer margin) {
         getConfig().mMarginTop = margin;
         return this;
     }
 
-    public OverlayLayer setMarginRight(int margin) {
+    public OverlayLayer setMarginRight(@Nullable Integer margin) {
         getConfig().mMarginRight = margin;
         return this;
     }
 
-    public OverlayLayer setMarginBottom(int margin) {
+    public OverlayLayer setMarginBottom(@Nullable Integer margin) {
         getConfig().mMarginBottom = margin;
         return this;
     }
@@ -513,40 +512,40 @@ public class OverlayLayer extends DecorLayer {
     protected static class Config extends DecorLayer.Config {
         protected int mOverlayViewId = -1;
 
-        private boolean mOutside = GlobalConfig.get().overlayOutside;
-        private int mSnapEdge = GlobalConfig.get().overlaySnapEdge;
+        private boolean mOutside = true;
+        private int mSnapEdge = OverlayLayer.Edge.HORIZONTAL;
 
         @FloatRange(from = -2F, to = 2F)
-        private float mDefPercentX = GlobalConfig.get().overlayDefPercentX;
+        private float mDefPercentX = 2F;
         @FloatRange(from = -2F, to = 2F)
-        private float mDefPercentY = GlobalConfig.get().overlayDefPercentY;
+        private float mDefPercentY = 0.236F;
         @FloatRange(from = 0F, to = 1F)
-        private float mDefAlpha = GlobalConfig.get().overlayDefAlpha;
-        private float mDefScale = GlobalConfig.get().overlayDefScale;
+        private float mDefAlpha = 1F;
+        private float mDefScale = 1F;
 
-        private float mPivotX = GlobalConfig.get().overlayPivotX;
-        private float mPivotY = GlobalConfig.get().overlayPivotY;
+        private float mPivotX = 0.5F;
+        private float mPivotY = 0.5F;
 
         @FloatRange(from = 0F, to = 1F)
-        private float mNormalAlpha = GlobalConfig.get().overlayNormalAlpha;
-        private float mNormalScale = GlobalConfig.get().overlayNormalScale;
+        private float mNormalAlpha = 1F;
+        private float mNormalScale = 1F;
         @IntRange(from = 0)
-        private long mLowProfileDelay = GlobalConfig.get().overlayLowProfileDelay;
+        private long mLowProfileDelay = 3000L;
         @FloatRange(from = 0F, to = 1F)
-        private float mLowProfileAlpha = GlobalConfig.get().overlayLowProfileAlpha;
-        private float mLowProfileScale = GlobalConfig.get().overlayLowProfileScale;
+        private float mLowProfileAlpha = 0.8F;
+        private float mLowProfileScale = 1F;
         @FloatRange(from = 0F, to = 1F)
-        private float mLowProfileIndent = GlobalConfig.get().overlayLowProfileIndent;
+        private float mLowProfileIndent = 0F;
 
-        private int mMarginLeft = GlobalConfig.get().overlayMarginLeft;
-        private int mMarginTop = GlobalConfig.get().overlayMarginTop;
-        private int mMarginRight = GlobalConfig.get().overlayMarginRight;
-        private int mMarginBottom = GlobalConfig.get().overlayMarginBottom;
+        private Integer mMarginLeft = null;
+        private Integer mMarginTop = null;
+        private Integer mMarginRight = null;
+        private Integer mMarginBottom = null;
 
-        private int mPaddingLeft = GlobalConfig.get().overlayPaddingLeft;
-        private int mPaddingTop = GlobalConfig.get().overlayPaddingTop;
-        private int mPaddingRight = GlobalConfig.get().overlayPaddingRight;
-        private int mPaddingBottom = GlobalConfig.get().overlayPaddingBottom;
+        private int mPaddingLeft = 0;
+        private int mPaddingTop = 0;
+        private int mPaddingRight = 0;
+        private int mPaddingBottom = 0;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {

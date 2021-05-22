@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.SoftInputHelper;
@@ -45,9 +44,8 @@ import per.goweii.visualeffect.core.VisualEffect;
 import per.goweii.visualeffect.view.BackdropVisualEffectView;
 
 public class DialogLayer extends DecorLayer {
-
-    private final long mAnimDurDef = GlobalConfig.get().dialogAnimDuration;
-    private final float mDimAmountDef = GlobalConfig.get().dialogDimAmount;
+    private final long mAnimDurDef = 220L;
+    private final float mDimAmountDef = 0.6F;
 
     private SoftInputHelper mSoftInputHelper = null;
 
@@ -163,14 +161,8 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected Animator onCreateDefBackgroundInAnimator(@NonNull View view) {
-        Animator animator = null;
-        if (GlobalConfig.get().dialogBackgroundAnimatorCreator != null) {
-            animator = GlobalConfig.get().dialogBackgroundAnimatorCreator.createInAnimator(view);
-        }
-        if (animator == null) {
-            animator = AnimatorHelper.createAlphaInAnim(view);
-            animator.setDuration(mAnimDurDef);
-        }
+        Animator animator = AnimatorHelper.createAlphaInAnim(view);
+        animator.setDuration(mAnimDurDef);
         return animator;
     }
 
@@ -225,14 +217,8 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected Animator onCreateDefContentInAnimator(@NonNull View view) {
-        Animator animator = null;
-        if (GlobalConfig.get().dialogContentAnimatorCreator != null) {
-            animator = GlobalConfig.get().dialogContentAnimatorCreator.createInAnimator(view);
-        }
-        if (animator == null) {
-            animator = AnimatorHelper.createZoomAlphaInAnim(view);
-            animator.setDuration(mAnimDurDef);
-        }
+        Animator animator = AnimatorHelper.createZoomAlphaInAnim(view);
+        animator.setDuration(mAnimDurDef);
         return animator;
     }
 
@@ -262,14 +248,8 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected Animator onCreateDefBackgroundOutAnimator(@NonNull View view) {
-        Animator animator = null;
-        if (GlobalConfig.get().dialogBackgroundAnimatorCreator != null) {
-            animator = GlobalConfig.get().dialogBackgroundAnimatorCreator.createOutAnimator(view);
-        }
-        if (animator == null) {
-            animator = AnimatorHelper.createAlphaOutAnim(view);
-            animator.setDuration(mAnimDurDef);
-        }
+        Animator animator = AnimatorHelper.createAlphaOutAnim(view);
+        animator.setDuration(mAnimDurDef);
         return animator;
     }
 
@@ -324,14 +304,8 @@ public class DialogLayer extends DecorLayer {
 
     @NonNull
     protected Animator onCreateDefContentOutAnimator(@NonNull View view) {
-        Animator animator = null;
-        if (GlobalConfig.get().dialogContentAnimatorCreator != null) {
-            animator = GlobalConfig.get().dialogContentAnimatorCreator.createOutAnimator(view);
-        }
-        if (animator == null) {
-            animator = AnimatorHelper.createZoomAlphaOutAnim(view);
-            animator.setDuration(mAnimDurDef);
-        }
+        Animator animator = AnimatorHelper.createZoomAlphaOutAnim(view);
+        animator.setDuration(mAnimDurDef);
         return animator;
     }
 
