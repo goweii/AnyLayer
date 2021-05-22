@@ -108,7 +108,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 .addMapping(new GuideLayer.Mapping()
                         .setGuideView(textView3)
                         .setHorizontalAlign(GuideLayer.Align.Horizontal.CENTER)
-                        .setVerticalAlign(GuideLayer.Align.Vertical.ALIGN_BOTTOM)
+                        .setVerticalAlign(GuideLayer.Align.Vertical.ALIGN_PARENT_BOTTOM)
                         .setMarginBottom(60)
                         .addOnClickListener(new Layer.OnClickListener() {
                             @Override
@@ -515,7 +515,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_menu:
                 if (anyLayer_show_menu == null) {
                     anyLayer_show_menu = AnyLayer.popup(findViewById(R.id.tv_show_menu))
-                            .setAlign(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, true)
+                            .setAlign(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, false)
                             .setOffsetYdp(15)
                             .setOutsideTouchToDismiss(true)
                             .setOutsideInterceptTouchEvent(false)
