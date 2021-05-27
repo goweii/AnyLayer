@@ -12,20 +12,11 @@ import per.goweii.anylayer.guide.GuideLayer;
 import per.goweii.anylayer.notification.NotificationLayer;
 import per.goweii.anylayer.popup.PopupLayer;
 import per.goweii.anylayer.toast.ToastLayer;
-import per.goweii.burred.Blurred;
 
 public final class AnyLayer {
 
     public static void init(@NonNull Application application) {
         ActivityHolder.init(application);
-    }
-
-    public static void initBlurred(@NonNull Context context) {
-        Blurred.init(context);
-    }
-
-    public static void recycleBlurred() {
-        Blurred.recycle();
     }
 
     @NonNull

@@ -3,6 +3,7 @@ package per.goweii.anylayer.guide;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
@@ -128,13 +129,18 @@ public class GuideLayer extends DecorLayer {
             }
             mapping.bindOnClickListener(this);
         }
+        Utils.onViewLayout(getViewHolder().getChild(), new Runnable() {
+            @Override
+            public void run() {
+                updateLocation();
+            }
+        });
     }
 
     @CallSuper
     @Override
     protected void onAppear() {
         super.onAppear();
-        updateLocation();
     }
 
     @CallSuper
@@ -168,9 +174,25 @@ public class GuideLayer extends DecorLayer {
     }
 
     @Override
+    protected void fitDecorInsides() {
+        fitDecorInsidesToViewMargin(getViewHolder().getContentWrapper());
+    }
+
+    @Override
     public void onGlobalLayout() {
         super.onGlobalLayout();
         updateLocation();
+    }
+
+    @Override
+    protected void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Utils.onViewLayout(getViewHolder().getChild(), new Runnable() {
+            @Override
+            public void run() {
+                updateLocation();
+            }
+        });
     }
 
     public void updateLocation() {
@@ -190,9 +212,12 @@ public class GuideLayer extends DecorLayer {
                 getViewHolder().getBackground().addRect(holeRect, mapping.getCornerRadius());
                 initLocation(holeRect, mapping);
             } else {
-                Rect wrapperRect = new Rect(0, 0,
-                        getViewHolder().getContentWrapper().getWidth(),
-                        getViewHolder().getContentWrapper().getHeight());
+                Rect wrapperRect = new Rect(
+                        getViewHolder().getContentWrapper().getLeft(),
+                        getViewHolder().getContentWrapper().getTop(),
+                        getViewHolder().getContentWrapper().getRight(),
+                        getViewHolder().getContentWrapper().getBottom()
+                );
                 initLocation(wrapperRect, mapping);
             }
         }

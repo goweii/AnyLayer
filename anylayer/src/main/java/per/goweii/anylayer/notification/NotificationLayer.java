@@ -153,8 +153,6 @@ public class NotificationLayer extends DecorLayer {
     @Override
     protected void onAttach() {
         super.onAttach();
-        getViewHolder().getChild().setPadding(0, Utils.getStatusBarHeight(getActivity()), 0, 0);
-        getViewHolder().getChild().setClipToPadding(false);
         getViewHolder().getChild().setSwipeDirection(
                 SwipeLayout.Direction.TOP | SwipeLayout.Direction.LEFT | SwipeLayout.Direction.RIGHT
         );
@@ -254,6 +252,12 @@ public class NotificationLayer extends DecorLayer {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected void fitDecorInsides() {
+        fitDecorInsidesToViewPadding(getViewHolder().getChild());
+        getViewHolder().getChild().setClipToPadding(false);
     }
 
     private void bindDefaultContentData() {

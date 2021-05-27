@@ -22,7 +22,7 @@ public final class ViewManager {
     private LayerKeyListener mLayerKeyListener = null;
     private LayerGlobalFocusChangeListener mLayerGlobalFocusChangeListener = null;
 
-    private View currentKeyView = null;
+    private View mCurrentKeyView = null;
 
     private OnLifeListener mOnLifeListener = null;
     private OnKeyListener mOnKeyListener = null;
@@ -81,7 +81,7 @@ public final class ViewManager {
     }
 
     public boolean isAttached() {
-        return mChild != null && mChild.getParent() != null;
+        return mChild != null && mParent != null && mChild.getParent() == mParent;
     }
 
     public void setOnLifeListener(@Nullable OnLifeListener onLifeListener) {
@@ -109,8 +109,8 @@ public final class ViewManager {
     }
 
     private void unregisterKeyListener() {
-        if (currentKeyView != null) {
-            currentKeyView.setOnKeyListener(null);
+        if (mCurrentKeyView != null) {
+            mCurrentKeyView.setOnKeyListener(null);
             mLayerKeyListener = null;
         }
         if (mLayerGlobalFocusChangeListener != null) {
@@ -149,15 +149,21 @@ public final class ViewManager {
         Utils.onViewLayout(mChild, new Runnable() {
             @Override
             public void run() {
-                currentKeyView = mChild.findFocus();
-                if (currentKeyView != null) {
-                    currentKeyView.setOnKeyListener(mLayerKeyListener);
-                    return;
+                if (mCurrentKeyView != null) {
+                    mCurrentKeyView.setOnKeyListener(null);
+                    mCurrentKeyView = null;
                 }
-                mChild.requestFocus();
-                currentKeyView = mChild.findFocus();
-                if (currentKeyView != null) {
-                    currentKeyView.setOnKeyListener(mLayerKeyListener);
+                if (isAttached()) {
+                    mCurrentKeyView = mChild.findFocus();
+                    if (mCurrentKeyView != null) {
+                        mCurrentKeyView.setOnKeyListener(mLayerKeyListener);
+                        return;
+                    }
+                    mChild.requestFocus();
+                    mCurrentKeyView = mChild.findFocus();
+                    if (mCurrentKeyView != null) {
+                        mCurrentKeyView.setOnKeyListener(mLayerKeyListener);
+                    }
                 }
             }
         });
@@ -166,22 +172,25 @@ public final class ViewManager {
     private final class LayerGlobalFocusChangeListener implements ViewTreeObserver.OnGlobalFocusChangeListener {
         @Override
         public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-            if (currentKeyView != null) {
-                currentKeyView.setOnKeyListener(null);
+            if (mCurrentKeyView != null) {
+                mCurrentKeyView.setOnKeyListener(null);
+                mCurrentKeyView = null;
             }
-            currentKeyView = mChild.findFocus();
-            if (currentKeyView != null) {
-                currentKeyView.setOnKeyListener(mLayerKeyListener);
-                return;
-            }
-            View rootFocus = mChild.getRootView().findFocus();
-            if (rootFocus != null) {
-                return;
-            }
-            mChild.requestFocus();
-            currentKeyView = mChild.findFocus();
-            if (currentKeyView != null) {
-                currentKeyView.setOnKeyListener(mLayerKeyListener);
+            if (isAttached()) {
+                mCurrentKeyView = mChild.findFocus();
+                if (mCurrentKeyView != null) {
+                    mCurrentKeyView.setOnKeyListener(mLayerKeyListener);
+                    return;
+                }
+                View rootFocus = mChild.getRootView().findFocus();
+                if (rootFocus != null) {
+                    return;
+                }
+                mChild.requestFocus();
+                mCurrentKeyView = mChild.findFocus();
+                if (mCurrentKeyView != null) {
+                    mCurrentKeyView.setOnKeyListener(mLayerKeyListener);
+                }
             }
         }
     }

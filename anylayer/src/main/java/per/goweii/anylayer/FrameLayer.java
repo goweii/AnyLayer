@@ -6,6 +6,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -155,6 +156,9 @@ public class FrameLayer extends Layer {
         super.onDestroy();
     }
 
+    protected void onConfigurationChanged(@NonNull Configuration newConfig) {
+    }
+
     @Override
     public void onGlobalLayout() {
         super.onGlobalLayout();
@@ -212,7 +216,12 @@ public class FrameLayer extends Layer {
     @NonNull
     private LayerLayout addNewLayerLayoutToRoot() {
         final ViewGroup root = getViewHolder().getRoot();
-        LayerLayout layerLayout = new LayerLayout(root.getContext());
+        LayerLayout layerLayout = new LayerLayout(root.getContext(), new LayerLayout.OnConfigurationChangedListener() {
+            @Override
+            public void onConfigurationChanged(@NonNull Configuration newConfig) {
+                FrameLayer.this.onConfigurationChanged(newConfig);
+            }
+        });
         layerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         root.addView(layerLayout, root.getChildCount());
         return layerLayout;
@@ -283,8 +292,23 @@ public class FrameLayer extends Layer {
      */
     @SuppressLint("ViewConstructor")
     public static class LayerLayout extends FrameLayout {
-        public LayerLayout(@NonNull Context context) {
+        private final OnConfigurationChangedListener mOnConfigurationChangedListener;
+
+        public LayerLayout(@NonNull Context context, OnConfigurationChangedListener listener) {
             super(context);
+            mOnConfigurationChangedListener = listener;
+        }
+
+        @Override
+        protected void onConfigurationChanged(@NonNull Configuration newConfig) {
+            super.onConfigurationChanged(newConfig);
+            if (mOnConfigurationChangedListener != null) {
+                mOnConfigurationChangedListener.onConfigurationChanged(newConfig);
+            }
+        }
+
+        public interface OnConfigurationChangedListener {
+            void onConfigurationChanged(@NonNull Configuration newConfig);
         }
     }
 

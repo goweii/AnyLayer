@@ -5,6 +5,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.github.goweii:Blurred:1.3.0'
+    compileOnly 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'per.goweii.visualeffect:visualeffect-core:1.0.0'
+    implementation 'per.goweii.visualeffect:visualeffect-blur:1.0.0'
+    implementation 'per.goweii.visualeffect:visualeffect-view:1.0.0'
 }
