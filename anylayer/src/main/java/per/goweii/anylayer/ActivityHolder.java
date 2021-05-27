@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public final class ActivityHolder implements Application.ActivityLifecycleCallba
 
     @NonNull
     private final Application mApplication;
-    private final List<Activity> mActivityStack = new LinkedList<>();
+    private final List<WeakReference<Activity>> mActivityStack = new LinkedList<>();
 
     private ActivityHolder(@NonNull Application application) {
         mApplication = application;
@@ -51,15 +52,25 @@ public final class ActivityHolder implements Application.ActivityLifecycleCallba
 
     @Nullable
     public static Activity getActivity(@NonNull Class<Activity> clazz) {
-        if (getInstance().mActivityStack.isEmpty()) return null;
-        final int size = getInstance().mActivityStack.size();
+        final List<WeakReference<Activity>> stack = getInstance().mActivityStack;
+        if (stack.isEmpty()) return null;
+        final int size = stack.size();
+        Activity find = null;
         for (int i = size - 1; i >= 0; i--) {
-            Activity activity = getInstance().mActivityStack.get(i);
-            if (TextUtils.equals(clazz.getName(), activity.getClass().getName())) {
-                return activity;
+            WeakReference<Activity> ref = stack.get(i);
+            final Activity activity = ref.get();
+            if (activity == null) {
+                ref.clear();
+                stack.remove(i);
+            } else {
+                if (find == null) {
+                    if (TextUtils.equals(clazz.getName(), activity.getClass().getName())) {
+                        find = activity;
+                    }
+                }
             }
         }
-        return null;
+        return find;
     }
 
     @NonNull
@@ -71,13 +82,23 @@ public final class ActivityHolder implements Application.ActivityLifecycleCallba
 
     @Nullable
     public static Activity getCurrentActivity() {
-        if (getInstance().mActivityStack.isEmpty()) return null;
-        return getInstance().mActivityStack.get(getInstance().mActivityStack.size() - 1);
+        final List<WeakReference<Activity>> stack = getInstance().mActivityStack;
+        if (stack.isEmpty()) return null;
+        final int size = stack.size();
+        for (int i = size - 1; i >= 0; i--) {
+            WeakReference<Activity> ref = stack.get(i);
+            if (ref.get() == null) {
+                ref.clear();
+                stack.remove(i);
+            }
+        }
+        if (stack.isEmpty()) return null;
+        return stack.get(stack.size() - 1).get();
     }
 
     @Override
     public void onActivityCreated(@NonNull Activity activity, Bundle savedInstanceState) {
-        mActivityStack.add(activity);
+        mActivityStack.add(new WeakReference<>(activity));
     }
 
     @Override
@@ -98,7 +119,14 @@ public final class ActivityHolder implements Application.ActivityLifecycleCallba
 
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
-        mActivityStack.remove(activity);
+        final int size = mActivityStack.size();
+        for (int i = size - 1; i >= 0; i--) {
+            WeakReference<Activity> ref = mActivityStack.get(i);
+            if (ref.get() == null || ref.get() == activity) {
+                ref.clear();
+                mActivityStack.remove(i);
+            }
+        }
     }
 
     @Override

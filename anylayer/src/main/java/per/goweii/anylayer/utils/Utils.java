@@ -231,4 +231,20 @@ public final class Utils {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         return params.bottomMargin;
     }
+
+    public static void setViewPaddingLeft(@NonNull View view, int padding) {
+        view.setPadding(padding, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
+    }
+
+    public static void setViewPaddingTop(@NonNull View view, int padding) {
+        view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(), view.getPaddingBottom());
+    }
+
+    public static void setViewPaddingRight(@NonNull View view, int padding) {
+        view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), padding, view.getPaddingBottom());
+    }
+
+    public static void setViewPaddingBottom(@NonNull View view, int padding) {
+        view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), padding);
+    }
 }

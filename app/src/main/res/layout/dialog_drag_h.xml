@@ -5,12 +5,6 @@
     android:background="#fff"
     android:orientation="vertical">
 
-    <View
-        android:id="@+id/dialog_drag_h_v"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:background="#33000000" />
-
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
