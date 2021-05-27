@@ -25,12 +25,12 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.startup:startup-runtime:1.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    //implementation 'androidx.startup:startup-runtime:1.0.0'
     implementation 'com.github.goweii:StatusBarCompat:1.2.1'
     implementation project(':anylayer')
     implementation project(':anylayer-ext')
     implementation project(':anylayer-ktx')
-    implementation project(':anylayer-startup')
+    //implementation project(':anylayer-startup')
 }

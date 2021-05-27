@@ -3,6 +3,8 @@ package per.goweii.android.anylayer;
 import android.app.Application;
 import android.os.Handler;
 
+import per.goweii.anylayer.AnyLayer;
+
 /**
  * @author CuiZhen
  * @date 2019/3/10
@@ -17,5 +19,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        AnyLayer.init(this);
     }
 }
