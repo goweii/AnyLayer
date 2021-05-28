@@ -14,6 +14,16 @@ Android稳定高效的浮层创建管理框架。
 
 
 
+# 优势
+
+如果你的App用的是单Activity架构，那么这个就是系统Dialog/PopupWindow/Toast的完美替代。而且可以实现悬浮按钮和引导层等一些列功能。
+
+不是单Activity也不影响，上面这些功能一样可以实现，只是
+
+- 相对于Dialog更轻量，相对于PopupWindow
+
+
+
 # 简介
 
 - 同时兼容support和androidx
@@ -93,14 +103,16 @@ Android稳定高效的浮层创建管理框架。
 
 ![](https://img.shields.io/badge/Downloads%20Week-1.4k-green) ![](https://img.shields.io/badge/Downloads%20Month-7.3K-blue)
 
-- ### 添加jitpack库
+- ### 添加仓库
 
 ```groovy
 // build.gradle(Project:)
 allprojects {
     repositories {
-        maven { url 'https://www.jitpack.io' }
+        maven { url "https://www.jitpack.io" }
+        
         // 支持4.1.0及以后版本 
+        // 使用4.1.5及以后版本必须添加，因为高斯模糊实现用到的VisualEffect库暂时只发布在了的gitee仓库
         // maven { url "https://gitee.com/goweii/maven-repository/raw/master/releases/" }
     }
 }
@@ -113,82 +125,32 @@ allprojects {
 // build.gradle(Module:)
 dependencies {
     // 完整引入，二选一
-    implementation 'com.github.goweii:AnyLayer:4.1.4-androidx'
-    implementation 'com.github.goweii:AnyLayer:4.1.4-support'
+    implementation "com.github.goweii:AnyLayer:4.1.4-androidx"
+    // implementation "com.github.goweii:AnyLayer:4.1.4-support"
     
+    // 按需引入
     // 基础库
-    // implementation 'com.github.goweii.AnyLayer:anylayer:4.1.4-androidx'
-    // 自动初始化（依赖基础库和Android Jetpack App Startup）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-startup:4.1.4-androidx'
+    // implementation "com.github.goweii.AnyLayer:anylayer:4.1.4-androidx"
+    // 自动初始化（依赖基础库和Jetpack Startup）
+    // implementation "com.github.goweii.AnyLayer:anylayer-startup:4.1.4-androidx"
     // 扩展库（依赖基础库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ext:4.1.4-androidx'
+    // implementation "com.github.goweii.AnyLayer:anylayer-ext:4.1.4-androidx"
     // Kotlin扩展库（依赖基础库和扩展库）
-    // implementation 'com.github.goweii.AnyLayer:anylayer-ktx:4.1.4-androidx'
+    // implementation "com.github.goweii.AnyLayer:anylayer-ktx:4.1.4-androidx"
 }
 ```
+
+- ### 一些问题/建议
+
+  - 建议按需引入
+
+  - anylayer-startup依赖于Jetpack Startup，仅支持androidx，support需要自己在application初始化
 
 
 
 ## 更新说明
 
-[点击查看详细更新说明](https://github.com/goweii/AnyLayer/releases)
-
-### 4.1.3
-
-- 优化输入法适配
-- 修复一些BUG
-
-### 4.1.1
-
-- 修复物理返回键事件拦截问题
-- 修复带输入框弹窗点击外部关闭需要2次才能触发的问题
-
-### 4.1.0
-
-- 适配分屏小窗和横竖屏切换
-- 新增设置通知最大宽高
-- 新增3组对其方式
-- 新增吐司自定义布局
-- 吐司和通知默认布局适配暗色模式
-- 修复一些代码错误
-
-### 4.0.0
-
-- 重构包结构
-- 新增通知/悬浮按钮/引导浮层
-- 支持自定义浮层层级
-
-### 3.6.0
-
-- 新增ext库，添加常用动画创建器
-- 新增ktx库，方便kotlin调用
-
-### 3.5.0
-
-- 添加注解，避免kotlin调用变为可选型
-
-### 3.3.0
-
-- 拆分为support和androidx两个分支
-
-### 3.1.0
-
-- 移除对support-v7的依赖，可同时兼容support和androidx
-
-### 3.0.0
-
-- 大型重构，修改层级和继承结构，API改变很大
-- 删除common库
-
-### 2.5.0
-
-- 新增popupWindow效果时可跟随targetView移动
-- 可以从ApplicationContext中弹出
-- 监听器支持添加多个
-
-### 2.4.0
-
-- 新增通用库
+[点击查看](https://github.com/goweii/AnyLayer/releases)
 
 
 
