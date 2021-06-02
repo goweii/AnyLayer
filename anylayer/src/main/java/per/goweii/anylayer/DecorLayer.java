@@ -212,11 +212,11 @@ public class DecorLayer extends FrameLayer {
     }
 
     @Override
-    public void dismiss() {
+    public void dismiss(boolean withAnim) {
         if (mShowRunnable != null) {
             getViewHolder().getDecor().removeCallbacks(mShowRunnable);
         } else {
-            super.dismiss();
+            super.dismiss(withAnim);
         }
     }
 

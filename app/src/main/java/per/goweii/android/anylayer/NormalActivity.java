@@ -127,7 +127,22 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 .cancelableOnClickKeyBack(true)
                 .onClickToDismiss(R.id.fl_dialog_no);
         dialog.show();
-        dialog.dismiss();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(30);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        }).start();
     }
 
     private Random mRandom = new Random();
