@@ -111,8 +111,7 @@ allprojects {
     repositories {
         maven { url "https://www.jitpack.io" }
         
-        // 支持4.1.0及以后版本 
-        // 使用4.1.5及以后版本必须添加，因为高斯模糊实现用到的VisualEffect库暂时只发布在了的gitee仓库
+        // 使用4.1.5及以后版本必须添加，因高斯模糊用到的VisualEffect库暂时只发布在gitee仓库
         // maven { url "https://gitee.com/goweii/maven-repository/raw/master/releases/" }
     }
 }
@@ -144,7 +143,7 @@ dependencies {
 
   - 建议按需引入
 
-  - anylayer-startup依赖于Jetpack Startup，仅支持androidx，support需要自己在application初始化
+  - anylayer-startup依赖于Jetpack Startup，需要自行引入。仅支持androidx，support需要自己在application初始化
 
 
 
@@ -183,17 +182,6 @@ dependencies {
 只是提供了静态方法方便调用，不用new来new去的。
 
 ```java
-/**
- * 初始化高斯模糊，可在用到高斯模糊背景的Activity的onCreate方法调用
- * 其实不调用也没关系，第一次显示的时候也会初始化的，只是这样第一次显示就会比后面显示稍微慢一点
- */
-public static void initBlurred(Context context)
-
-/**
- * 回收高斯模糊内存占用，可在用到高斯模糊背景的Activity的onDestroy方法调用，也可以在内存不足时调用
- */
-public static void recycleBlurred()
-
 /**
  * 创建一个DialogLayer
  * 这个Context不能是ApplicationContext
