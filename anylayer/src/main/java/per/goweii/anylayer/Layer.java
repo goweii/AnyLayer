@@ -25,10 +25,15 @@ public class Layer {
     private final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new OnGlobalLayoutListener();
     private final ViewManager.OnKeyListener mOnViewKeyListener = new OnViewKeyListener();
 
+    private final Runnable mInAnimEndCallback = new OnInAnimEndCallback();
+    private final Runnable mOutAnimEndCallback = new OnOutAnimEndCallback();
+
     private final ViewManager mViewManager;
     private final ViewHolder mViewHolder;
     private final ListenerHolder mListenerHolder;
     private final Config mConfig;
+
+    private ViewTreeObserver.OnPreDrawListener mShowOnPreDrawListener = null;
 
     private boolean mShowWithAnim = false;
     private boolean mDismissWithAnim = false;
@@ -180,12 +185,7 @@ public class Layer {
     private void handleShow() {
         if (isShown()) {
             if (isOutAnimRunning()) {
-                startAnimatorIn(new Runnable() {
-                    @Override
-                    public void run() {
-                        onPostShow();
-                    }
-                });
+                startAnimatorIn();
             }
             return;
         }
@@ -193,25 +193,24 @@ public class Layer {
         mViewManager.attach();
         onAttach();
         getViewHolder().getChild().setVisibility(View.VISIBLE);
-        getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                if (getViewTreeObserver().isAlive()) {
-                    getViewTreeObserver().removeOnPreDrawListener(this);
-                }
-                onPreShow();
-                startAnimatorIn(new Runnable() {
-                    @Override
-                    public void run() {
-                        onPostShow();
+        if (mShowOnPreDrawListener == null) {
+            mShowOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mShowOnPreDrawListener = null;
+                    if (getViewTreeObserver().isAlive()) {
+                        getViewTreeObserver().removeOnPreDrawListener(this);
                     }
-                });
-                return true;
-            }
-        });
+                    onPreShow();
+                    startAnimatorIn();
+                    return true;
+                }
+            };
+        }
+        getViewTreeObserver().addOnPreDrawListener(mShowOnPreDrawListener);
     }
 
-    private void startAnimatorIn(@NonNull Runnable onEnd) {
+    private void startAnimatorIn() {
         cancelAnimator();
         if (mShowWithAnim) {
             mAnimatorIn = onCreateInAnimator(mViewHolder.getChild());
@@ -225,34 +224,41 @@ public class Layer {
 
                     @Override
                     public void onAnimationEndNotCanceled(Animator animation) {
-                        onEnd.run();
+                        super.onAnimationEndNotCanceled(animation);
+                        mInAnimEndCallback.run();
                     }
                 });
                 mAnimatorIn.start();
             } else {
-                onEnd.run();
+                mInAnimEndCallback.run();
             }
         } else {
-            onEnd.run();
+            mInAnimEndCallback.run();
         }
+    }
+
+    private void handleInAnimEnd() {
+        onPostShow();
     }
 
     private void handleDismiss() {
         if (!isShown()) return;
         if (isOutAnimRunning()) return;
-        onPreDismiss();
-        startAnimatorOut(new Runnable() {
-            @Override
-            public void run() {
-                onPostDismiss();
-                mViewManager.detach();
-                onDetach();
-                onDestroy();
+        if (mShowOnPreDrawListener != null) {
+            mShowOnPreDrawListener = null;
+            if (getViewTreeObserver().isAlive()) {
+                getViewTreeObserver().removeOnPreDrawListener(mShowOnPreDrawListener);
             }
-        });
+            mViewManager.detach();
+            onDetach();
+            onDestroy();
+            return;
+        }
+        onPreDismiss();
+        startAnimatorOut();
     }
 
-    private void startAnimatorOut(@NonNull final Runnable onEnd) {
+    private void startAnimatorOut() {
         cancelAnimator();
         if (mDismissWithAnim) {
             mAnimatorOut = onCreateOutAnimator(mViewHolder.getChild());
@@ -266,19 +272,27 @@ public class Layer {
 
                     @Override
                     public void onAnimationEndNotCanceled(Animator animation) {
+                        super.onAnimationEndNotCanceled(animation);
                         getViewHolder().getChild().setVisibility(View.INVISIBLE);
-                        getViewHolder().getParent().post(onEnd);
+                        getViewHolder().getParent().post(mOutAnimEndCallback);
                     }
                 });
                 mAnimatorOut.start();
             } else {
                 getViewHolder().getChild().setVisibility(View.INVISIBLE);
-                onEnd.run();
+                mOutAnimEndCallback.run();
             }
         } else {
             getViewHolder().getChild().setVisibility(View.INVISIBLE);
-            onEnd.run();
+            mOutAnimEndCallback.run();
         }
+    }
+
+    private void handleOutAnimEnd() {
+        onPostDismiss();
+        mViewManager.detach();
+        onDetach();
+        onDestroy();
     }
 
     private ViewTreeObserver getViewTreeObserver() {
@@ -286,11 +300,15 @@ public class Layer {
     }
 
     private void cancelAnimator() {
+        getViewHolder().getParent().removeCallbacks(mInAnimEndCallback);
+        getViewHolder().getParent().removeCallbacks(mOutAnimEndCallback);
         if (mAnimatorIn != null) {
+            mAnimatorIn.removeAllListeners();
             mAnimatorIn.cancel();
             mAnimatorIn = null;
         }
         if (mAnimatorOut != null) {
+            mAnimatorOut.removeAllListeners();
             mAnimatorOut.cancel();
             mAnimatorOut = null;
         }
@@ -818,6 +836,20 @@ public class Layer {
         @Override
         public boolean onKey(int keyCode, KeyEvent keyEvent) {
             return Layer.this.onKeyEvent(keyCode, keyEvent);
+        }
+    }
+
+    private class OnInAnimEndCallback implements Runnable {
+        @Override
+        public void run() {
+            Layer.this.handleInAnimEnd();
+        }
+    }
+
+    private class OnOutAnimEndCallback implements Runnable {
+        @Override
+        public void run() {
+            Layer.this.handleOutAnimEnd();
         }
     }
 
