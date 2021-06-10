@@ -14,17 +14,11 @@ Android稳定高效的浮层创建管理框架。
 
 
 
-# 优势
+# 简介
 
 如果你的App用的是单Activity架构，那么这个就是系统Dialog/PopupWindow/Toast的完美替代。而且可以实现悬浮按钮和引导层等一些列功能。
 
-不是单Activity也不影响，上面这些功能一样可以实现，只是
-
-- 相对于Dialog更轻量，相对于PopupWindow
-
-
-
-# 简介
+不是单Activity也不影响，上面这些功能一样可以实现，只是Toast无法跨页面，会随Activity一起关闭。
 
 - 同时兼容support和androidx
 - 链式调用
@@ -89,9 +83,11 @@ Android稳定高效的浮层创建管理框架。
 
 # 截图
 
-截图效果较差且版本较老，建议[下载Demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)体验最新功能
+截图效果较差，建议[下载Demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)体验最新功能
 
-![demo](https://gitee.com/goweii/pic/raw/master/default/20210610_190449.gif )
+| ![20210610_190449.gif](https://i.loli.net/2021/06/10/6jgVucdrE73S2pG.gif) | ![20210610_190537.gif](https://i.loli.net/2021/06/10/N617Xf2Kl5Woqd8.gif) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![20210610_190654.gif](https://i.loli.net/2021/06/10/aVoWBmGqtE1HkUP.gif) | ![20210610_190715.gif](https://i.loli.net/2021/06/10/npHzPjwdqfKBDQt.gif) |
 
 
 
