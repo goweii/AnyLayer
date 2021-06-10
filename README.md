@@ -91,7 +91,7 @@ Android稳定高效的浮层创建管理框架。
 
 截图效果较差且版本较老，建议[下载Demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)体验最新功能
 
-![demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.gif)
+![demo](https://gitee.com/goweii/pic/raw/master/default/20210610_190449.gif )
 
 
 
