@@ -135,21 +135,19 @@ public final class Utils {
     }
 
     public static void getViewPadding(@NonNull View view, @NonNull Rect rect) {
-        rect.setEmpty();
-        rect.left = view.getPaddingLeft();
-        rect.top = view.getPaddingTop();
-        rect.right = view.getPaddingRight();
-        rect.bottom = view.getPaddingBottom();
+        rect.left += view.getPaddingLeft();
+        rect.top += view.getPaddingTop();
+        rect.right += view.getPaddingRight();
+        rect.bottom += view.getPaddingBottom();
     }
 
     public static void getViewMargin(@NonNull View view, @NonNull Rect rect) {
-        rect.setEmpty();
         if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return;
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        rect.left = params.leftMargin;
-        rect.top = params.topMargin;
-        rect.right = params.rightMargin;
-        rect.bottom = params.bottomMargin;
+        rect.left += params.leftMargin;
+        rect.top += params.topMargin;
+        rect.right += params.rightMargin;
+        rect.bottom += params.bottomMargin;
     }
 
     public static int getViewMarginLeft(@NonNull View view) {

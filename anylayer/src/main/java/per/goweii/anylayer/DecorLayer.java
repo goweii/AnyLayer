@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
@@ -214,13 +215,27 @@ public class DecorLayer extends FrameLayer {
 
     @NonNull
     protected final Rect getDecorPadding() {
-        Utils.getViewPadding(getViewHolder().getDecorChild(), mDecorPadding);
+        mDecorPadding.setEmpty();
+        Utils.getViewPadding(getViewHolder().getActivityContent(), mDecorPadding);
         return mDecorPadding;
     }
 
     @NonNull
     protected final Rect getDecorMargin() {
-        Utils.getViewMargin(getViewHolder().getDecorChild(), mDecorMargin);
+        mDecorMargin.setEmpty();
+        ViewGroup viewGroup = getViewHolder().getActivityContent();
+        while (true) {
+            Utils.getViewMargin(viewGroup, mDecorMargin);
+            ViewParent viewParent = viewGroup.getParent();
+            if (!(viewParent instanceof ViewGroup)) {
+                break;
+            }
+            viewGroup = (ViewGroup) viewParent;
+            Utils.getViewPadding(viewGroup, mDecorMargin);
+            if (viewGroup == getViewHolder().getDecor()) {
+                break;
+            }
+        }
         return mDecorMargin;
     }
 
