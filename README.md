@@ -6,6 +6,8 @@
 
 Android稳定高效的浮层创建管理框架。
 
+什么是浮层？浮层就是一个悬浮在其他View上方的View。但是2个View处于同一个Window。
+
 可实现Dialog/Popup/BottomSheet等弹窗，引导层，悬浮按钮，浮动通知，吐司等效果。
 
 [GitHub主页](https://github.com/goweii/AnyLayer)
@@ -25,35 +27,11 @@ Android稳定高效的浮层创建管理框架。
 - 支持自由扩展
 - 实现几种常用效果
   - Dialog/BottomSheet效果
-    - 占用区域不会超过当前Activity避免导航栏遮挡
-    - 支持自定义大小和显示位置
-    - 支持自定义数据绑定
-    - 支持自定义进出场动画
-    - 支持自定义背景颜色/图片/高斯模糊
-    - 支持在Activity的onCreate生命周期弹出
-    - 支持从ApplicationContext中弹出
-    - 支持拖拽关闭
-    - 支持不拦截外部事件
   - Popup效果
-    - 拥有Dialog效果特性
-    - 支持跟随目标View移动
   - Toast效果
-    - 支持自定义图标和文字
-    - 支持自定义显示时长
-    - 支持自定义位置
-    - 支持自定义背景资源和颜色
-    - 支持自定义透明度
-    - 支持自定义进出场动画
   - Guide效果
-    - 详见demo
-  - Float效果
-    - 支持自定义吸附边
-    - 支持自定义正常和低姿态2中模式
-    - 支持自定义低姿态显示效果
+  - Overlay效果
   - Notification效果
-    - 支持滑动关闭
-
-
 
 # 说明
 
@@ -85,11 +63,9 @@ Android稳定高效的浮层创建管理框架。
 
 截图效果较差，建议[下载Demo](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)体验最新功能
 
-| ![20210610_190449.gif](https://i.loli.net/2021/06/10/6jgVucdrE73S2pG.gif) | ![20210610_190537.gif](https://i.loli.net/2021/06/10/N617Xf2Kl5Woqd8.gif) |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![20210610_190654.gif](https://i.loli.net/2021/06/10/aVoWBmGqtE1HkUP.gif) | ![20210610_190715.gif](https://i.loli.net/2021/06/10/npHzPjwdqfKBDQt.gif) |
-
-
+| ![20210610_190449.gif](https://i.loli.net/2021/06/10/6jgVucdrE73S2pG.gif) | ![20210610_190537.gif](https://i.loli.net/2021/06/10/N617Xf2Kl5Woqd8.gif) | ![20210610_190654.gif](https://i.loli.net/2021/06/10/aVoWBmGqtE1HkUP.gif) | ![20210610_190715.gif](https://i.loli.net/2021/06/10/npHzPjwdqfKBDQt.gif) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|                                                              |                                                              |                                                              |                                                              |
 
 # 使用说明
 
@@ -97,7 +73,9 @@ Android稳定高效的浮层创建管理框架。
 
 ## 集成
 
-![](https://img.shields.io/badge/Downloads%20Week-1.4k-green) ![](https://img.shields.io/badge/Downloads%20Month-7.3K-blue)
+![](https://img.shields.io/badge/Downloads%20Week-1.4k-green)
+![](https://img.shields.io/badge/Downloads%20Month-7.3K-blue)
+[![](https://www.jitpack.io/v/goweii/AnyLayer.svg)](https://www.jitpack.io/#goweii/AnyLayer)
 
 - ### 添加仓库
 
@@ -138,8 +116,12 @@ dependencies {
 - ### 一些问题/建议
 
   - 建议按需引入
-
-  - anylayer-startup依赖于Jetpack Startup，需要自行引入。仅支持androidx，support需要自己在application初始化
+- anylayer-startup依赖于Jetpack Startup，需要自行引入。而且Jetpack Startup仅支持androidx，如果引用的是x.x.x-support需要自己在application初始化
+  - 这几个依赖有啥区别？
+    - anylayer：核心功能，所有浮层效果的实现
+    - anylayer-ext：扩展功能，比如通用的动画实现和监听器的默认实现
+    - anylayer-ktx：Kotlin扩展，方便再kt环境实现链式调用
+    - anylayer-startup：Jetpack Startup实现
 
 
 
@@ -162,7 +144,7 @@ dependencies {
         - **[PopupLayer]()**（可依据锚点View定位）
       - **[ToastLayer]()**（吐司）
       - **[GuideLayer]()**（引导层）
-      - **[FloatLayer]()**（悬浮按钮）
+      - **[OverlayLayer]()**（悬浮按钮）
       - **[NotificationLayer]()**（通知）
 
 - **[AnimatorHelper]()**（创建常用属性动画）
@@ -220,10 +202,10 @@ public static ToastLayer toast()
 public static ToastLayer toast(Context context)
 
 /**
- * 创建一个FloatLayer
+ * 创建一个OverlayLayer
  * 这个Context不能是ApplicationContext
  */
-public static FloatLayer floats(Context context)
+public static OverlayLayer overlay(Context context)
 
 /**
  * 创建一个GuideLayer
@@ -276,7 +258,7 @@ public static NotificationLayer notification(Context context)
 
   有几个常用的事件监听，在ListenerHolder中统一管理
 
-  - DataBinder（绑定数据）
+  - DataBindCallback（绑定数据）
   - OnClickListener（点击事件监听）
   - OnShowListener（显示动画开始和结束监听）
   - OnDismissListener（消失时动画开始和结束监听）
@@ -286,77 +268,18 @@ public static NotificationLayer notification(Context context)
 
   这个看名字应该就知道了，就不介绍了。
 
-- #### 常用方法
 
-  ```java
-  /**
-   * 一组控制显示隐藏的方法
-   */
-  public void show()
-  public void show(boolean withAnim)
-  public void dismiss()
-  public void dismiss(boolean withAnim)
-      
-  /**
-   * 判断当前显示隐藏状态
-   */  
-  public boolean isShow()
-      
-  /**
-   * 根据ID获取对应View
-   */  
-  public <V extends View> V getView(int id)
-      
-  /**
-   * 指定父布局
-   */  
-  public Layer parent(ViewGroup parent)
-      
-  /**
-   * 指定子布局
-   */  
-  public Layer child(View child)
-      
-  /**
-   * 自定义进出场动画
-   */  
-  public Layer animator(AnimatorCreator creator)
-  
-  /**
-   * 是否拦截物理按键，为true时cancelableOnKeyBack才有效
-   */  
-  public Layer interceptKeyEvent(boolean intercept)
-      
-  /**
-   * 是否可点击返回键关闭浮层，interceptKeyEvent为true才有效
-   */  
-  public Layer cancelableOnKeyBack(boolean cancelable)
-      
-  /**
-   * 一组事件监听，见上面介绍
-   */  
-  public Layer bindData(DataBinder dataBinder)
-  public Layer onVisibleChangeListener(OnVisibleChangeListener onVisibleChangeListener)
-  public Layer onShowListener(OnShowListener onShowListener)
-  public Layer onDismissListener(OnDismissListener onDismissListener)
-      
-  /**
-   * 点击某些控件关闭浮层
-   */  
-  public Layer onClickToDismiss(OnClickListener listener, int... viewIds)
-  public Layer onClickToDismiss(int... viewIds)
-      
-  /**
-   * 对控件绑定点击事件
-   */  
-  public Layer onClick(OnClickListener listener, int... viewIds)
-  ```
+
+
+### FrameLayer
+
+继承自Layer，强制父布局为FrameLayout。主要就是引入了Layer层级概念。
 
 
 
 ### DecorLayer
 
-继承自Layer，强制父布局为DecorView。主要就是引入了Layer层级概念。
+继承自FrameLayer，强制父布局为DecorView。
 
 而这个层级就是由两个静态内部类实现的
 
@@ -374,7 +297,7 @@ public static NotificationLayer notification(Context context)
 
 ### DialogLayer
 
-这个就是模仿传说中Dialog效果的浮层。用上面的描述就是：
+Dialog效果的浮层。用上面的描述就是：
 
 > 规范子布局层级，加入背景层，分离动画为背景动画和内容动画
 
@@ -386,243 +309,47 @@ public static NotificationLayer notification(Context context)
 
   ```xml
   <?xml version="1.0" encoding="utf-8"?>
-  <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      android:id="@+id/fl_container"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:clickable="true">
-  
-      <ImageView
-          android:id="@+id/iv_background"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:scaleType="centerCrop"/>
-  
-      <FrameLayout
-          android:id="@+id/fl_content_wrapper"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent" />
-  
+  <FrameLayout android:id="@+id/fl_container" >
+      <ImageView android:id="@+id/iv_background" />
+      <FrameLayout android:id="@+id/fl_content_wrapper" />
   </FrameLayout>
   ```
-
+  
   contentView其实是直接添加至fl_content_wrapper中的。
-
+  
 - #### 分离动画为背景动画和内容动画
 
   因为有了contextView和background的概念，原来的动画就不好用了。所以从写了动画的创建逻辑，分离了背景和前景应用不同的动画。
-
-最后看下常用的方法。
-
-```java
-/**
- * 设置自定义布局View/资源ID
- */
-public DialogLayer contentView(View contentView)
-public DialogLayer contentView(int contentViewId)
-
-/**
- * 设置自定义布局文件中状态栏的占位View
- * 该控件高度将设置为状态栏高度，可用来使布局整体下移，避免状态栏遮挡
- */
-public DialogLayer asStatusBar(int statusBarId)
-
-/**
- * 设置避开状态栏
- */
-public DialogLayer avoidStatusBar(boolean avoid)
-
-/**
- * 设置子布局的gravity
- * 可直接在布局文件指定layout_gravity属性，作用相同
- */
-public DialogLayer gravity(int gravity)
-
-/**
- * 自定义浮层的进入和退出动画
- */
-public DialogLayer contentAnimator(AnimatorCreator contentAnimatorCreator)
-
-/**
- * 自定义背景的进入和退出动画
- */
-public DialogLayer backgroundAnimator(AnimatorCreator backgroundAnimatorCreator)
-
-/**
- * 设置背景高斯模糊/图片/颜色
- */
-public DialogLayer backgroundBlurRadius(float radius)
-public DialogLayer backgroundBlurPercent(float percent)
-public DialogLayer backgroundBlurScale(float scale)
-public DialogLayer backgroundBitmap(Bitmap bitmap)
-public DialogLayer backgroundDimAmount(float dimAmount)
-public DialogLayer backgroundResource(int resource)
-public DialogLayer backgroundDrawable(Drawable drawable)
-public DialogLayer backgroundColorInt(int colorInt)
-public DialogLayer backgroundColorRes(int colorRes)
-
-/**
- * 设置点击浮层以外区域是否可关闭
- */
-public DialogLayer cancelableOnTouchOutside(boolean cancelable)
-
-/**
- * 设置点击返回键是否可关闭
- */
-public DialogLayer cancelableOnClickKeyBack(boolean cancelable)
-```
-
-算了，再看下调用代码凑凑字数把。
-
-```java
-AnyLayer.dialog(this)
-        .contentView(R.layout.dialog_test_2)
-        .backgroundColorRes(R.color.dialog_bg)
-        .gravity(Gravity.CENTER)
-        .cancelableOnTouchOutside(true)
-        .cancelableOnClickKeyBack(true)
-        .bindData(new Layer.DataBinder() {
-            @Override
-            public void bindData(Layer layer) {
-                // TODO 绑定数据
-            }
-        })
-        .onClickToDismiss(R.id.fl_dialog_no)
-        .show();
-```
 
 
 
 ### PopupLayer
 
-因为继承自DialogLayer，所以可以使用定义过的方法（这不是废话吗）。
-
-主要就是加入了可依据锚点View定位。
-
-这个效果可能还要重构，暂时就不介绍了。
-
-看下其他新增方法。
-
-```java
-/**
- * 设置浮层外部是否拦截触摸
- * 默认为true，false则事件有activityContent本身消费
- */
-public PopupLayer outsideInterceptTouchEvent(boolean intercept)
-
-/**
- * 是否裁剪contentView至包裹边界
- */
-public PopupLayer contentClip(boolean clip)
-
-/**
- * 是否偏移背景对齐目标控件
- */
-public PopupLayer backgroundAlign(boolean align)
-
-/**
- * 背景应用offset设置
- */
-public PopupLayer backgroundOffset(boolean offset)
-
-/**
- * 当以target方式创建时为参照View位置显示
- * 可自己指定浮层相对于参照View的对齐方式
- */
-public PopupLayer align(Align.Direction direction,
-                        Align.Horizontal horizontal,
-                        Align.Vertical vertical,
-                        boolean inside)
-
-/**
- * 指定浮层相对于参照View的对齐方式
- */
-public PopupLayer direction(Align.Direction direction)
-
-/**
- * 指定浮层相对于参照View的对齐方式
- */
-public PopupLayer horizontal(Align.Horizontal horizontal)
-
-/**
- * 指定浮层相对于参照View的对齐方式
- */
-public PopupLayer vertical(Align.Vertical vertical)
-
-/**
- * 指定浮层是否强制位于屏幕内部
- */
-public PopupLayer inside(boolean inside)
-
-/**
- * X轴偏移
- */
-public PopupLayer offsetX(float offsetX, int unit)
-public PopupLayer offsetXdp(float dp)
-public PopupLayer offsetXpx(float px)
-/**
- * Y轴偏移
- */
-public PopupLayer offsetY(float offsetY, int unit)
-public PopupLayer offsetYdp(float dp)
-public PopupLayer offsetYpY(float px)
-```
-
-国际惯例，最后看下调用代码凑凑字数。
-
-```java
-AnyLayer.popup(targetView)
-        .contentView(R.layout.dialog_test_4)
-        .backgroundColorRes(R.color.dialog_bg)
-        .direction(Align.Direction.VERTICAL)
-        .horizontal(Align.Horizontal.CENTER)
-        .vertical(Align.Vertical.BELOW)
-    	.inside(true)
-        .contentAnim(new LayerManager.IAnim() {
-            @Override
-            public Animator inAnim(View content) {
-                return AnimHelper.createTopInAnim(content);
-            }
-
-            @Override
-            public Animator outAnim(View content) {
-                return AnimHelper.createTopOutAnim(content);
-            }
-        })
-        .show();
-```
+继承自DialogLayer，加入了锚点定位。
 
 
 
 ### ToastLayer
 
-累了，这个写简单点，就看下调用代码算了。
-
-```java
-AnyLayer.toast()
-        .duration(3000)
-        .icon(isSucc ? R.drawable.ic_success : R.drawable.ic_fail)
-        .message(isSucc ? "哈哈，成功了" : "哎呀，失败了")
-        .show();
-```
+吐司
 
 
 
 ### GuideLayer
 
-> 已实现，文档待补充
+引导层
 
 
 
-### FloatLayer
+### OverlayLayer
 
-> 已实现，文档待补充
+悬浮按钮
 
 
 
 ### NotificationLayer
 
-> 已实现，文档待补充
+通知
 
 
 
