@@ -109,7 +109,7 @@ public class NotificationLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildNullable() == null) {
+        if (getViewHolder().getChildOrNull() == null) {
             SwipeLayout container = (SwipeLayout) inflater.inflate(R.layout.anylayer_notification_layer, parent, false);
             getViewHolder().setChild(container);
             getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getChild()));
@@ -130,7 +130,7 @@ public class NotificationLayer extends DecorLayer {
 
     @NonNull
     protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getContentNullable() == null) {
+        if (getViewHolder().getContentOrNull() == null) {
             getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
         } else {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
@@ -177,6 +177,9 @@ public class NotificationLayer extends DecorLayer {
 
             @Override
             public void onSwiping(@SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
+                if (getConfig().mSwipeTransformer != null) {
+                    getConfig().mSwipeTransformer.onSwiping(NotificationLayer.this, direction, fraction);
+                }
                 getListenerHolder().notifyOnSwiping(NotificationLayer.this, direction, fraction);
             }
 
@@ -510,13 +513,13 @@ public class NotificationLayer extends DecorLayer {
     }
 
     @NonNull
-    public NotificationLayer setOnNotificationClickListener(@NonNull OnClickListener listener) {
+    public NotificationLayer addOnNotificationClickListener(@NonNull OnClickListener listener) {
         addOnClickToDismissListener(listener);
         return this;
     }
 
     @NonNull
-    public NotificationLayer setOnNotificationLongClickListener(@NonNull OnLongClickListener listener) {
+    public NotificationLayer addOnNotificationLongClickListener(@NonNull OnLongClickListener listener) {
         addOnLongClickToDismissListener(listener);
         return this;
     }
@@ -573,8 +576,8 @@ public class NotificationLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected SwipeLayout getChildNullable() {
-            return (SwipeLayout) super.getChildNullable();
+        protected SwipeLayout getChildOrNull() {
+            return (SwipeLayout) super.getChildOrNull();
         }
 
         @NonNull
@@ -587,7 +590,7 @@ public class NotificationLayer extends DecorLayer {
         }
 
         @Nullable
-        protected View getContentNullable() {
+        protected View getContentOrNull() {
             return mContent;
         }
 

@@ -39,7 +39,7 @@ fun <T : DialogLayer> T.swipeTransformer(swipeTransformer: DialogLayer.SwipeTran
     this.setSwipeTransformer(swipeTransformer)
 }
 
-fun <T : DialogLayer> T.onSwipeStart(onStart: T.() -> Unit) = this.apply {
+fun <T : DialogLayer> T.doOnSwipeStart(onStart: T.() -> Unit) = this.apply {
     this.addOnSwipeListener(object : DefaultDialogOnSwipeListener() {
         override fun onStart(layer: DialogLayer) {
             this@apply.onStart()
@@ -47,7 +47,7 @@ fun <T : DialogLayer> T.onSwipeStart(onStart: T.() -> Unit) = this.apply {
     })
 }
 
-fun <T : DialogLayer> T.onSwiping(onSwiping: T.(direction: Int, fraction: Float) -> Unit) = this.apply {
+fun <T : DialogLayer> T.doOnSwiping(onSwiping: T.(direction: Int, fraction: Float) -> Unit) = this.apply {
     this.addOnSwipeListener(object : DefaultDialogOnSwipeListener() {
         override fun onSwiping(layer: DialogLayer,
                                @SwipeLayout.Direction direction: Int,
@@ -57,7 +57,7 @@ fun <T : DialogLayer> T.onSwiping(onSwiping: T.(direction: Int, fraction: Float)
     })
 }
 
-fun <T : DialogLayer> T.onSwipeEnd(onEnd: T.(direction: Int) -> Unit) = this.apply {
+fun <T : DialogLayer> T.doOnSwipeEnd(onEnd: T.(direction: Int) -> Unit) = this.apply {
     this.addOnSwipeListener(object : DefaultDialogOnSwipeListener() {
         override fun onEnd(layer: DialogLayer, @SwipeLayout.Direction direction: Int) {
             this@apply.onEnd(direction)
@@ -183,10 +183,10 @@ fun <T : DialogLayer> T.outsideInterceptTouchEvent(enable: Boolean) = this.apply
     this.setOutsideInterceptTouchEvent(enable)
 }
 
-fun <T : DialogLayer> T.onOutsideTouch(onOutsideTouched: T.() -> Unit) = this.apply {
+fun <T : DialogLayer> T.doOnOutsideTouch(onOutsideTouched: T.() -> Unit) = this.apply {
     this.setOnOutsideTouchListener { this@apply.onOutsideTouched() }
 }
 
-fun <T : DialogLayer> T.outsideTouchToDismiss(enable: Boolean) = this.apply {
+fun <T : DialogLayer> T.dismissOnOutsideTouch(enable: Boolean) = this.apply {
     this.setOutsideTouchToDismiss(enable)
 }

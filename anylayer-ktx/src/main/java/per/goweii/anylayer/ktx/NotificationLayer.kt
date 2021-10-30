@@ -100,11 +100,11 @@ fun <T : NotificationLayer> T.duration(duration: Long) = this.apply {
 }
 
 fun <T : NotificationLayer> T.onNotificationClick(onNotificationClick: T.(view: View) -> Unit) = this.apply {
-    this.setOnNotificationClickListener { _, view -> this.onNotificationClick(view) }
+    this.addOnNotificationClickListener { _, view -> this.onNotificationClick(view) }
 }
 
-fun <T : NotificationLayer> T.onNotificationLongClick(onNotificationClick: T.(view: View) -> Boolean) = this.apply {
-    this.setOnNotificationLongClickListener { _, view -> this.onNotificationClick(view) }
+fun <T : NotificationLayer> T.doOnNotificationLongClick(onNotificationClick: T.(view: View) -> Boolean) = this.apply {
+    this.addOnNotificationLongClickListener { _, view -> this.onNotificationClick(view) }
 }
 
 fun <T : NotificationLayer> T.autoDismiss(autoDismiss: Boolean) = this.apply {
@@ -115,7 +115,7 @@ fun <T : NotificationLayer> T.swipeTransformer(swipeTransformer: NotificationLay
     this.setSwipeTransformer(swipeTransformer)
 }
 
-fun <T : NotificationLayer> T.onSwipeStart(onStart: T.() -> Unit) = this.apply {
+fun <T : NotificationLayer> T.doOnSwipeStart(onStart: T.() -> Unit) = this.apply {
     this.addOnSwipeListener(object : DefaultNotificationOnSwipeListener() {
         override fun onStart(layer: NotificationLayer) {
             this@apply.onStart()
@@ -123,7 +123,7 @@ fun <T : NotificationLayer> T.onSwipeStart(onStart: T.() -> Unit) = this.apply {
     })
 }
 
-fun <T : NotificationLayer> T.onSwiping(onSwiping: T.(direction: Int, fraction: Float) -> Unit) = this.apply {
+fun <T : NotificationLayer> T.doOnSwiping(onSwiping: T.(direction: Int, fraction: Float) -> Unit) = this.apply {
     this.addOnSwipeListener(object : DefaultNotificationOnSwipeListener() {
         override fun onSwiping(layer: NotificationLayer,
                                @SwipeLayout.Direction direction: Int,
@@ -133,7 +133,7 @@ fun <T : NotificationLayer> T.onSwiping(onSwiping: T.(direction: Int, fraction: 
     })
 }
 
-fun <T : NotificationLayer> T.onSwipeEnd(onEnd: T.(direction: Int) -> Unit) = this.apply {
+fun <T : NotificationLayer> T.doOnSwipeEnd(onEnd: T.(direction: Int) -> Unit) = this.apply {
     this.addOnSwipeListener(object : DefaultNotificationOnSwipeListener() {
         override fun onEnd(layer: NotificationLayer, @SwipeLayout.Direction direction: Int) {
             this@apply.onEnd(direction)

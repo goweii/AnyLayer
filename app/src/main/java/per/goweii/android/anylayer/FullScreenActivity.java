@@ -160,7 +160,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                     public void onLayerCreated(@NonNull DialogLayer anyLayer) {
                         anyLayer.setContentView(R.layout.dialog_normal)
                                 .setBackgroundDimDefault()
-                                .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                                .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                                 .show();
                     }
                 });
@@ -220,7 +220,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .addOnShowListener(new Layer.OnShowListener() {
                             @Override
                             public void onPreShow(@NonNull Layer layer) {
-                                EditText et = layer.requireView(R.id.et_input);
+                                EditText et = layer.requireViewById(R.id.et_input);
                                 et.setFocusable(true);
                                 et.setFocusableInTouchMode(true);
                                 et.requestFocus();
@@ -235,7 +235,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .addOnDismissListener(new Layer.OnDismissListener() {
                             @Override
                             public void onPreDismiss(@NonNull Layer layer) {
-                                EditText et = layer.requireView(R.id.et_input);
+                                EditText et = layer.requireViewById(R.id.et_input);
                                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
                             }
@@ -247,7 +247,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .addOnClickToDismissListener(new Layer.OnClickListener() {
                             @Override
                             public void onClick(@NonNull Layer layer, @NonNull View v) {
-                                EditText et = layer.requireView(R.id.et_input);
+                                EditText et = layer.requireViewById(R.id.et_input);
                                 Toast.makeText(FullScreenActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
                             }
                         }, R.id.tv_send)
@@ -271,11 +271,11 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                             }
                         })
                         .addInputMethodCompat(false)
-                        .addOnClickToDismissListener(R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_no)
                         .addOnClickToDismissListener(new Layer.OnClickListener() {
                             @Override
                             public void onClick(@NonNull Layer anyLayer, @NonNull View v) {
-                                EditText et = anyLayer.findView(R.id.et_dialog_content);
+                                EditText et = anyLayer.requireViewById(R.id.et_dialog_content);
                                 Toast.makeText(FullScreenActivity.this, et.getText().toString(), Toast.LENGTH_SHORT).show();
                             }
                         }, R.id.fl_dialog_yes)
@@ -284,7 +284,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_full:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .setContentView(R.layout.dialog_fullscreen)
-                        .addOnClickToDismissListener(R.id.iv_1)
+                        .addOnClickToDismiss(R.id.iv_1)
                         .show();
                 break;
             case R.id.tv_show_target_full:
@@ -419,13 +419,13 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentBlurSimple(8F)
                         .setContentBlurCornerRadiusDp(10F)
                         .setContentBlurColorInt(Color.parseColor("#66ffffff"))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_tran_bg:
                 AnyLayer.dialog(FullScreenActivity.this)
                         .setContentView(R.layout.dialog_normal)
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_bottom_in:
@@ -433,7 +433,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.BOTTOM))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_bottom_alpha_in:
@@ -441,7 +441,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.BOTTOM_ALPHA))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_bottom_zoom_alpha_in:
@@ -449,7 +449,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.BOTTOM_ZOOM_ALPHA))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_top_in:
@@ -457,7 +457,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.TOP))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_top_alpha_in:
@@ -465,7 +465,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.TOP_ALPHA))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_left_in:
@@ -473,7 +473,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.LEFT))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_left_alpha_in:
@@ -481,7 +481,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.LEFT_ALPHA))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_right_in:
@@ -489,7 +489,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.RIGHT))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_right_alpha_in:
@@ -497,7 +497,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                         .setContentView(R.layout.dialog_normal)
                         .setBackgroundDimDefault()
                         .setContentAnimator(new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.RIGHT_ALPHA))
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_reveal:
@@ -509,7 +509,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                         ? new CircularRevealAnimatorCreator()
                                         : new SimpleAnimatorCreator(SimpleAnimatorCreator.AnimStyle.ALPHA)
                         )
-                        .addOnClickToDismissListener(R.id.fl_dialog_yes, R.id.fl_dialog_no)
+                        .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
             case R.id.tv_show_menu:

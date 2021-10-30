@@ -8,11 +8,11 @@ fun <T : PopupLayer> T.updateLocationInterceptor(interceptor: PopupLayer.UpdateL
     this.setUpdateLocationInterceptor(interceptor)
 }
 
-fun <T : PopupLayer> T.onViewTreeScrollChanged(onScrollChanged: T.() -> Unit) = this.apply {
+fun <T : PopupLayer> T.doOnViewTreeScrollChanged(onScrollChanged: T.() -> Unit) = this.apply {
     this.setOnViewTreeScrollChangedListener { this.onScrollChanged() }
 }
 
-fun <T : PopupLayer> T.scrollChangedToDismiss(enable: Boolean) = this.apply {
+fun <T : PopupLayer> T.dismissOnScrollChanged(enable: Boolean) = this.apply {
     this.setScrollChangedToDismiss(enable)
 }
 

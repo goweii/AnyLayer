@@ -31,6 +31,7 @@ import per.goweii.anylayer.utils.Utils;
 public class GuideLayer extends DecorLayer {
 
     private final int[] mLocationTemp = new int[2];
+    private final Rect mTargetRect = new Rect();
 
     public GuideLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
@@ -85,7 +86,7 @@ public class GuideLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildNullable() == null) {
+        if (getViewHolder().getChildOrNull() == null) {
             FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_guide_layer, parent, false);
             getViewHolder().setChild(container);
         }
@@ -197,8 +198,6 @@ public class GuideLayer extends DecorLayer {
         mLocationTemp[0] = 0;
         mLocationTemp[1] = 0;
     }
-
-    private final Rect mTargetRect = new Rect();
 
     public void updateLocation() {
         resetLocationTemp();
@@ -338,8 +337,8 @@ public class GuideLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected FrameLayout getChildNullable() {
-            return (FrameLayout) super.getChildNullable();
+        protected FrameLayout getChildOrNull() {
+            return (FrameLayout) super.getChildOrNull();
         }
 
         @NonNull

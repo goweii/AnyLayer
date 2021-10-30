@@ -18,6 +18,9 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import per.goweii.anylayer.DecorLayer;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
@@ -84,7 +87,7 @@ public class OverlayLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildNullable() == null) {
+        if (getViewHolder().getChildOrNull() == null) {
             DragLayout container = (DragLayout) inflater.inflate(R.layout.anylayer_overlay_layer, parent, false);
             getViewHolder().setChild(container);
             getViewHolder().setOverlay(onCreateOverlay(inflater, getViewHolder().getChild()));
@@ -200,7 +203,7 @@ public class OverlayLayer extends DecorLayer {
         if (config.mMarginBottom != null) {
             params.bottomMargin = config.mMarginBottom;
         }
-        getListenerHolder().bindTouchListener(this);
+        getListenerHolder().bindOnTouchListener(this);
     }
 
     private void initOverlayViewDefConfig() {
@@ -394,6 +397,10 @@ public class OverlayLayer extends DecorLayer {
         }
     }
 
+    private void addOnDragListener(@NonNull OnDragListener onDragListener) {
+        getListenerHolder().addOnDragListener(onDragListener);
+    }
+
     private final Runnable mOverlayNormalRunnable = new Runnable() {
         @Override
         public void run() {
@@ -451,19 +458,23 @@ public class OverlayLayer extends DecorLayer {
         @Override
         public void onStart(@NonNull View view) {
             toNormal();
+            getListenerHolder().notifyOnDragStart(view);
         }
 
         @Override
         public void onDragging(@NonNull View view) {
+            getListenerHolder().notifyOnDragging(view);
         }
 
         @Override
         public void onRelease(@NonNull View view) {
+            getListenerHolder().notifyOnDragRelease(view);
         }
 
         @Override
         public void onStop(@NonNull View view) {
             toLowProfile();
+            getListenerHolder().notifyOnDragStop(view);
         }
     }
 
@@ -483,8 +494,8 @@ public class OverlayLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected DragLayout getChildNullable() {
-            return (DragLayout) super.getChildNullable();
+        protected DragLayout getChildOrNull() {
+            return (DragLayout) super.getChildOrNull();
         }
 
         void setOverlay(@NonNull View overlayView) {
@@ -550,8 +561,9 @@ public class OverlayLayer extends DecorLayer {
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
         private GestureDetector mGestureDetector = null;
+        private List<OnDragListener> mOnDragListeners = null;
 
-        public void bindTouchListener(@NonNull OverlayLayer layer) {
+        public void bindOnTouchListener(@NonNull OverlayLayer layer) {
             final View overlayView = layer.getViewHolder().getOverlay();
             mGestureDetector = new GestureDetector(overlayView.getContext(), new GestureDetector.OnGestureListener() {
                 @Override
@@ -595,6 +607,45 @@ public class OverlayLayer extends DecorLayer {
                 }
             });
         }
+
+        private void addOnDragListener(@NonNull OnDragListener onDragListener) {
+            if (mOnDragListeners == null) {
+                mOnDragListeners = new ArrayList<>(1);
+            }
+            mOnDragListeners.add(onDragListener);
+        }
+
+        private void notifyOnDragStart(@NonNull View view) {
+            if (mOnDragListeners != null) {
+                for (OnDragListener onDragListener : mOnDragListeners) {
+                    onDragListener.onStart(view);
+                }
+            }
+        }
+
+        private void notifyOnDragging(@NonNull View view) {
+            if (mOnDragListeners != null) {
+                for (OnDragListener onDragListener : mOnDragListeners) {
+                    onDragListener.onDragging(view);
+                }
+            }
+        }
+
+        private void notifyOnDragRelease(@NonNull View view) {
+            if (mOnDragListeners != null) {
+                for (OnDragListener onDragListener : mOnDragListeners) {
+                    onDragListener.onRelease(view);
+                }
+            }
+        }
+
+        private void notifyOnDragStop(@NonNull View view) {
+            if (mOnDragListeners != null) {
+                for (OnDragListener onDragListener : mOnDragListeners) {
+                    onDragListener.onStop(view);
+                }
+            }
+        }
     }
 
     public static class Edge {
@@ -609,5 +660,15 @@ public class OverlayLayer extends DecorLayer {
         public static final int VERTICAL = TOP | BOTTOM;
 
         public static final int ALL = HORIZONTAL | VERTICAL;
+    }
+
+    public interface OnDragListener {
+        void onStart(@NonNull View view);
+
+        void onDragging(@NonNull View view);
+
+        void onRelease(@NonNull View view);
+
+        void onStop(@NonNull View view);
     }
 }

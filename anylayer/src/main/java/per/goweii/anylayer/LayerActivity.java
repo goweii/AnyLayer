@@ -13,8 +13,7 @@ import java.lang.ref.WeakReference;
 import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.utils.Utils;
 
-public class LayerActivity extends Activity implements Layer.OnVisibleChangedListener {
-
+public class LayerActivity extends Activity implements Layer.OnVisibleChangeListener {
     @Nullable
     private static WeakReference<OnLayerCreatedCallback> sOnLayerCreatedCallback = null;
 

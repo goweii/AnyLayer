@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import per.goweii.anylayer.utils.AnimatorListener;
+import per.goweii.anylayer.utils.DefaultAnimatorListener;
 import per.goweii.anylayer.utils.Utils;
 
 public class Layer {
@@ -101,7 +101,7 @@ public class Layer {
 
     @NonNull
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (mViewHolder.getChildNullable() == null) {
+        if (mViewHolder.getChildOrNull() == null) {
             mViewHolder.setChild(inflater.inflate(mConfig.mChildId, parent, false));
         }
         return mViewHolder.getChild();
@@ -142,30 +142,30 @@ public class Layer {
             getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
             getViewTreeObserver().addOnPreDrawListener(mOnGlobalPreDrawListener);
         }
-        mListenerHolder.bindClickListeners(this);
-        mListenerHolder.bindLongClickListeners(this);
+        mListenerHolder.bindOnClickListeners(this);
+        mListenerHolder.bindOnLongClickListeners(this);
         mListenerHolder.notifyVisibleChangeOnShow(this);
-        mListenerHolder.notifyDataBinder(this);
+        mListenerHolder.notifyBindData(this);
     }
 
     @CallSuper
-    protected void onAppear() {
-        mListenerHolder.notifyLayerOnShowing(this);
+    protected void onPreShow() {
+        mListenerHolder.notifyOnPreShow(this);
     }
 
     @CallSuper
-    protected void onShow() {
-        mListenerHolder.notifyLayerOnShown(this);
+    protected void onPostShow() {
+        mListenerHolder.notifyOnPostShow(this);
     }
 
     @CallSuper
-    protected void onDismiss() {
-        mListenerHolder.notifyLayerOnDismissing(this);
+    protected void onPreDismiss() {
+        mListenerHolder.notifyOnPreDismiss(this);
     }
 
     @CallSuper
-    protected void onDisappear() {
-        mListenerHolder.notifyLayerOnDismissed(this);
+    protected void onPostDismiss() {
+        mListenerHolder.notifyOnPostDismiss(this);
     }
 
     @CallSuper
@@ -225,7 +225,7 @@ public class Layer {
                     if (getViewTreeObserver().isAlive()) {
                         getViewTreeObserver().removeOnPreDrawListener(this);
                     }
-                    onAppear();
+                    onPreShow();
                     startAnimatorIn();
                     return true;
                 }
@@ -239,7 +239,7 @@ public class Layer {
         if (mShowWithAnim) {
             mAnimatorIn = onCreateInAnimator(mViewHolder.getChild());
             if (mAnimatorIn != null) {
-                mAnimatorIn.addListener(new AnimatorListener() {
+                mAnimatorIn.addListener(new DefaultAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
@@ -247,8 +247,8 @@ public class Layer {
                     }
 
                     @Override
-                    public void onAnimationEndWithoutCancel(Animator animation) {
-                        super.onAnimationEndWithoutCancel(animation);
+                    public void onAnimationEndNotCanceled(Animator animation) {
+                        super.onAnimationEndNotCanceled(animation);
                         mInAnimEndCallback.run();
                     }
                 });
@@ -262,7 +262,7 @@ public class Layer {
     }
 
     private void handleInAnimEnd() {
-        onShow();
+        onPostShow();
     }
 
     private void handleDismiss() {
@@ -278,7 +278,7 @@ public class Layer {
             onDestroy();
             return;
         }
-        onDismiss();
+        onPreDismiss();
         startAnimatorOut();
     }
 
@@ -287,7 +287,7 @@ public class Layer {
         if (mDismissWithAnim) {
             mAnimatorOut = onCreateOutAnimator(mViewHolder.getChild());
             if (mAnimatorOut != null) {
-                mAnimatorOut.addListener(new AnimatorListener() {
+                mAnimatorOut.addListener(new DefaultAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
@@ -295,8 +295,8 @@ public class Layer {
                     }
 
                     @Override
-                    public void onAnimationEndWithoutCancel(Animator animation) {
-                        super.onAnimationEndWithoutCancel(animation);
+                    public void onAnimationEndNotCanceled(Animator animation) {
+                        super.onAnimationEndNotCanceled(animation);
                         // 动画执行结束后不能直接removeView，要在下一个dispatchDraw周期移除
                         // 否则会崩溃，因为viewGroup的childCount没有来得及-1，获取到的view为空
                         getViewHolder().getChild().setVisibility(View.INVISIBLE);
@@ -315,7 +315,7 @@ public class Layer {
     }
 
     private void handleOutAnimEnd() {
-        onDisappear();
+        onPostDismiss();
         mViewManager.detach();
         onDetach();
         onDestroy();
@@ -401,73 +401,73 @@ public class Layer {
     }
 
     @NonNull
-    public <V extends View> V requireView(@IdRes int id) {
-        return Utils.requireNonNull(mViewHolder.findView(id));
+    public <V extends View> V requireViewById(@IdRes int id) {
+        return Utils.requireNonNull(mViewHolder.findViewById(id));
     }
 
     @Nullable
-    public <V extends View> V getView(@IdRes int id) {
-        return mViewHolder.findView(id);
+    public <V extends View> V findViewById(@IdRes int id) {
+        return mViewHolder.findViewById(id);
     }
 
     @NonNull
-    public Layer parent(@NonNull ViewGroup parent) {
+    public Layer setParent(@NonNull ViewGroup parent) {
         mViewHolder.setParent(parent);
         return this;
     }
 
     @NonNull
-    public Layer child(@NonNull View child) {
+    public Layer setChild(@NonNull View child) {
         mViewHolder.setChild(child);
         return this;
     }
 
     @NonNull
-    public Layer child(int child) {
+    public Layer setChild(int child) {
         mConfig.mChildId = child;
         return this;
     }
 
     @NonNull
-    public Layer animator(@Nullable AnimatorCreator creator) {
+    public Layer setAnimator(@Nullable AnimatorCreator creator) {
         mConfig.mAnimatorCreator = creator;
         return this;
     }
 
     @NonNull
-    public Layer interceptKeyEvent(boolean intercept) {
+    public Layer setInterceptKeyEvent(boolean intercept) {
         mConfig.mInterceptKeyEvent = intercept;
         return this;
     }
 
     @NonNull
-    public Layer cancelableOnKeyBack(boolean cancelable) {
-        if (cancelable) interceptKeyEvent(true);
+    public Layer setCancelableOnKeyBack(boolean cancelable) {
+        if (cancelable) setInterceptKeyEvent(true);
         mConfig.mCancelableOnKeyBack = cancelable;
         return this;
     }
 
     /**
      * 绑定数据
-     * 获取子控件ID为{@link #getView(int)}
+     * 获取子控件ID为{@link #findViewById(int)}
      *
-     * @param dataBinder 实现该接口进行数据绑定
+     * @param dataBindCallback 实现该接口进行数据绑定
      */
     @NonNull
-    public Layer bindData(@NonNull DataBinder dataBinder) {
-        mListenerHolder.addDataBinder(dataBinder);
+    public Layer addDataBindCallback(@NonNull DataBindCallback dataBindCallback) {
+        mListenerHolder.addDataBindCallback(dataBindCallback);
         return this;
     }
 
     /**
      * 初始化
-     * 获取子控件ID为{@link #getView(int)}
+     * 获取子控件ID为{@link #findViewById(int)}
      *
-     * @param onInitialize 该接口仅在第一次加载时调用，可加载初始化数据
+     * @param onInitializeListener 该接口仅在第一次加载时调用，可加载初始化数据
      */
     @NonNull
-    public Layer onInitialize(@NonNull OnInitialize onInitialize) {
-        mListenerHolder.addOnInitialize(onInitialize);
+    public Layer addOnInitializeListener(@NonNull OnInitializeListener onInitializeListener) {
+        mListenerHolder.addOnInitializeListener(onInitializeListener);
         return this;
     }
 
@@ -477,7 +477,7 @@ public class Layer {
      * @param onVisibleChangeListener OnVisibleChangeListener
      */
     @NonNull
-    public Layer onVisibleChangeListener(@NonNull OnVisibleChangeListener onVisibleChangeListener) {
+    public Layer addOnVisibleChangeListener(@NonNull OnVisibleChangeListener onVisibleChangeListener) {
         mListenerHolder.addOnVisibleChangeListener(onVisibleChangeListener);
         return this;
     }
@@ -488,8 +488,8 @@ public class Layer {
      * @param onShowListener OnShowListener
      */
     @NonNull
-    public Layer onShowListener(@NonNull OnShowListener onShowListener) {
-        mListenerHolder.addOnLayerShowListener(onShowListener);
+    public Layer addOnShowListener(@NonNull OnShowListener onShowListener) {
+        mListenerHolder.addOnShowListener(onShowListener);
         return this;
     }
 
@@ -499,8 +499,8 @@ public class Layer {
      * @param onDismissListener OnDismissListener
      */
     @NonNull
-    public Layer onDismissListener(@NonNull OnDismissListener onDismissListener) {
-        mListenerHolder.addOnLayerDismissListener(onDismissListener);
+    public Layer addOnDismissListener(@NonNull OnDismissListener onDismissListener) {
+        mListenerHolder.addOnDismissListener(onDismissListener);
         return this;
     }
 
@@ -511,8 +511,21 @@ public class Layer {
      * @param viewIds 控件ID
      */
     @NonNull
-    public Layer onClickToDismiss(int... viewIds) {
-        onClickToDismiss(null, viewIds);
+    public Layer addOnClickToDismiss(@IdRes int... viewIds) {
+        addOnClickToDismissListener(null, viewIds);
+        return this;
+    }
+
+    /**
+     * 对View绑定点击事件
+     * 绑定该控件点击时直接隐藏浮层
+     *
+     * @param viewId   控件ID
+     * @param listener 监听器
+     */
+    @NonNull
+    public Layer addOnClickToDismissListener(@IdRes int viewId, @Nullable OnClickListener listener) {
+        addOnClickToDismissListener(listener, viewId);
         return this;
     }
 
@@ -524,8 +537,8 @@ public class Layer {
      * @param viewIds  控件ID
      */
     @NonNull
-    public Layer onClickToDismiss(@Nullable OnClickListener listener, int... viewIds) {
-        onClick(new OnClickListener() {
+    public Layer addOnClickToDismissListener(@Nullable OnClickListener listener, @IdRes int... viewIds) {
+        addOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull Layer decorLayer, @NonNull View v) {
                 if (listener != null) {
@@ -538,13 +551,25 @@ public class Layer {
     }
 
     /**
+     * 对View绑定点击事件
+     *
+     * @param viewId   控件ID
+     * @param listener 回调
+     */
+    @NonNull
+    public Layer addOnClickListener(@IdRes int viewId, @NonNull OnClickListener listener) {
+        addOnClickListener(listener, viewId);
+        return this;
+    }
+
+    /**
      * 对多个View绑定点击事件
      *
      * @param listener 回调
      * @param viewIds  控件ID
      */
     @NonNull
-    public Layer onClick(@NonNull OnClickListener listener, int... viewIds) {
+    public Layer addOnClickListener(@NonNull OnClickListener listener, @IdRes int... viewIds) {
         mListenerHolder.addOnClickListener(listener, viewIds);
         return this;
     }
@@ -556,8 +581,21 @@ public class Layer {
      * @param viewIds 控件ID
      */
     @NonNull
-    public Layer onLongClickToDismiss(int... viewIds) {
-        onLongClickToDismiss(null, viewIds);
+    public Layer addOnLongClickToDismiss(@IdRes int... viewIds) {
+        addOnLongClickToDismissListener(null, viewIds);
+        return this;
+    }
+
+    /**
+     * 对View绑定长按事件
+     * 绑定该控件点击时直接隐藏浮层
+     *
+     * @param viewId   控件ID
+     * @param listener 监听器
+     */
+    @NonNull
+    public Layer addOnLongClickToDismissListener(@IdRes int viewId, @Nullable OnLongClickListener listener) {
+        addOnLongClickToDismissListener(listener, viewId);
         return this;
     }
 
@@ -569,8 +607,8 @@ public class Layer {
      * @param viewIds  控件ID
      */
     @NonNull
-    public Layer onLongClickToDismiss(@Nullable OnLongClickListener listener, int... viewIds) {
-        onLongClick(new OnLongClickListener() {
+    public Layer addOnLongClickToDismissListener(@Nullable OnLongClickListener listener, int... viewIds) {
+        addOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(@NonNull Layer layer, @NonNull View v) {
                 if (listener == null) {
@@ -587,13 +625,25 @@ public class Layer {
     }
 
     /**
+     * 对View绑定长按事件
+     *
+     * @param viewId   控件ID
+     * @param listener 回调
+     */
+    @NonNull
+    public Layer addOnLongClickListener(@IdRes int viewId, @NonNull OnLongClickListener listener) {
+        addOnLongClickListener(listener, viewId);
+        return this;
+    }
+
+    /**
      * 对多个View绑定长按事件
      *
      * @param listener 回调
      * @param viewIds  控件ID
      */
     @NonNull
-    public Layer onLongClick(@NonNull OnLongClickListener listener, int... viewIds) {
+    public Layer addOnLongClickListener(@NonNull OnLongClickListener listener, int... viewIds) {
         mListenerHolder.addOnLongClickListener(listener, viewIds);
         return this;
     }
@@ -637,7 +687,7 @@ public class Layer {
         }
 
         @Nullable
-        protected View getChildNullable() {
+        protected View getChildOrNull() {
             return mChild;
         }
 
@@ -648,7 +698,7 @@ public class Layer {
 
         @SuppressWarnings("unchecked")
         @Nullable
-        public final <V extends View> V findView(@IdRes int id) {
+        public final <V extends View> V findViewById(@IdRes int id) {
             if (mChild == null) {
                 return null;
             }
@@ -669,13 +719,13 @@ public class Layer {
     protected static class ListenerHolder {
         private SparseArray<OnClickListener> mOnClickListeners = null;
         private SparseArray<OnLongClickListener> mOnLongClickListeners = null;
-        private List<OnInitialize> mOnInitializes = null;
-        private List<DataBinder> mDataBinders = null;
+        private List<OnInitializeListener> mOnInitializeListeners = null;
+        private List<DataBindCallback> mDataBindCallbacks = null;
         private List<OnVisibleChangeListener> mOnVisibleChangeListeners = null;
         private List<OnShowListener> mOnShowListeners = null;
         private List<OnDismissListener> mOnDismissListeners = null;
 
-        private void bindClickListeners(@NonNull Layer layer) {
+        private void bindOnClickListeners(@NonNull Layer layer) {
             if (mOnClickListeners == null) return;
             for (int i = 0; i < mOnClickListeners.size(); i++) {
                 final int viewId = mOnClickListeners.keyAt(i);
@@ -684,7 +734,7 @@ public class Layer {
                 if (viewId == View.NO_ID) {
                     view = layer.getViewHolder().getNoIdClickView();
                 } else {
-                    view = layer.getView(viewId);
+                    view = layer.findViewById(viewId);
                 }
                 if (view != null) {
                     view.setOnClickListener(new View.OnClickListener() {
@@ -697,7 +747,7 @@ public class Layer {
             }
         }
 
-        private void bindLongClickListeners(@NonNull Layer layer) {
+        private void bindOnLongClickListeners(@NonNull Layer layer) {
             if (mOnLongClickListeners == null) return;
             for (int i = 0; i < mOnLongClickListeners.size(); i++) {
                 final int viewId = mOnLongClickListeners.keyAt(i);
@@ -706,7 +756,7 @@ public class Layer {
                 if (viewId == View.NO_ID) {
                     view = layer.getViewHolder().getNoIdClickView();
                 } else {
-                    view = layer.getView(viewId);
+                    view = layer.findViewById(viewId);
                 }
                 if (view != null) {
                     view.setOnLongClickListener(new View.OnLongClickListener() {
@@ -745,18 +795,18 @@ public class Layer {
             }
         }
 
-        private void addDataBinder(@NonNull DataBinder dataBinder) {
-            if (mDataBinders == null) {
-                mDataBinders = new ArrayList<>(1);
+        private void addDataBindCallback(@NonNull DataBindCallback dataBindCallback) {
+            if (mDataBindCallbacks == null) {
+                mDataBindCallbacks = new ArrayList<>(1);
             }
-            mDataBinders.add(dataBinder);
+            mDataBindCallbacks.add(dataBindCallback);
         }
 
-        private void addOnInitialize(@NonNull OnInitialize onInitialize) {
-            if (mOnInitializes == null) {
-                mOnInitializes = new ArrayList<>(1);
+        private void addOnInitializeListener(@NonNull OnInitializeListener onInitializeListener) {
+            if (mOnInitializeListeners == null) {
+                mOnInitializeListeners = new ArrayList<>(1);
             }
-            mOnInitializes.add(onInitialize);
+            mOnInitializeListeners.add(onInitializeListener);
         }
 
         private void addOnVisibleChangeListener(@NonNull OnVisibleChangeListener onVisibleChangeListener) {
@@ -766,32 +816,32 @@ public class Layer {
             mOnVisibleChangeListeners.add(onVisibleChangeListener);
         }
 
-        private void addOnLayerShowListener(@NonNull OnShowListener onShowListener) {
+        private void addOnShowListener(@NonNull OnShowListener onShowListener) {
             if (mOnShowListeners == null) {
                 mOnShowListeners = new ArrayList<>(1);
             }
             mOnShowListeners.add(onShowListener);
         }
 
-        private void addOnLayerDismissListener(@NonNull OnDismissListener onDismissListener) {
+        private void addOnDismissListener(@NonNull OnDismissListener onDismissListener) {
             if (mOnDismissListeners == null) {
                 mOnDismissListeners = new ArrayList<>(1);
             }
             mOnDismissListeners.add(onDismissListener);
         }
 
-        private void notifyDataBinder(@NonNull Layer layer) {
-            if (mDataBinders != null) {
-                for (DataBinder dataBinder : mDataBinders) {
-                    dataBinder.bindData(layer);
+        private void notifyBindData(@NonNull Layer layer) {
+            if (mDataBindCallbacks != null) {
+                for (DataBindCallback dataBindCallback : mDataBindCallbacks) {
+                    dataBindCallback.bindData(layer);
                 }
             }
         }
 
         private void notifyOnInitialize(@NonNull Layer layer) {
-            if (mOnInitializes != null) {
-                for (OnInitialize onInitialize : mOnInitializes) {
-                    onInitialize.onInit(layer);
+            if (mOnInitializeListeners != null) {
+                for (OnInitializeListener onInitializeListener : mOnInitializeListeners) {
+                    onInitializeListener.onInitialize(layer);
                 }
             }
         }
@@ -812,34 +862,34 @@ public class Layer {
             }
         }
 
-        private void notifyLayerOnShowing(@NonNull Layer layer) {
+        private void notifyOnPreShow(@NonNull Layer layer) {
             if (mOnShowListeners != null) {
                 for (OnShowListener onShowListener : mOnShowListeners) {
-                    onShowListener.onShowing(layer);
+                    onShowListener.onPreShow(layer);
                 }
             }
         }
 
-        private void notifyLayerOnShown(@NonNull Layer layer) {
+        private void notifyOnPostShow(@NonNull Layer layer) {
             if (mOnShowListeners != null) {
                 for (OnShowListener onShowListener : mOnShowListeners) {
-                    onShowListener.onShown(layer);
+                    onShowListener.onPostShow(layer);
                 }
             }
         }
 
-        private void notifyLayerOnDismissing(@NonNull Layer layer) {
+        private void notifyOnPreDismiss(@NonNull Layer layer) {
             if (mOnDismissListeners != null) {
                 for (OnDismissListener onDismissListener : mOnDismissListeners) {
-                    onDismissListener.onDismissing(layer);
+                    onDismissListener.onPreDismiss(layer);
                 }
             }
         }
 
-        private void notifyLayerOnDismissed(@NonNull Layer layer) {
+        private void notifyOnPostDismiss(@NonNull Layer layer) {
             if (mOnDismissListeners != null) {
                 for (OnDismissListener onDismissListener : mOnDismissListeners) {
-                    onDismissListener.onDismissed(layer);
+                    onDismissListener.onPostDismiss(layer);
                 }
             }
         }
@@ -863,18 +913,18 @@ public class Layer {
         Animator createOutAnimator(@NonNull View target);
     }
 
-    public interface DataBinder {
+    public interface DataBindCallback {
         /**
          * 绑定数据
          */
         void bindData(@NonNull Layer layer);
     }
 
-    public interface OnInitialize {
+    public interface OnInitializeListener {
         /**
          * 首次加载
          */
-        void onInit(@NonNull Layer layer);
+        void onInitialize(@NonNull Layer layer);
     }
 
     public interface OnClickListener {
@@ -895,24 +945,24 @@ public class Layer {
         /**
          * 开始隐藏，动画刚开始执行
          */
-        void onDismissing(@NonNull Layer layer);
+        void onPreDismiss(@NonNull Layer layer);
 
         /**
          * 已隐藏，浮层已被移除
          */
-        void onDismissed(@NonNull Layer layer);
+        void onPostDismiss(@NonNull Layer layer);
     }
 
     public interface OnShowListener {
         /**
          * 开始显示，动画刚开始执行
          */
-        void onShowing(@NonNull Layer layer);
+        void onPreShow(@NonNull Layer layer);
 
         /**
          * 已显示，浮层已显示且动画结束
          */
-        void onShown(@NonNull Layer layer);
+        void onPostShow(@NonNull Layer layer);
     }
 
     public interface OnVisibleChangeListener {

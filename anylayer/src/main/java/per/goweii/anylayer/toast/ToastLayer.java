@@ -87,7 +87,7 @@ public class ToastLayer extends DecorLayer {
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildNullable() == null) {
+        if (getViewHolder().getChildOrNull() == null) {
             FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
             getViewHolder().setChild(container);
             getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getChild()));
@@ -108,7 +108,7 @@ public class ToastLayer extends DecorLayer {
 
     @NonNull
     protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getContentNullable() == null) {
+        if (getViewHolder().getContentOrNull() == null) {
             getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
         } else {
             ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
@@ -402,8 +402,8 @@ public class ToastLayer extends DecorLayer {
 
         @Nullable
         @Override
-        protected FrameLayout getChildNullable() {
-            return (FrameLayout) super.getChildNullable();
+        protected FrameLayout getChildOrNull() {
+            return (FrameLayout) super.getChildOrNull();
         }
 
         protected void setContent(@NonNull View content) {
@@ -411,7 +411,7 @@ public class ToastLayer extends DecorLayer {
         }
 
         @Nullable
-        protected View getContentNullable() {
+        protected View getContentOrNull() {
             return mContent;
         }
 
