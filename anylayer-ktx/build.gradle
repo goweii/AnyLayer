@@ -1,4 +1,4 @@
-apply from:  "../library.gradle"
+apply from: "../library.gradle"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 

@@ -1,34 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:gravity="center"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_activity_normal"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center"
-        android:text="非全屏Activity"
-        android:textColor="#232323"
-        android:textSize="14sp" />
+        style="@style/ListTextStyle"
+        android:text="普通Activity" />
 
     <TextView
         android:id="@+id/tv_activity_full_screen"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center"
-        android:text="全屏Activity"
-        android:textColor="#232323"
-        android:textSize="14sp" />
+        style="@style/ListTextStyle"
+        android:text="全屏Activity" />
 
     <TextView
         android:id="@+id/tv_activity_drag"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center"
-        android:text="抽屉弹窗"
-        android:textColor="#232323"
-        android:textSize="14sp" />
+        style="@style/ListTextStyle"
+        android:text="抽屉弹窗" />
 
 </LinearLayout>

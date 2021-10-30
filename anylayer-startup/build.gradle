@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply from:  "../library.gradle"
+apply from: "../library.gradle"
 
 android {
 }

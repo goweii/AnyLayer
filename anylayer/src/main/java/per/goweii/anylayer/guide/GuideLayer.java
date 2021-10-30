@@ -3,7 +3,7 @@ package per.goweii.anylayer.guide;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -18,17 +18,19 @@ import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 
 public class GuideLayer extends DecorLayer {
+
+    private final int[] mLocationTemp = new int[2];
 
     public GuideLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
@@ -118,7 +120,7 @@ public class GuideLayer extends DecorLayer {
             if (mapping.getGuideView() == null) {
                 if (mapping.getGuideViewRes() > 0) {
                     View view = LayoutInflater.from(getActivity()).inflate(mapping.getGuideViewRes(), getViewHolder().getContentWrapper(), false);
-                    mapping.guideView(view);
+                    mapping.setGuideView(view);
                 }
             }
             if (mapping.getGuideView() != null) {
@@ -140,26 +142,26 @@ public class GuideLayer extends DecorLayer {
 
     @CallSuper
     @Override
-    protected void onAppear() {
-        super.onAppear();
+    protected void onPreShow() {
+        super.onPreShow();
     }
 
     @CallSuper
     @Override
-    protected void onShow() {
-        super.onShow();
+    protected void onPostShow() {
+        super.onPostShow();
     }
 
     @CallSuper
     @Override
-    protected void onDismiss() {
-        super.onDismiss();
+    protected void onPreDismiss() {
+        super.onPreDismiss();
     }
 
     @CallSuper
     @Override
-    protected void onDisappear() {
-        super.onDisappear();
+    protected void onPostDismiss() {
+        super.onPostDismiss();
     }
 
     @CallSuper
@@ -176,18 +178,7 @@ public class GuideLayer extends DecorLayer {
 
     @Override
     protected void fitDecorInsides() {
-        fitDecorInsidesToViewMargin(getViewHolder().getContentWrapper());
-    }
-
-    @Override
-    public void onGlobalLayout() {
-        super.onGlobalLayout();
-        updateLocation();
-    }
-
-    @Override
-    protected void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+        fitDecorInsidesToViewPadding(getViewHolder().getContentWrapper());
         Utils.onViewLayout(getViewHolder().getChild(), new Runnable() {
             @Override
             public void run() {
@@ -196,31 +187,43 @@ public class GuideLayer extends DecorLayer {
         });
     }
 
+    @Override
+    public void onGlobalLayout() {
+        super.onGlobalLayout();
+        updateLocation();
+    }
+
+    private void resetLocationTemp() {
+        mLocationTemp[0] = 0;
+        mLocationTemp[1] = 0;
+    }
+
+    private final Rect mTargetRect = new Rect();
+
     public void updateLocation() {
-        int[] childLocation = new int[2];
+        resetLocationTemp();
+        final int[] location = mLocationTemp;
         getViewHolder().getBackground().clear();
-        getViewHolder().getChild().getLocationInWindow(childLocation);
+        getViewHolder().getChild().getLocationInWindow(location);
         for (Mapping mapping : getConfig().mMapping) {
-            final Rect targetRect = mapping.getTargetRect();
-            if (!targetRect.isEmpty()) {
-                final Rect holeRect = new Rect(targetRect);
-                holeRect.offset(-childLocation[0], -childLocation[1]);
-                holeRect.offset(mapping.getOffsetX(), mapping.getOffsetY());
-                holeRect.set(holeRect.left - mapping.getPaddingLeft(),
-                        holeRect.top - mapping.getPaddingTop(),
-                        holeRect.right + mapping.getPaddingRight(),
-                        holeRect.bottom + mapping.getPaddingBottom());
-                getViewHolder().getBackground().addRect(holeRect, mapping.getCornerRadius());
-                initLocation(holeRect, mapping);
+            mTargetRect.set(mapping.getTargetRect());
+            if (!mTargetRect.isEmpty()) {
+                mTargetRect.offset(-location[0], -location[1]);
+                mTargetRect.offset(mapping.getOffsetX(), mapping.getOffsetY());
+                mTargetRect.set(mTargetRect.left - mapping.getPaddingLeft(),
+                        mTargetRect.top - mapping.getPaddingTop(),
+                        mTargetRect.right + mapping.getPaddingRight(),
+                        mTargetRect.bottom + mapping.getPaddingBottom());
+                getViewHolder().getBackground().addRect(mTargetRect, mapping.getCornerRadius());
             } else {
-                Rect wrapperRect = new Rect(
+                mTargetRect.set(
                         getViewHolder().getContentWrapper().getLeft(),
                         getViewHolder().getContentWrapper().getTop(),
                         getViewHolder().getContentWrapper().getRight(),
                         getViewHolder().getContentWrapper().getBottom()
                 );
-                initLocation(wrapperRect, mapping);
             }
+            initLocation(mTargetRect, mapping);
         }
     }
 
@@ -257,10 +260,10 @@ public class GuideLayer extends DecorLayer {
                 view.offsetLeftAndRight(parent.getWidth() + mapping.getMarginLeft());
                 break;
             case ALIGN_PARENT_LEFT:
-                view.offsetLeftAndRight(mapping.getMarginLeft());
+                view.offsetLeftAndRight(parent.getPaddingLeft() + mapping.getMarginLeft());
                 break;
             case ALIGN_PARENT_RIGHT:
-                view.offsetLeftAndRight(parent.getWidth() - view.getWidth() - mapping.getMarginRight());
+                view.offsetLeftAndRight(parent.getWidth() - parent.getPaddingRight() - view.getWidth() - mapping.getMarginRight());
                 break;
         }
         final int viewHeightWithMargin = view.getHeight() + mapping.getMarginTop() + mapping.getMarginBottom();
@@ -290,28 +293,28 @@ public class GuideLayer extends DecorLayer {
                 view.offsetTopAndBottom(parent.getHeight() + mapping.getMarginTop());
                 break;
             case ALIGN_PARENT_TOP:
-                view.offsetTopAndBottom(mapping.getMarginTop());
+                view.offsetTopAndBottom(parent.getPaddingTop() + mapping.getMarginTop());
                 break;
             case ALIGN_PARENT_BOTTOM:
-                view.offsetTopAndBottom(parent.getHeight() - view.getHeight() - mapping.getMarginBottom());
+                view.offsetTopAndBottom(parent.getHeight() - parent.getPaddingBottom() - view.getHeight() - mapping.getMarginBottom());
                 break;
         }
     }
 
     @NonNull
-    public GuideLayer mapping(@NonNull Mapping mapping) {
+    public GuideLayer addMapping(@NonNull Mapping mapping) {
         getConfig().mMapping.add(mapping);
         return this;
     }
 
     @NonNull
-    public GuideLayer backgroundColorInt(@ColorInt int colorInt) {
+    public GuideLayer setBackgroundColorInt(@ColorInt int colorInt) {
         getConfig().mBackgroundColor = colorInt;
         return this;
     }
 
     @NonNull
-    public GuideLayer backgroundColorRes(@ColorRes int colorRes) {
+    public GuideLayer setBackgroundColorRes(@ColorRes int colorRes) {
         getConfig().mBackgroundColor = getActivity().getResources().getColor(colorRes);
         return this;
     }
@@ -352,14 +355,15 @@ public class GuideLayer extends DecorLayer {
 
     protected static class Config extends DecorLayer.Config {
         @ColorInt
-        protected int mBackgroundColor = GlobalConfig.get().guideBackgroundInt;
-        protected List<Mapping> mMapping = new ArrayList<>(1);
+        protected int mBackgroundColor = ColorUtils.setAlphaComponent(Color.BLACK, (int) (255 * 0.6));
+        protected final List<Mapping> mMapping = new ArrayList<>(1);
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
     }
 
     public static class Mapping {
+        private final int[] mTargetLocation = new int[2];
         private final Rect mTargetRect = new Rect();
         @Nullable
         private View mTargetView = null;
@@ -399,7 +403,7 @@ public class GuideLayer extends DecorLayer {
             }
         }
 
-        public Mapping onClick(@NonNull OnClickListener listener, int... viewIds) {
+        public Mapping addOnClickListener(@NonNull OnClickListener listener, int... viewIds) {
             if (viewIds != null && viewIds.length > 0) {
                 for (int id : viewIds) {
                     mOnClickListeners.put(id, listener);
@@ -411,56 +415,56 @@ public class GuideLayer extends DecorLayer {
         }
 
         @NonNull
-        public Mapping targetRect(@NonNull Rect targetRect) {
+        public Mapping setTargetRect(@NonNull Rect targetRect) {
             this.mTargetRect.set(targetRect);
             return this;
         }
 
         @NonNull
-        public Mapping targetView(@Nullable View targetView) {
+        public Mapping setTargetView(@Nullable View targetView) {
             this.mTargetView = targetView;
             return this;
         }
 
         @NonNull
-        public Mapping guideView(@Nullable View guideView) {
+        public Mapping setGuideView(@Nullable View guideView) {
             this.mGuideView = guideView;
             return this;
         }
 
         @NonNull
-        public Mapping guideView(@LayoutRes int guideViewRes) {
+        public Mapping setGuideView(@LayoutRes int guideViewRes) {
             this.mGuideViewRes = guideViewRes;
             return this;
         }
 
         @NonNull
-        public Mapping cornerRadius(float cornerRadius) {
+        public Mapping setCornerRadius(float cornerRadius) {
             this.mCornerRadius = cornerRadius;
             return this;
         }
 
         @NonNull
-        public Mapping offset(int offset) {
+        public Mapping setOffset(int offset) {
             this.mOffsetX = offset;
             this.mOffsetY = offset;
             return this;
         }
 
         @NonNull
-        public Mapping offsetX(int offset) {
+        public Mapping setOffsetX(int offset) {
             this.mOffsetX = offset;
             return this;
         }
 
         @NonNull
-        public Mapping offsetY(int offset) {
+        public Mapping setOffsetY(int offset) {
             this.mOffsetY = offset;
             return this;
         }
 
         @NonNull
-        public Mapping padding(int padding) {
+        public Mapping setPadding(int padding) {
             this.mPaddingLeft = padding;
             this.mPaddingTop = padding;
             this.mPaddingRight = padding;
@@ -469,31 +473,31 @@ public class GuideLayer extends DecorLayer {
         }
 
         @NonNull
-        public Mapping paddingLeft(int padding) {
+        public Mapping setPaddingLeft(int padding) {
             this.mPaddingLeft = padding;
             return this;
         }
 
         @NonNull
-        public Mapping paddingTop(int padding) {
+        public Mapping setPaddingTop(int padding) {
             this.mPaddingTop = padding;
             return this;
         }
 
         @NonNull
-        public Mapping paddingRight(int padding) {
+        public Mapping setPaddingRight(int padding) {
             this.mPaddingRight = padding;
             return this;
         }
 
         @NonNull
-        public Mapping paddingBottom(int padding) {
+        public Mapping setPaddingBottom(int padding) {
             this.mPaddingBottom = padding;
             return this;
         }
 
         @NonNull
-        public Mapping margin(int margin) {
+        public Mapping setMargin(int margin) {
             this.mMarginLeft = margin;
             this.mMarginTop = margin;
             this.mMarginRight = margin;
@@ -502,37 +506,37 @@ public class GuideLayer extends DecorLayer {
         }
 
         @NonNull
-        public Mapping marginLeft(int margin) {
+        public Mapping setMarginLeft(int margin) {
             this.mMarginLeft = margin;
             return this;
         }
 
         @NonNull
-        public Mapping marginTop(int margin) {
+        public Mapping setMarginTop(int margin) {
             this.mMarginTop = margin;
             return this;
         }
 
         @NonNull
-        public Mapping marginRight(int margin) {
+        public Mapping setMarginRight(int margin) {
             this.mMarginRight = margin;
             return this;
         }
 
         @NonNull
-        public Mapping marginBottom(int margin) {
+        public Mapping setMarginBottom(int margin) {
             this.mMarginBottom = margin;
             return this;
         }
 
         @NonNull
-        public Mapping horizontalAlign(@NonNull Align.Horizontal horizontalAlign) {
+        public Mapping setHorizontalAlign(@NonNull Align.Horizontal horizontalAlign) {
             mHorizontalAlign = horizontalAlign;
             return this;
         }
 
         @NonNull
-        public Mapping verticalAlign(@NonNull Align.Vertical verticalAlign) {
+        public Mapping setVerticalAlign(@NonNull Align.Vertical verticalAlign) {
             mVerticalAlign = verticalAlign;
             return this;
         }
@@ -540,11 +544,14 @@ public class GuideLayer extends DecorLayer {
         @NonNull
         public Rect getTargetRect() {
             if (mTargetView != null) {
-                int[] location = new int[2];
+                final int[] location = mTargetLocation;
                 mTargetView.getLocationInWindow(location);
-                mTargetRect.set(location[0], location[1],
+                mTargetRect.set(
+                        location[0],
+                        location[1],
                         location[0] + mTargetView.getWidth(),
-                        location[1] + mTargetView.getHeight());
+                        location[1] + mTargetView.getHeight()
+                );
             }
             return mTargetRect;
         }

@@ -12,7 +12,10 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.LinkedList;
+
 public class FrameLayer extends Layer {
+    private final LayerLayout.OnConfigurationChangedListener mOnConfigurationChangedListener = new OnConfigurationChangedListenerImpl();
 
     public FrameLayer(@NonNull FrameLayout frameLayout) {
         super();
@@ -75,6 +78,7 @@ public class FrameLayer extends Layer {
         if (group == null) {
             group = addNewLayerLayoutToRoot();
         }
+        group.registerOnConfigurationChangedListener(mOnConfigurationChangedListener);
         LevelLayout parent = null;
         int lastIndex = -1;
         final int count = group.getChildCount();
@@ -109,26 +113,26 @@ public class FrameLayer extends Layer {
 
     @CallSuper
     @Override
-    protected void onAppear() {
-        super.onAppear();
+    protected void onPreShow() {
+        super.onPreShow();
     }
 
     @CallSuper
     @Override
-    protected void onShow() {
-        super.onShow();
+    protected void onPostShow() {
+        super.onPostShow();
     }
 
     @CallSuper
     @Override
-    protected void onDismiss() {
-        super.onDismiss();
+    protected void onPreDismiss() {
+        super.onPreDismiss();
     }
 
     @CallSuper
     @Override
-    protected void onDisappear() {
-        super.onDisappear();
+    protected void onPostDismiss() {
+        super.onPostDismiss();
     }
 
     @CallSuper
@@ -139,6 +143,7 @@ public class FrameLayer extends Layer {
         if (group == null) {
             return;
         }
+        group.unregisterOnConfigurationChangedListener(mOnConfigurationChangedListener);
         final LevelLayout parent = findLevelLayoutFromGroup(group);
         if (parent == null) {
             return;
@@ -217,12 +222,7 @@ public class FrameLayer extends Layer {
     @NonNull
     private LayerLayout addNewLayerLayoutToRoot() {
         final ViewGroup root = getViewHolder().getRoot();
-        LayerLayout layerLayout = new LayerLayout(root.getContext(), new LayerLayout.OnConfigurationChangedListener() {
-            @Override
-            public void onConfigurationChanged(@NonNull Configuration newConfig) {
-                FrameLayer.this.onConfigurationChanged(newConfig);
-            }
-        });
+        LayerLayout layerLayout = new LayerLayout(root.getContext());
         layerLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         root.addView(layerLayout, root.getChildCount());
         return layerLayout;
@@ -234,15 +234,22 @@ public class FrameLayer extends Layer {
     }
 
     @NonNull
-    public FrameLayer level(int level) {
+    public FrameLayer setLevel(int level) {
         getConfig().mLevel = level;
         return this;
     }
 
     @NonNull
-    public FrameLayer cancelableOnClickKeyBack(boolean cancelable) {
-        cancelableOnKeyBack(cancelable);
+    public FrameLayer setCancelableOnClickKeyBack(boolean cancelable) {
+        setCancelableOnKeyBack(cancelable);
         return this;
+    }
+
+    protected class OnConfigurationChangedListenerImpl implements LayerLayout.OnConfigurationChangedListener {
+        @Override
+        public void onConfigurationChanged(@NonNull Configuration newConfig) {
+            FrameLayer.this.onConfigurationChanged(newConfig);
+        }
     }
 
     public static class ViewHolder extends Layer.ViewHolder {
@@ -279,7 +286,7 @@ public class FrameLayer extends Layer {
         public static final int GUIDE = 1000;
         public static final int POPUP = 2000;
         public static final int DIALOG = 3000;
-        public static final int FLOAT = 4000;
+        public static final int OVERLAY = 4000;
         public static final int NOTIFICATION = 5000;
         public static final int TOAST = 6000;
 
@@ -293,19 +300,26 @@ public class FrameLayer extends Layer {
      */
     @SuppressLint("ViewConstructor")
     public static class LayerLayout extends FrameLayout {
-        private final OnConfigurationChangedListener mOnConfigurationChangedListener;
+        private final LinkedList<OnConfigurationChangedListener> mOnConfigurationChangedListeners = new LinkedList<>();
 
-        public LayerLayout(@NonNull Context context, OnConfigurationChangedListener listener) {
+        public LayerLayout(@NonNull Context context) {
             super(context);
-            mOnConfigurationChangedListener = listener;
         }
 
         @Override
         protected void onConfigurationChanged(@NonNull Configuration newConfig) {
             super.onConfigurationChanged(newConfig);
-            if (mOnConfigurationChangedListener != null) {
-                mOnConfigurationChangedListener.onConfigurationChanged(newConfig);
+            for (OnConfigurationChangedListener listener : mOnConfigurationChangedListeners) {
+                listener.onConfigurationChanged(newConfig);
             }
+        }
+
+        protected void registerOnConfigurationChangedListener(@NonNull OnConfigurationChangedListener listener) {
+            mOnConfigurationChangedListeners.add(listener);
+        }
+
+        protected void unregisterOnConfigurationChangedListener(@NonNull OnConfigurationChangedListener listener) {
+            mOnConfigurationChangedListeners.remove(listener);
         }
 
         public interface OnConfigurationChangedListener {

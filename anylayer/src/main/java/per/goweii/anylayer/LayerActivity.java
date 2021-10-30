@@ -8,16 +8,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
+
 import per.goweii.anylayer.dialog.DialogLayer;
 import per.goweii.anylayer.utils.Utils;
 
-public class LayerActivity extends Activity implements Layer.OnVisibleChangeListener {
+public class LayerActivity extends Activity implements Layer.OnVisibleChangedListener {
 
     @Nullable
-    private static OnLayerCreatedCallback sOnLayerCreatedCallback = null;
+    private static WeakReference<OnLayerCreatedCallback> sOnLayerCreatedCallback = null;
 
-    static void start(@NonNull Context context, OnLayerCreatedCallback callback) {
-        sOnLayerCreatedCallback = callback;
+    static void start(@NonNull Context context, @NonNull OnLayerCreatedCallback callback) {
+        sOnLayerCreatedCallback = new WeakReference<>(callback);
         Intent intent = new Intent(context, LayerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
@@ -29,9 +31,12 @@ public class LayerActivity extends Activity implements Layer.OnVisibleChangeList
         super.onCreate(savedInstanceState);
         Utils.transparent(this);
         DialogLayer dialogLayer = AnyLayer.dialog(this);
-        dialogLayer.onVisibleChangeListener(this);
+        dialogLayer.addOnVisibleChangeListener(this);
         if (sOnLayerCreatedCallback != null) {
-            sOnLayerCreatedCallback.onLayerCreated(dialogLayer);
+            OnLayerCreatedCallback callback = sOnLayerCreatedCallback.get();
+            callback.onLayerCreated(dialogLayer);
+            sOnLayerCreatedCallback.clear();
+            sOnLayerCreatedCallback = null;
         }
     }
 

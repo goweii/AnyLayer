@@ -3,19 +3,24 @@ package per.goweii.anylayer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Size;
 
 import per.goweii.anylayer.utils.Utils;
 
 public class DecorLayer extends FrameLayer {
     private final Activity mActivity;
+
+    private final Rect mDecorMargin = new Rect();
+    private final Rect mDecorPadding = new Rect();
+
     private Runnable mShowRunnable = null;
 
     public DecorLayer(@NonNull Context context) {
@@ -83,26 +88,26 @@ public class DecorLayer extends FrameLayer {
 
     @CallSuper
     @Override
-    protected void onAppear() {
-        super.onAppear();
+    protected void onPreShow() {
+        super.onPreShow();
     }
 
     @CallSuper
     @Override
-    protected void onShow() {
-        super.onShow();
+    protected void onPostShow() {
+        super.onPostShow();
     }
 
     @CallSuper
     @Override
-    protected void onDismiss() {
-        super.onDismiss();
+    protected void onPreDismiss() {
+        super.onPreDismiss();
     }
 
     @CallSuper
     @Override
-    protected void onDisappear() {
-        super.onDisappear();
+    protected void onPostDismiss() {
+        super.onPostDismiss();
     }
 
     @CallSuper
@@ -134,67 +139,112 @@ public class DecorLayer extends FrameLayer {
         getViewHolder().getParent().setClipChildren(false);
     }
 
-    protected void fitDecorInsidesToViewPadding(@NonNull View view) {
-        final int[] padding = getDecorPadding();
-        final int[] margin = getDecorMargin();
-        view.setPadding(
-                padding[0] + margin[0],
-                padding[1] + margin[1],
-                padding[2] + margin[2],
-                padding[3] + margin[3]
-        );
+    protected final void fitDecorInsidesToViewPadding(@NonNull View view) {
+        Rect padding = getDecorPadding();
+        Rect margin = getDecorMargin();
+        padding.left += margin.left;
+        padding.top += margin.top;
+        padding.right += margin.right;
+        padding.bottom += margin.bottom;
+        setViewPaddingTo(view, padding);
+        padding.setEmpty();
+        margin.setEmpty();
     }
 
-    protected void fitDecorInsidesToViewMargin(@NonNull View view) {
-        final int[] padding = getDecorPadding();
-        final int[] margin = getDecorMargin();
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        params.leftMargin = padding[0] + margin[0];
-        params.topMargin = padding[1] + margin[1];
-        params.rightMargin = padding[2] + margin[2];
-        params.bottomMargin = padding[3] + margin[3];
+    protected final void fitDecorInsidesToViewMargin(@NonNull View view) {
+        Rect padding = getDecorPadding();
+        Rect margin = getDecorMargin();
+        margin.left += padding.left;
+        margin.top += padding.top;
+        margin.right += padding.right;
+        margin.bottom += padding.bottom;
+        setViewMarginTo(view, margin);
+        padding.setEmpty();
+        margin.setEmpty();
     }
 
-    protected void fitDecorInsidesTo(@NonNull View view) {
+    protected final void fitDecorInsidesTo(@NonNull View view) {
         fitDecorPaddingTo(view);
         fitDecorMarginTo(view);
     }
 
-    protected void fitDecorPaddingTo(@NonNull View view) {
-        final int[] padding = getDecorPadding();
-        view.setPadding(padding[0], padding[1], padding[2], padding[3]);
+    protected final void fitDecorPaddingTo(@NonNull View view) {
+        Rect padding = getDecorPadding();
+        setViewPaddingTo(view, padding);
+        padding.setEmpty();
     }
 
-    protected void fitDecorMarginTo(@NonNull View view) {
-        final int[] margin = getDecorMargin();
+    protected final void fitDecorMarginTo(@NonNull View view) {
+        Rect margin = getDecorMargin();
+        setViewMarginTo(view, margin);
+        margin.setEmpty();
+    }
+
+    protected final void setViewPaddingTo(@NonNull View view, @NonNull Rect padding) {
+        if (view.getPaddingLeft() != padding.left ||
+                view.getPaddingTop() != padding.top ||
+                view.getPaddingRight() != padding.right ||
+                view.getPaddingBottom() != padding.bottom) {
+            view.setPadding(padding.left, padding.top, padding.right, padding.bottom);
+        }
+    }
+
+    protected final void setViewMarginTo(@NonNull View view, @NonNull Rect margin) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        params.leftMargin = margin[0];
-        params.topMargin = margin[1];
-        params.rightMargin = margin[2];
-        params.bottomMargin = margin[3];
+        boolean changed = false;
+        if (params.leftMargin != margin.left) {
+            params.leftMargin = margin.left;
+            changed = true;
+        }
+        if (params.topMargin != margin.top) {
+            params.topMargin = margin.top;
+            changed = true;
+        }
+        if (params.rightMargin != margin.right) {
+            params.rightMargin = margin.right;
+            changed = true;
+        }
+        if (params.bottomMargin != margin.bottom) {
+            params.bottomMargin = margin.bottom;
+            changed = true;
+        }
+        if (changed) {
+            view.requestLayout();
+        }
     }
 
     @NonNull
-    @Size(4)
-    protected int[] getDecorPadding() {
-        return new int[]{
-                getViewHolder().getDecorChild().getPaddingLeft(),
-                getViewHolder().getDecorChild().getPaddingTop(),
-                getViewHolder().getDecorChild().getPaddingRight(),
-                getViewHolder().getDecorChild().getPaddingBottom()
-        };
+    protected final Rect getDecorPadding() {
+        mDecorPadding.setEmpty();
+        Utils.getViewPadding(getViewHolder().getActivityContent(), mDecorPadding);
+        return mDecorPadding;
     }
 
     @NonNull
-    @Size(4)
-    protected int[] getDecorMargin() {
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) getViewHolder().getDecorChild().getLayoutParams();
-        return new int[]{
-                params.leftMargin,
-                params.topMargin,
-                params.rightMargin,
-                params.bottomMargin
-        };
+    protected final Rect getDecorMargin() {
+        mDecorMargin.setEmpty();
+        ViewGroup viewGroup = getViewHolder().getActivityContent();
+        while (true) {
+            Utils.getViewMargin(viewGroup, mDecorMargin);
+            ViewParent viewParent = viewGroup.getParent();
+            if (!(viewParent instanceof ViewGroup)) {
+                break;
+            }
+            viewGroup = (ViewGroup) viewParent;
+            Utils.getViewPadding(viewGroup, mDecorMargin);
+            if (viewGroup == getViewHolder().getDecor()) {
+                break;
+            }
+        }
+        return mDecorMargin;
+    }
+
+    public void showImmediately(boolean withAnim) {
+        if (mShowRunnable != null) {
+            getViewHolder().getDecor().removeCallbacks(mShowRunnable);
+            mShowRunnable = null;
+        }
+        super.show(withAnim);
     }
 
     @Override
@@ -215,11 +265,11 @@ public class DecorLayer extends FrameLayer {
     public void dismiss(boolean withAnim) {
         if (mShowRunnable != null) {
             getViewHolder().getDecor().removeCallbacks(mShowRunnable);
+            mShowRunnable = null;
         } else {
             super.dismiss(withAnim);
         }
     }
-
 
     public static class ViewHolder extends FrameLayer.ViewHolder {
         private FrameLayout mActivityContent;

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="per.goweii.anylayer.startup">
+
     <application>
         <provider
             android:name="androidx.startup.InitializationProvider"

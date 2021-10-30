@@ -1,4 +1,4 @@
-package per.goweii.anylayer.floats;
+package per.goweii.anylayer.overlay;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
@@ -19,26 +19,25 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.GlobalConfig;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.DragLayout;
 
-public class FloatLayer extends DecorLayer {
+public class OverlayLayer extends DecorLayer {
 
-    public FloatLayer(@NonNull Context context) {
+    public OverlayLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
     }
 
-    public FloatLayer(@NonNull Activity activity) {
+    public OverlayLayer(@NonNull Activity activity) {
         super(activity);
     }
 
     @IntRange(from = 0)
     @Override
     protected int getLevel() {
-        return Level.FLOAT;
+        return Level.OVERLAY;
     }
 
     @NonNull
@@ -86,35 +85,35 @@ public class FloatLayer extends DecorLayer {
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
         if (getViewHolder().getChildNullable() == null) {
-            DragLayout container = (DragLayout) inflater.inflate(R.layout.anylayer_float_layer, parent, false);
+            DragLayout container = (DragLayout) inflater.inflate(R.layout.anylayer_overlay_layer, parent, false);
             getViewHolder().setChild(container);
-            getViewHolder().setFloat(onCreateFloat(inflater, getViewHolder().getChild()));
-            ViewGroup.LayoutParams layoutParams = getViewHolder().getFloat().getLayoutParams();
-            FrameLayout.LayoutParams floatParams;
+            getViewHolder().setOverlay(onCreateOverlay(inflater, getViewHolder().getChild()));
+            ViewGroup.LayoutParams layoutParams = getViewHolder().getOverlay().getLayoutParams();
+            FrameLayout.LayoutParams overlayParams;
             if (layoutParams == null) {
-                floatParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+                overlayParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
             } else if (layoutParams instanceof FrameLayout.LayoutParams) {
-                floatParams = (FrameLayout.LayoutParams) layoutParams;
+                overlayParams = (FrameLayout.LayoutParams) layoutParams;
             } else {
-                floatParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
+                overlayParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
             }
-            getViewHolder().getFloat().setLayoutParams(floatParams);
-            getViewHolder().getChild().addView(getViewHolder().getFloat());
+            getViewHolder().getOverlay().setLayoutParams(overlayParams);
+            getViewHolder().getChild().addView(getViewHolder().getOverlay());
         }
         return getViewHolder().getChild();
     }
 
     @NonNull
-    protected View onCreateFloat(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getFloatOrNull() == null) {
-            getViewHolder().setFloat(inflater.inflate(getConfig().mFloatViewId, parent, false));
+    protected View onCreateOverlay(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (getViewHolder().getOverlayOrNull() == null) {
+            getViewHolder().setOverlay(inflater.inflate(getConfig().mOverlayViewId, parent, false));
         } else {
-            ViewGroup contentParent = (ViewGroup) getViewHolder().getFloat().getParent();
+            ViewGroup contentParent = (ViewGroup) getViewHolder().getOverlay().getParent();
             if (contentParent != null) {
-                contentParent.removeView(getViewHolder().getFloat());
+                contentParent.removeView(getViewHolder().getOverlay());
             }
         }
-        return getViewHolder().getFloat();
+        return getViewHolder().getOverlay();
     }
 
     @Nullable
@@ -134,34 +133,34 @@ public class FloatLayer extends DecorLayer {
     protected void onAttach() {
         super.onAttach();
         initDragLayout();
-        initFloatView();
+        initOverlayView();
     }
 
     @CallSuper
     @Override
-    protected void onAppear() {
-        super.onAppear();
-        initFloatViewDefConfig();
+    protected void onPreShow() {
+        super.onPreShow();
+        initOverlayViewDefConfig();
         toNormal();
     }
 
     @CallSuper
     @Override
-    protected void onShow() {
-        super.onShow();
-        getViewHolder().getChild().goEdge(getViewHolder().getFloat());
+    protected void onPostShow() {
+        super.onPostShow();
+        getViewHolder().getChild().goEdge(getViewHolder().getOverlay());
     }
 
     @CallSuper
     @Override
-    protected void onDismiss() {
-        super.onDismiss();
+    protected void onPreDismiss() {
+        super.onPreDismiss();
     }
 
     @CallSuper
     @Override
-    protected void onDisappear() {
-        super.onDisappear();
+    protected void onPostDismiss() {
+        super.onPostDismiss();
     }
 
     @CallSuper
@@ -182,223 +181,223 @@ public class FloatLayer extends DecorLayer {
         dragLayout.setPadding(config.mPaddingLeft, config.mPaddingTop, config.mPaddingRight, config.mPaddingBottom);
         dragLayout.setOutside(config.mOutside);
         dragLayout.setSnapEdge(config.mSnapEdge);
-        dragLayout.setOnDragListener(new FloatDragListener());
+        dragLayout.setOnDragListener(new OverlayDragListener());
     }
 
-    private void initFloatView() {
+    private void initOverlayView() {
         final Config config = getConfig();
-        final View floatView = getViewHolder().getFloat();
-        final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) floatView.getLayoutParams();
-        if (config.mMarginLeft != Integer.MIN_VALUE) {
+        final View overlayView = getViewHolder().getOverlay();
+        final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) overlayView.getLayoutParams();
+        if (config.mMarginLeft != null) {
             params.leftMargin = config.mMarginLeft;
         }
-        if (config.mMarginTop != Integer.MIN_VALUE) {
+        if (config.mMarginTop != null) {
             params.topMargin = config.mMarginTop;
         }
-        if (config.mMarginRight != Integer.MIN_VALUE) {
+        if (config.mMarginRight != null) {
             params.rightMargin = config.mMarginRight;
         }
-        if (config.mMarginBottom != Integer.MIN_VALUE) {
+        if (config.mMarginBottom != null) {
             params.bottomMargin = config.mMarginBottom;
         }
         getListenerHolder().bindTouchListener(this);
     }
 
-    private void initFloatViewDefConfig() {
+    private void initOverlayViewDefConfig() {
         final Config config = getConfig();
         final DragLayout dragLayout = getViewHolder().getChild();
-        final View floatView = getViewHolder().getFloat();
-        final int minLeft = dragLayout.getViewLeftMinInside(floatView);
-        final int maxLeft = dragLayout.getViewLeftMaxInside(floatView);
-        final int minTop = dragLayout.getViewTopMinInside(floatView);
-        final int maxTop = dragLayout.getViewTopMaxInside(floatView);
+        final View overlayView = getViewHolder().getOverlay();
+        final int minLeft = dragLayout.getViewLeftMinInside(overlayView);
+        final int maxLeft = dragLayout.getViewLeftMaxInside(overlayView);
+        final int minTop = dragLayout.getViewTopMinInside(overlayView);
+        final int maxTop = dragLayout.getViewTopMaxInside(overlayView);
         final float layoutPercentX;
-        final float floatPercentX;
+        final float overlayPercentX;
         if (config.mDefPercentX < -1) {
             layoutPercentX = -1;
-            floatPercentX = config.mDefPercentX + 1;
+            overlayPercentX = config.mDefPercentX + 1;
         } else if (config.mDefPercentX > 1) {
             layoutPercentX = 1;
-            floatPercentX = config.mDefPercentX - 1;
+            overlayPercentX = config.mDefPercentX - 1;
         } else {
             layoutPercentX = config.mDefPercentX;
-            floatPercentX = 0;
+            overlayPercentX = 0;
         }
         final float layoutPercentY;
-        final float floatPercentY;
+        final float overlayPercentY;
         if (config.mDefPercentY < -1) {
             layoutPercentY = -1;
-            floatPercentY = config.mDefPercentY + 1;
+            overlayPercentY = config.mDefPercentY + 1;
         } else if (config.mDefPercentY > 1) {
             layoutPercentY = 1;
-            floatPercentY = config.mDefPercentY - 1;
+            overlayPercentY = config.mDefPercentY - 1;
         } else {
             layoutPercentY = config.mDefPercentY;
-            floatPercentY = 0;
+            overlayPercentY = 0;
         }
         final int halfRangeH = (maxLeft - minLeft) / 2;
         final int halfRangeV = (maxTop - minTop) / 2;
         final int centerLeft = minLeft + halfRangeH;
         final int centerTop = minTop + halfRangeV;
-        final int floatWidthWithMargin = floatView.getWidth() + Utils.getViewMarginLeft(floatView) + Utils.getViewMarginRight(floatView);
-        final int floatHeightWithMargin = floatView.getHeight() + Utils.getViewMarginTop(floatView) + Utils.getViewMarginBottom(floatView);
-        final int defLeft = (int) (centerLeft + halfRangeH * layoutPercentX + floatWidthWithMargin * floatPercentX);
-        final int defTop = (int) (centerTop + halfRangeV * layoutPercentY + floatHeightWithMargin * floatPercentY);
-        floatView.offsetLeftAndRight(defLeft - floatView.getLeft());
-        floatView.offsetTopAndBottom(defTop - floatView.getTop());
-        floatView.setPivotX(floatView.getWidth() * config.mPivotX);
-        floatView.setPivotY(floatView.getHeight() * config.mPivotY);
-        floatView.setAlpha(config.mDefAlpha);
-        floatView.setScaleX(config.mDefScale);
-        floatView.setScaleY(config.mDefScale);
+        final int overlayWidthWithMargin = overlayView.getWidth() + Utils.getViewMarginLeft(overlayView) + Utils.getViewMarginRight(overlayView);
+        final int overlayHeightWithMargin = overlayView.getHeight() + Utils.getViewMarginTop(overlayView) + Utils.getViewMarginBottom(overlayView);
+        final int defLeft = (int) (centerLeft + halfRangeH * layoutPercentX + overlayWidthWithMargin * overlayPercentX);
+        final int defTop = (int) (centerTop + halfRangeV * layoutPercentY + overlayHeightWithMargin * overlayPercentY);
+        overlayView.offsetLeftAndRight(defLeft - overlayView.getLeft());
+        overlayView.offsetTopAndBottom(defTop - overlayView.getTop());
+        overlayView.setPivotX(overlayView.getWidth() * config.mPivotX);
+        overlayView.setPivotY(overlayView.getHeight() * config.mPivotY);
+        overlayView.setAlpha(config.mDefAlpha);
+        overlayView.setScaleX(config.mDefScale);
+        overlayView.setScaleY(config.mDefScale);
     }
 
-    public FloatLayer floatView(@LayoutRes int layoutId) {
-        getConfig().mFloatViewId = layoutId;
+    public OverlayLayer setOverlayView(@LayoutRes int layoutId) {
+        getConfig().mOverlayViewId = layoutId;
         return this;
     }
 
-    public FloatLayer floatView(@NonNull View floatView) {
-        getViewHolder().setFloat(floatView);
+    public OverlayLayer setOverlayView(@NonNull View overlayView) {
+        getViewHolder().setOverlay(overlayView);
         return this;
     }
 
-    public FloatLayer defPercentX(float p) {
+    public OverlayLayer setDefPercentX(float p) {
         getConfig().mDefPercentX = p;
         return this;
     }
 
-    public FloatLayer defPercentY(float p) {
+    public OverlayLayer setDefPercentY(float p) {
         getConfig().mDefPercentY = p;
         return this;
     }
 
-    public FloatLayer defAlpha(float alpha) {
+    public OverlayLayer setDefAlpha(float alpha) {
         getConfig().mDefAlpha = alpha;
         return this;
     }
 
-    public FloatLayer defScale(float scale) {
+    public OverlayLayer setDefScale(float scale) {
         getConfig().mDefScale = scale;
         return this;
     }
 
-    public FloatLayer pivotX(float pivot) {
+    public OverlayLayer setPivotX(float pivot) {
         getConfig().mPivotX = pivot;
         return this;
     }
 
-    public FloatLayer pivotY(float pivot) {
+    public OverlayLayer setPivotY(float pivot) {
         getConfig().mPivotY = pivot;
         return this;
     }
 
-    public FloatLayer normalAlpha(float alpha) {
+    public OverlayLayer setNormalAlpha(float alpha) {
         getConfig().mNormalAlpha = alpha;
         return this;
     }
 
-    public FloatLayer normalScale(float scale) {
+    public OverlayLayer setNormalScale(float scale) {
         getConfig().mNormalScale = scale;
         return this;
     }
 
-    public FloatLayer lowProfileAlpha(float alpha) {
+    public OverlayLayer setLowProfileAlpha(float alpha) {
         getConfig().mLowProfileAlpha = alpha;
         return this;
     }
 
-    public FloatLayer lowProfileScale(float scale) {
+    public OverlayLayer setLowProfileScale(float scale) {
         getConfig().mLowProfileScale = scale;
         return this;
     }
 
-    public FloatLayer lowProfileIndent(float indent) {
+    public OverlayLayer setLowProfileIndent(float indent) {
         getConfig().mLowProfileIndent = indent;
         return this;
     }
 
-    public FloatLayer lowProfileDelay(long delay) {
+    public OverlayLayer setLowProfileDelay(long delay) {
         getConfig().mLowProfileDelay = delay;
         return this;
     }
 
-    public FloatLayer snapEdge(int edge) {
+    public OverlayLayer setSnapEdge(int edge) {
         getConfig().mSnapEdge = edge;
         return this;
     }
 
-    public FloatLayer outside(boolean outside) {
+    public OverlayLayer setOutside(boolean outside) {
         getConfig().mOutside = outside;
         return this;
     }
 
-    public FloatLayer marginLeft(int margin) {
+    public OverlayLayer setMarginLeft(@Nullable Integer margin) {
         getConfig().mMarginLeft = margin;
         return this;
     }
 
-    public FloatLayer marginTop(int margin) {
+    public OverlayLayer setMarginTop(@Nullable Integer margin) {
         getConfig().mMarginTop = margin;
         return this;
     }
 
-    public FloatLayer marginRight(int margin) {
+    public OverlayLayer setMarginRight(@Nullable Integer margin) {
         getConfig().mMarginRight = margin;
         return this;
     }
 
-    public FloatLayer marginBottom(int margin) {
+    public OverlayLayer setMarginBottom(@Nullable Integer margin) {
         getConfig().mMarginBottom = margin;
         return this;
     }
 
-    public FloatLayer paddingLeft(int padding) {
+    public OverlayLayer setPaddingLeft(int padding) {
         getConfig().mPaddingLeft = padding;
         return this;
     }
 
-    public FloatLayer paddingTop(int padding) {
+    public OverlayLayer setPaddingTop(int padding) {
         getConfig().mPaddingTop = padding;
         return this;
     }
 
-    public FloatLayer paddingRight(int padding) {
+    public OverlayLayer setPaddingRight(int padding) {
         getConfig().mPaddingRight = padding;
         return this;
     }
 
-    public FloatLayer paddingBottom(int padding) {
+    public OverlayLayer setPaddingBottom(int padding) {
         getConfig().mPaddingBottom = padding;
         return this;
     }
 
-    public FloatLayer onFloatClick(@NonNull OnClickListener listener) {
-        onClick(listener);
+    public OverlayLayer addOnOverlayClickListener(@NonNull OnClickListener listener) {
+        addOnClickListener(listener);
         return this;
     }
 
-    public FloatLayer onFloatLongClick(@NonNull OnLongClickListener listener) {
-        onLongClick(listener);
+    public OverlayLayer setOnOverlayLongClickListener(@NonNull OnLongClickListener listener) {
+        addOnLongClickListener(listener);
         return this;
     }
 
     public void toNormal() {
-        getViewHolder().getFloat().removeCallbacks(mFloatLowProfileRunnable);
-        getViewHolder().getFloat().post(mFloatNormalRunnable);
+        getViewHolder().getOverlay().removeCallbacks(mOverlayLowProfileRunnable);
+        getViewHolder().getOverlay().post(mOverlayNormalRunnable);
     }
 
     public void toLowProfile() {
         if (getConfig().mNormalAlpha != getConfig().mLowProfileAlpha) {
-            getViewHolder().getFloat().removeCallbacks(mFloatLowProfileRunnable);
-            getViewHolder().getFloat().postDelayed(mFloatLowProfileRunnable, getConfig().mLowProfileDelay);
+            getViewHolder().getOverlay().removeCallbacks(mOverlayLowProfileRunnable);
+            getViewHolder().getOverlay().postDelayed(mOverlayLowProfileRunnable, getConfig().mLowProfileDelay);
         }
     }
 
-    private final Runnable mFloatNormalRunnable = new Runnable() {
+    private final Runnable mOverlayNormalRunnable = new Runnable() {
         @Override
         public void run() {
-            getViewHolder().getFloat().animate()
+            getViewHolder().getOverlay().animate()
                     .alpha(getConfig().mNormalAlpha)
                     .scaleX(getConfig().mNormalScale)
                     .scaleY(getConfig().mNormalScale)
@@ -408,11 +407,11 @@ public class FloatLayer extends DecorLayer {
         }
     };
 
-    private final Runnable mFloatLowProfileRunnable = new Runnable() {
+    private final Runnable mOverlayLowProfileRunnable = new Runnable() {
         @Override
         public void run() {
             float[] xy = calcIntentTranslation();
-            getViewHolder().getFloat().animate()
+            getViewHolder().getOverlay().animate()
                     .alpha(getConfig().mLowProfileAlpha)
                     .scaleX(getConfig().mLowProfileScale)
                     .scaleY(getConfig().mLowProfileScale)
@@ -428,27 +427,27 @@ public class FloatLayer extends DecorLayer {
         float y = 0F;
         if (percent != 0) {
             final DragLayout dragLayout = getViewHolder().getChild();
-            final View floatView = getViewHolder().getFloat();
-            final int currEdge = dragLayout.calcCurrEdge(floatView);
-            final int floatWidthWithMargin = floatView.getWidth() + Utils.getViewMarginLeft(floatView) + Utils.getViewMarginRight(floatView);
-            final int floatHeightWithMargin = floatView.getHeight() + Utils.getViewMarginTop(floatView) + Utils.getViewMarginBottom(floatView);
+            final View overlayView = getViewHolder().getOverlay();
+            final int currEdge = dragLayout.calcCurrEdge(overlayView);
+            final int overlayWidthWithMargin = overlayView.getWidth() + Utils.getViewMarginLeft(overlayView) + Utils.getViewMarginRight(overlayView);
+            final int overlayHeightWithMargin = overlayView.getHeight() + Utils.getViewMarginTop(overlayView) + Utils.getViewMarginBottom(overlayView);
             if ((currEdge & DragLayout.Edge.LEFT) != 0) {
-                x = -floatWidthWithMargin * percent;
+                x = -overlayWidthWithMargin * percent;
             }
             if ((currEdge & DragLayout.Edge.RIGHT) != 0) {
-                x = floatWidthWithMargin * percent;
+                x = overlayWidthWithMargin * percent;
             }
             if ((currEdge & DragLayout.Edge.TOP) != 0) {
-                y = -floatHeightWithMargin * percent;
+                y = -overlayHeightWithMargin * percent;
             }
             if ((currEdge & DragLayout.Edge.BOTTOM) != 0) {
-                y = floatHeightWithMargin * percent;
+                y = overlayHeightWithMargin * percent;
             }
         }
         return new float[]{x, y};
     }
 
-    private class FloatDragListener implements DragLayout.OnDragListener {
+    private class OverlayDragListener implements DragLayout.OnDragListener {
         @Override
         public void onStart(@NonNull View view) {
             toNormal();
@@ -469,7 +468,7 @@ public class FloatLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
-        private View mFloat;
+        private View mOverlayView;
 
         @Override
         public void setChild(@NonNull View child) {
@@ -488,73 +487,73 @@ public class FloatLayer extends DecorLayer {
             return (DragLayout) super.getChildNullable();
         }
 
-        void setFloat(@NonNull View floatView) {
-            mFloat = floatView;
+        void setOverlay(@NonNull View overlayView) {
+            mOverlayView = overlayView;
         }
 
         @Nullable
-        protected View getFloatOrNull() {
-            return mFloat;
+        protected View getOverlayOrNull() {
+            return mOverlayView;
         }
 
         @NonNull
-        public View getFloat() {
-            Utils.requireNonNull(mFloat, "必须在show方法后调用");
-            return mFloat;
+        public View getOverlay() {
+            Utils.requireNonNull(mOverlayView, "必须在show方法后调用");
+            return mOverlayView;
         }
 
         @Nullable
         @Override
         protected View getNoIdClickView() {
-            return mFloat;
+            return mOverlayView;
         }
     }
 
     protected static class Config extends DecorLayer.Config {
-        protected int mFloatViewId = -1;
+        protected int mOverlayViewId = -1;
 
-        private boolean mOutside = GlobalConfig.get().floatOutside;
-        private int mSnapEdge = GlobalConfig.get().floatSnapEdge;
+        private boolean mOutside = true;
+        private int mSnapEdge = OverlayLayer.Edge.HORIZONTAL;
 
         @FloatRange(from = -2F, to = 2F)
-        private float mDefPercentX = GlobalConfig.get().floatDefPercentX;
+        private float mDefPercentX = 2F;
         @FloatRange(from = -2F, to = 2F)
-        private float mDefPercentY = GlobalConfig.get().floatDefPercentY;
+        private float mDefPercentY = 0.236F;
         @FloatRange(from = 0F, to = 1F)
-        private float mDefAlpha = GlobalConfig.get().floatDefAlpha;
-        private float mDefScale = GlobalConfig.get().floatDefScale;
+        private float mDefAlpha = 1F;
+        private float mDefScale = 1F;
 
-        private float mPivotX = GlobalConfig.get().floatPivotX;
-        private float mPivotY = GlobalConfig.get().floatPivotY;
+        private float mPivotX = 0.5F;
+        private float mPivotY = 0.5F;
 
         @FloatRange(from = 0F, to = 1F)
-        private float mNormalAlpha = GlobalConfig.get().floatNormalAlpha;
-        private float mNormalScale = GlobalConfig.get().floatNormalScale;
+        private float mNormalAlpha = 1F;
+        private float mNormalScale = 1F;
         @IntRange(from = 0)
-        private long mLowProfileDelay = GlobalConfig.get().floatLowProfileDelay;
+        private long mLowProfileDelay = 3000L;
         @FloatRange(from = 0F, to = 1F)
-        private float mLowProfileAlpha = GlobalConfig.get().floatLowProfileAlpha;
-        private float mLowProfileScale = GlobalConfig.get().floatLowProfileScale;
+        private float mLowProfileAlpha = 0.8F;
+        private float mLowProfileScale = 1F;
         @FloatRange(from = 0F, to = 1F)
-        private float mLowProfileIndent = GlobalConfig.get().floatLowProfileIndent;
+        private float mLowProfileIndent = 0F;
 
-        private int mMarginLeft = GlobalConfig.get().floatMarginLeft;
-        private int mMarginTop = GlobalConfig.get().floatMarginTop;
-        private int mMarginRight = GlobalConfig.get().floatMarginRight;
-        private int mMarginBottom = GlobalConfig.get().floatMarginBottom;
+        private Integer mMarginLeft = null;
+        private Integer mMarginTop = null;
+        private Integer mMarginRight = null;
+        private Integer mMarginBottom = null;
 
-        private int mPaddingLeft = GlobalConfig.get().floatPaddingLeft;
-        private int mPaddingTop = GlobalConfig.get().floatPaddingTop;
-        private int mPaddingRight = GlobalConfig.get().floatPaddingRight;
-        private int mPaddingBottom = GlobalConfig.get().floatPaddingBottom;
+        private int mPaddingLeft = 0;
+        private int mPaddingTop = 0;
+        private int mPaddingRight = 0;
+        private int mPaddingBottom = 0;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
         private GestureDetector mGestureDetector = null;
 
-        public void bindTouchListener(@NonNull FloatLayer layer) {
-            final View floatView = layer.getViewHolder().getFloat();
-            mGestureDetector = new GestureDetector(floatView.getContext(), new GestureDetector.OnGestureListener() {
+        public void bindTouchListener(@NonNull OverlayLayer layer) {
+            final View overlayView = layer.getViewHolder().getOverlay();
+            mGestureDetector = new GestureDetector(overlayView.getContext(), new GestureDetector.OnGestureListener() {
                 @Override
                 public boolean onDown(MotionEvent e) {
                     layer.toNormal();
@@ -567,7 +566,7 @@ public class FloatLayer extends DecorLayer {
 
                 @Override
                 public boolean onSingleTapUp(MotionEvent e) {
-                    floatView.performClick();
+                    overlayView.performClick();
                     layer.toLowProfile();
                     return true;
                 }
@@ -579,7 +578,7 @@ public class FloatLayer extends DecorLayer {
 
                 @Override
                 public void onLongPress(MotionEvent e) {
-                    floatView.performLongClick();
+                    overlayView.performLongClick();
                     layer.toLowProfile();
                 }
 
@@ -588,7 +587,7 @@ public class FloatLayer extends DecorLayer {
                     return false;
                 }
             });
-            floatView.setOnTouchListener(new View.OnTouchListener() {
+            overlayView.setOnTouchListener(new View.OnTouchListener() {
                 @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {

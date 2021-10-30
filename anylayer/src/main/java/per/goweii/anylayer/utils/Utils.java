@@ -3,24 +3,18 @@ package per.goweii.anylayer.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
-import androidx.annotation.FloatRange;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import per.goweii.anylayer.FrameLayer;
-import per.goweii.anylayer.dialog.ContainerLayout;
 
 public final class Utils {
 
@@ -84,83 +78,11 @@ public final class Utils {
         }
         if (context instanceof ContextWrapper) {
             Context baseContext = ((ContextWrapper) context).getBaseContext();
-            if (baseContext instanceof Activity) {
-                return (Activity) baseContext;
+            if (baseContext != context) {
+                return getActivity(baseContext);
             }
         }
         return null;
-    }
-
-    @Nullable
-    public static Bitmap snapshotSafely(@NonNull FrameLayout decorView,
-                                        @NonNull ImageView inImageView,
-                                        @FloatRange(from = 1F) float inSampleSize,
-                                        @NonNull FrameLayer.LevelLayout currLevelLayout,
-                                        @NonNull ContainerLayout currContainerLayout) {
-        try {
-            return snapshot(decorView, inImageView, inSampleSize, currLevelLayout, currContainerLayout);
-        } catch (Throwable ignore) {
-            return null;
-        }
-    }
-
-    @NonNull
-    public static Bitmap snapshot(@NonNull FrameLayout decorView,
-                                  @NonNull ImageView inImageView,
-                                  @FloatRange(from = 1F) float inSampleSize,
-                                  @NonNull FrameLayer.LevelLayout currLevelLayout,
-                                  @NonNull ContainerLayout currContainerLayout) {
-        int w = inImageView.getWidth();
-        int h = inImageView.getHeight();
-        int oW = (int) (w / inSampleSize);
-        int oH = (int) (h / inSampleSize);
-        Bitmap bitmap = Bitmap.createBitmap(oW, oH, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        canvas.save();
-        int[] locationRootView = new int[2];
-        decorView.getLocationOnScreen(locationRootView);
-        int[] locationBackground = new int[2];
-        inImageView.getLocationOnScreen(locationBackground);
-        int x = locationBackground[0] - locationRootView[0];
-        int y = locationBackground[1] - locationRootView[1];
-        canvas.scale(1 / inSampleSize, 1 / inSampleSize);
-        canvas.translate(x / inSampleSize, y / inSampleSize);
-        if (decorView.getBackground() != null) {
-            decorView.getBackground().draw(canvas);
-        }
-        out:
-        for (int i = 0; i < decorView.getChildCount(); i++) {
-            View decorChildAt = decorView.getChildAt(i);
-            if (decorChildAt instanceof FrameLayer.LayerLayout) {
-                FrameLayer.LayerLayout layerLayout = (FrameLayer.LayerLayout) decorChildAt;
-                for (int j = 0; j < layerLayout.getChildCount(); j++) {
-                    View layerChildAt = layerLayout.getChildAt(j);
-                    if (layerChildAt instanceof FrameLayer.LevelLayout) {
-                        FrameLayer.LevelLayout levelLayout = (FrameLayer.LevelLayout) layerChildAt;
-                        if (levelLayout == currLevelLayout) {
-                            for (int k = 0; k < levelLayout.getChildCount(); k++) {
-                                View containerLayout = levelLayout.getChildAt(k);
-                                if (containerLayout == currContainerLayout) {
-                                    break out;
-                                } else {
-                                    containerLayout.draw(canvas);
-                                }
-                            }
-                            break out;
-                        } else {
-                            levelLayout.draw(canvas);
-                        }
-                    } else {
-                        break out;
-                    }
-                }
-                break;
-            } else {
-                decorChildAt.draw(canvas);
-            }
-        }
-        canvas.restore();
-        return bitmap;
     }
 
     public static void transparent(@NonNull Activity activity) {
@@ -176,36 +98,56 @@ public final class Utils {
     }
 
     public static void onViewPreDraw(@NonNull final View view, @NonNull Runnable runnable) {
-        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                if (view.getViewTreeObserver().isAlive()) {
-                    view.getViewTreeObserver().removeOnPreDrawListener(this);
+        if (view.getViewTreeObserver().isAlive()) {
+            view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    if (view.getViewTreeObserver().isAlive()) {
+                        view.getViewTreeObserver().removeOnPreDrawListener(this);
+                    }
+                    runnable.run();
+                    return true;
                 }
-                runnable.run();
-                return true;
-            }
-        });
+            });
+        }
     }
 
     public static void onViewLayout(@NonNull final View view, @NonNull Runnable runnable) {
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (view.getViewTreeObserver().isAlive()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    } else {
-                        view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        if (view.getViewTreeObserver().isAlive()) {
+            view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if (view.getViewTreeObserver().isAlive()) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        } else {
+                            view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
                     }
+                    runnable.run();
                 }
-                runnable.run();
-            }
-        });
+            });
+        }
     }
 
     public static void getViewSize(@NonNull final View view, @NonNull Runnable runnable) {
         onViewLayout(view, runnable);
+    }
+
+    public static void getViewPadding(@NonNull View view, @NonNull Rect rect) {
+        rect.left += view.getPaddingLeft();
+        rect.top += view.getPaddingTop();
+        rect.right += view.getPaddingRight();
+        rect.bottom += view.getPaddingBottom();
+    }
+
+    public static void getViewMargin(@NonNull View view, @NonNull Rect rect) {
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return;
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        rect.left += params.leftMargin;
+        rect.top += params.topMargin;
+        rect.right += params.rightMargin;
+        rect.bottom += params.bottomMargin;
     }
 
     public static int getViewMarginLeft(@NonNull View view) {

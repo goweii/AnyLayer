@@ -29,7 +29,7 @@
                 android:layout_marginLeft="15dp"
                 android:textColor="#fff"
                 android:textStyle="bold"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <ImageView
                 android:id="@+id/tv_show_menu"
@@ -40,7 +40,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="15dp"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/ic_more"/>
+                android:src="@mipmap/ic_more" />
 
         </RelativeLayout>
 

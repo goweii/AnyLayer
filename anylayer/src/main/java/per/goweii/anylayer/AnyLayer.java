@@ -8,9 +8,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import per.goweii.anylayer.dialog.DialogLayer;
-import per.goweii.anylayer.floats.FloatLayer;
 import per.goweii.anylayer.guide.GuideLayer;
 import per.goweii.anylayer.notification.NotificationLayer;
+import per.goweii.anylayer.overlay.OverlayLayer;
 import per.goweii.anylayer.popup.PopupLayer;
 import per.goweii.anylayer.toast.ToastLayer;
 
@@ -18,11 +18,6 @@ public final class AnyLayer {
 
     public static void init(@NonNull Application application) {
         ActivityHolder.init(application);
-    }
-
-    @NonNull
-    public static GlobalConfig globalConfig() {
-        return GlobalConfig.get();
     }
 
     public static void dialog(@NonNull LayerActivity.OnLayerCreatedCallback callback) {
@@ -65,8 +60,8 @@ public final class AnyLayer {
     }
 
     @NonNull
-    public static FloatLayer floats(@NonNull Context context) {
-        return new FloatLayer(context);
+    public static OverlayLayer overlay(@NonNull Context context) {
+        return new OverlayLayer(context);
     }
 
     @NonNull
