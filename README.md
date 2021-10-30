@@ -98,25 +98,24 @@ allprojects {
 // build.gradle(Module:)
 dependencies {
     // 完整引入，二选一
-    implementation "com.github.goweii:AnyLayer:4.1.4-androidx"
-    // implementation "com.github.goweii:AnyLayer:4.1.4-support"
+    implementation "com.github.goweii:AnyLayer:$version"
     
     // 按需引入
     // 基础库
-    // implementation "com.github.goweii.AnyLayer:anylayer:4.1.4-androidx"
-    // 自动初始化（依赖基础库和Jetpack Startup）
-    // implementation "com.github.goweii.AnyLayer:anylayer-startup:4.1.4-androidx"
+    // implementation "com.github.goweii.AnyLayer:anylayer:$version"
     // 扩展库（依赖基础库）
-    // implementation "com.github.goweii.AnyLayer:anylayer-ext:4.1.4-androidx"
+    // implementation "com.github.goweii.AnyLayer:anylayer-ext:$version"
     // Kotlin扩展库（依赖基础库和扩展库）
-    // implementation "com.github.goweii.AnyLayer:anylayer-ktx:4.1.4-androidx"
+    // implementation "com.github.goweii.AnyLayer:anylayer-ktx:$version"
+    // 自动初始化（依赖基础库和Jetpack Startup）
+    // implementation "com.github.goweii.AnyLayer:anylayer-startup:$version"
 }
 ```
 
 - ### 一些问题/建议
 
   - 建议按需引入
-- anylayer-startup依赖于Jetpack Startup，需要自行引入。而且Jetpack Startup仅支持androidx，如果引用的是x.x.x-support需要自己在application初始化
+  anylayer-startup依赖于Jetpack Startup，需要自行引入。而且Jetpack Startup仅支持androidx，如果引用的是x.x.x-support需要自己在application初始化
   - 这几个依赖有啥区别？
     - anylayer：核心功能，所有浮层效果的实现
     - anylayer-ext：扩展功能，比如通用的动画实现和监听器的默认实现
