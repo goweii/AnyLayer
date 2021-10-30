@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -37,7 +36,7 @@ import java.util.List;
 import per.goweii.anylayer.DecorLayer;
 import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
-import per.goweii.anylayer.utils.SoftInputHelper;
+import per.goweii.anylayer.utils.InputMethodCompat;
 import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.SwipeLayout;
 import per.goweii.visualeffect.blur.RSBlurEffect;
@@ -48,7 +47,7 @@ public class DialogLayer extends DecorLayer {
     private final long mAnimDurDef = 220L;
     private final float mDimAmountDef = 0.6F;
 
-    private SoftInputHelper mSoftInputHelper = null;
+    private InputMethodCompat mInputMethodCompat = null;
 
     public DialogLayer(@NonNull Context context) {
         this(Utils.requireActivity(context));
@@ -329,7 +328,7 @@ public class DialogLayer extends DecorLayer {
         onInitBackground();
         onInitContainer();
         super.onAttach();
-        registerSoftInputCompat();
+        registerInputMethodCompat();
     }
 
     @CallSuper
@@ -360,7 +359,7 @@ public class DialogLayer extends DecorLayer {
     @Override
     protected void onDetach() {
         super.onDetach();
-        unregisterSoftInputCompat();
+        unregisterInputMethodCompat();
     }
 
     @CallSuper
@@ -383,6 +382,7 @@ public class DialogLayer extends DecorLayer {
 
     protected void onInitContainer() {
         if (getConfig().mOutsideInterceptTouchEvent) {
+            getViewHolder().getContainer().setForceFocusInside(true);
             getViewHolder().getContainer().setHandleTouchEvent(true);
             if (getConfig().mCancelableOnTouchOutside) {
                 getViewHolder().getContainer().setOnTappedListener(new ContainerLayout.OnTappedListener() {
@@ -394,6 +394,7 @@ public class DialogLayer extends DecorLayer {
             }
         } else {
             getViewHolder().getContainer().setOnTappedListener(null);
+            getViewHolder().getContainer().setForceFocusInside(false);
             getViewHolder().getContainer().setHandleTouchEvent(false);
         }
         if (getConfig().mOutsideTouchedToDismiss || getConfig().mOnOutsideTouchListener != null) {
@@ -558,56 +559,56 @@ public class DialogLayer extends DecorLayer {
         getViewHolder().getContent().setLayoutParams(contentParams);
     }
 
-    private void registerSoftInputCompat() {
-        final SparseBooleanArray mapping = getConfig().mSoftInputMapping;
+    private void registerInputMethodCompat() {
+        final SparseBooleanArray mapping = getConfig().mInputMethodMapping;
         if (mapping == null || mapping.size() == 0) {
             return;
         }
-        if (mSoftInputHelper == null) {
-            mSoftInputHelper = SoftInputHelper.attach(getActivity());
+        if (mInputMethodCompat == null) {
+            mInputMethodCompat = InputMethodCompat.attach(getActivity());
         } else {
-            mSoftInputHelper.clear();
+            mInputMethodCompat.clear();
         }
-        mSoftInputHelper.setListener(new SoftInputHelper.OnSoftInputListener() {
+        mInputMethodCompat.setListener(new InputMethodCompat.OnInputMethodListener() {
             @Override
             public void onOpen(int height) {
-                getListenerHolder().notifyOnSoftInputOpen(DialogLayer.this, height);
+                getListenerHolder().notifyOnInputMethodOpen(DialogLayer.this, height);
             }
 
             @Override
             public void onClose(int height) {
-                getListenerHolder().notifyOnSoftInputClose(DialogLayer.this, height);
+                getListenerHolder().notifyOnInputMethodClose(DialogLayer.this, height);
             }
 
             @Override
             public void onHeightChange(int height) {
-                getListenerHolder().notifyOnSoftInputHeightChange(DialogLayer.this, height);
+                getListenerHolder().notifyOnInputMethodHeightChange(DialogLayer.this, height);
             }
         });
-        mSoftInputHelper.setMoveView(getViewHolder().getContentWrapper());
+        mInputMethodCompat.setMoveView(getViewHolder().getContentWrapper());
         for (int i = 0; i < mapping.size(); i++) {
             boolean alignToContentOrFocus = mapping.valueAt(i);
             int focusId = mapping.keyAt(i);
             if (focusId == View.NO_ID) {
                 if (alignToContentOrFocus) {
-                    mSoftInputHelper.setFollowViews(getViewHolder().getContent());
+                    mInputMethodCompat.setFollowViews(getViewHolder().getContent());
                 }
             } else {
                 if (alignToContentOrFocus) {
-                    mSoftInputHelper.setFollowViews(getViewHolder().getContent(), findView(focusId));
+                    mInputMethodCompat.setFollowViews(getViewHolder().getContent(), findView(focusId));
                 } else {
-                    mSoftInputHelper.setFollowViews(null, findView(focusId));
+                    mInputMethodCompat.setFollowViews(null, findView(focusId));
                 }
             }
         }
     }
 
-    private void unregisterSoftInputCompat() {
-        if (mSoftInputHelper != null) {
-            mSoftInputHelper.setListener(null);
-            mSoftInputHelper.clear();
-            mSoftInputHelper.detach();
-            mSoftInputHelper = null;
+    private void unregisterInputMethodCompat() {
+        if (mInputMethodCompat != null) {
+            mInputMethodCompat.setListener(null);
+            mInputMethodCompat.clear();
+            mInputMethodCompat.detach();
+            mInputMethodCompat = null;
         }
     }
 
@@ -917,22 +918,22 @@ public class DialogLayer extends DecorLayer {
      * @param focusIds              焦点View
      */
     @NonNull
-    public DialogLayer addSoftInputCompat(boolean alignToContentOrFocus, @Nullable int... focusIds) {
-        if (getConfig().mSoftInputMapping == null) {
-            getConfig().mSoftInputMapping = new SparseBooleanArray(1);
+    public DialogLayer addInputMethodCompat(boolean alignToContentOrFocus, @Nullable int... focusIds) {
+        if (getConfig().mInputMethodMapping == null) {
+            getConfig().mInputMethodMapping = new SparseBooleanArray(1);
         }
         if (focusIds != null && focusIds.length > 0) {
             for (int focusId : focusIds) {
-                getConfig().mSoftInputMapping.append(focusId, alignToContentOrFocus);
+                getConfig().mInputMethodMapping.append(focusId, alignToContentOrFocus);
             }
         } else {
-            getConfig().mSoftInputMapping.append(View.NO_ID, alignToContentOrFocus);
+            getConfig().mInputMethodMapping.append(View.NO_ID, alignToContentOrFocus);
         }
         return this;
     }
 
-    public DialogLayer addOnSoftInputListener(@NonNull OnSoftInputListener onSoftInputListener) {
-        getListenerHolder().addOnSoftInputListener(onSoftInputListener);
+    public DialogLayer addOnInputMethodListener(@NonNull OnInputMethodListener onInputMethodListener) {
+        getListenerHolder().addOnInputMethodListener(onInputMethodListener);
         return this;
     }
 
@@ -1144,12 +1145,12 @@ public class DialogLayer extends DecorLayer {
         @Nullable
         protected SwipeTransformer mSwipeTransformer = null;
 
-        protected SparseBooleanArray mSoftInputMapping = null;
+        protected SparseBooleanArray mInputMethodMapping = null;
     }
 
     protected static class ListenerHolder extends DecorLayer.ListenerHolder {
         private List<OnSwipeListener> mOnSwipeListeners = null;
-        private List<OnSoftInputListener> mOnSoftInputListeners = null;
+        private List<OnInputMethodListener> mOnInputMethodListeners = null;
 
         private void addOnSwipeListener(@NonNull OnSwipeListener onSwipeListener) {
             if (mOnSwipeListeners == null) {
@@ -1158,11 +1159,11 @@ public class DialogLayer extends DecorLayer {
             mOnSwipeListeners.add(onSwipeListener);
         }
 
-        private void addOnSoftInputListener(@NonNull OnSoftInputListener onSoftInputListener) {
-            if (mOnSoftInputListeners == null) {
-                mOnSoftInputListeners = new ArrayList<>(1);
+        private void addOnInputMethodListener(@NonNull OnInputMethodListener onInputMethodListener) {
+            if (mOnInputMethodListeners == null) {
+                mOnInputMethodListeners = new ArrayList<>(1);
             }
-            mOnSoftInputListeners.add(onSoftInputListener);
+            mOnInputMethodListeners.add(onInputMethodListener);
         }
 
         private void notifyOnSwipeStart(@NonNull DialogLayer layer) {
@@ -1192,26 +1193,26 @@ public class DialogLayer extends DecorLayer {
             }
         }
 
-        private void notifyOnSoftInputOpen(@NonNull DialogLayer layer, @Px int height) {
-            if (mOnSoftInputListeners != null) {
-                for (OnSoftInputListener onSoftInputListener : mOnSoftInputListeners) {
-                    onSoftInputListener.onOpen(layer, height);
+        private void notifyOnInputMethodOpen(@NonNull DialogLayer layer, @Px int height) {
+            if (mOnInputMethodListeners != null) {
+                for (OnInputMethodListener onInputMethodListener : mOnInputMethodListeners) {
+                    onInputMethodListener.onOpen(layer, height);
                 }
             }
         }
 
-        private void notifyOnSoftInputClose(@NonNull DialogLayer layer, @Px int height) {
-            if (mOnSoftInputListeners != null) {
-                for (OnSoftInputListener onSoftInputListener : mOnSoftInputListeners) {
-                    onSoftInputListener.onClose(layer, height);
+        private void notifyOnInputMethodClose(@NonNull DialogLayer layer, @Px int height) {
+            if (mOnInputMethodListeners != null) {
+                for (OnInputMethodListener onInputMethodListener : mOnInputMethodListeners) {
+                    onInputMethodListener.onClose(layer, height);
                 }
             }
         }
 
-        private void notifyOnSoftInputHeightChange(@NonNull DialogLayer layer, @Px int height) {
-            if (mOnSoftInputListeners != null) {
-                for (OnSoftInputListener onSoftInputListener : mOnSoftInputListeners) {
-                    onSoftInputListener.onHeightChange(layer, height);
+        private void notifyOnInputMethodHeightChange(@NonNull DialogLayer layer, @Px int height) {
+            if (mOnInputMethodListeners != null) {
+                for (OnInputMethodListener onInputMethodListener : mOnInputMethodListeners) {
+                    onInputMethodListener.onHeightChange(layer, height);
                 }
             }
         }
@@ -1238,7 +1239,7 @@ public class DialogLayer extends DecorLayer {
                    @SwipeLayout.Direction int direction);
     }
 
-    public interface OnSoftInputListener {
+    public interface OnInputMethodListener {
         void onOpen(@NonNull DialogLayer layer, @Px int height);
 
         void onClose(@NonNull DialogLayer layer, @Px int height);

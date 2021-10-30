@@ -187,8 +187,8 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                         .setDuration(200);
                             }
                         })
-                        .addSoftInputCompat(true)
-                        .addOnSoftInputListener(new DialogLayer.OnSoftInputListener() {
+                        .addInputMethodCompat(true)
+                        .addOnInputMethodListener(new DialogLayer.OnInputMethodListener() {
                             @Override
                             public void onOpen(@NonNull DialogLayer layer, int height) {
                                 AnyLayer.toast(FullScreenActivity.this)
@@ -270,7 +270,7 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                                 return AnimatorHelper.createBottomOutAnim(content);
                             }
                         })
-                        .addSoftInputCompat(false)
+                        .addInputMethodCompat(false)
                         .addOnClickToDismissListener(R.id.fl_dialog_no)
                         .addOnClickToDismissListener(new Layer.OnClickListener() {
                             @Override
