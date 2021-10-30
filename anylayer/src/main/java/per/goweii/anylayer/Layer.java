@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -72,6 +73,8 @@ public class Layer {
 
     private boolean mInitialized = false;
 
+    private boolean mViewCacheable = false;
+
     public Layer() {
         mViewManager = new ViewManager();
         mConfig = onCreateConfig();
@@ -85,8 +88,18 @@ public class Layer {
     }
 
     @NonNull
+    public Config getConfig() {
+        return mConfig;
+    }
+
+    @NonNull
     protected ViewHolder onCreateViewHolder() {
         return new ViewHolder();
+    }
+
+    @NonNull
+    public ViewHolder getViewHolder() {
+        return mViewHolder;
     }
 
     @NonNull
@@ -95,38 +108,24 @@ public class Layer {
     }
 
     @NonNull
-    protected ViewGroup onGetParent() {
-        return mViewHolder.getParent();
-    }
-
-    @NonNull
-    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (mViewHolder.getChildOrNull() == null) {
-            mViewHolder.setChild(inflater.inflate(mConfig.mChildId, parent, false));
-        }
-        return mViewHolder.getChild();
-    }
-
-    @Nullable
-    protected Animator onCreateInAnimator(@NonNull View view) {
-        if (mConfig.mAnimatorCreator != null) {
-            return mConfig.mAnimatorCreator.createInAnimator(view);
-        }
-        return null;
-    }
-
-    @Nullable
-    protected Animator onCreateOutAnimator(@NonNull View view) {
-        if (mConfig.mAnimatorCreator != null) {
-            return mConfig.mAnimatorCreator.createOutAnimator(view);
-        }
-        return null;
+    public ListenerHolder getListenerHolder() {
+        return mListenerHolder;
     }
 
     @CallSuper
     protected void onCreate() {
-        mViewHolder.setParent(onGetParent());
-        mViewHolder.setChild(onCreateChild(getLayoutInflater(), mViewHolder.getParent()));
+        if (mViewHolder.getParentOrNull() == null) {
+            ViewGroup parent = onGetParent();
+            mViewHolder.setParent(parent);
+        }
+        if (mViewHolder.getChildOrNull() == null) {
+            View child = onCreateChild(getLayoutInflater(), mViewHolder.getParent());
+            mViewHolder.setChild(child);
+        }
+        ViewGroup.LayoutParams layoutParams = mViewHolder.getChild().getLayoutParams();
+        if (layoutParams == null) {
+            mViewHolder.getChild().setLayoutParams(generateDefaultLayoutParams());
+        }
         mViewManager.setParent(mViewHolder.getParent());
         mViewManager.setChild(mViewHolder.getChild());
         mViewManager.setOnKeyListener(mConfig.mInterceptKeyEvent ? mOnLayerKeyListener : null);
@@ -183,9 +182,62 @@ public class Layer {
 
     @CallSuper
     protected void onDestroy() {
+        if (!mViewCacheable) {
+            onResetParent();
+            mViewHolder.setParent(null);
+            onDestroyChild();
+            mViewHolder.setChild(null);
+        }
         mViewManager.setParent(null);
         mViewManager.setChild(null);
         mViewManager.setOnKeyListener(null);
+    }
+
+    @NonNull
+    protected ViewGroup onGetParent() {
+        if (mConfig.mParentView != null) {
+            return mConfig.mParentView;
+        }
+        throw new IllegalStateException("未设置父布局");
+    }
+
+    @NonNull
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (mConfig.mChildView != null) {
+            return mConfig.mChildView;
+        }
+        if (mConfig.mChildLayoutId != View.NO_ID) {
+            return inflater.inflate(mConfig.mChildLayoutId, parent, false);
+        }
+        throw new IllegalStateException("未设置子控件");
+    }
+
+    protected void onResetParent() {
+    }
+
+    protected void onDestroyChild() {
+    }
+
+    @NonNull
+    protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
+        return new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
+
+    @Nullable
+    protected Animator onCreateInAnimator(@NonNull View view) {
+        if (mConfig.mAnimatorCreator != null) {
+            return mConfig.mAnimatorCreator.createInAnimator(view);
+        }
+        return null;
+    }
+
+    @Nullable
+    protected Animator onCreateOutAnimator(@NonNull View view) {
+        if (mConfig.mAnimatorCreator != null) {
+            return mConfig.mAnimatorCreator.createOutAnimator(view);
+        }
+        return null;
     }
 
     protected boolean onKey(int keyCode, @NonNull KeyEvent event) {
@@ -340,6 +392,14 @@ public class Layer {
         }
     }
 
+    public boolean isViewCacheable() {
+        return mViewCacheable;
+    }
+
+    public void setViewCacheable(boolean viewCacheable) {
+        mViewCacheable = viewCacheable;
+    }
+
     public void show() {
         show(true);
     }
@@ -371,21 +431,6 @@ public class Layer {
     }
 
     @NonNull
-    public ViewHolder getViewHolder() {
-        return mViewHolder;
-    }
-
-    @NonNull
-    public Config getConfig() {
-        return mConfig;
-    }
-
-    @NonNull
-    public ListenerHolder getListenerHolder() {
-        return mListenerHolder;
-    }
-
-    @NonNull
     public LayoutInflater getLayoutInflater() {
         return LayoutInflater.from(mViewHolder.getParent().getContext());
     }
@@ -402,7 +447,8 @@ public class Layer {
 
     @NonNull
     public <V extends View> V requireViewById(@IdRes int id) {
-        return Utils.requireNonNull(mViewHolder.findViewById(id));
+        V view = mViewHolder.findViewById(id);
+        return Utils.requireNonNull(view);
     }
 
     @Nullable
@@ -412,19 +458,19 @@ public class Layer {
 
     @NonNull
     public Layer setParent(@NonNull ViewGroup parent) {
-        mViewHolder.setParent(parent);
+        mConfig.mParentView = parent;
         return this;
     }
 
     @NonNull
-    public Layer setChild(@NonNull View child) {
-        mViewHolder.setChild(child);
+    public Layer setChild(@Nullable View child) {
+        mConfig.mChildView = child;
         return this;
     }
 
     @NonNull
-    public Layer setChild(int child) {
-        mConfig.mChildId = child;
+    public Layer setChild(@LayoutRes int child) {
+        mConfig.mChildLayoutId = child;
         return this;
     }
 
@@ -537,7 +583,7 @@ public class Layer {
      * @param viewIds  控件ID
      */
     @NonNull
-    public Layer addOnClickToDismissListener(@Nullable OnClickListener listener, @IdRes int... viewIds) {
+    public Layer addOnClickToDismissListener(@Nullable final OnClickListener listener, @IdRes int... viewIds) {
         addOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull Layer decorLayer, @NonNull View v) {
@@ -607,7 +653,7 @@ public class Layer {
      * @param viewIds  控件ID
      */
     @NonNull
-    public Layer addOnLongClickToDismissListener(@Nullable OnLongClickListener listener, int... viewIds) {
+    public Layer addOnLongClickToDismissListener(@Nullable final OnLongClickListener listener, int... viewIds) {
         addOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(@NonNull Layer layer, @NonNull View v) {
@@ -649,7 +695,12 @@ public class Layer {
     }
 
     protected static class Config {
-        private int mChildId;
+        @Nullable
+        private ViewGroup mParentView = null;
+        @Nullable
+        private View mChildView = null;
+        @LayoutRes
+        private int mChildLayoutId = View.NO_ID;
 
         private boolean mInterceptKeyEvent = false;
         private boolean mCancelableOnKeyBack = false;
@@ -661,9 +712,7 @@ public class Layer {
         private ViewGroup mParent;
         private View mChild;
 
-        private SparseArray<View> mViewCaches = null;
-
-        public void setParent(@NonNull ViewGroup parent) {
+        public void setParent(@Nullable ViewGroup parent) {
             mParent = parent;
         }
 
@@ -673,11 +722,11 @@ public class Layer {
         }
 
         @Nullable
-        protected ViewGroup getParentNullable() {
+        protected ViewGroup getParentOrNull() {
             return mParent;
         }
 
-        public void setChild(@NonNull View child) {
+        public void setChild(@Nullable View child) {
             mChild = child;
         }
 
@@ -696,23 +745,12 @@ public class Layer {
             return null;
         }
 
-        @SuppressWarnings("unchecked")
         @Nullable
         public final <V extends View> V findViewById(@IdRes int id) {
             if (mChild == null) {
                 return null;
             }
-            if (mViewCaches == null) {
-                mViewCaches = new SparseArray<>();
-            }
-            View view = mViewCaches.get(id);
-            if (view == null) {
-                view = mChild.findViewById(id);
-                if (view != null) {
-                    mViewCaches.put(id, view);
-                }
-            }
-            return (V) view;
+            return mChild.findViewById(id);
         }
     }
 
@@ -725,7 +763,7 @@ public class Layer {
         private List<OnShowListener> mOnShowListeners = null;
         private List<OnDismissListener> mOnDismissListeners = null;
 
-        private void bindOnClickListeners(@NonNull Layer layer) {
+        private void bindOnClickListeners(@NonNull final Layer layer) {
             if (mOnClickListeners == null) return;
             for (int i = 0; i < mOnClickListeners.size(); i++) {
                 final int viewId = mOnClickListeners.keyAt(i);
@@ -747,7 +785,7 @@ public class Layer {
             }
         }
 
-        private void bindOnLongClickListeners(@NonNull Layer layer) {
+        private void bindOnLongClickListeners(@NonNull final Layer layer) {
             if (mOnLongClickListeners == null) return;
             for (int i = 0; i < mOnLongClickListeners.size(); i++) {
                 final int viewId = mOnLongClickListeners.keyAt(i);

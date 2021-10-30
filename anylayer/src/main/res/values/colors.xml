@@ -12,6 +12,6 @@
     <color name="anylayer_notification_time_text_color">@color/anylayer_text_color_third</color>
     <color name="anylayer_notification_desc_text_color">@color/anylayer_text_color_second</color>
 
-    <color name="anylayer_toast_bg">@color/anylayer_card_bg</color>
+    <color name="anylayer_toast_bg">#F7EEEEEE</color>
     <color name="anylayer_toast_text_color">@color/anylayer_text_color</color>
 </resources>

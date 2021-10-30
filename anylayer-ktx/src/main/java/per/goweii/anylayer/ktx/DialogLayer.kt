@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.*
-import androidx.core.view.doOnNextLayout
 import per.goweii.anylayer.Layer
 import per.goweii.anylayer.dialog.DialogLayer
 import per.goweii.anylayer.ext.DefaultDialogOnSwipeListener
@@ -107,48 +106,12 @@ fun <T : DialogLayer> T.backgroundAnimator(creator: Layer.AnimatorCreator) = thi
     this.setBackgroundAnimator(creator)
 }
 
-fun <T : DialogLayer> T.contentBlurRadius(@FloatRange(from = 0.0) radius: Float) = this.apply {
-    this.setContentBlurRadius(radius)
+fun <T : DialogLayer> T.backgroundView(view: View) = this.apply {
+    this.setBackgroundView(view)
 }
 
-fun <T : DialogLayer> T.contentBlurPercent(@FloatRange(from = 0.0) percent: Float) = this.apply {
-    this.setContentBlurPercent(percent)
-}
-
-fun <T : DialogLayer> T.contentBlurScale(@FloatRange(from = 1.0) scale: Float) = this.apply {
-    this.setContentBlurSimple(scale)
-}
-
-fun <T : DialogLayer> T.contentBlurCornerRadius(@FloatRange(from = 0.0) radius: Float, unit: Int) = this.apply {
-    this.setContentBlurCornerRadius(radius, unit)
-}
-
-fun <T : DialogLayer> T.contentBlurCornerRadiusPx(@FloatRange(from = 0.0) radius: Float) = this.apply {
-    this.setContentBlurCornerRadiusPx(radius)
-}
-
-fun <T : DialogLayer> T.contentBlurCornerRadiusDp(@FloatRange(from = 0.0) radius: Float) = this.apply {
-    this.setContentBlurCornerRadiusDp(radius)
-}
-
-fun <T : DialogLayer> T.contentBlurColorInt(@ColorInt colorInt: Int) = this.apply {
-    this.setContentBlurColorInt(colorInt)
-}
-
-fun <T : DialogLayer> T.contentBlurColorRes(@ColorRes colorRes: Int) = this.apply {
-    this.setContentBlurColorRes(colorRes)
-}
-
-fun <T : DialogLayer> T.backgroundBlurRadius(@FloatRange(from = 0.0) radius: Float) = this.apply {
-    this.setBackgroundBlurRadius(radius)
-}
-
-fun <T : DialogLayer> T.backgroundBlurPercent(@FloatRange(from = 0.0) percent: Float) = this.apply {
-    this.setBackgroundBlurPercent(percent)
-}
-
-fun <T : DialogLayer> T.backgroundBlurScale(@FloatRange(from = 1.0) scale: Float) = this.apply {
-    this.setBackgroundBlurSimple(scale)
+fun <T : DialogLayer> T.backgroundView(@LayoutRes layoutId: Int) = this.apply {
+    this.setBackgroundView(layoutId)
 }
 
 fun <T : DialogLayer> T.backgroundBitmap(bitmap: Bitmap) = this.apply {

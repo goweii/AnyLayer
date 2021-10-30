@@ -86,42 +86,6 @@ public class DecorLayer extends FrameLayer {
         fitDecorInsides();
     }
 
-    @CallSuper
-    @Override
-    protected void onPreShow() {
-        super.onPreShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostShow() {
-        super.onPostShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreDismiss() {
-        super.onPreDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostDismiss() {
-        super.onPostDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-    }
-
-    @CallSuper
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     @Override
     protected void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -216,23 +180,23 @@ public class DecorLayer extends FrameLayer {
     @NonNull
     protected final Rect getDecorPadding() {
         mDecorPadding.setEmpty();
-        Utils.getViewPadding(getViewHolder().getActivityContent(), mDecorPadding);
+        Utils.getViewPadding(getViewHolder().getDecorChild(), mDecorPadding);
         return mDecorPadding;
     }
 
     @NonNull
     protected final Rect getDecorMargin() {
         mDecorMargin.setEmpty();
-        ViewGroup viewGroup = getViewHolder().getActivityContent();
+        View view = getViewHolder().getDecorChild();
         while (true) {
-            Utils.getViewMargin(viewGroup, mDecorMargin);
-            ViewParent viewParent = viewGroup.getParent();
+            Utils.getViewMargin(view, mDecorMargin);
+            ViewParent viewParent = view.getParent();
             if (!(viewParent instanceof ViewGroup)) {
                 break;
             }
-            viewGroup = (ViewGroup) viewParent;
-            Utils.getViewPadding(viewGroup, mDecorMargin);
-            if (viewGroup == getViewHolder().getDecor()) {
+            view = (ViewGroup) viewParent;
+            Utils.getViewPadding(view, mDecorMargin);
+            if (view == getViewHolder().getDecor()) {
                 break;
             }
         }
@@ -248,7 +212,7 @@ public class DecorLayer extends FrameLayer {
     }
 
     @Override
-    public void show(boolean withAnim) {
+    public void show(final boolean withAnim) {
         if (mShowRunnable == null) {
             mShowRunnable = new Runnable() {
                 @Override

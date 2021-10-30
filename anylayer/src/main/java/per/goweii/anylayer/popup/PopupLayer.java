@@ -82,54 +82,6 @@ public class PopupLayer extends DialogLayer {
         return (ListenerHolder) super.getListenerHolder();
     }
 
-    @NonNull
-    @Override
-    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        return super.onCreateChild(inflater, parent);
-    }
-
-    @NonNull
-    @Override
-    protected Animator onCreateDefContentInAnimator(@NonNull View view) {
-        return AnimatorHelper.createTopInAnim(view);
-    }
-
-    @NonNull
-    @Override
-    protected Animator onCreateDefContentOutAnimator(@NonNull View view) {
-        return AnimatorHelper.createTopOutAnim(view);
-    }
-
-    @CallSuper
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreShow() {
-        super.onPreShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostShow() {
-        super.onPostShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreDismiss() {
-        super.onPreDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostDismiss() {
-        super.onPostDismiss();
-    }
-
     @CallSuper
     @Override
     protected void onDetach() {
@@ -141,12 +93,6 @@ public class PopupLayer extends DialogLayer {
             mOnScrollChangedListener = null;
         }
         super.onDetach();
-    }
-
-    @CallSuper
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     @Override
@@ -207,6 +153,18 @@ public class PopupLayer extends DialogLayer {
             contentParams.gravity = -1;
         }
         getViewHolder().getContent().setLayoutParams(contentParams);
+    }
+
+    @NonNull
+    @Override
+    protected Animator onCreateDefContentInAnimator(@NonNull View view) {
+        return AnimatorHelper.createTopInAnim(view);
+    }
+
+    @NonNull
+    @Override
+    protected Animator onCreateDefContentOutAnimator(@NonNull View view) {
+        return AnimatorHelper.createTopOutAnim(view);
     }
 
     @Override
@@ -439,14 +397,18 @@ public class PopupLayer extends DialogLayer {
     }
 
     private void initBackgroundLocation() {
-        if (!getConfig().mBackgroundAlign) {
-            getViewHolder().getBackground().setX(0);
-            getViewHolder().getBackground().setY(0);
+        View background = getViewHolder().getBackground();
+        if (background == null) {
             return;
         }
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getViewHolder().getBackground().getLayoutParams();
-        int width = getViewHolder().getBackground().getWidth();
-        int height = getViewHolder().getBackground().getHeight();
+        if (!getConfig().mBackgroundAlign) {
+            background.setX(0);
+            background.setY(0);
+            return;
+        }
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) background.getLayoutParams();
+        int width = background.getWidth();
+        int height = background.getHeight();
         int cww = getViewHolder().getContentWrapper().getWidth();
         int cwh = getViewHolder().getContentWrapper().getHeight();
         final float cwx = getViewHolder().getContentWrapper().getX();
@@ -501,8 +463,8 @@ public class PopupLayer extends DialogLayer {
                     break;
             }
         }
-        getViewHolder().getBackground().setX(x);
-        getViewHolder().getBackground().setY(y);
+        background.setX(x);
+        background.setY(y);
         boolean changed = false;
         if (params.width != w) {
             changed = true;
@@ -513,8 +475,8 @@ public class PopupLayer extends DialogLayer {
         if (changed) {
             params.width = (int) w;
             params.height = (int) h;
-            getViewHolder().getBackground().setLayoutParams(params);
-            Utils.onViewLayout(getViewHolder().getBackground(), new Runnable() {
+            background.setLayoutParams(params);
+            Utils.onViewLayout(background, new Runnable() {
                 @Override
                 public void run() {
                     updateLocation();

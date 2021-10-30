@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.dialog.DialogLayer;
+import per.goweii.anylayer.effect.BackdropBlurView;
 import per.goweii.anylayer.ext.CircularRevealAnimatorCreator;
 import per.goweii.anylayer.ext.SimpleAnimatorCreator;
 import per.goweii.anylayer.notification.NotificationLayer;
@@ -101,11 +103,7 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 .addOnOverlayClickListener(new Layer.OnClickListener() {
                     @Override
                     public void onClick(@NonNull Layer layer, @NonNull View v) {
-                        AnyLayer.toast()
-                                .setBackgroundColorInt(Color.parseColor("#f5f5f5"))
-                                .setMessage("点击了悬浮按钮")
-                                .setGravity(Gravity.CENTER)
-                                .show();
+                        AnyLayer.toast().setMessage("点击了悬浮按钮").show();
                     }
                 })
                 .show();
@@ -153,10 +151,6 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_show_notification:
                 new NotificationLayer(this)
-                        .setContentBlurSimple(8)
-                        .setContentBlurRadius(20)
-                        .setContentBlurColorInt(Color.parseColor("#aaffffff"))
-                        .setContentBlurCornerRadiusDp(10)
                         .setTitle("这是一个通知")
                         .setDesc(R.string.dialog_msg)
                         .setTimePattern("HH:mm")
@@ -260,22 +254,26 @@ public class NormalActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
             case R.id.tv_show_blur_bg:
+                BackdropBlurView blurBackground = new BackdropBlurView(this);
+                blurBackground.setBlurPercent(0.05F);
                 AnyLayer.dialog(NormalActivity.this)
                         .setContentView(R.layout.dialog_icon)
-                        .setBackgroundBlurRadius(8F)
-                        .setBackgroundBlurSimple(8F)
+                        .setBackgroundView(blurBackground)
                         .setBackgroundColorInt(Color.parseColor("#33ffffff"))
                         .show();
                 break;
             case R.id.tv_show_blur_content:
                 if (layer_show_blur_content == null) {
+                    @SuppressLint("InflateParams")
+                    BackdropBlurView blurContent = (BackdropBlurView) LayoutInflater.from(this).inflate(R.layout.dialog_content_blur, null);
+                    blurContent.setBlurRadius(8F);
+                    blurContent.setSimpleSize(8F);
+                    blurContent.setCornerRadius(30F);
+                    blurContent.setOverlayColor(Color.parseColor("#66ffffff"));
                     layer_show_blur_content = AnyLayer.dialog(NormalActivity.this)
                             .setContentView(R.layout.dialog_content_blur)
                             .setBackgroundColorInt(Color.parseColor("#33000000"))
-                            .setContentBlurRadius(8F)
-                            .setContentBlurSimple(8F)
-                            .setContentBlurCornerRadiusDp(10F)
-                            .setContentBlurColorInt(Color.parseColor("#66ffffff"))
+                            .setContentView(blurContent)
                             .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                             .addOnInitializeListener(new Layer.OnInitializeListener() {
                                 @Override

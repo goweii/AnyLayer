@@ -84,39 +84,115 @@ public class ToastLayer extends DecorLayer {
         return (ListenerHolder) super.getListenerHolder();
     }
 
+    @CallSuper
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        getChild().setTag(this);
+        if (getConfig().mRemoveOthers) {
+            removeOthers();
+        }
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
+        params.gravity = getConfig().mGravity;
+        if (getConfig().mMarginLeft != null) {
+            params.leftMargin = getConfig().mMarginLeft;
+        } else {
+            params.leftMargin = getActivity().getResources().getDimensionPixelOffset(R.dimen.anylayer_toast_margin);
+        }
+        if (getConfig().mMarginTop != null) {
+            params.topMargin = getConfig().mMarginTop;
+        } else {
+            params.topMargin = getActivity().getResources().getDimensionPixelOffset(R.dimen.anylayer_toast_margin);
+        }
+        if (getConfig().mMarginRight != null) {
+            params.rightMargin = getConfig().mMarginRight;
+        } else {
+            params.rightMargin = getActivity().getResources().getDimensionPixelOffset(R.dimen.anylayer_toast_margin);
+        }
+        if (getConfig().mMarginBottom != null) {
+            params.bottomMargin = getConfig().mMarginBottom;
+        } else {
+            params.bottomMargin = getActivity().getResources().getDimensionPixelOffset(R.dimen.anylayer_toast_margin);
+        }
+        getChild().setLayoutParams(params);
+        bindDefaultContentData();
+    }
+
+    @CallSuper
+    @Override
+    protected void onPostShow() {
+        super.onPostShow();
+        if (getConfig().mDuration > 0) {
+            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
+        }
+    }
+
+    @CallSuper
+    @Override
+    protected void onPreDismiss() {
+        getChild().removeCallbacks(mDismissRunnable);
+        super.onPreDismiss();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDetach() {
+        getChild().setTag(null);
+        super.onDetach();
+    }
+
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildOrNull() == null) {
-            FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_toast_layer, parent, false);
-            getViewHolder().setChild(container);
-            getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getChild()));
-            ViewGroup.LayoutParams layoutParams = getViewHolder().getContent().getLayoutParams();
-            FrameLayout.LayoutParams contentParams;
-            if (layoutParams == null) {
-                contentParams = generateContentDefaultLayoutParams();
-            } else if (layoutParams instanceof FrameLayout.LayoutParams) {
-                contentParams = (FrameLayout.LayoutParams) layoutParams;
-            } else {
-                contentParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
-            }
-            getViewHolder().getContent().setLayoutParams(contentParams);
-            getViewHolder().getChild().addView(getViewHolder().getContent());
+        FrameLayout container = new FrameLayout(getActivity());
+
+        View content = onCreateContent(inflater, container);
+        getViewHolder().setContent(content);
+
+        ViewGroup.LayoutParams contentLayoutParams = content.getLayoutParams();
+        FrameLayout.LayoutParams newContentLayoutParams;
+        if (contentLayoutParams == null) {
+            newContentLayoutParams = generateContentDefaultLayoutParams();
+        } else if (contentLayoutParams instanceof FrameLayout.LayoutParams) {
+            newContentLayoutParams = (FrameLayout.LayoutParams) contentLayoutParams;
+        } else {
+            newContentLayoutParams = new FrameLayout.LayoutParams(contentLayoutParams.width, contentLayoutParams.height);
         }
-        return getViewHolder().getChild();
+        content.setLayoutParams(newContentLayoutParams);
+        container.addView(content);
+
+        return container;
     }
 
     @NonNull
     protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getContentOrNull() == null) {
-            getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
-        } else {
-            ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
+        if (getConfig().mContentView != null) {
+            ViewGroup contentParent = (ViewGroup) getConfig().mContentView.getParent();
             if (contentParent != null) {
-                contentParent.removeView(getViewHolder().getContent());
+                contentParent.removeView(getConfig().mContentView);
             }
+            return getConfig().mContentView;
         }
-        return getViewHolder().getContent();
+        if (getConfig().mContentViewId != View.NO_ID) {
+            return inflater.inflate(getConfig().mContentViewId, parent, false);
+        }
+        throw new IllegalStateException("未设置contentView");
+    }
+
+    @Override
+    protected void onDestroyChild() {
+        getViewHolder().getChild().removeAllViews();
+        if (!isViewCacheable()) {
+            getViewHolder().setContent(null);
+        }
+        super.onDestroyChild();
+    }
+
+    @NonNull
+    @Override
+    protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
+        return new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     @NonNull
@@ -145,73 +221,6 @@ public class ToastLayer extends DecorLayer {
             animator.setDuration(mAnimDurDef);
         }
         return animator;
-    }
-
-    @CallSuper
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        getChild().setTag(this);
-        if (getConfig().mRemoveOthers) {
-            removeOthers();
-        }
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getChild().getLayoutParams();
-        params.gravity = getConfig().mGravity;
-        if (getConfig().mMarginLeft != null) {
-            params.leftMargin = getConfig().mMarginLeft;
-        }
-        if (getConfig().mMarginTop != null) {
-            params.topMargin = getConfig().mMarginTop;
-        }
-        if (getConfig().mMarginRight != null) {
-            params.rightMargin = getConfig().mMarginRight;
-        }
-        if (getConfig().mMarginBottom != null) {
-            params.bottomMargin = getConfig().mMarginBottom;
-        }
-        getChild().setLayoutParams(params);
-        bindDefaultContentData();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreShow() {
-        super.onPreShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostShow() {
-        super.onPostShow();
-        if (getConfig().mDuration > 0) {
-            getChild().postDelayed(mDismissRunnable, getConfig().mDuration);
-        }
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreDismiss() {
-        getChild().removeCallbacks(mDismissRunnable);
-        super.onPreDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostDismiss() {
-        super.onPostDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onDetach() {
-        getChild().setTag(null);
-        super.onDetach();
-    }
-
-    @CallSuper
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     private void removeOthers() {
@@ -271,7 +280,7 @@ public class ToastLayer extends DecorLayer {
 
     @NonNull
     public ToastLayer setContentView(@NonNull View contentView) {
-        getViewHolder().setContent(contentView);
+        getConfig().mContentView = contentView;
         return this;
     }
 
@@ -389,11 +398,6 @@ public class ToastLayer extends DecorLayer {
     public static class ViewHolder extends DecorLayer.ViewHolder {
         private View mContent;
 
-        @Override
-        public void setChild(@NonNull View child) {
-            super.setChild(child);
-        }
-
         @NonNull
         @Override
         public FrameLayout getChild() {
@@ -406,7 +410,7 @@ public class ToastLayer extends DecorLayer {
             return (FrameLayout) super.getChildOrNull();
         }
 
-        protected void setContent(@NonNull View content) {
+        protected void setContent(@Nullable View content) {
             mContent = content;
         }
 
@@ -433,12 +437,15 @@ public class ToastLayer extends DecorLayer {
     }
 
     protected static class Config extends DecorLayer.Config {
+        @Nullable
+        private View mContentView = null;
+        @LayoutRes
         private int mContentViewId = R.layout.anylayer_toast_content;
         private boolean mRemoveOthers = true;
         private long mDuration = 3000L;
         @NonNull
         private CharSequence mMessage = "";
-        private int mIcon = 0;
+        private int mIcon = -1;
         @Nullable
         private Drawable mBackgroundDrawable = null;
         private int mBackgroundResource = -1;

@@ -97,7 +97,7 @@ public final class Utils {
         }
     }
 
-    public static void onViewPreDraw(@NonNull final View view, @NonNull Runnable runnable) {
+    public static void onViewPreDraw(@NonNull final View view, @NonNull final Runnable runnable) {
         if (view.getViewTreeObserver().isAlive()) {
             view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -112,7 +112,7 @@ public final class Utils {
         }
     }
 
-    public static void onViewLayout(@NonNull final View view, @NonNull Runnable runnable) {
+    public static void onViewLayout(@NonNull final View view, @NonNull final Runnable runnable) {
         if (view.getViewTreeObserver().isAlive()) {
             view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override

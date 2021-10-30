@@ -830,11 +830,11 @@ public class AnimatorHelper {
                                                    int centerX,
                                                    int centerY,
                                                    @Nullable TimeInterpolator zoomInterpolator,
-                                                   @Nullable TimeInterpolator alphaInterpolator) {
+                                                   @Nullable final TimeInterpolator alphaInterpolator) {
         if (!(target instanceof ViewGroup)) {
             return createZoomInAnim(target, centerX, centerY);
         }
-        ViewGroup targetGroup = (ViewGroup) target;
+        final ViewGroup targetGroup = (ViewGroup) target;
         for (int i = 0; i < targetGroup.getChildCount(); i++) {
             View targetChild = targetGroup.getChildAt(i);
             targetChild.setAlpha(0);
@@ -915,11 +915,11 @@ public class AnimatorHelper {
                                                     int centerX,
                                                     int centerY,
                                                     @Nullable TimeInterpolator zoomInterpolator,
-                                                    @Nullable TimeInterpolator alphaInterpolator) {
+                                                    @Nullable final TimeInterpolator alphaInterpolator) {
         if (!(target instanceof ViewGroup)) {
             return createZoomInAnim(target, centerX, centerY);
         }
-        ViewGroup targetGroup = (ViewGroup) target;
+        final ViewGroup targetGroup = (ViewGroup) target;
         targetGroup.setPivotX(centerX);
         targetGroup.setPivotY(centerY);
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(targetGroup, "scaleX", targetGroup.getScaleX(), 0);

@@ -101,44 +101,12 @@ public class FrameLayer extends Layer {
             parent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             group.addView(parent, lastIndex + 1);
         }
-        getViewHolder().setParent(parent);
         return parent;
     }
 
-    @CallSuper
     @Override
-    protected void onAttach() {
-        super.onAttach();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreShow() {
-        super.onPreShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostShow() {
-        super.onPostShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreDismiss() {
-        super.onPreDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostDismiss() {
-        super.onPostDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onDetach() {
-        super.onDetach();
+    protected void onResetParent() {
+        super.onResetParent();
         final LayerLayout group = findLayerLayoutFromRoot();
         if (group == null) {
             return;
@@ -154,12 +122,6 @@ public class FrameLayer extends Layer {
         if (group.getChildCount() == 0) {
             removeLayerLayoutFromRoot(group);
         }
-    }
-
-    @CallSuper
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     protected void onConfigurationChanged(@NonNull Configuration newConfig) {

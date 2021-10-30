@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.Utils;
 
@@ -83,34 +82,6 @@ public class GuideLayer extends DecorLayer {
         return (ListenerHolder) super.getListenerHolder();
     }
 
-    @NonNull
-    @Override
-    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildOrNull() == null) {
-            FrameLayout container = (FrameLayout) inflater.inflate(R.layout.anylayer_guide_layer, parent, false);
-            getViewHolder().setChild(container);
-        }
-        return getViewHolder().getChild();
-    }
-
-    @Nullable
-    @Override
-    protected Animator onCreateInAnimator(@NonNull View view) {
-        return AnimatorHelper.createAlphaInAnim(view);
-    }
-
-    @Nullable
-    @Override
-    protected Animator onCreateOutAnimator(@NonNull View view) {
-        return AnimatorHelper.createAlphaOutAnim(view);
-    }
-
-    @NonNull
-    protected FrameLayout.LayoutParams generateGuideDefaultLayoutParams() {
-        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT);
-    }
-
     @CallSuper
     @Override
     protected void onAttach() {
@@ -141,40 +112,58 @@ public class GuideLayer extends DecorLayer {
         });
     }
 
-    @CallSuper
+    @NonNull
     @Override
-    protected void onPreShow() {
-        super.onPreShow();
+    protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        final FrameLayout container = new FrameLayout(getActivity());
+
+        final HoleView background = new HoleView(getActivity());
+        getViewHolder().setBackground(background);
+        background.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+        container.addView(background);
+
+        final FrameLayout contentWrapper = new FrameLayout(getActivity());
+        getViewHolder().setContentWrapper(contentWrapper);
+        contentWrapper.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+        container.addView(contentWrapper);
+
+        return container;
     }
 
-    @CallSuper
     @Override
-    protected void onPostShow() {
-        super.onPostShow();
+    protected void onDestroyChild() {
+        getViewHolder().getBackground().clear();
+        getViewHolder().setBackground(null);
+        getViewHolder().getContentWrapper().removeAllViews();
+        getViewHolder().setContentWrapper(null);
+        super.onDestroyChild();
     }
 
-    @CallSuper
+    @NonNull
     @Override
-    protected void onPreDismiss() {
-        super.onPreDismiss();
+    protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
+        return new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
-    @CallSuper
-    @Override
-    protected void onPostDismiss() {
-        super.onPostDismiss();
+    @NonNull
+    protected FrameLayout.LayoutParams generateGuideDefaultLayoutParams() {
+        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
     }
 
-    @CallSuper
+    @Nullable
     @Override
-    protected void onDetach() {
-        super.onDetach();
+    protected Animator onCreateInAnimator(@NonNull View view) {
+        return AnimatorHelper.createAlphaInAnim(view);
     }
 
-    @CallSuper
+    @Nullable
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected Animator onCreateOutAnimator(@NonNull View view) {
+        return AnimatorHelper.createAlphaOutAnim(view);
     }
 
     @Override
@@ -322,13 +311,6 @@ public class GuideLayer extends DecorLayer {
         private HoleView mBackground;
         private FrameLayout mContentWrapper;
 
-        @Override
-        public void setChild(@NonNull View child) {
-            super.setChild(child);
-            mContentWrapper = getChild().findViewById(R.id.anylayler_guide_content_wrapper);
-            mBackground = getChild().findViewById(R.id.anylayler_guide_background);
-        }
-
         @NonNull
         @Override
         public FrameLayout getChild() {
@@ -341,14 +323,24 @@ public class GuideLayer extends DecorLayer {
             return (FrameLayout) super.getChildOrNull();
         }
 
-        @NonNull
-        public FrameLayout getContentWrapper() {
-            return mContentWrapper;
+        public void setBackground(@Nullable HoleView background) {
+            mBackground = background;
+        }
+
+        public void setContentWrapper(@Nullable FrameLayout contentWrapper) {
+            mContentWrapper = contentWrapper;
         }
 
         @NonNull
         public HoleView getBackground() {
+            Utils.requireNonNull(mBackground, "必须在show方法后调用");
             return mBackground;
+        }
+
+        @NonNull
+        public FrameLayout getContentWrapper() {
+            Utils.requireNonNull(mContentWrapper, "必须在show方法后调用");
+            return mContentWrapper;
         }
     }
 
@@ -386,11 +378,11 @@ public class GuideLayer extends DecorLayer {
 
         private final SparseArray<OnClickListener> mOnClickListeners = new SparseArray<>();
 
-        private void bindOnClickListener(@NonNull GuideLayer layer) {
+        private void bindOnClickListener(@NonNull final GuideLayer layer) {
             if (mGuideView == null) return;
             for (int i = 0; i < mOnClickListeners.size(); i++) {
                 int id = mOnClickListeners.keyAt(i);
-                OnClickListener listener = mOnClickListeners.valueAt(i);
+                final OnClickListener listener = mOnClickListeners.valueAt(i);
                 View view = mGuideView.findViewById(id);
                 if (view == null) view = mGuideView;
                 view.setOnClickListener(new View.OnClickListener() {

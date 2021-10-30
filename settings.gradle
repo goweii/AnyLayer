@@ -1,3 +1,4 @@
+include ':anylayer-effect'
 include ':anylayer-startup'
 include ':anylayer-ktx'
 include ':app'

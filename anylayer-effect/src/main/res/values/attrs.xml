@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ShadowLayout">
+        <attr name="shadowSolidColor" format="color" />
+        <attr name="shadowColor" format="color" />
+        <attr name="shadowSymmetry" format="boolean" />
+        <attr name="shadowRadius" format="dimension" />
+        <attr name="shadowOffsetX" format="dimension" />
+        <attr name="shadowOffsetY" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="RoundedShadowLayout">
+        <attr name="roundedCornerRadius" format="dimension" />
+        <attr name="roundedCornerRadiusTopLeft" format="dimension" />
+        <attr name="roundedCornerRadiusTopRight" format="dimension" />
+        <attr name="roundedCornerRadiusBottomRight" format="dimension" />
+        <attr name="roundedCornerRadiusBottomLeft" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="PopupShadowLayout">
+        <attr name="popupCornerRadius" format="dimension" />
+        <attr name="popupArrowSide" format="enum">
+            <enum name="none" value="0" />
+            <enum name="top" value="1" />
+            <enum name="left" value="2" />
+            <enum name="right" value="3" />
+            <enum name="bottom" value="4" />
+        </attr>
+        <attr name="popupArrowCenter" format="boolean" />
+        <attr name="popupArrowOffset" format="dimension" />
+        <attr name="popupArrowRadius" format="dimension" />
+        <attr name="popupArrowWidth" format="dimension" />
+        <attr name="popupArrowHeight" format="dimension" />
+    </declare-styleable>
+</resources>

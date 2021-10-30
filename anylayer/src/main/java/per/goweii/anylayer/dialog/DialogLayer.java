@@ -6,17 +6,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.SparseBooleanArray;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -28,20 +25,15 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import per.goweii.anylayer.DecorLayer;
-import per.goweii.anylayer.R;
 import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.InputMethodCompat;
 import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.SwipeLayout;
-import per.goweii.visualeffect.blur.RSBlurEffect;
-import per.goweii.visualeffect.core.VisualEffect;
-import per.goweii.visualeffect.view.BackdropVisualEffectView;
 
 public class DialogLayer extends DecorLayer {
     private final long mAnimDurDef = 220L;
@@ -100,45 +92,149 @@ public class DialogLayer extends DecorLayer {
         return (ListenerHolder) super.getListenerHolder();
     }
 
+    @CallSuper
+    @Override
+    protected void onAttach() {
+        onInitContent();
+        onInitBackground();
+        onInitContainer();
+        super.onAttach();
+        registerInputMethodCompat();
+    }
+
+    @CallSuper
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        unregisterInputMethodCompat();
+    }
+
     @NonNull
     @Override
     protected View onCreateChild(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getChildOrNull() == null) {
-            ContainerLayout container = (ContainerLayout) inflater.inflate(R.layout.anylayer_dialog_layer, parent, false);
-            getViewHolder().setChild(container);
-            getViewHolder().setContent(onCreateContent(inflater, getViewHolder().getContentWrapper()));
-            ViewGroup.LayoutParams layoutParams = getViewHolder().getContent().getLayoutParams();
-            FrameLayout.LayoutParams contentParams;
-            if (layoutParams == null) {
-                contentParams = generateContentDefaultLayoutParams();
-            } else if (layoutParams instanceof FrameLayout.LayoutParams) {
-                contentParams = (FrameLayout.LayoutParams) layoutParams;
-            } else {
-                contentParams = new FrameLayout.LayoutParams(layoutParams.width, layoutParams.height);
+        ContainerLayout container = new ContainerLayout(getActivity());
+
+        View background = onCreateBackground(inflater, container);
+        if (background != null) {
+            getViewHolder().setBackground(background);
+            ViewGroup.LayoutParams backgroundLayoutParams = background.getLayoutParams();
+            if (backgroundLayoutParams == null) {
+                backgroundLayoutParams = generateBackgroundDefaultLayoutParams();
             }
-            getViewHolder().getContent().setLayoutParams(contentParams);
-            getViewHolder().getContentWrapper().addView(getViewHolder().getContent());
+            background.setLayoutParams(backgroundLayoutParams);
+            container.addView(background);
         }
-        return getViewHolder().getContainer();
+
+        SwipeLayout contentWrapper = new SwipeLayout(getActivity());
+        getViewHolder().setContentWrapper(contentWrapper);
+        contentWrapper.setLayoutParams(generateContentWrapperDefaultLayoutParams());
+        container.addView(contentWrapper);
+
+        View content = onCreateContent(inflater, contentWrapper);
+        getViewHolder().setContent(content);
+        ViewGroup.LayoutParams contentLayoutParams = content.getLayoutParams();
+        FrameLayout.LayoutParams newContentLayoutParams;
+        if (contentLayoutParams == null) {
+            newContentLayoutParams = generateContentDefaultLayoutParams();
+        } else if (contentLayoutParams instanceof FrameLayout.LayoutParams) {
+            newContentLayoutParams = (FrameLayout.LayoutParams) contentLayoutParams;
+        } else {
+            newContentLayoutParams = new FrameLayout.LayoutParams(contentLayoutParams.width, contentLayoutParams.height);
+        }
+        content.setLayoutParams(newContentLayoutParams);
+        contentWrapper.addView(content);
+
+        return container;
+    }
+
+    @Nullable
+    protected View onCreateBackground(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        if (getConfig().mBackgroundView != null) {
+            ViewGroup backgroundParent = (ViewGroup) getConfig().mBackgroundView.getParent();
+            if (backgroundParent != null) {
+                backgroundParent.removeView(getConfig().mBackgroundView);
+            }
+            return getConfig().mBackgroundView;
+        }
+        if (getConfig().mBackgroundViewId > 0) {
+            return inflater.inflate(getConfig().mBackgroundViewId, parent, false);
+        }
+        if (getConfig().mBackgroundBitmap != null) {
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setImageBitmap(getConfig().mBackgroundBitmap);
+            if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
+                imageView.setColorFilter(getConfig().mBackgroundColor);
+            }
+            return imageView;
+        }
+        if (getConfig().mBackgroundDrawable != null) {
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setImageDrawable(getConfig().mBackgroundDrawable);
+            if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
+                imageView.setColorFilter(getConfig().mBackgroundColor);
+            }
+            return imageView;
+        }
+        if (getConfig().mBackgroundResource != -1) {
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setImageResource(getConfig().mBackgroundResource);
+            if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
+                imageView.setColorFilter(getConfig().mBackgroundColor);
+            }
+        }
+        if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
+            View view = new View(getActivity());
+            view.setBackgroundColor(getConfig().mBackgroundColor);
+            return view;
+        }
+        if (getConfig().mBackgroundDimAmount > 0) {
+            View view = new View(getActivity());
+            int alpha = (int) (255 * Utils.floatRange01(getConfig().mBackgroundDimAmount));
+            int color = Color.argb(alpha, 0, 0, 0);
+            view.setBackgroundColor(color);
+            return view;
+        }
+        return null;
     }
 
     @NonNull
     protected View onCreateContent(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        if (getViewHolder().getContentNullable() == null) {
-            getViewHolder().setContent(inflater.inflate(getConfig().mContentViewId, parent, false));
-        } else {
-            ViewGroup contentParent = (ViewGroup) getViewHolder().getContent().getParent();
+        if (getConfig().mContentView != null) {
+            ViewGroup contentParent = (ViewGroup) getConfig().mContentView.getParent();
             if (contentParent != null) {
-                contentParent.removeView(getViewHolder().getContent());
+                contentParent.removeView(getConfig().mContentView);
             }
+            return getConfig().mContentView;
         }
-        return getViewHolder().getContent();
+        if (getConfig().mContentViewId != View.NO_ID) {
+            return inflater.inflate(getConfig().mContentViewId, parent, false);
+        }
+        throw new IllegalStateException("未设置contentView");
+    }
+
+    @Override
+    protected void onDestroyChild() {
+        getViewHolder().setBackground(null);
+        getViewHolder().getContentWrapper().removeAllViews();
+        getViewHolder().setContentWrapper(null);
+        getViewHolder().setContent(null);
+        super.onDestroyChild();
+    }
+
+    @NonNull
+    @Override
+    protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
+        return new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     @Nullable
     @Override
     protected Animator onCreateInAnimator(@NonNull View view) {
-        Animator backgroundAnimator = onCreateBackgroundInAnimator(getViewHolder().getBackground());
+        Animator backgroundAnimator = null;
+        if (getViewHolder().getBackground() != null) {
+            backgroundAnimator = onCreateBackgroundInAnimator(getViewHolder().getBackground());
+        }
         Animator contentAnimator = onCreateContentInAnimator(getViewHolder().getContent());
         if (backgroundAnimator == null && contentAnimator == null) return null;
         if (backgroundAnimator == null) return contentAnimator;
@@ -225,7 +321,10 @@ public class DialogLayer extends DecorLayer {
     @Nullable
     @Override
     protected Animator onCreateOutAnimator(@NonNull View view) {
-        Animator backgroundAnimator = onCreateBackgroundOutAnimator(getViewHolder().getBackground());
+        Animator backgroundAnimator = null;
+        if (getViewHolder().getBackground() != null) {
+            backgroundAnimator = onCreateBackgroundOutAnimator(getViewHolder().getBackground());
+        }
         Animator contentAnimator = onCreateContentOutAnimator(getViewHolder().getContent());
         if (backgroundAnimator == null && contentAnimator == null) return null;
         if (backgroundAnimator == null) return contentAnimator;
@@ -310,62 +409,21 @@ public class DialogLayer extends DecorLayer {
     }
 
     @NonNull
+    protected FrameLayout.LayoutParams generateBackgroundDefaultLayoutParams() {
+        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+    }
+
+    @NonNull
+    protected FrameLayout.LayoutParams generateContentWrapperDefaultLayoutParams() {
+        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+    }
+
+    @NonNull
     protected FrameLayout.LayoutParams generateContentDefaultLayoutParams() {
         return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT);
-    }
-
-    @CallSuper
-    @Override
-    protected void onCreate() {
-        super.onCreate();
-    }
-
-    @CallSuper
-    @Override
-    protected void onAttach() {
-        onInitContent();
-        onInitBackground();
-        onInitContainer();
-        super.onAttach();
-        registerInputMethodCompat();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreShow() {
-        super.onPreShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostShow() {
-        super.onPostShow();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPreDismiss() {
-        super.onPreDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onPostDismiss() {
-        super.onPostDismiss();
-    }
-
-    @CallSuper
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        unregisterInputMethodCompat();
-    }
-
-    @CallSuper
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     @Override
@@ -422,7 +480,9 @@ public class DialogLayer extends DecorLayer {
                     getConfig().mSwipeTransformer = new SwipeTransformer() {
                         @Override
                         public void onSwiping(@NonNull DialogLayer layer, @SwipeLayout.Direction int direction, @FloatRange(from = 0F, to = 1F) float fraction) {
-                            layer.getViewHolder().getBackground().setAlpha(1F - fraction);
+                            if (getViewHolder().getBackground() != null) {
+                                getViewHolder().getBackground().setAlpha(1F - fraction);
+                            }
                         }
                     };
                 }
@@ -457,101 +517,10 @@ public class DialogLayer extends DecorLayer {
     }
 
     protected void onInitBackground() {
-        if (getConfig().mBackgroundBlurPercent > 0) {
-            final BackdropVisualEffectView backdropVisualEffectView = getViewHolder().replaceBackgroundToVisualEffectView();
-            backdropVisualEffectView.setOverlayColor(getConfig().mBackgroundColor);
-            Utils.onViewLayout(backdropVisualEffectView, new Runnable() {
-                @Override
-                public void run() {
-                    int w = backdropVisualEffectView.getWidth();
-                    int h = backdropVisualEffectView.getHeight();
-                    float radius = Math.min(w, h) * getConfig().mBackgroundBlurPercent;
-                    float simple = getConfig().mBackgroundBlurSimple;
-                    if (radius > 25) {
-                        simple = simple * (radius / 25);
-                        radius = 25;
-                    }
-                    backdropVisualEffectView.setSimpleSize(simple);
-                    VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
-                    backdropVisualEffectView.setVisualEffect(visualEffect);
-                }
-            });
-        } else if (getConfig().mBackgroundBlurRadius > 0) {
-            BackdropVisualEffectView backdropVisualEffectView = getViewHolder().replaceBackgroundToVisualEffectView();
-            backdropVisualEffectView.setOverlayColor(getConfig().mBackgroundColor);
-            float radius = getConfig().mBackgroundBlurRadius;
-            float simple = getConfig().mBackgroundBlurSimple;
-            if (radius > 25) {
-                simple = simple * (radius / 25);
-                radius = 25;
-            }
-            backdropVisualEffectView.setSimpleSize(simple);
-            VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
-            backdropVisualEffectView.setVisualEffect(visualEffect);
-        } else {
-            ImageView backgroundView = (ImageView) getViewHolder().getBackground();
-            if (getConfig().mBackgroundBitmap != null) {
-                backgroundView.setImageBitmap(getConfig().mBackgroundBitmap);
-                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    backgroundView.setColorFilter(getConfig().mBackgroundColor);
-                }
-            } else if (getConfig().mBackgroundDrawable != null) {
-                backgroundView.setImageDrawable(getConfig().mBackgroundDrawable);
-                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    backgroundView.setColorFilter(getConfig().mBackgroundColor);
-                }
-            } else if (getConfig().mBackgroundResource != -1) {
-                backgroundView.setImageResource(getConfig().mBackgroundResource);
-                if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                    backgroundView.setColorFilter(getConfig().mBackgroundColor);
-                }
-            } else if (getConfig().mBackgroundColor != Color.TRANSPARENT) {
-                backgroundView.setImageDrawable(new ColorDrawable(getConfig().mBackgroundColor));
-            } else if (getConfig().mBackgroundDimAmount != -1) {
-                int color = Color.argb((int) (255 * Utils.floatRange01(getConfig().mBackgroundDimAmount)), 0, 0, 0);
-                backgroundView.setImageDrawable(new ColorDrawable(color));
-            } else {
-                backgroundView.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
-            }
-        }
     }
 
     protected void onInitContent() {
         getViewHolder().getContent().setClickable(true);
-        if (getConfig().mContentBlurPercent > 0) {
-            final BackdropVisualEffectView backdropVisualEffectView = getViewHolder()
-                    .replaceContentToBackdropVisualEffectView(getConfig().mContentBlurCornerRadius);
-            backdropVisualEffectView.setOverlayColor(getConfig().mContentBlurColor);
-            Utils.onViewLayout(backdropVisualEffectView, new Runnable() {
-                @Override
-                public void run() {
-                    int w = backdropVisualEffectView.getWidth();
-                    int h = backdropVisualEffectView.getHeight();
-                    float radius = Math.min(w, h) * getConfig().mContentBlurPercent;
-                    float simple = getConfig().mContentBlurSimple;
-                    if (radius > 25) {
-                        simple = simple * (radius / 25);
-                        radius = 25;
-                    }
-                    backdropVisualEffectView.setSimpleSize(simple);
-                    VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
-                    backdropVisualEffectView.setVisualEffect(visualEffect);
-                }
-            });
-        } else if (getConfig().mContentBlurRadius > 0) {
-            BackdropVisualEffectView backdropVisualEffectView = getViewHolder()
-                    .replaceContentToBackdropVisualEffectView(getConfig().mContentBlurCornerRadius);
-            backdropVisualEffectView.setOverlayColor(getConfig().mContentBlurColor);
-            float radius = getConfig().mContentBlurRadius;
-            float simple = getConfig().mContentBlurSimple;
-            if (radius > 25) {
-                simple = simple * (radius / 25);
-                radius = 25;
-            }
-            backdropVisualEffectView.setSimpleSize(simple);
-            VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
-            backdropVisualEffectView.setVisualEffect(visualEffect);
-        }
         FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) getViewHolder().getContent().getLayoutParams();
         if (getConfig().mGravity != -1) {
             contentParams.gravity = getConfig().mGravity;
@@ -610,28 +579,6 @@ public class DialogLayer extends DecorLayer {
             mInputMethodCompat.detach();
             mInputMethodCompat = null;
         }
-    }
-
-    /**
-     * 设置自自定义View
-     *
-     * @param contentView 自定以View
-     */
-    @NonNull
-    public DialogLayer setContentView(@NonNull View contentView) {
-        getViewHolder().setContent(contentView);
-        return this;
-    }
-
-    /**
-     * 设置自定义布局文件
-     *
-     * @param contentViewId 自定义布局ID
-     */
-    @NonNull
-    public DialogLayer setContentView(@LayoutRes int contentViewId) {
-        getConfig().mContentViewId = contentViewId;
-        return this;
     }
 
     /**
@@ -725,86 +672,47 @@ public class DialogLayer extends DecorLayer {
         return this;
     }
 
+    /**
+     * 设置自自定义View
+     *
+     * @param contentView 自定以View
+     */
     @NonNull
-    public DialogLayer setContentBlurRadius(@FloatRange(from = 0F) float radius) {
-        getConfig().mContentBlurRadius = radius;
-        return this;
-    }
-
-    @NonNull
-    public DialogLayer setContentBlurPercent(@FloatRange(from = 0F) float percent) {
-        getConfig().mContentBlurPercent = percent;
-        return this;
-    }
-
-    @NonNull
-    public DialogLayer setContentBlurSimple(@FloatRange(from = 1F) float simple) {
-        getConfig().mContentBlurSimple = simple;
-        return this;
-    }
-
-    @NonNull
-    public DialogLayer setContentBlurColorInt(@ColorInt int colorInt) {
-        getConfig().mContentBlurColor = colorInt;
-        return this;
-    }
-
-    @NonNull
-    public DialogLayer setContentBlurColorRes(@ColorRes int colorRes) {
-        getConfig().mContentBlurColor = getActivity().getResources().getColor(colorRes);
-        return this;
-    }
-
-    @NonNull
-    public DialogLayer setContentBlurCornerRadius(float radius, int unit) {
-        getConfig().mContentBlurCornerRadius = TypedValue.applyDimension(
-                unit, radius, getActivity().getResources().getDisplayMetrics()
-        );
-        return this;
-    }
-
-    @NonNull
-    public DialogLayer setContentBlurCornerRadiusDp(float radius) {
-        getConfig().mContentBlurCornerRadius = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, radius, getActivity().getResources().getDisplayMetrics()
-        );
-        return this;
-    }
-
-    @NonNull
-    public DialogLayer setContentBlurCornerRadiusPx(float radius) {
-        getConfig().mContentBlurCornerRadius = radius;
+    public DialogLayer setContentView(@Nullable View contentView) {
+        getConfig().mContentView = contentView;
         return this;
     }
 
     /**
-     * 设置背景为当前activity的高斯模糊效果
-     * 设置之后其他背景设置方法失效，仅{@link #setBackgroundColorInt(int)}生效
-     * 且设置的backgroundColor值调用imageView.setColorFilter(backgroundColor)设置
-     * 建议此时的{@link #setBackgroundColorInt(int)}传入的为半透明颜色
+     * 设置自定义布局文件
      *
-     * @param radius 模糊半径
+     * @param contentViewId 自定义布局ID
      */
     @NonNull
-    public DialogLayer setBackgroundBlurRadius(@FloatRange(from = 0F) float radius) {
-        getConfig().mBackgroundBlurRadius = radius;
-        return this;
-    }
-
-    @NonNull
-    public DialogLayer setBackgroundBlurPercent(@FloatRange(from = 0F) float percent) {
-        getConfig().mBackgroundBlurPercent = percent;
+    public DialogLayer setContentView(@LayoutRes int contentViewId) {
+        getConfig().mContentViewId = contentViewId;
         return this;
     }
 
     /**
-     * 设置背景高斯模糊的采样比例
+     * 设置背景View
      *
-     * @param simple 采样比例
+     * @param backgroundView 背景View
      */
     @NonNull
-    public DialogLayer setBackgroundBlurSimple(@FloatRange(from = 1F) float simple) {
-        getConfig().mBackgroundBlurSimple = simple;
+    public DialogLayer setBackgroundView(@Nullable View backgroundView) {
+        getConfig().mBackgroundView = backgroundView;
+        return this;
+    }
+
+    /**
+     * 设置背景View
+     *
+     * @param backgroundViewId 自定义布局ID
+     */
+    @NonNull
+    public DialogLayer setBackgroundView(@LayoutRes int backgroundViewId) {
+        getConfig().mBackgroundViewId = backgroundViewId;
         return this;
     }
 
@@ -862,9 +770,6 @@ public class DialogLayer extends DecorLayer {
 
     /**
      * 设置背景颜色
-     * 在调用了{@link #setBackgroundBitmap(Bitmap)}或者{@link #setBackgroundBlurRadius(float)}方法后
-     * 该颜色值将调用imageView.setColorFilter(backgroundColor)设置
-     * 建议此时传入的颜色为半透明颜色
      *
      * @param colorInt 颜色值
      */
@@ -876,8 +781,6 @@ public class DialogLayer extends DecorLayer {
 
     /**
      * 设置背景颜色
-     * 在调用了{@link #setBackgroundBitmap(Bitmap)}或者{@link #setBackgroundBlurRadius(float)}方法后
-     * 该颜色值将调用imageView.setColorFilter(backgroundColor)设置
      * 建议此时传入的颜色为半透明颜色
      *
      * @param colorRes 颜色资源ID
@@ -962,142 +865,42 @@ public class DialogLayer extends DecorLayer {
     }
 
     public static class ViewHolder extends DecorLayer.ViewHolder {
-        private View mBackground;
         private SwipeLayout mContentWrapper;
+        private View mBackground;
         private View mContent;
-
-        @Override
-        public void setChild(@NonNull View child) {
-            super.setChild(child);
-            mContentWrapper = getChild().findViewById(R.id.anylayler_dialog_content_wrapper);
-            mBackground = getChild().findViewById(R.id.anylayler_dialog_background);
-        }
 
         @NonNull
         public ContainerLayout getContainer() {
-            return getChild();
+            return (ContainerLayout) getChild();
+        }
+
+        public void setContentWrapper(@Nullable SwipeLayout contentWrapper) {
+            mContentWrapper = contentWrapper;
         }
 
         @NonNull
-        @Override
-        public ContainerLayout getChild() {
-            return (ContainerLayout) super.getChild();
+        public SwipeLayout getContentWrapper() {
+            Utils.requireNonNull(mContentWrapper, "必须在show方法后调用");
+            return mContentWrapper;
+        }
+
+        protected void setBackground(@Nullable View background) {
+            mBackground = background;
         }
 
         @Nullable
-        @Override
-        protected ContainerLayout getChildOrNull() {
-            return (ContainerLayout) super.getChildOrNull();
+        public View getBackground() {
+            return mBackground;
         }
 
-        protected void setContent(@NonNull View content) {
+        protected void setContent(@Nullable View content) {
             mContent = content;
-        }
-
-        @Nullable
-        protected View getContentNullable() {
-            return mContent;
         }
 
         @NonNull
         public View getContent() {
             Utils.requireNonNull(mContent, "必须在show方法后调用");
             return mContent;
-        }
-
-        public BackdropVisualEffectView replaceContentToBackdropVisualEffectView(float cornerRadius) {
-            if (mContent instanceof CardView && mContent.getId() == R.id.anylayer_dialog_content) {
-                return (BackdropVisualEffectView) mContent.findViewById(R.id.anylayer_dialog_content_effect);
-            }
-            final ViewGroup contentWrapper = mContentWrapper;
-            final View realContent = mContent;
-            final Context context = contentWrapper.getContext();
-            if (realContent.getId() == View.NO_ID) {
-                realContent.setId(R.id.anylayer_dialog_content_really);
-            }
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) realContent.getLayoutParams();
-
-            int contentIndex = contentWrapper.indexOfChild(realContent);
-            contentWrapper.removeViewAt(contentIndex);
-
-            BackdropVisualEffectView backdropVisualEffectView = new BackdropVisualEffectView(context);
-            backdropVisualEffectView.setId(R.id.anylayer_dialog_content_effect);
-            backdropVisualEffectView.setShowDebugInfo(false);
-
-            CardView cardView = new CardView(context);
-            cardView.setId(R.id.anylayer_dialog_content);
-            cardView.setCardBackgroundColor(Color.TRANSPARENT);
-            cardView.setMaxCardElevation(0);
-            cardView.setCardElevation(0);
-            cardView.setRadius(cornerRadius);
-
-            RelativeLayout relativeLayout = new RelativeLayout(context);
-
-            RelativeLayout.LayoutParams effectViewLP = new RelativeLayout.LayoutParams(0, 0);
-            effectViewLP.addRule(RelativeLayout.ALIGN_TOP, realContent.getId());
-            effectViewLP.addRule(RelativeLayout.ALIGN_BOTTOM, realContent.getId());
-            effectViewLP.addRule(RelativeLayout.ALIGN_LEFT, realContent.getId());
-            effectViewLP.addRule(RelativeLayout.ALIGN_RIGHT, realContent.getId());
-            relativeLayout.addView(backdropVisualEffectView, effectViewLP);
-
-            RelativeLayout.LayoutParams contentViewLP = new RelativeLayout.LayoutParams(
-                    layoutParams.width, layoutParams.height
-            );
-            relativeLayout.addView(realContent, contentViewLP);
-
-            cardView.addView(relativeLayout, new CardView.LayoutParams(buildWrapInnerLayoutParams(layoutParams)));
-
-            FrameLayout.LayoutParams cardLP = new FrameLayout.LayoutParams(buildWrapInnerLayoutParams(layoutParams));
-            cardLP.leftMargin = layoutParams.leftMargin;
-            cardLP.topMargin = layoutParams.topMargin;
-            cardLP.rightMargin = layoutParams.rightMargin;
-            cardLP.bottomMargin = layoutParams.bottomMargin;
-            cardLP.gravity = layoutParams.gravity;
-            contentWrapper.addView(cardView, contentIndex, cardLP);
-
-            mContent = cardView;
-            return backdropVisualEffectView;
-        }
-
-        @NonNull
-        private ViewGroup.LayoutParams buildWrapInnerLayoutParams(@NonNull ViewGroup.LayoutParams layoutParams) {
-            final int lpw, lph;
-            if (layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-                lpw = ViewGroup.LayoutParams.MATCH_PARENT;
-            } else {
-                lpw = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-            if (layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT) {
-                lph = ViewGroup.LayoutParams.MATCH_PARENT;
-            } else {
-                lph = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-            return new ViewGroup.LayoutParams(lpw, lph);
-        }
-
-        @NonNull
-        public SwipeLayout getContentWrapper() {
-            return mContentWrapper;
-        }
-
-        @NonNull
-        public View getBackground() {
-            return mBackground;
-        }
-
-        public BackdropVisualEffectView replaceBackgroundToVisualEffectView() {
-            if (mBackground instanceof BackdropVisualEffectView) {
-                return (BackdropVisualEffectView) mBackground;
-            }
-            ViewGroup.LayoutParams layoutParams = mBackground.getLayoutParams();
-            int index = getChild().indexOfChild(mBackground);
-            getChild().removeViewAt(index);
-            BackdropVisualEffectView backdropVisualEffectView = new BackdropVisualEffectView(getChild().getContext());
-            backdropVisualEffectView.setShowDebugInfo(false);
-            backdropVisualEffectView.setId(R.id.anylayler_dialog_background);
-            getChild().addView(backdropVisualEffectView, index, new ViewGroup.LayoutParams(layoutParams));
-            mBackground = backdropVisualEffectView;
-            return backdropVisualEffectView;
         }
     }
 
@@ -1114,31 +917,29 @@ public class DialogLayer extends DecorLayer {
         @Nullable
         protected AnimStyle mAnimStyle = null;
 
-        protected int mContentViewId = -1;
-
         protected boolean mCancelableOnTouchOutside = true;
 
         protected boolean mAvoidStatusBar = false;
 
         protected int mGravity = Gravity.CENTER;
-        protected float mBackgroundBlurPercent = 0F;
-        protected float mBackgroundBlurRadius = 0F;
-        protected float mBackgroundBlurSimple = 4F;
+
+        @Nullable
+        protected View mContentView = null;
+        @LayoutRes
+        protected int mContentViewId = View.NO_ID;
+
+        @Nullable
+        protected View mBackgroundView = null;
+        @LayoutRes
+        protected int mBackgroundViewId = View.NO_ID;
         @Nullable
         protected Bitmap mBackgroundBitmap = null;
-        protected int mBackgroundResource = -1;
+        protected int mBackgroundResource = View.NO_ID;
         @Nullable
         protected Drawable mBackgroundDrawable = null;
-        protected float mBackgroundDimAmount = -1;
+        protected float mBackgroundDimAmount = -0;
         @ColorInt
         protected int mBackgroundColor = Color.TRANSPARENT;
-
-        protected float mContentBlurPercent = 0F;
-        protected float mContentBlurRadius = 0F;
-        protected float mContentBlurSimple = 4F;
-        @ColorInt
-        protected int mContentBlurColor = Color.TRANSPARENT;
-        protected float mContentBlurCornerRadius = 0F;
 
         @SwipeLayout.Direction
         protected int mSwipeDirection = 0;

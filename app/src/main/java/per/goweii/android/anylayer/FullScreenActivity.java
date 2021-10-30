@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -21,6 +22,7 @@ import per.goweii.anylayer.AnyLayer;
 import per.goweii.anylayer.Layer;
 import per.goweii.anylayer.LayerActivity;
 import per.goweii.anylayer.dialog.DialogLayer;
+import per.goweii.anylayer.effect.BackdropBlurView;
 import per.goweii.anylayer.ext.CircularRevealAnimatorCreator;
 import per.goweii.anylayer.ext.SimpleAnimatorCreator;
 import per.goweii.anylayer.guide.GuideLayer;
@@ -405,20 +407,25 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
             case R.id.tv_show_blur_bg:
+                @SuppressLint("InflateParams")
+                BackdropBlurView blurBackground = new BackdropBlurView(this);
+                blurBackground.setBlurPercent(0.05F);
                 AnyLayer.dialog(FullScreenActivity.this)
                         .setContentView(R.layout.dialog_icon)
-                        .setBackgroundBlurPercent(0.05f)
+                        .setBackgroundView(blurBackground)
                         .setBackgroundColorInt(Color.parseColor("#33ffffff"))
                         .show();
                 break;
             case R.id.tv_show_blur_content:
+                @SuppressLint("InflateParams")
+                BackdropBlurView blurContent = (BackdropBlurView) LayoutInflater.from(this).inflate(R.layout.dialog_content_blur, null);
+                blurContent.setBlurRadius(8F);
+                blurContent.setSimpleSize(8F);
+                blurContent.setCornerRadius(30F);
+                blurContent.setOverlayColor(Color.parseColor("#66ffffff"));
                 AnyLayer.dialog(FullScreenActivity.this)
-                        .setContentView(R.layout.dialog_content_blur)
+                        .setContentView(blurContent)
                         .setBackgroundColorInt(Color.parseColor("#33000000"))
-                        .setContentBlurRadius(8F)
-                        .setContentBlurSimple(8F)
-                        .setContentBlurCornerRadiusDp(10F)
-                        .setContentBlurColorInt(Color.parseColor("#66ffffff"))
                         .addOnClickToDismiss(R.id.fl_dialog_yes, R.id.fl_dialog_no)
                         .show();
                 break;
