@@ -522,20 +522,20 @@ public class FullScreenActivity extends AppCompatActivity implements View.OnClic
             case R.id.tv_show_menu:
                 if (anyLayer_show_menu == null) {
                     anyLayer_show_menu = AnyLayer.popup(findViewById(R.id.tv_show_menu))
-                            .setAlign(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_RIGHT, Align.Vertical.BELOW, false)
-                            .setOffsetYdp(15)
+                            .setAlign(Align.Direction.VERTICAL, Align.Horizontal.ALIGN_PARENT_RIGHT, Align.Vertical.BELOW, false)
+                            .setOffsetYdp(-15)
                             .setOutsideTouchToDismiss(true)
                             .setOutsideInterceptTouchEvent(false)
                             .setContentView(R.layout.popup_meun)
                             .setContentAnimator(new DialogLayer.AnimatorCreator() {
                                 @Override
                                 public Animator createInAnimator(@NonNull View content) {
-                                    return AnimatorHelper.createDelayedZoomInAnim(content, 1F, 0F);
+                                    return AnimatorHelper.createDelayedZoomInAnim(content, 0.8F, 0F);
                                 }
 
                                 @Override
                                 public Animator createOutAnimator(@NonNull View content) {
-                                    return AnimatorHelper.createDelayedZoomOutAnim(content, 1F, 0F);
+                                    return AnimatorHelper.createDelayedZoomOutAnim(content, 0.8F, 0F);
                                 }
                             });
                 }

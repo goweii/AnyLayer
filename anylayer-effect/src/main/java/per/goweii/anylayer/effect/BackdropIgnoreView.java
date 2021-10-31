@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class BackdropIgnoreView extends FrameLayout {
-    private List<WeakReference<BackdropBlurView>> mBackdropBlurViews = new LinkedList<>();
+    private final List<WeakReference<BackdropBlurView>> mBackdropBlurViews = new LinkedList<>();
 
     public BackdropIgnoreView(@NonNull Context context) {
         super(context);

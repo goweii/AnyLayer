@@ -4,6 +4,7 @@
     <dimen name="anylayer_margin_small">6dp</dimen>
 
     <dimen name="anylayer_notification_corner_radius">8dp</dimen>
+    <dimen name="anylayer_notification_stroke_width">0.5dp</dimen>
     <dimen name="anylayer_notification_padding_left">16dp</dimen>
     <dimen name="anylayer_notification_padding_right">16dp</dimen>
     <dimen name="anylayer_notification_padding_top">16dp</dimen>

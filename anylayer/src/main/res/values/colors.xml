@@ -7,6 +7,7 @@
     <color name="anylayer_text_color_fourth">#33000000</color>
 
     <color name="anylayer_notification_bg">@color/anylayer_card_bg</color>
+    <color name="anylayer_notification_stroke">#FFEEEEEE</color>
     <color name="anylayer_notification_title_text_color">@color/anylayer_text_color</color>
     <color name="anylayer_notification_label_text_color">@color/anylayer_text_color_second</color>
     <color name="anylayer_notification_time_text_color">@color/anylayer_text_color_third</color>

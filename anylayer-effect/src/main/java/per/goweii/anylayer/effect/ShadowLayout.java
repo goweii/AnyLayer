@@ -25,7 +25,7 @@ public class ShadowLayout extends FrameLayout {
 
     private int mSolidColor = Color.TRANSPARENT;
     private boolean mShadowSymmetry = true;
-    private int mShadowColor = Color.argb(100, 0, 0, 0);
+    private int mShadowColor = Color.argb(25, 0, 0, 0);
     private float mShadowRadius = 0F;
     private float mShadowOffsetX = 0F;
     private float mShadowOffsetY = 0F;

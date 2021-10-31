@@ -33,13 +33,10 @@ public class PopupShadowLayout extends ShadowLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PopupShadowLayout);
         int cornerRadius = typedArray.getDimensionPixelSize(R.styleable.PopupShadowLayout_popupCornerRadius, 0);
         mPopupShadowOutlineProvider.setCornerRadius(cornerRadius);
-        boolean arrowCenter = typedArray.getBoolean(R.styleable.PopupShadowLayout_popupArrowCenter, false);
-        if (arrowCenter) {
-            mPopupShadowOutlineProvider.setArrowOffset(PopupShadowOutlineProvider.ARROW_CENTER);
-        } else {
-            int arrowOffset = typedArray.getDimensionPixelSize(R.styleable.PopupShadowLayout_popupArrowOffset, 0);
-            mPopupShadowOutlineProvider.setArrowOffset(arrowOffset);
-        }
+        int arrowAlign = typedArray.getInt(R.styleable.PopupShadowLayout_popupArrowAlign, PopupShadowOutlineProvider.ARROW_ALIGN_CENTER);
+        mPopupShadowOutlineProvider.setArrowAlign(arrowAlign);
+        int arrowOffset = typedArray.getDimensionPixelSize(R.styleable.PopupShadowLayout_popupArrowOffset, 0);
+        mPopupShadowOutlineProvider.setArrowOffset(arrowOffset);
         int arrowSide = typedArray.getInt(R.styleable.PopupShadowLayout_popupArrowSide, PopupShadowOutlineProvider.ARROW_SIDE_NONE);
         mPopupShadowOutlineProvider.setArrowSide(arrowSide);
         int arrowWidth = typedArray.getDimensionPixelOffset(R.styleable.PopupShadowLayout_popupArrowWidth, 0);
@@ -108,21 +105,24 @@ public class PopupShadowLayout extends ShadowLayout {
     }
 
     public float getRealArrowOffset() {
-        return mPopupShadowOutlineProvider.getRealArrowOffset(this);
+        return mPopupShadowOutlineProvider.getRealArrowOffset(this, getShadowInsets());
     }
 
     public static class PopupShadowOutlineProvider extends ShadowLayout.ShadowOutlineProvider {
+        public static final int ARROW_ALIGN_CENTER = 0;
+        public static final int ARROW_ALIGN_START = 1;
+        public static final int ARROW_ALIGN_END = 2;
+
         public static final int ARROW_SIDE_NONE = 0;
         public static final int ARROW_SIDE_TOP = 1;
         public static final int ARROW_SIDE_LEFT = 2;
         public static final int ARROW_SIDE_RIGHT = 3;
         public static final int ARROW_SIDE_BOTTOM = 4;
 
-        public static final int ARROW_CENTER = -1;
-
         @ArrowSide
         private int mArrowSide = ARROW_SIDE_NONE;
-        private int mArrowOffset = ARROW_CENTER;
+        private int mArrowAlign = ARROW_ALIGN_CENTER;
+        private int mArrowOffset = 0;
         private int mArrowRadius = 0;
         private int mArrowWidth = 0;
         private int mArrowHeight = 0;
@@ -148,6 +148,7 @@ public class PopupShadowLayout extends ShadowLayout {
                     buildBottomArrow(shadowLayout, shadowOutline, shadowInsets);
                     break;
                 default:
+                    buildNoneArrow(shadowLayout, shadowOutline, shadowInsets);
                     break;
             }
         }
@@ -191,6 +192,13 @@ public class PopupShadowLayout extends ShadowLayout {
         public void setArrowSide(@ArrowSide int arrowSide) {
             if (mArrowSide != arrowSide) {
                 mArrowSide = arrowSide;
+                invalidateShadowOutline();
+            }
+        }
+
+        public void setArrowAlign(int arrowAlign) {
+            if (mArrowAlign != arrowAlign) {
+                mArrowAlign = arrowAlign;
                 invalidateShadowOutline();
             }
         }
@@ -253,13 +261,27 @@ public class PopupShadowLayout extends ShadowLayout {
             return mArrowInset;
         }
 
+        private void buildNoneArrow(@NonNull ShadowLayout shadowLayout,
+                                    @NonNull Path shadowOutline,
+                                    @NonNull RectF shadowInsets) {
+            moveToTopLeft(shadowLayout, shadowOutline, shadowInsets);
+            addTopLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+            lineToTopRight(shadowLayout, shadowOutline, shadowInsets);
+            addTopRightCorner(shadowLayout, shadowOutline, shadowInsets);
+            lineToBottomRight(shadowLayout, shadowOutline, shadowInsets);
+            addBottomRightCorner(shadowLayout, shadowOutline, shadowInsets);
+            lineToBottomLeft(shadowLayout, shadowOutline, shadowInsets);
+            addBottomLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+            shadowOutline.close();
+        }
+
         private void buildLeftArrow(@NonNull ShadowLayout shadowLayout,
                                     @NonNull Path shadowOutline,
                                     @NonNull RectF shadowInsets) {
             final float arrowRadius = mArrowRadius;
             final float arrowHeight = mArrowHeight;
             final float halfArrowWidth = getHalfArrowWidth();
-            final float realArrowOffset = getRealArrowOffset(shadowLayout);
+            final float realArrowOffset = getRealArrowOffset(shadowLayout, shadowInsets);
             final float realHalfArrowWidth = calcRealHalfArrowWidth();
             final double vertexDegrees = calcVertexDegrees();
 
@@ -298,10 +320,19 @@ public class PopupShadowLayout extends ShadowLayout {
                     shadowInsets.left,
                     realArrowOffset - realHalfArrowWidth
             );
-            lineToTopLeftAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToTopRightAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToBottomRightAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToBottomLeftAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToTopLeft(shadowLayout, shadowOutline, shadowInsets);
+            addTopLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToTopRight(shadowLayout, shadowOutline, shadowInsets);
+            addTopRightCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToBottomRight(shadowLayout, shadowOutline, shadowInsets);
+            addBottomRightCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToBottomLeft(shadowLayout, shadowOutline, shadowInsets);
+            addBottomLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+
             shadowOutline.close();
         }
 
@@ -311,7 +342,7 @@ public class PopupShadowLayout extends ShadowLayout {
             final float arrowRadius = mArrowRadius;
             final float arrowHeight = mArrowHeight;
             final float halfArrowWidth = getHalfArrowWidth();
-            final float realArrowOffset = getRealArrowOffset(shadowLayout);
+            final float realArrowOffset = getRealArrowOffset(shadowLayout, shadowInsets);
             final float realHalfArrowWidth = calcRealHalfArrowWidth();
             final double vertexDegrees = calcVertexDegrees();
 
@@ -350,10 +381,19 @@ public class PopupShadowLayout extends ShadowLayout {
                     realArrowOffset + realHalfArrowWidth,
                     shadowInsets.top
             );
-            lineToTopRightAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToBottomRightAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToBottomLeftAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToTopLeftAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToTopRight(shadowLayout, shadowOutline, shadowInsets);
+            addTopRightCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToBottomRight(shadowLayout, shadowOutline, shadowInsets);
+            addBottomRightCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToBottomLeft(shadowLayout, shadowOutline, shadowInsets);
+            addBottomLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToTopLeft(shadowLayout, shadowOutline, shadowInsets);
+            addTopLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+
             shadowOutline.close();
         }
 
@@ -363,7 +403,7 @@ public class PopupShadowLayout extends ShadowLayout {
             final float arrowRadius = mArrowRadius;
             final float arrowHeight = mArrowHeight;
             final float halfArrowWidth = getHalfArrowWidth();
-            final float realArrowOffset = getRealArrowOffset(shadowLayout);
+            final float realArrowOffset = getRealArrowOffset(shadowLayout, shadowInsets);
             final float realHalfArrowWidth = calcRealHalfArrowWidth();
             final double vertexDegrees = calcVertexDegrees();
 
@@ -402,10 +442,19 @@ public class PopupShadowLayout extends ShadowLayout {
                     shadowLayout.getWidth() - shadowInsets.right,
                     realArrowOffset - realHalfArrowWidth
             );
-            lineToBottomRightAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToBottomLeftAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToTopLeftAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToTopRightAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToBottomRight(shadowLayout, shadowOutline, shadowInsets);
+            addBottomRightCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToBottomLeft(shadowLayout, shadowOutline, shadowInsets);
+            addBottomLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToTopLeft(shadowLayout, shadowOutline, shadowInsets);
+            addTopLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToTopRight(shadowLayout, shadowOutline, shadowInsets);
+            addTopRightCorner(shadowLayout, shadowOutline, shadowInsets);
+
             shadowOutline.close();
         }
 
@@ -415,7 +464,7 @@ public class PopupShadowLayout extends ShadowLayout {
             final float arrowRadius = mArrowRadius;
             final float arrowHeight = mArrowHeight;
             final float halfArrowWidth = getHalfArrowWidth();
-            final float realArrowOffset = getRealArrowOffset(shadowLayout);
+            final float realArrowOffset = getRealArrowOffset(shadowLayout, shadowInsets);
             final float realHalfArrowWidth = calcRealHalfArrowWidth();
             final double vertexDegrees = calcVertexDegrees();
 
@@ -454,20 +503,37 @@ public class PopupShadowLayout extends ShadowLayout {
                     realArrowOffset + realHalfArrowWidth,
                     shadowLayout.getHeight() - shadowInsets.bottom
             );
-            lineToBottomLeftAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToTopLeftAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToTopRightAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
-            lineToBottomRightAndAddCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToBottomLeft(shadowLayout, shadowOutline, shadowInsets);
+            addBottomLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToTopLeft(shadowLayout, shadowOutline, shadowInsets);
+            addTopLeftCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToTopRight(shadowLayout, shadowOutline, shadowInsets);
+            addTopRightCorner(shadowLayout, shadowOutline, shadowInsets);
+
+            lineToBottomRight(shadowLayout, shadowOutline, shadowInsets);
+            addBottomRightCorner(shadowLayout, shadowOutline, shadowInsets);
+
             shadowOutline.close();
         }
 
-        private void lineToTopLeftAndAddCorner(@NonNull ShadowLayout shadowLayout,
-                                               @NonNull Path shadowOutline,
-                                               @NonNull RectF shadowInsets) {
+        private void moveToTopLeft(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
+            shadowOutline.moveTo(
+                    shadowInsets.left,
+                    shadowInsets.top + mCornerRadius
+            );
+        }
+
+        private void lineToTopLeft(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
             shadowOutline.lineTo(
                     shadowInsets.left,
                     shadowInsets.top + mCornerRadius
             );
+        }
+
+        private void addTopLeftCorner(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
             shadowOutline.quadTo(
                     shadowInsets.left,
                     shadowInsets.top,
@@ -476,13 +542,21 @@ public class PopupShadowLayout extends ShadowLayout {
             );
         }
 
-        private void lineToTopRightAndAddCorner(@NonNull ShadowLayout shadowLayout,
-                                                @NonNull Path shadowOutline,
-                                                @NonNull RectF shadowInsets) {
+        private void moveToTopRight(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
+            shadowOutline.moveTo(
+                    shadowLayout.getWidth() - shadowInsets.right - mCornerRadius,
+                    shadowInsets.top
+            );
+        }
+
+        private void lineToTopRight(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
             shadowOutline.lineTo(
                     shadowLayout.getWidth() - shadowInsets.right - mCornerRadius,
                     shadowInsets.top
             );
+        }
+
+        private void addTopRightCorner(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
             shadowOutline.quadTo(
                     shadowLayout.getWidth() - shadowInsets.right,
                     shadowInsets.top,
@@ -491,13 +565,21 @@ public class PopupShadowLayout extends ShadowLayout {
             );
         }
 
-        private void lineToBottomRightAndAddCorner(@NonNull ShadowLayout shadowLayout,
-                                                   @NonNull Path shadowOutline,
-                                                   @NonNull RectF shadowInsets) {
+        private void moveToBottomRight(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
+            shadowOutline.moveTo(
+                    shadowLayout.getWidth() - shadowInsets.right,
+                    shadowLayout.getHeight() - shadowInsets.bottom - mCornerRadius
+            );
+        }
+
+        private void lineToBottomRight(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
             shadowOutline.lineTo(
                     shadowLayout.getWidth() - shadowInsets.right,
                     shadowLayout.getHeight() - shadowInsets.bottom - mCornerRadius
             );
+        }
+
+        private void addBottomRightCorner(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
             shadowOutline.quadTo(
                     shadowLayout.getWidth() - shadowInsets.right,
                     shadowLayout.getHeight() - shadowInsets.bottom,
@@ -506,13 +588,21 @@ public class PopupShadowLayout extends ShadowLayout {
             );
         }
 
-        private void lineToBottomLeftAndAddCorner(@NonNull ShadowLayout shadowLayout,
-                                                  @NonNull Path shadowOutline,
-                                                  @NonNull RectF shadowInsets) {
+        private void moveToBottomLeft(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
+            shadowOutline.moveTo(
+                    shadowInsets.left + mCornerRadius,
+                    shadowLayout.getHeight() - shadowInsets.bottom
+            );
+        }
+
+        private void lineToBottomLeft(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
             shadowOutline.lineTo(
                     shadowInsets.left + mCornerRadius,
                     shadowLayout.getHeight() - shadowInsets.bottom
             );
+        }
+
+        private void addBottomLeftCorner(@NonNull ShadowLayout shadowLayout, @NonNull Path shadowOutline, @NonNull RectF shadowInsets) {
             shadowOutline.quadTo(
                     shadowInsets.left,
                     shadowLayout.getHeight() - shadowInsets.bottom,
@@ -540,36 +630,60 @@ public class PopupShadowLayout extends ShadowLayout {
             return mArrowWidth / 2F;
         }
 
-        public float getRealArrowOffset(@NonNull ShadowLayout shadowLayout) {
-            final float minArrowOffset = mCornerRadius + calcRealHalfArrowWidth();
+        public float getRealArrowOffset(@NonNull ShadowLayout shadowLayout,
+                                        @NonNull RectF shadowInsets) {
+            final float minArrowPadding = mCornerRadius + calcRealHalfArrowWidth();
+            final float minOffset;
+            final float maxOffset;
+            float realOffset;
             switch (mArrowSide) {
                 case ARROW_SIDE_LEFT:
                 case ARROW_SIDE_RIGHT:
-                    if (mArrowOffset == ARROW_CENTER) {
-                        return shadowLayout.getHeight() / 2F;
+                    minOffset = shadowInsets.top + minArrowPadding;
+                    maxOffset = shadowLayout.getHeight() - shadowInsets.bottom - minArrowPadding;
+                    switch (mArrowAlign) {
+                        case ARROW_ALIGN_CENTER:
+                            realOffset = (minOffset + maxOffset) / 2F;
+                            break;
+                        case ARROW_ALIGN_START:
+                            realOffset = minOffset + mArrowOffset;
+                            break;
+                        case ARROW_ALIGN_END:
+                            realOffset = maxOffset - mArrowOffset;
+                            break;
+                        default:
+                            realOffset = 0;
+                            break;
                     }
-                    if (mArrowOffset < minArrowOffset) {
-                        return minArrowOffset;
-                    } else if (mArrowOffset > shadowLayout.getHeight() - minArrowOffset) {
-                        return shadowLayout.getHeight() - minArrowOffset;
-                    } else {
-                        return mArrowOffset;
-                    }
+                    realOffset = Math.max(realOffset, minOffset);
+                    realOffset = Math.min(realOffset, maxOffset);
+                    break;
                 case ARROW_SIDE_TOP:
                 case ARROW_SIDE_BOTTOM:
-                    if (mArrowOffset == ARROW_CENTER) {
-                        return shadowLayout.getWidth() / 2F;
+                    minOffset = shadowInsets.left + minArrowPadding;
+                    maxOffset = shadowLayout.getWidth() - shadowInsets.right - minArrowPadding;
+                    switch (mArrowAlign) {
+                        case ARROW_ALIGN_CENTER:
+                            realOffset = (minOffset + maxOffset) / 2F;
+                            break;
+                        case ARROW_ALIGN_START:
+                            realOffset = minOffset + mArrowOffset;
+                            break;
+                        case ARROW_ALIGN_END:
+                            realOffset = maxOffset - mArrowOffset;
+                            break;
+                        default:
+                            realOffset = 0;
+                            break;
                     }
-                    if (mArrowOffset < minArrowOffset) {
-                        return minArrowOffset;
-                    } else if (mArrowOffset > shadowLayout.getWidth() - minArrowOffset) {
-                        return shadowLayout.getWidth() - minArrowOffset;
-                    } else {
-                        return mArrowOffset;
-                    }
+                    realOffset = Math.max(realOffset, minOffset);
+                    realOffset = Math.min(realOffset, maxOffset);
+                    break;
                 default:
-                    return mArrowOffset;
+                    realOffset = 0;
+                    break;
             }
+            return realOffset;
         }
 
         @Retention(RetentionPolicy.SOURCE)

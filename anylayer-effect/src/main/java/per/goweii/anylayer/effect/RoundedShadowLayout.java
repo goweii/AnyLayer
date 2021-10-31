@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 public class RoundedShadowLayout extends ShadowLayout {
     private final RoundedShadowOutlineProvider mRoundedShadowOutlineProvider = new RoundedShadowOutlineProvider();
 
+    private boolean mRoundedCornerRadiusAdaptation = true;
+
     public RoundedShadowLayout(Context context) {
         this(context, null);
     }
@@ -25,6 +27,7 @@ public class RoundedShadowLayout extends ShadowLayout {
         setClipToShadowOutline(true);
         setClipToPadding(false);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RoundedShadowLayout);
+        mRoundedCornerRadiusAdaptation = typedArray.getBoolean(R.styleable.RoundedShadowLayout_roundedCornerRadiusAdaptation, mRoundedCornerRadiusAdaptation);
         float cornerRadius = typedArray.getDimension(R.styleable.RoundedShadowLayout_roundedCornerRadius, 0F);
         float cornerRadiusTopLeft = typedArray.getDimension(R.styleable.RoundedShadowLayout_roundedCornerRadiusTopLeft, cornerRadius);
         float cornerRadiusTopRight = typedArray.getDimension(R.styleable.RoundedShadowLayout_roundedCornerRadiusTopRight, cornerRadius);
@@ -36,6 +39,9 @@ public class RoundedShadowLayout extends ShadowLayout {
 
     @Override
     protected int getSuggestedMinimumWidth() {
+        if (mRoundedCornerRadiusAdaptation) {
+            return super.getSuggestedMinimumWidth();
+        }
         int radiusLeft = (int) Math.max(getTopLeftCornerRadius(), getBottomLeftCornerRadius());
         int radiusRight = (int) Math.max(getTopRightCornerRadius(), getBottomRightCornerRadius());
         return radiusLeft + radiusRight + super.getSuggestedMinimumWidth();
@@ -43,6 +49,9 @@ public class RoundedShadowLayout extends ShadowLayout {
 
     @Override
     protected int getSuggestedMinimumHeight() {
+        if (mRoundedCornerRadiusAdaptation) {
+            return super.getSuggestedMinimumHeight();
+        }
         int radiusTop = (int) Math.max(getTopLeftCornerRadius(), getTopRightCornerRadius());
         int radiusBottom = (int) Math.max(getBottomLeftCornerRadius(), getBottomRightCornerRadius());
         return radiusTop + radiusBottom + super.getSuggestedMinimumHeight();
@@ -74,6 +83,17 @@ public class RoundedShadowLayout extends ShadowLayout {
 
     public boolean areCornersRadiusSame() {
         return mRoundedShadowOutlineProvider.areCornersRadiusSame();
+    }
+
+    public boolean isRoundedCornerRadiusAdaptation() {
+        return mRoundedCornerRadiusAdaptation;
+    }
+
+    public void setRoundedCornerRadiusAdaptation(boolean roundedCornerRadiusAdaptation) {
+        if (mRoundedCornerRadiusAdaptation != roundedCornerRadiusAdaptation) {
+            mRoundedCornerRadiusAdaptation = roundedCornerRadiusAdaptation;
+            requestLayout();
+        }
     }
 
     public void setCornerRadius(float cornerRadius) {

@@ -9,6 +9,7 @@
         <attr name="shadowOffsetY" format="dimension" />
     </declare-styleable>
     <declare-styleable name="RoundedShadowLayout">
+        <attr name="roundedCornerRadiusAdaptation" format="boolean" />
         <attr name="roundedCornerRadius" format="dimension" />
         <attr name="roundedCornerRadiusTopLeft" format="dimension" />
         <attr name="roundedCornerRadiusTopRight" format="dimension" />
@@ -25,6 +26,11 @@
             <enum name="bottom" value="4" />
         </attr>
         <attr name="popupArrowCenter" format="boolean" />
+        <attr name="popupArrowAlign" format="enum">
+            <enum name="center" value="0" />
+            <enum name="start" value="1" />
+            <enum name="end" value="2" />
+        </attr>
         <attr name="popupArrowOffset" format="dimension" />
         <attr name="popupArrowRadius" format="dimension" />
         <attr name="popupArrowWidth" format="dimension" />

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/anylayer_notification_bg" />
+    <stroke
+        android:width="@dimen/anylayer_notification_stroke_width"
+        android:color="@color/anylayer_notification_stroke" />
     <corners
         android:bottomLeftRadius="@dimen/anylayer_notification_corner_radius"
         android:bottomRightRadius="@dimen/anylayer_notification_corner_radius"
