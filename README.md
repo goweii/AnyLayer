@@ -1,7 +1,3 @@
-# [求职](https://github.com/goweii/job-wanted)
-
-
-
 # AnyLayer
 
 Android稳定高效的浮层创建管理框架。
@@ -15,6 +11,8 @@ Android稳定高效的浮层创建管理框架。
 [Demo下载](https://gitee.com/goweii/AnyLayer/raw/master/app/demo/demo.apk)
 
 
+
+[![Android CI](https://github.com/goweii/AnyLayer/actions/workflows/android.yml/badge.svg)](https://github.com/goweii/AnyLayer/actions/workflows/android.yml)
 
 # 简介
 
