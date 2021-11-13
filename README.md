@@ -1,7 +1,10 @@
 # AnyLayer
 
-[![Android CI](https://github.com/goweii/AnyLayer/actions/workflows/android.yml/badge.svg)](https://github.com/goweii/AnyLayer/actions/workflows/android.yml)[![GitHub license](https://img.shields.io/github/license/goweii/AnyLayer)](https://github.com/goweii/AnyLayer/blob/master/LICENSE)
-[![](https://www.jitpack.io/v/goweii/AnyLayer.svg)](https://www.jitpack.io/#goweii/AnyLayer)![Downloads Week](https://img.shields.io/badge/Downloads%20Week-1.4k-green)![Downloads Month](https://img.shields.io/badge/Downloads%20Month-7.3K-blue)
+[![Android CI](https://github.com/goweii/AnyLayer/actions/workflows/android.yml/badge.svg)](https://github.com/goweii/AnyLayer/actions/workflows/android.yml)
+[![GitHub license](https://img.shields.io/github/license/goweii/AnyLayer)](https://github.com/goweii/AnyLayer/blob/master/LICENSE)
+[![](https://www.jitpack.io/v/goweii/AnyLayer.svg)](https://www.jitpack.io/#goweii/AnyLayer)
+![Downloads Week](https://img.shields.io/badge/Downloads%20Week-1.4k-green)
+![Downloads Month](https://img.shields.io/badge/Downloads%20Month-7.3K-blue)
 ![Demo](https://img.shields.io/badge/Demo-Apk-blue?link=https://github.com/goweii/AnyLayer/raw/master/simple/demo/demo.apk)
 
 Android稳定高效的浮层创建管理框架。
