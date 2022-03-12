@@ -1,3 +1,9 @@
+# ⚠️注意
+
+项目已进行重构，将不再开发新功能，仅稳定性维护。
+
+新项目地址[Layer](https://github.com/goweii/Layer)
+
 # AnyLayer
 
 [![Android CI](https://github.com/goweii/AnyLayer/actions/workflows/android.yml/badge.svg)](https://github.com/goweii/AnyLayer/actions/workflows/android.yml)
