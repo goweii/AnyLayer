@@ -33,7 +33,7 @@ Android稳定高效的浮层创建管理框架。
 ```groovy
 maven { url "https://www.jitpack.io" }
 
-// 使用4.1.5及以后版本必须添加，因高斯模糊用到的VisualEffect库暂时只发布在gitee仓库
+// 使用4.1.5和4.1.6必须添加，因高斯模糊用到的VisualEffect库暂时只发布在gitee仓库
 // maven { url "https://gitee.com/goweii/maven-repository/raw/master/releases/" }
 ```
 
@@ -52,6 +52,8 @@ implementation "com.github.goweii:AnyLayer:$version"
 // implementation "com.github.goweii.AnyLayer:anylayer-ext:$version"
 // Kotlin扩展库（依赖基础库和扩展库）
 // implementation "com.github.goweii.AnyLayer:anylayer-ktx:$version"
+// 视图效果库（高斯模糊和阴影布局）
+// implementation "com.github.goweii.AnyLayer:anylayer-effect:$version"
 // 自动初始化（依赖基础库和Jetpack Startup）
 // implementation "com.github.goweii.AnyLayer:anylayer-startup:$version"
 ```
@@ -62,6 +64,7 @@ implementation "com.github.goweii:AnyLayer:$version"
     - anylayer：核心功能，所有浮层效果的实现
     - anylayer-ext：扩展功能，比如通用的动画实现和监听器的默认实现
     - anylayer-ktx：Kotlin扩展，方便再kt环境实现链式调用
+    - anylayer-effect：视图效果库，高斯模糊和阴影布局
     - anylayer-startup：Jetpack Startup实现
 - anylayer-startup依赖于Jetpack Startup，需要自行引入。而且Jetpack Startup仅支持androidx，如果引用的是x.x.x-support需要自己在application初始化
 
