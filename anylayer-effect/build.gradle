@@ -5,7 +5,7 @@ android {
 }
 
 dependencies {
-    api 'per.goweii.visualeffect:visualeffect-core:1.0.10'
-    api 'per.goweii.visualeffect:visualeffect-blur:1.0.10'
-    api 'per.goweii.visualeffect:visualeffect-view:1.0.10'
+    api 'com.github.goweii.VisualEffect:visualeffect-core:1.0.0'
+    api 'com.github.goweii.VisualEffect:visualeffect-blur:1.0.0'
+    api 'com.github.goweii.VisualEffect:visualeffect-view:1.0.0'
 }
