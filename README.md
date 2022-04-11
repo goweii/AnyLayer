@@ -69,6 +69,8 @@ implementation "com.github.goweii:AnyLayer:$version"
 
 ## 截图
 
+[Demo下载](https://raw.githubusercontent.com/goweii/AnyLayer/master/simple/demo/demo.apk)
+
 | ![20210610_190449.gif](https://i.loli.net/2021/06/10/6jgVucdrE73S2pG.gif) | ![20210610_190537.gif](https://i.loli.net/2021/06/10/N617Xf2Kl5Woqd8.gif) | ![20210610_190654.gif](https://i.loli.net/2021/06/10/aVoWBmGqtE1HkUP.gif) | ![20210610_190715.gif](https://i.loli.net/2021/06/10/npHzPjwdqfKBDQt.gif) |
 | --- | --- | --- | --- |
 |     |     |     |     |
