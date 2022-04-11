@@ -92,9 +92,19 @@ public class DecorLayer extends FrameLayer {
         Utils.onViewLayout(getViewHolder().getChild(), new Runnable() {
             @Override
             public void run() {
-                fitDecorInsides();
+                if (isShown()) {
+                    fitDecorInsides();
+                }
             }
         });
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        super.onGlobalLayout();
+        if (isShown()) {
+            fitDecorInsides();
+        }
     }
 
     protected void fitDecorInsides() {

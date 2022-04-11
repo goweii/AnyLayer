@@ -24,7 +24,7 @@
             android:configChanges="orientation|screenSize|keyboard|smallestScreenSize|screenLayout" />
         <activity
             android:name=".DragActivity"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="adjustResize|stateVisible"
             android:configChanges="orientation|screenSize|keyboard|smallestScreenSize|screenLayout" />
         <activity
             android:name=".FullScreenActivity"

@@ -321,10 +321,10 @@ public class Layer {
         if (!isShown()) return;
         if (isOutAnimRunning()) return;
         if (mShowOnPreDrawListener != null) {
-            mShowOnPreDrawListener = null;
             if (getViewTreeObserver().isAlive()) {
                 getViewTreeObserver().removeOnPreDrawListener(mShowOnPreDrawListener);
             }
+            mShowOnPreDrawListener = null;
             mViewManager.detach();
             onDetach();
             onDestroy();

@@ -173,7 +173,9 @@ public class PopupLayer extends DialogLayer {
         Utils.onViewLayout(getViewHolder().getDecor(), new Runnable() {
             @Override
             public void run() {
-                updateLocation();
+                if (isShown()) {
+                    updateLocation();
+                }
             }
         });
     }

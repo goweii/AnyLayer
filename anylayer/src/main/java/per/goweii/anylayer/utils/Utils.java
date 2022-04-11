@@ -104,8 +104,8 @@ public final class Utils {
                 public boolean onPreDraw() {
                     if (view.getViewTreeObserver().isAlive()) {
                         view.getViewTreeObserver().removeOnPreDrawListener(this);
+                        runnable.run();
                     }
-                    runnable.run();
                     return true;
                 }
             });
@@ -123,8 +123,8 @@ public final class Utils {
                         } else {
                             view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         }
+                        runnable.run();
                     }
-                    runnable.run();
                 }
             });
         }
