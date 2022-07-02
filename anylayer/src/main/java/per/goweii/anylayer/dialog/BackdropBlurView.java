@@ -4,10 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
-
-import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 
