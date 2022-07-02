@@ -52,21 +52,36 @@ implementation "com.github.goweii:AnyLayer:$version"
 // implementation "com.github.goweii.AnyLayer:anylayer-ext:$version"
 // Kotlin扩展库（依赖基础库和扩展库）
 // implementation "com.github.goweii.AnyLayer:anylayer-ktx:$version"
-// 视图效果库（高斯模糊和阴影布局）
-// implementation "com.github.goweii.AnyLayer:anylayer-effect:$version"
 // 自动初始化（依赖基础库和Jetpack Startup）
 // implementation "com.github.goweii.AnyLayer:anylayer-startup:$version"
 ```
 
 ## 问题建议
 
-- 这几个依赖有啥区别？
-    - anylayer：核心功能，所有浮层效果的实现
-    - anylayer-ext：扩展功能，比如通用的动画实现和监听器的默认实现
-    - anylayer-ktx：Kotlin扩展，方便再kt环境实现链式调用
-    - anylayer-effect：视图效果库，高斯模糊和阴影布局
-    - anylayer-startup：Jetpack Startup实现
-- anylayer-startup依赖于Jetpack Startup，需要自行引入。而且Jetpack Startup仅支持androidx，如果引用的是x.x.x-support需要自己在application初始化
+### 这几个依赖有啥区别？
+
+- anylayer：核心功能，所有浮层效果的实现
+- anylayer-ext：扩展功能，比如通用的动画实现和监听器的默认实现
+- anylayer-ktx：Kotlin扩展，方便再kt环境实现链式调用
+- anylayer-startup：Jetpack App Startup实现
+
+### 报错ClassNotFoundException: Didn't find class androidx.startup.InitializationProvider？
+
+anylayer-startup依赖于[Jetpack App Startup](https://developer.android.google.cn/topic/libraries/app-startup)，需要自行引入androidx.startup依赖。而且Jetpack Startup仅支持androidx，如果引用的是x.x.x-support需要自己在application初始化
+
+### 为什么无法下载visualeffect相关依赖？
+
+因为4.1.5和4.1.6用于实现背景高斯模糊的VisualEffect库暂时只发布在gitee仓库，需要加下gitee仓库，或者更新4.1.7之后版本。还是建议更新4.1.7之后版本，因为gitee仓库可能被封！
+
+```
+maven { url "https://gitee.com/goweii/maven-repository/raw/master/releases/" }
+```
+
+### 5.0.0版本怎么还没发正式版？
+
+5.0.0版本不会发正式版了。因为5.0.0版本主要做的是一些重构，但是因为重构导致api和依赖方式变化太大，大版本号更新也没法表示这个变动之大。所以后面我又新起了一个项目去搞（新项目地址[Layer](https://github.com/goweii/Layer)）。而且新项目Layer已经发布正式版，欢迎大家迁移体验。
+还有就是这个项目不会再开发新功能，只进行稳定性维护，实在没精力搞同时维护这么多开源项目了。
+
 
 # 使用说明
 
@@ -102,6 +117,6 @@ implementation "com.github.goweii:AnyLayer:$version"
 
 如果你觉得还不错，就请我喝杯咖啡吧~
 
-| ![wx_qrcode](https://gitee.com/goweii/WanAndroidServer/raw/master/about/wx_qrcode.png) |   |   |
+| ![wx_qrcode](https://gitee.com/goweii/WanAndroidServer/raw/master/about/wx_qrcode.png) | ![wx_qrcode](https://gitee.com/goweii/WanAndroidServer/raw/master/about/wx_qrcode.png) | ![wx_qrcode](https://gitee.com/goweii/WanAndroidServer/raw/master/about/wx_qrcode.png) |
 |---|---|---|
 |   |   |   |
