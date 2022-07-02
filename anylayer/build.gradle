@@ -5,7 +5,8 @@ android {
 }
 
 dependencies {
-    implementation 'per.goweii.visualeffect:visualeffect-core:1.0.3'
-    implementation 'per.goweii.visualeffect:visualeffect-blur:1.0.3'
-    implementation 'per.goweii.visualeffect:visualeffect-view:1.0.3'
+    compileOnly 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.github.goweii.VisualEffect:visualeffect-core:1.0.0'
+    implementation 'com.github.goweii.VisualEffect:visualeffect-blur:1.0.0'
+    implementation 'com.github.goweii.VisualEffect:visualeffect-view:1.0.0'
 }
