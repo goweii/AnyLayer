@@ -35,9 +35,6 @@ import per.goweii.anylayer.utils.AnimatorHelper;
 import per.goweii.anylayer.utils.SoftInputHelper;
 import per.goweii.anylayer.utils.Utils;
 import per.goweii.anylayer.widget.SwipeLayout;
-import per.goweii.visualeffect.blur.RSBlurEffect;
-import per.goweii.visualeffect.core.VisualEffect;
-import per.goweii.visualeffect.view.BackdropVisualEffectView;
 
 public class DialogLayer extends DecorLayer {
 
@@ -477,37 +474,12 @@ public class DialogLayer extends DecorLayer {
 
     protected void initBackground() {
         if (getConfig().mBackgroundBlurPercent > 0 || getConfig().mBackgroundBlurRadius > 0) {
-            getViewHolder().replaceBackgroundToBackdropVisualEffectView();
-            getViewHolder().getBackdropVisualEffectView().setShowDebugInfo(false);
-            getViewHolder().getBackdropVisualEffectView().setOverlayColor(getConfig().mBackgroundColor);
-            if (getConfig().mBackgroundBlurPercent > 0) {
-                Utils.onViewLayout(getViewHolder().getBackdropVisualEffectView(), new Runnable() {
-                    @Override
-                    public void run() {
-                        int w = getViewHolder().getBackdropVisualEffectView().getWidth();
-                        int h = getViewHolder().getBackdropVisualEffectView().getHeight();
-                        float radius = Math.min(w, h) * getConfig().mBackgroundBlurPercent;
-                        float simple = getConfig().mBackgroundBlurSimple;
-                        if (radius > 25) {
-                            simple = simple * (radius / 25);
-                            radius = 25;
-                        }
-                        getViewHolder().getBackdropVisualEffectView().setSimpleSize(simple);
-                        VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
-                        getViewHolder().getBackdropVisualEffectView().setVisualEffect(visualEffect);
-                    }
-                });
-            } else {
-                float radius = getConfig().mBackgroundBlurRadius;
-                float simple = getConfig().mBackgroundBlurSimple;
-                if (radius > 25) {
-                    simple = simple * (radius / 25);
-                    radius = 25;
-                }
-                getViewHolder().getBackdropVisualEffectView().setSimpleSize(simple);
-                VisualEffect visualEffect = new RSBlurEffect(getActivity(), radius);
-                getViewHolder().getBackdropVisualEffectView().setVisualEffect(visualEffect);
-            }
+            getViewHolder().replaceBackgroundToBackdropBlurView();
+            getViewHolder().getBackdropBlurView().setShowDebugInfo(false);
+            getViewHolder().getBackdropBlurView().setOverlayColor(getConfig().mBackgroundColor);
+            getViewHolder().getBackdropBlurView().setSimpleSize(getConfig().mBackgroundBlurSimple);
+            getViewHolder().getBackdropBlurView().setBlurRadius(getConfig().mBackgroundBlurRadius);
+            getViewHolder().getBackdropBlurView().setBlurPercent(getConfig().mBackgroundBlurPercent);
         } else {
             if (getConfig().mBackgroundBitmap != null) {
                 getViewHolder().getBackgroundView().setImageBitmap(getConfig().mBackgroundBitmap);
@@ -946,19 +918,19 @@ public class DialogLayer extends DecorLayer {
             return mBackground;
         }
 
-        public void replaceBackgroundToBackdropVisualEffectView() {
-            if (mBackground instanceof BackdropVisualEffectView) return;
+        public void replaceBackgroundToBackdropBlurView() {
+            if (mBackground instanceof BackdropBlurView) return;
             ViewGroup.LayoutParams layoutParams = mBackground.getLayoutParams();
             int index = getChild().indexOfChild(mBackground);
             getChild().removeViewAt(index);
-            mBackground = new BackdropVisualEffectView(getChild().getContext());
+            mBackground = new BackdropBlurView(getChild().getContext());
             getChild().addView(mBackground, index, new ViewGroup.LayoutParams(layoutParams));
         }
 
         @Nullable
-        public BackdropVisualEffectView getBackdropVisualEffectView() {
-            if (mBackground instanceof BackdropVisualEffectView) {
-                return (BackdropVisualEffectView) mBackground;
+        public BackdropBlurView getBackdropBlurView() {
+            if (mBackground instanceof BackdropBlurView) {
+                return (BackdropBlurView) mBackground;
             }
             return null;
         }
